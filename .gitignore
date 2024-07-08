@@ -1,0 +1,7 @@
+.idea
+.DS_Store
+.s
+node_modules
+package-lock.json
+./index.py
+.vscode
