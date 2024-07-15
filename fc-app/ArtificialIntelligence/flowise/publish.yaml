@@ -11,7 +11,7 @@ Effective: Public
 Tags:
   - AI
   - Custom Runtime
-Category: Web框架
+Category: 人工智能
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
