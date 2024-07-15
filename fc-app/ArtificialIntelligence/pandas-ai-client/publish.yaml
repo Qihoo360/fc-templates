@@ -54,9 +54,9 @@ Parameters:
       x-formitem:
         type: radio
     X-Config:
-      title: configfile 
+      title: configfile
       type: string
       description: configfile for pandas-ai-client
       x-tableitem:
-        - filepath: src/pandas-ai-client/.env
+        - filepath: src/pandas-ai-client/.env.example
           describe: envfile

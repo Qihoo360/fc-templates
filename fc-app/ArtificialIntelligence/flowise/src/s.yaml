@@ -1,0 +1,47 @@
+edition: 3.0.0
+name: flowise-app
+access: '{{ access }}'
+vars:
+  region: '{{ region }}'
+resources:
+  framework:
+    component: fc
+    props:
+      region: ${vars.region}
+      description: Serverless flowise
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      customRuntimeConfig:
+        port: 8080
+      functionName: '{{ functionName }}'
+      code: ./flowise
+      environmentVariables:
+        - testkey: testvalue
+      logConfig: auto
+      triggers:
+        - triggerName: httpTrigger
+          triggerType: http
+          disableURLInternet: true
+          triggerConfig:
+            authType: anonymous
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - HEAD
+              - OPTIONS
+  fc_domain_0:
+    component: fc-domain
+    props:
+      region: ${vars.region}
+      domainName: flowise-apptest.test-1-vpc.fc.zyunapp.com
+      protocol: HTTP
+      routeConfig:
+        routes:
+          - path: /*
+            functionName: ${resources.framework.props.functionName}
