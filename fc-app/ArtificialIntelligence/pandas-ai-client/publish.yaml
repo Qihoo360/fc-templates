@@ -1,0 +1,62 @@
+Edition: 3.0.0
+Type: Project
+Name: pandas-ai-client-v3
+Provider:
+  - fc
+Version: 0.0.3
+Description: 本案例是将 pandas-ai-client，快速创建并部署到函数计算 FC 。
+HomePage: https://github.com/Qihoo360/fc-templates/fc-app/ArtificialIntelligence/pandas-ai-client
+Organization: 函数计算（FC）
+Effective: Public
+Tags:
+  - AI
+  - Custom Runtime
+Category: Web框架
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - functionName
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: cn-hangzhou
+      description: 创建应用所在的地区
+      enum:
+        - cn-beijing
+        - cn-hangzhou
+        - cn-shanghai
+        - cn-qingdao
+        - cn-zhangjiakou
+        - cn-huhehaote
+        - cn-shenzhen
+        - cn-chengdu
+        - cn-hongkong
+      x-formitem:
+        type: select
+    functionName:
+      title: 函数名
+      type: string
+      default: pandas-ai-client-${default-suffix}
+      pattern: "^[a-zA-Z_][a-zA-Z0-9-_]{0,127}$"
+      description: 函数名称，只能包含字母、数字、下划线和中划线。不能以数字、中划线开头。长度在 1-128 之间
+      x-formitem:
+        type: input
+    scaleConfig:
+      title: 弹性伸缩配置
+      type: boolean
+      default: true
+      description: 单实例创建函数后，不支持弹性伸缩，即不允许修改配置成多实例
+      enum:
+        - 单实例
+      x-formitem:
+        type: radio
+    X-Config:
+      title: configfile 
+      type: string
+      description: configfile for pandas-ai-client
+      x-tableitem:
+        - filepath: src/pandas-ai-client/.env
+          describe: envfile
