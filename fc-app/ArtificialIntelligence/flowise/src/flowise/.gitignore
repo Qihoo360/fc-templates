@@ -35,6 +35,8 @@
 .env.production.local
 .env
 
+server.env
+
 ## turbo
 .turbo
 
