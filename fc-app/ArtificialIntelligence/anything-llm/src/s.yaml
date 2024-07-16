@@ -36,7 +36,7 @@ resources:
     props:
       region: '{{ region }}'
       domainName: anything-llm-apptest.test-1-vpc.fc.zyunapp.com
-      protocol: HTTP
+      protocol: http
       routes:
         - path: /*
           functionName: '{{ functionName }}'
