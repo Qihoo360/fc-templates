@@ -15,29 +15,22 @@ resources:
       diskSize: 512
       timeout: 30
       instanceConcurrency: 100
-      customRuntimeConfig:
-        port: 8080
+      port: 8080
       functionName: '{{ functionName }}'
-      code: ./code
+      code: code
       environmentVariables:
         testkey: testvalue
       requestType: http
       runtimeType: customize
       cloudBuildType: Source
-      logConfig: auto
+      logConfig:
+        isOpen: true
       triggers:
         - triggerName: httpTrigger
           triggerType: http
           disableURLInternet: true
-          triggerConfig:
-            authType: anonymous
-            methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - HEAD
-              - OPTIONS
+          funcVersion: LATEST
+          triggerConfig: "{\"auth_type\":\"None\",\"methods\":[\"GET\",\"POST\",\"PUT\",\"DELETE\",\"OPTIONS\",\"HEAD\",\"PATCH\"],\"disable_url_internet\":true,\"auth_config\":\"\"}"
   fc_domain_0:
     component: fc-domain
     props:
