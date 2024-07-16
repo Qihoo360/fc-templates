@@ -22,18 +22,15 @@ Parameters:
     region:
       title: 地域
       type: string
-      default: cn-hangzhou
+      default: test-3
       description: 创建应用所在的地区
       enum:
-        - cn-beijing
-        - cn-hangzhou
-        - cn-shanghai
-        - cn-qingdao
-        - cn-zhangjiakou
-        - cn-huhehaote
-        - cn-shenzhen
-        - cn-chengdu
-        - cn-hongkong
+        - test-1
+        - test-2
+        - test-3
+        - test-4
+        - test-5
+        - test-6
       x-formitem:
         type: select
     functionName:
@@ -46,8 +43,8 @@ Parameters:
         type: input
     scaleConfig:
       title: 弹性伸缩配置
-      type: boolean
-      default: true
+      type: string
+      default: 单实例
       description: 单实例创建函数后，不支持弹性伸缩，即不允许修改配置成多实例
       enum:
         - 单实例
