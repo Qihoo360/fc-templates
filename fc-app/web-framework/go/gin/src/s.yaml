@@ -20,7 +20,7 @@ resources:
       functionName: '{{ functionName }}'
       code: ./code
       environmentVariables:
-        - testkey: testvalue
+        testkey: testvalue
       requestType: http
       runtimeType: customize
       cloudBuildType: Source
