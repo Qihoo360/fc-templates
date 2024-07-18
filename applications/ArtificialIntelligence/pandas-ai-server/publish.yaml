@@ -65,4 +65,4 @@ Parameters:
       x-tableitem:
         - filepath: src/pandas-ai-server/.env
           describe: envfile
-          fileurl: http://next.app-store.test-3.fc.zyunapp.com/application-templates/demo/resources?config-url=https%3A%2F%2Fraw.githubusercontent.com%2FQihoo360%2Ffc-templates%2Ffeature%2Ffc-app-test%2Ffc-app%2FArtificialIntelligence%2Fpandas-ai-server%2Fsrc%2Fpandas-ai-server%2F.env.example&filepath=src%2Fpandas-ai-server%2F.env.example
+          fileurl: http://next.app-store.test-3.fc.zyunapp.com/application-templates/demo/resources?config-url=https%3A%2F%2Fraw.githubusercontent.com%2FQihoo360%2Ffc-templates%2Ffeature%2Ffc-app-test%2Fapplications%2FArtificialIntelligence%2Fpandas-ai-server%2Fsrc%2Fpandas-ai-server%2F.env.example&filepath=src%2Fpandas-ai-server%2F.env.example
