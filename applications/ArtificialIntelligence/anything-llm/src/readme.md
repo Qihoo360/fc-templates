@@ -11,7 +11,7 @@
 
 <codeUrl>
 
-- [:smiley_cat: 代码](https://github.com/Qihoo360/fc-templates/applications/ArtificialIntelligence/anything-llm/src)
+- [:smiley_cat: 代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/ArtificialIntelligence/anything-llm/src)
 
 </codeUrl>
 <preview>
