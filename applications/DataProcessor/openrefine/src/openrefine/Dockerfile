@@ -1,24 +1,7 @@
-# 使用 Maven 和 OpenJDK 11 构建环境
-FROM maven:3.8.1-jdk-11 AS build
-
-# 安装 Node.js 和 npm
-RUN apt-get update && \
-  apt-get install -y curl wget && \
-  curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
-  apt-get install -y nodejs
-
-# 复制本地下载的 OpenRefine 源码和依赖到容器中
-COPY . /opt/openrefine
-
-# 设置工作目录
-WORKDIR /opt/openrefine
+FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/apps/openrefine-maven as build
 
 # 创建运行时镜像
-FROM openjdk:11-jre-slim
-
-# 安装 curl 和 wget 以确保所有工具在运行时可用
-RUN apt-get update && \
-  apt-get install -y curl wget procps
+FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/apps/openrefine-jdk
 
 # 设置环境变量
 ENV REFINE_HOME=/opt/openrefine
