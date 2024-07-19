@@ -11,7 +11,7 @@
 
 <codeUrl>
 
-- [:smiley_cat: 代码](https://github.com/Qihoo360/fc-templates/applications/ArtificialIntelligence/pandas-ai-client/src)
+- [:smiley_cat: 代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/ArtificialIntelligence/pandas-ai-client/src)
 
 </codeUrl>
 <preview>

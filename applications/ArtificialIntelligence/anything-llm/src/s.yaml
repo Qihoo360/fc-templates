@@ -35,7 +35,7 @@ resources:
     component: fc-domain
     props:
       region: '{{ region }}'
-      domainName: anything-llm-apptest.test-1-vpc.fc.zyunapp.com
+      domainName: anything-llm-apptest.test-3-vpc.fc.zyunapp.com
       protocol: http
       routes:
         - path: /*

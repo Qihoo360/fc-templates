@@ -7,7 +7,7 @@ resources:
   framework:
     component: fc
     props:
-      region: ${vars.region}
+      region: '{{ region }}'
       description: Serverless openrefine
       runtime: custom
       memorySize: 10240
@@ -15,33 +15,19 @@ resources:
       diskSize: 512
       timeout: 100
       instanceConcurrency: 100
-      customRuntimeConfig:
-        port: 8080
+      port: 8080
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
       functionName: '{{ functionName }}'
-      code: ./openrefine
+      code: openrefine
       environmentVariables:
-        - testkey: testvalue
-      logConfig: auto
+        testkey: testvalue
+      logConfig:
+        isOpen: true
       triggers:
-        - triggerName: httpTrigger
+        - triggerName: httptrigger
           triggerType: http
           disableURLInternet: true
-          triggerConfig:
-            authType: anonymous
-            methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - HEAD
-              - OPTIONS
-  fc_domain_0:
-    component: fc-domain
-    props:
-      region: ${vars.region}
-      domainName: openrefine-apptest.test-1-vpc.fc.zyunapp.com
-      protocol: HTTP
-      routeConfig:
-        routes:
-          - path: /*
-            functionName: ${resources.framework.props.functionName}
+          funcVersion: LATEST
+          triggerConfig: "{\"auth_type\":\"None\",\"methods\":[\"GET\",\"POST\",\"PUT\",\"DELETE\",\"OPTIONS\",\"HEAD\",\"PATCH\"],\"disable_url_internet\":true,\"auth_config\":\"\"}"

@@ -159,6 +159,8 @@ WORKDIR /app/collector
 ENV PUPPETEER_DOWNLOAD_BASE_URL=https://storage.googleapis.com/chrome-for-testing-public
 RUN yarn install --production --network-timeout 100000 && yarn cache clean
 
+FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/anything-llm-production-stage:v1 AS ready-stage
+
 # Migrate and Run Prisma against known schema
 WORKDIR /app/server
 RUN npx prisma generate --schema=./prisma/schema.prisma && \
