@@ -29,6 +29,10 @@ RUN poetry lock --no-update
 RUN poetry install --no-root
 
 FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/pandas-ai-server-base:v1 as ready-stage
+
+# Copy the current directory contents into the container at /app
+COPY ./. /app
+
 # Add wait-for-it.sh script to the container
 COPY wait-for-it.sh /wait-for-it.sh
 
