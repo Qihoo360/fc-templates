@@ -12,7 +12,9 @@ RUN npm run build
 
 FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/pandas-ai-client-base:v1 as ready-stage
 
-COPY ./. .
+WORKDIR /app
+
+COPY ./.env ./
 
 ENV PORT=8080
 EXPOSE 8080
