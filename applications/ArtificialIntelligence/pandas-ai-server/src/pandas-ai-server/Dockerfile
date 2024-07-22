@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.11-slim
+FROM python:3.11-slim AS base
 
 # Set the working directory in the container
 WORKDIR /app
@@ -28,6 +28,7 @@ RUN poetry lock --no-update
 # Install Python dependencies
 RUN poetry install --no-root
 
+FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/pandas-ai-server-base:v1 as ready-stage
 # Add wait-for-it.sh script to the container
 COPY wait-for-it.sh /wait-for-it.sh
 
