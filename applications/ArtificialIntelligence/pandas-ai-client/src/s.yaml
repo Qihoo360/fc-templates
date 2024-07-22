@@ -20,7 +20,7 @@ resources:
       functionName: '{{ functionName }}'
       code: ./pandas-ai-client
       environmentVariables:
-        - testkey: testvalue
+        testkey: testvalue
       logConfig: auto
       triggers:
         - triggerName: httpTrigger
