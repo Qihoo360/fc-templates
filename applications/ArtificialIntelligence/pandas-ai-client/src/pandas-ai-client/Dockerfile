@@ -1,4 +1,4 @@
-FROM node:19.4.0-alpine3.17
+FROM node:19.4.0-alpine3.17 AS base
 
 WORKDIR /app
 
@@ -6,9 +6,12 @@ COPY package*.json ./
 
 RUN npm install
 
-COPY . .
+COPY ./. .
 
 RUN npm run build
+
+FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/pandas-ai-client-base:v1 as ready-stage
+
 ENV PORT=8080
 EXPOSE 8080
 
