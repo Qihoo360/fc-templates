@@ -7,7 +7,7 @@ resources:
   framework:
     component: fc
     props:
-      region: ${vars.region}
+      region: '{{ region }}'
       description: Serverless pandas-ai-client
       runtime: custom
       memorySize: 10240
@@ -15,23 +15,19 @@ resources:
       diskSize: 512
       timeout: 100
       instanceConcurrency: 100
-      customRuntimeConfig:
-        port: 8080
+      port: 8080
       functionName: '{{ functionName }}'
-      code: ./pandas-ai-client
+      code: pandas-ai-client
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
       environmentVariables:
         testkey: testvalue
-      logConfig: auto
+      logConfig:
+        isOpen: true
       triggers:
-        - triggerName: httpTrigger
+        - triggerName: httptrigger
           triggerType: http
           disableURLInternet: true
-          triggerConfig:
-            authType: anonymous
-            methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - HEAD
-              - OPTIONS
+          funcVersion: LATEST
+          triggerConfig: "{\"auth_type\":\"None\",\"methods\":[\"GET\",\"POST\",\"PUT\",\"DELETE\",\"OPTIONS\",\"HEAD\",\"PATCH\"],\"disable_url_internet\":true,\"auth_config\":\"\"}"
