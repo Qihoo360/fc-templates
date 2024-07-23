@@ -3,20 +3,9 @@
 
 # openrefine 帮助文档
 
-<description>
-
 本案例是将 OpenRefine：一个免费的开源工具，用于处理杂乱的数据并对其进行清洗优化，快速创建并部署到函数计算 FC 。
 
-</description>
-
-<codeUrl>
-
 - [:smiley_cat: 代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/DataProcessor/openrefine/src)
-
-</codeUrl>
-<preview>
-
-</preview>
 
 ## 前期准备
 

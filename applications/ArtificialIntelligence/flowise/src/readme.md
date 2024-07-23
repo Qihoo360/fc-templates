@@ -3,31 +3,15 @@
 
 # flowise 帮助文档
 
-<description>
-
 本案例是将 Flowise - 轻松构建 LLM 应用程序，快速创建并部署到函数计算 FC 。
 
-</description>
-
-<codeUrl>
-
 - [:smiley_cat: 代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/ArtificialIntelligence/flowise/src)
-
-</codeUrl>
-<preview>
-
-
-
-</preview>
-
 
 ## 前期准备
 
 使用该项目，您需要有开通以下服务并拥有对应权限：
 
 <service>
-
-
 
 | 服务/业务 |
 | --- |
@@ -37,13 +21,9 @@
 
 <remark>
 
-
-
 </remark>
 
 <disclaimers>
-
-
 
 </disclaimers>
 
@@ -74,9 +54,7 @@ flowise
 <matters id="flushContent">
 </matters>
 
-
 <devgroup>
-
 
 ## 开发者社区
 

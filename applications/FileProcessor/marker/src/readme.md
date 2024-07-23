@@ -3,20 +3,9 @@
 
 # marker 帮助文档
 
-<description>
-
 本案例是将 marker - 一个快速，高精度将 PDF 转换为 markdown 的工具，快速创建并部署到函数计算 FC 。
 
-</description>
-
-<codeUrl>
-
 - [:smiley_cat: 代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/FileProcessor/marker/src)
-
-</codeUrl>
-<preview>
-
-</preview>
 
 ## 前期准备
 
