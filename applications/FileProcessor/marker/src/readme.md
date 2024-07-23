@@ -11,51 +11,20 @@
 
 使用该项目，您需要有开通以下服务并拥有对应权限：
 
-<service>
-
 | 服务/业务 |
 | --- |
 | 函数计算 |
 
-</service>
-
-<remark>
-
-</remark>
-
-<disclaimers>
-
-</disclaimers>
-
 ## 部署 & 体验
-
-<appcenter>
 
 - :fire: 通过 [Serverless 应用中心](https://console.zyun.qihoo.net/fc) ,部署该应用。
 
-</appcenter>
-
 ## 案例介绍
-
-<appdetail id="flushContent">
 
 marker
 
-</appdetail>
-
 ## 使用流程
-
-<usedetail id="flushContent">
-
-</usedetail>
 
 ## 注意事项
 
-<matters id="flushContent">
-</matters>
-
-<devgroup>
-
 ## 开发者社区
-
-</devgroup>
