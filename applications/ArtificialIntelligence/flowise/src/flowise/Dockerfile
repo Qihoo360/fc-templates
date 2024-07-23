@@ -3,6 +3,7 @@ FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/apps/flowise-base
 
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV FLOWISE_SECRETKEY_OVERWRITE=fcappdemo
 
 WORKDIR /usr/src
 
