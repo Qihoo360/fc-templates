@@ -12,7 +12,7 @@
 
 ### pandas-ai-client/.env
 
-```
+```sh
 # THE URL OF YOUR CLIENT
 NEXT_PUBLIC_API_URL='http://localhost:8000/'
 

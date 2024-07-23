@@ -12,7 +12,7 @@
 
 ### pandas-ai-server/.env
 
-```
+```sh
 # Database
 POSTGRES_URL=postgresql+asyncpg://pandasai:password123@postgresql:5432/pandasai-db
 TEST_POSTGRES_URL=postgresql+asyncpg://pandasai:password123@postgresql:5432/pandasai-db
