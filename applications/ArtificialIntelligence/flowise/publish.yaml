@@ -44,7 +44,7 @@ Parameters:
     description:
       title: 描述
       type: string
-      default: "" 
+      default: "Serverless flowise" 
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
       x-formitem:
