@@ -8,7 +8,7 @@ resources:
     component: fc
     props:
       region: '{{ region }}'
-      description: Serverless one-api
+      description: '{{ description }}'
       runtime: custom
       memorySize: 10240
       cpu: 8
