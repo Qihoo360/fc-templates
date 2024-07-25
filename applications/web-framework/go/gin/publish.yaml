@@ -45,7 +45,7 @@ Parameters:
     description:
       title: 描述
       type: string
-      default: "" 
+      default: "Serverless Devs Web Framework Gin Function" 
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
       x-formitem:
@@ -59,3 +59,7 @@ Parameters:
         - 单实例
       x-formitem:
         type: radio
+    x-config:
+      title: 可修改的配置文件
+      type: string
+      description: configfile for start-gin-v3

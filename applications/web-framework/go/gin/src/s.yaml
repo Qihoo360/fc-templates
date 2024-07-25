@@ -8,7 +8,7 @@ resources:
     component: fc
     props:
       region: '{{ region }}'
-      description: Serverless Devs Web Framework Gin Function
+      description: '{{ description }}'
       runtime: custom
       memorySize: 1024
       cpu: 1
