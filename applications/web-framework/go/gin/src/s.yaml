@@ -43,7 +43,7 @@ resources:
             functionName: '{{ functionName }}'
             methods: ""
             funcVersion: LATEST
-        cert:
+      cert:
         isForceHttps: false
       domainAuthConfig:
         authType: "None"
