@@ -44,7 +44,7 @@ Parameters:
     description:
       title: 描述
       type: string
-      default: "" 
+      default: "Serverless pandas-ai-client" 
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
       x-formitem:
@@ -65,4 +65,4 @@ Parameters:
       x-tableitem:
         - filepath: src/pandas-ai-client/.env
           describe: envfile
-          fileurl: http://next.app-store.test-3.fc.zyunapp.com/application-templates/demo/resources?config-url=https%3A%2F%2Fraw.githubusercontent.com%2FQihoo360%2Ffc-templates%2Ffeature%2Ffc-app-test%2Fapplications%2FArtificialIntelligence%2Fpandas-ai-client%2Fsrc%2Fpandas-ai-client%2F.env.example&filepath=src%2Fpandas-ai-client%2F.env.example
+          fileurl: http://next.app-store.test-3.fc.zyunapp.com/application-templates/demo/resources?config-url=https%3A%2F%2Fraw.githubusercontent.com%2FQihoo360%2Ffc-templates%2Ffeature%2Ffc-app-test%2Fapplications%2FArtificialIntelligence%2Fpandas-ai-client%2Fsrc%2Fpandas-ai-client%2F.env&filepath=src%2Fpandas-ai-client%2F.env

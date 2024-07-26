@@ -41,6 +41,14 @@ Parameters:
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-48 之间。
       x-formitem:
         type: input
+    description:
+      title: 描述
+      type: string
+      default: "Serverless flowise" 
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-formitem:
+        type: input
     scaleConfig:
       title: 弹性伸缩配置
       type: string
