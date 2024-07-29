@@ -31,8 +31,3 @@ resources:
           disableURLInternet: true
           funcVersion: LATEST
           triggerConfig: "{\"auth_type\":\"None\",\"methods\":[\"GET\",\"POST\",\"PUT\",\"DELETE\",\"OPTIONS\",\"HEAD\",\"PATCH\"],\"disable_url_internet\":true,\"auth_config\":\"\"}"
-        disableUrlInternet: true
-      tls:
-        maxVersion: ""
-      waf:
-        enableWaf: false
