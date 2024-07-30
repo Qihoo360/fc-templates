@@ -4,7 +4,7 @@ Name: flowise
 Provider:
   - fc
 Version: 0.0.3
-Description: 本案例是将 flowise AI，快速创建并部署到函数计算 FC 。
+Description: 本案例是将 flowise AI（拖放 UI 来构建您的自定义LLM流程），快速创建并部署到函数计算 FC 。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/ArtificialIntelligence/flowise
 Organization: 函数计算（FC）
 Effective: Public
@@ -44,7 +44,7 @@ Parameters:
     description:
       title: 描述
       type: string
-      default: "Serverless flowise" 
+      default: "Serverless flowise"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
       x-formitem:
