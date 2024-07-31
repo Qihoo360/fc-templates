@@ -2,7 +2,8 @@
 
 # Flowise
 
-![flowise](./flowise/images/flowise.png)
+![flowise](https://github.com/Qihoo360/fc-templates/blob/main/applications/artificial-intelligence/flowise/src/flowise/images/flowise.png?raw=true)
+
 本案例是将 Flowise 快速创建并部署到函数计算（FC）。Flowise 是一个开源项目，提供可视化工具，通过拖拽 UI 轻松构建自定义 LLM 流程，它的优势在于简化了 AI 模型的设计和运行过程。
 
 - [Flowise 应用代码](https://github.com/Qihoo360/fc-templates/tree/main/applications/artificial-intelligence/flowise/src)
@@ -23,10 +24,10 @@
 
 **拖放界面构建定制化的LLM流程**
 
-![flowise](./flowise/images/flowise.gif)
-![image-20240730180936849](./flowise/images/image-20240730180936849.png)
-![image-20240730181011132](./flowise/images/image-20240730181011132.png)
-![image-20240730181126230](./flowise/images/image-20240730181126230.png)
+![flowise](https://github.com/Qihoo360/fc-templates/blob/main/applications/artificial-intelligence/flowise/src/flowise/images/flowise.gif?raw=true)
+![image-20240730180936849](https://github.com/Qihoo360/fc-templates/blob/main/applications/artificial-intelligence/flowise/src/flowise/images/image-20240730180936849.png?raw=true)
+![image-20240730181011132](https://github.com/Qihoo360/fc-templates/blob/main/applications/artificial-intelligence/flowise/src/flowise/images/image-20240730181011132.png?raw=true)
+![image-20240730181126230](https://github.com/Qihoo360/fc-templates/blob/main/applications/artificial-intelligence/flowise/src/flowise/images/image-20240730181126230.png?raw=true)
 
 ## 使用流程
 

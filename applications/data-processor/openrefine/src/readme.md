@@ -20,8 +20,8 @@
 
 ## 案例介绍
 
-![image-20240730180828454](./openrefine/images/image-20240730180828454.png)
-![image-20240730181710879](./openrefine/images/image-20240730181710879.png)
+![image-20240730180828454](https://github.com/Qihoo360/fc-templates/blob/main/applications/data-processor/openrefine/src/openrefine/images/image-20240730180828454.png?raw=true)
+![image-20240730181710879](https://github.com/Qihoo360/fc-templates/blob/main/applications/data-processor/openrefine/src/openrefine/images/image-20240730181710879.png?raw=true)
 
 ## 使用流程
 

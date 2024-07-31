@@ -21,7 +21,7 @@
 
 ## 案例介绍
 
-![image-20240730195524608](./stirling-pdf/images/stirling-home-dark.png)
+![image-20240730195524608](https://github.com/Qihoo360/fc-templates/blob/main/applications/file-processor/stirling-pdf/src/stirling-pdf/images/stirling-home-dark.png?raw=true)
 
 ## 使用流程
 
