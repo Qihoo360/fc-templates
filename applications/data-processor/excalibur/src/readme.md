@@ -21,10 +21,10 @@
 
 ## 案例介绍
 
-![image-20240730230709948](./excalibur/images/image-20240730230709948.png)
-![image-20240730230929025](./excalibur/images/image-20240730230929025.png)
-![image-20240730230958713](./excalibur/images/image-20240730230958713.png)
-![image-20240730231345351](./excalibur/images/image-20240730231345351.png)
+![image-20240730230709948](https://github.com/Qihoo360/fc-templates/blob/main/applications/data-processor/excalibur/src/excalibur/images/image-20240730230709948.png?raw=true)
+![image-20240730230929025](https://github.com/Qihoo360/fc-templates/blob/main/applications/data-processor/excalibur/src/excalibur/images/image-20240730230929025.png?raw=true)
+![image-20240730230958713](https://github.com/Qihoo360/fc-templates/blob/main/applications/data-processor/excalibur/src/excalibur/images/image-20240730230958713.png?raw=true)
+![image-20240730231345351](https://github.com/Qihoo360/fc-templates/blob/main/applications/data-processor/excalibur/src/excalibur/images/image-20240730231345351.png?raw=true)
 
 ## 使用流程
 
