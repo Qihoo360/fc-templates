@@ -1,0 +1,56 @@
+edition: 3.0.0
+name: web-framework-app
+access: '{{ access }}'
+vars:
+  region: '{{ region }}'
+resources:
+  framework:
+    component: fc
+    props:
+      region: '{{ region }}'
+      description: '{{ description }}'
+      runtime: custom
+      memorySize: 1024
+      cpu: 1
+      diskSize: 512
+      timeout: 30
+      instanceConcurrency: 100
+      port: 8080
+      functionName: '{{ functionName }}'
+      code: code
+      environmentVariables:
+        testkey: testvalue
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Source
+      logConfig:
+        isOpen: true
+      triggers:
+        - triggerName: httpTrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig: "{\"auth_type\":\"None\",\"methods\":[\"GET\",\"POST\",\"PUT\",\"DELETE\",\"OPTIONS\",\"HEAD\",\"PATCH\"],\"disable_url_internet\":true,\"auth_config\":\"\"}"
+  fc_domain_0:
+    component: fc-domain
+    props:
+      region: '{{ region }}'
+      domainName: gin-apptest.test-3-vpc.fc.zyunapp.com
+      protocol: http
+      routeConfig:
+        routes:
+          - path: /*
+            functionName: '{{ functionName }}'
+            methods: ""
+            funcVersion: LATEST
+      cert:
+        isForceHttps: false
+      domainAuthConfig:
+        authType: "None"
+        authConfig: ""
+      internetConfig:
+        disableUrlInternet: true
+      tls:
+        maxVersion: ""
+      waf:
+        enableWaf: false

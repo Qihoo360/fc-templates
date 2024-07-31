@@ -1,0 +1,64 @@
+Edition: 3.0.0
+Type: Project
+Name: openrefine
+Provider:
+  - fc
+Version: 0.0.3
+Description: 本案例是将 openrefine 一个免费的开源工具，用于处理杂乱的数据并对其进行改进，快速创建并部署到函数计算 FC 。
+HomePage: https://github.com/Qihoo360/fc-templates/applications/data-processor/openrefine
+Organization: 函数计算（FC）
+Effective: Public
+Tags:
+  - AI
+  - Data Processor
+Category: 数据处理
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - functionName
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: test-3
+      description: 创建应用所在的地区
+      enum:
+        - test-1
+        - test-2
+        - test-3
+        - test-4
+        - test-4
+        - test-6
+      x-formitem:
+        type: select
+    functionName:
+      title: 函数名
+      type: string
+      default: openrefine-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{2,48}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-48 之间。
+      x-formitem:
+        type: input
+    description:
+      title: 描述
+      type: string
+      default: "Serverless openrefine"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-formitem:
+        type: input
+    scaleConfig:
+      title: 弹性伸缩配置
+      type: string
+      default: 单实例
+      description: 单实例创建函数后，不支持弹性伸缩，即不允许修改配置成多实例
+      enum:
+        - 单实例
+      x-formitem:
+        type: radio
+    x-config:
+      title: 可修改的配置文件
+      type: string
+      description: configfile for openrefine
