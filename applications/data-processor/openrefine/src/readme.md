@@ -4,7 +4,7 @@
 
 本案例是将 OpenRefine 快速创建并部署到函数计算（FC）。OpenRefine 是一个基于 Java 的强大工具，允许您加载数据、理解数据、清理数据、对数据进行协调，并使用来自网络的数据进行增强。所有这些操作都可以通过网页浏览器在您自己的计算机上私密地进行。通过该应用，用户能够高效创建和管理数据处理服务，大大提升数据处理的便利性和管理效率。
 
-- [OpenRefine 应用代码](https://github.com/Qihoo360/fc-templates/tree/main/applications/data-processor/openrefine/src)
+- [OpenRefine 应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/data-processor/openrefine/src)
 
 ## 前期准备
 
@@ -20,8 +20,8 @@
 
 ## 案例介绍
 
-![image-20240730180828454](https://github.com/Qihoo360/fc-templates/blob/main/applications/data-processor/openrefine/src/openrefine/images/image-20240730180828454.png?raw=true)
-![image-20240730181710879](https://github.com/Qihoo360/fc-templates/blob/main/applications/data-processor/openrefine/src/openrefine/images/image-20240730181710879.png?raw=true)
+![image-20240730180828454](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/data-processor/openrefine/src/openrefine/images/image-20240730180828454.png?raw=true)
+![image-20240730181710879](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/data-processor/openrefine/src/openrefine/images/image-20240730181710879.png?raw=true)
 
 ## 使用流程
 

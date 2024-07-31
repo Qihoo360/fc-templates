@@ -61,4 +61,4 @@ Parameters:
       x-tableitem:
         - filepath: src/flowise/packages/server/.env.example
           describe: envfile
-          fileurl: http://app-store.cn-north-cu-1.fc.zyunapp.cn/application-templates/demo/resources?config-url=https%3A%2F%2Fraw.githubusercontent.com%2FQihoo360%2Ffc-templates%2Fmain%2Fapplications%2Fartificial-intelligence%2Fflowise%2Fsrc%2Fflowise%2Fpackages%2Fserver%2F.env.example&filepath=src%2Fflowise%2Fpackages%2Fserver%2F.env.example
+          fileurl: http://app-store.cn-north-cu-1.fc.zyunapp.cn/application-templates/demo/resources?config-url=https%3A%2F%2Fraw.githubusercontent.com%2FQihoo360%2Ffc-templates%2Ffeature%2Fmain%2Fapplications%2Fartificial-intelligence%2Fflowise%2Fsrc%2Fflowise%2Fpackages%2Fserver%2F.env.example&filepath=src%2Fflowise%2Fpackages%2Fserver%2F.env.example

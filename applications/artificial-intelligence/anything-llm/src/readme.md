@@ -20,7 +20,7 @@
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 anything-llm 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/main/applications/artificial-intelligence/anything-llm/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/anything-llm/src)
 
 # 应用的使用说明
 
