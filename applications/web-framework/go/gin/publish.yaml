@@ -23,15 +23,11 @@ Parameters:
     region:
       title: 地域
       type: string
-      default: test-3
+      default: cn-north-cu-1
       description: 创建应用所在的地区
       enum:
-        - test-1
-        - test-2
-        - test-3
-        - test-4
-        - test-5
-        - test-6
+        - cn-north-cu-1
+        - cn-north-ct-1
       x-formitem:
         type: select
     functionName:
@@ -45,7 +41,7 @@ Parameters:
     description:
       title: 描述
       type: string
-      default: "Serverless Devs Web Framework Gin Function" 
+      default: "Serverless Devs Web Framework Gin Function"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
       x-formitem:
