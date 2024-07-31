@@ -5,7 +5,7 @@
 本案例是将 Stirling-PDF 快速创建并部署到函数计算（FC）。Stirling-PDF 是一个本地托管的开源 Web 应用程序，允许用户对 PDF 文件执行合并、拆分、加密等多种操作，用户可以利用 Stirling-PDF 丰富的功能，高效处理 PDF 文件。
 所有文件和 PDF 要么完全存在于客户端，要么仅在任务执行期间驻留在服务器内存中，或者仅为执行任务而临时存在于文件中。用户下载的任何文件在那时都将从服务器中删除。
 
-- [Stirling-PDF 应用代码](https://github.com/Qihoo360/fc-templates/tree/main/applications/file-processor/stirling-pdf/src)
+- [Stirling-PDF 应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/file-processor/stirling-pdf/src)
 
 ## 前期准备
 
@@ -21,7 +21,7 @@
 
 ## 案例介绍
 
-![image-20240730195524608](https://github.com/Qihoo360/fc-templates/blob/main/applications/file-processor/stirling-pdf/src/stirling-pdf/images/stirling-home-dark.png?raw=true)
+![image-20240730195524608](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/file-processor/stirling-pdf/src/stirling-pdf/images/stirling-home-dark.png?raw=true)
 
 ## 使用流程
 

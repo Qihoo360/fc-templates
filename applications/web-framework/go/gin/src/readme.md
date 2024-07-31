@@ -22,7 +22,7 @@ Gin框架的应用场景非常广泛，如：RESTful API开发、Web服务开发
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 Gin 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/main/applications/web-framework/go/gin/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/web-framework/go/gin/src)
 
 # 应用的使用说明
 

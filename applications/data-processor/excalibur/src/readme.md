@@ -5,7 +5,7 @@
 本案例是将 Excalibur 快速创建并部署到函数计算（FC）。Excalibur 组合了 Camelot 和 Excalibur 的功能，用于从 PDF 文件中提取表格数据，并提供易用的 Web 界面，用户可以利用该服务高效提取 PDF（注：仅适用于基于文本的 PDF，不适用于扫描文档） 文件中的表格数据。
 所有文件和 PDF 要么完全存在于客户端，要么仅在任务执行期间驻留在服务器内存中，或者仅为执行任务而临时存在于文件中。用户下载的任何文件在那时都将从服务器中删除。
 
-- [Excalibur 应用代码](https://github.com/Qihoo360/fc-templates/tree/main/applications/data-processor/excalibur/src)
+- [Excalibur 应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/data-processor/excalibur/src)
 
 ## 前期准备
 
@@ -21,10 +21,10 @@
 
 ## 案例介绍
 
-![image-20240730230709948](https://github.com/Qihoo360/fc-templates/blob/main/applications/data-processor/excalibur/src/excalibur/images/image-20240730230709948.png?raw=true)
-![image-20240730230929025](https://github.com/Qihoo360/fc-templates/blob/main/applications/data-processor/excalibur/src/excalibur/images/image-20240730230929025.png?raw=true)
-![image-20240730230958713](https://github.com/Qihoo360/fc-templates/blob/main/applications/data-processor/excalibur/src/excalibur/images/image-20240730230958713.png?raw=true)
-![image-20240730231345351](https://github.com/Qihoo360/fc-templates/blob/main/applications/data-processor/excalibur/src/excalibur/images/image-20240730231345351.png?raw=true)
+![image-20240730230709948](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/data-processor/excalibur/src/excalibur/images/image-20240730230709948.png?raw=true)
+![image-20240730230929025](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/data-processor/excalibur/src/excalibur/images/image-20240730230929025.png?raw=true)
+![image-20240730230958713](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/data-processor/excalibur/src/excalibur/images/image-20240730230958713.png?raw=true)
+![image-20240730231345351](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/data-processor/excalibur/src/excalibur/images/image-20240730231345351.png?raw=true)
 
 ## 使用流程
 
