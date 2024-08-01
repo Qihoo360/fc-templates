@@ -34,5 +34,12 @@
 Base URL设置为api地址，例如：https://oneapi-public.cn-north-cu-1-vpc.fc.zyunapp.com/v1
 
 ![image.png](images/anything-llm设置20240801091213.png)
+
+## 设置User
+![image.png](images/anything-llm-usersetup20240801091605.png)
+
+## 设置survey
+![image.png](images/anything-llm-SkipSurvey-20240801091923.png)
+
 ## workspace 聊天
 ![image.png](images/workspace聊天.png)
