@@ -33,6 +33,6 @@
 ## 设置LLM 提供商
 Base URL设置为api地址，例如：https://oneapi-public.cn-north-cu-1-vpc.fc.zyunapp.com/v1
 
-![image.png](images/LLM首选项.png)
+![image.png](images/anything-llm设置20240801091213.png)
 ## workspace 聊天
 ![image.png](images/workspace聊天.png)
