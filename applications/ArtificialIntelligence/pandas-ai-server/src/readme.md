@@ -7,17 +7,17 @@ PandasAI 是一个 Python 库，可以轻松地用自然语言向数据提出问
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 pandas-ai-server 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-*   [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/ArtificialIntelligence/pandas-ai-server/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/ArtificialIntelligence/pandas-ai-server/src)
 
 # 前期准备
 
 使用该项目，您需要有开通以下服务并拥有对应权限：
 
-*   函数计算
+* 函数计算
 
 # 部署 & 体验
 
-*   通过 [Serverless 应用中心](https://console.zyun.qihoo.net/fc) ,部署该应用。
+* 通过 [Serverless 应用中心](https://console.zyun.qihoo.net/fc) ,部署该应用。
 
 ## 配置依赖
 
@@ -60,5 +60,5 @@ SHOW_SQL_ALCHEMY_QUERIES=0
 此时，使用浏览器或者 curl 工具， 就可以对触发器url进行请求。
 
 ## 请求效果
-![image.png](images/pandas-ai-server-20240730183738.png)
 
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/ArtificialIntelligence/pandas-ai-server/src/images/pandas-ai-server-20240730183738.png?raw=true)
