@@ -9,6 +9,8 @@ PandasAI 是一个 Python 库，可以轻松地用自然语言向数据提出问
 
 * [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/ArtificialIntelligence/pandas-ai-client/src)
 
+* [官方网站](https://pandas-ai.com)
+
 # 前期准备
 
 使用该项目，您需要有开通以下服务并拥有对应权限：
