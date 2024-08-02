@@ -56,3 +56,4 @@ NODE_ENV="development"
 ## 请求效果
 
 ![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/ArtificialIntelligence/pandas-ai-client/src/images/pandas-ai-client-20240730203453.png?raw=true)
+
