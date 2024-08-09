@@ -1,5 +1,5 @@
 edition: 3.0.0
-name: web-framework-app
+name: fc-zyun-golang-sample
 access: "{{ access }}"
 vars:
   region: "{{ region }}"
@@ -9,22 +9,26 @@ resources:
     props:
       region: "{{ region }}"
       description: "{{ description }}"
-      runtime: custom
+      runtime: "{{ runtime }}"
       memorySize: 512
-      cpu: 1
+      cpu: 0.05
       diskSize: 512
-      timeout: 30
-      instanceConcurrency: 100
+      timeout: 100
+      instanceConcurrency: 1
       port: 8080
+      requestType: http
+      runtimeType: built-in
+      cloudBuildType: Source
       functionName: "{{ functionName }}"
-      code: code
+      code: fc-zyun-golang
       environmentVariables:
         testkey: testvalue
-      requestType: http
-      runtimeType: customize
-      cloudBuildType: Source
       logConfig:
-        isOpen: true
+        isOpen: false
+      scale:
+        scale_config: 1
+        min: 1
+        max: 300
       triggers:
         - triggerName: httptrigger
           triggerType: http
