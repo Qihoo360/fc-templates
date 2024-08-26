@@ -1,0 +1,33 @@
+edition: 3.0.0
+name: pandas-ai-client-app
+access: '{{ access }}'
+vars:
+  region: '{{ region }}'
+resources:
+  framework:
+    component: fc
+    props:
+      region: '{{ region }}'
+      description: '{{ description }}'
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 8080
+      functionName: '{{ functionName }}'
+      code: pandas-ai-client
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      environmentVariables:
+        testkey: testvalue
+      logConfig:
+        isOpen: true
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig: "{\"auth_type\":\"None\",\"methods\":[\"GET\",\"POST\",\"PUT\",\"DELETE\",\"OPTIONS\",\"HEAD\",\"PATCH\"],\"disable_url_internet\":true,\"auth_config\":\"\"}"

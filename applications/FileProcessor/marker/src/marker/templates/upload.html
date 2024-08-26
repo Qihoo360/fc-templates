@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Upload File</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Upload File</h1>
+      <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="file-input" accept=".pdf">
+        <input type="submit" value="Upload">
+      </form>
+      <div id="progress" style="display: none;">
+        <p id="progress-text">Processing file...</p>
+      </div>
+      <div id="result" style="display: none;">
+        <p id="result-text"></p>
+        <a href="/" id="back-link">Back to Home</a>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script>
+      document.getElementById('upload-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var form = event.target;
+        var fileInput = document.getElementById('file-input');
+        var file = fileInput.files[0];
+
+        if (file) {
+          console.log('File selected:', file.name);
+          var fileName = file.name;
+          var fileExtension = fileName.split('.').pop().toLowerCase();
+          console.log('File extension:', fileExtension);
+
+          if (fileExtension !== 'pdf') {
+            alert('Only PDF files are allowed.');
+            return;
+          }
+        } else {
+          alert('No file selected.');
+          return;
+        }
+
+        var formData = new FormData(form);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', form.action, true);
+
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4) {
+            document.getElementById('progress').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+            if (xhr.status === 200) {
+              var response = JSON.parse(xhr.responseText);
+              if (response.success) {
+                document.getElementById('result-text').textContent = 'File processed successfully!';
+                var downloadLink = document.createElement('a');
+                downloadLink.href = '{{ url_for("uploaded_file", filename="") }}' + encodeURIComponent(response.filename);
+                downloadLink.textContent = 'Download processed file';
+                document.getElementById('result').appendChild(downloadLink);
+              } else {
+                document.getElementById('result-text').textContent = 'Error: ' + response.error;
+              }
+            } else {
+              document.getElementById('result-text').textContent = 'Error uploading file.';
+            }
+          }
+        };
+
+        xhr.send(formData);
+
+        document.getElementById('upload-form').style.display = 'none';
+        document.getElementById('progress').style.display = 'block';
+      });
+    </script>
+  </body>
+</html>

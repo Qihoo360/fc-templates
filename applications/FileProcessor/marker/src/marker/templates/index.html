@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center">Home Page</h1>
+      <ul class="nav nav-tabs justify-content-center">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" href="#upload">Upload File</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#uploaded">Uploaded Files</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#processed">Processed Files</a>
+        </li>
+      </ul>
+      <div class="tab-content">
+        <div id="upload" class="container tab-pane active"><br>
+          <h3>Upload File</h3>
+          <form id="upload-form" action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+              <input type="file" name="file" class="form-control-file" id="file-input">
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+          </form>
+        </div>
+        <div id="uploaded" class="container tab-pane fade"><br>
+          <h3>Uploaded Files</h3>
+          <ul id="uploaded-files-list">
+            {% for file in files %}
+              <li>
+                {{ file }}
+                <a href="{{ url_for('uploaded_file', filename=file) }}" class="download-button">Download</a>
+                <a href="#" class="delete-button text-danger" data-type="file" data-name="{{ file }}">Delete</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div id="processed" class="container tab-pane fade"><br>
+          <h3>Processed Files</h3>
+          <ul id="processed-files-list">
+            {% for directory in directories %}
+              <li>
+                {{ directory }}
+                <a href="{{ url_for('download_directory', directory=directory) }}" class="download-button">Download</a>
+                <a href="#" class="delete-button text-danger" data-type="directory" data-name="{{ directory }}">Delete</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="processingModal" tabindex="-1" role="dialog" aria-labelledby="processingModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="processingModalLabel">Processing</h5>
+          </div>
+          <div class="modal-body">
+            File is being processed, please wait...
+            <div id="timer">Elapsed time: 0s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+          </div>
+          <div class="modal-body">
+            Are you sure you want to delete this item?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger" id="confirm-delete">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script>
+      $(document).ready(function() {
+        var timerInterval;
+        var deleteType;
+        var deleteName;
+
+        $('#upload-form').on('submit', function(e) {
+          e.preventDefault();
+          var fileInput = $('#file-input');
+          if (fileInput.get(0).files.length === 0) {
+            alert('Please select a file to upload.');
+            return;
+          }
+
+          var form = $(this);
+          var formData = new FormData(form[0]);
+          $('#processingModal').modal('show');
+
+          // Initialize timer
+          var elapsedSeconds = 0;
+          $('#timer').text('Elapsed time: 0s');
+          clearInterval(timerInterval);
+          timerInterval = setInterval(function() {
+            elapsedSeconds += 1;
+            $('#timer').text('Elapsed time: ' + elapsedSeconds + 's');
+          }, 1000);
+
+          $.ajax({
+            url: form.attr('action'),
+            type: form.attr('method'),
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+              clearInterval(timerInterval);
+              $('#processingModal').modal('hide');
+              if (response.success) {
+                // Clear file input
+                $('#file-input').val('');
+
+                // Check if file already exists in the list
+                var existsInUploadedList = $('#uploaded-files-list li').filter(function() {
+                  return $(this).text().trim().includes(response.filename);
+                }).length > 0;
+
+                if (!existsInUploadedList) {
+                  // Dynamically add the new file to the uploaded files list
+                  var newFile = $('<li>').text(response.filename)
+                    .append(' ')
+                    .append($('<a>').attr('href', '{{ url_for("uploaded_file", filename="") }}' + encodeURIComponent(response.filename))
+                      .addClass('download-button').text('Download'))
+                    .append(' ')
+                    .append($('<a>').attr('href', '#').addClass('delete-button text-danger')
+                      .attr('data-type', 'file').attr('data-name', response.filename).text('Delete'));
+                  $('#uploaded-files-list').append(newFile);
+                }
+
+                // Check if directory already exists in the list
+                var existsInProcessedList = $('#processed-files-list li').filter(function() {
+                  return $(this).text().trim().includes(response.processed_filename);
+                }).length > 0;
+
+                if (!existsInProcessedList) {
+                  // Dynamically add the new processed directory to the processed files list
+                  var newDirectory = $('<li>').text(response.processed_filename)
+                    .append(' ')
+                    .append($('<a>').attr('href', '{{ url_for("download_directory", directory="") }}' + encodeURIComponent(response.processed_filename))
+                      .addClass('download-button').text('Download'))
+                    .append(' ')
+                    .append($('<a>').attr('href', '#').addClass('delete-button text-danger')
+                      .attr('data-type', 'directory').attr('data-name', response.processed_filename).text('Delete'));
+                  $('#processed-files-list').append(newDirectory);
+                }
+
+                $('.nav-tabs a[href="#processed"]').tab('show');
+              } else {
+                alert(response.error);
+              }
+            },
+            error: function(response) {
+              clearInterval(timerInterval);
+              $('#processingModal').modal('hide');
+              alert('Error uploading file.');
+            }
+          });
+        });
+
+        $(document).on('click', '.delete-button', function(e) {
+          e.preventDefault();
+          deleteType = $(this).data('type');
+          deleteName = $(this).data('name');
+          $('#deleteModal').modal('show');
+        });
+
+        $('#confirm-delete').on('click', function() {
+          $('#deleteModal').modal('hide');
+          var url;
+          if (deleteType === 'file') {
+            url = '{{ url_for("delete_file", filename="") }}' + encodeURIComponent(deleteName);
+          } else if (deleteType === 'directory') {
+            url = '{{ url_for("delete_directory", directory="") }}' + encodeURIComponent(deleteName);
+          }
+
+          $.ajax({
+            url: url,
+            type: 'POST',
+            success: function(response) {
+              if (response.success) {
+                if (deleteType === 'file') {
+                  $('#uploaded-files-list li').filter(function() {
+                    return $(this).text().trim().includes(deleteName);
+                  }).remove();
+                } else if (deleteType === 'directory') {
+                  $('#processed-files-list li').filter(function() {
+                    return $(this).text().trim().includes(deleteName);
+                  }).remove();
+                }
+              } else {
+                alert(response.error);
+              }
+            },
+            error: function(response) {
+              alert('Error deleting item.');
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
