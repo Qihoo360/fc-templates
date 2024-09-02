@@ -1,27 +1,45 @@
 edition: 3.0.0
 name: web-framework-app
+<<<<<<< HEAD
 access: '{{ access }}'
 vars:
   region: '{{ region }}'
+=======
+access: "{{ access }}"
+vars:
+  region: "{{ region }}"
+>>>>>>> feature/fc-app-test
 resources:
   framework:
     component: fc
     props:
+<<<<<<< HEAD
       region: '{{ region }}'
       description: '{{ description }}'
       runtime: custom
       memorySize: 1024
+=======
+      region: "{{ region }}"
+      description: "{{ description }}"
+      runtime: custom
+      memorySize: 512
+>>>>>>> feature/fc-app-test
       cpu: 1
       diskSize: 512
       timeout: 30
       instanceConcurrency: 100
       port: 8080
+<<<<<<< HEAD
       functionName: '{{ functionName }}'
+=======
+      functionName: "{{ functionName }}"
+>>>>>>> feature/fc-app-test
       code: code
       environmentVariables:
         testkey: testvalue
       requestType: http
       runtimeType: customize
+<<<<<<< HEAD
       cloudBuildType: Source
       logConfig:
         isOpen: true
@@ -31,3 +49,14 @@ resources:
           disableURLInternet: true
           funcVersion: LATEST
           triggerConfig: "{\"auth_type\":\"None\",\"methods\":[\"GET\",\"POST\",\"PUT\",\"DELETE\",\"OPTIONS\",\"HEAD\",\"PATCH\"],\"disable_url_internet\":true,\"auth_config\":\"\"}"
+=======
+      cloudBuildType: Auto
+      logConfig:
+        isOpen: true
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig: '{"auth_type":"None","methods":["GET","POST","PUT","DELETE","OPTIONS","HEAD","PATCH"],"disable_url_internet":true,"auth_config":""}'
+>>>>>>> feature/fc-app-test

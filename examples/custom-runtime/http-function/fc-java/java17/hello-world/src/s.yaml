@@ -1,0 +1,43 @@
+edition: 3.0.0
+name: fc-zyun-java-sample
+access: "{{ access }}"
+vars:
+  region: "{{ region }}"
+resources:
+  framework:
+    component: fc
+    props:
+      region: "{{ region }}"
+      description: "{{ description }}"
+      runtime: "{{ runtime }}"
+      memorySize: 1024
+      cpu: 2
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 1
+      port: 8080
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Auto
+      functionName: "{{ functionName }}"
+      code: fc-zyun-java
+      environmentVariables:
+        testkey: testvalue
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 0
+        max: 300
+      sourceSubDir: code
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      runtimeID: 1
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig: '{"auth_type":"None","methods":["GET","POST","PUT","DELETE","OPTIONS","HEAD","PATCH"],"disable_url_internet":true,"auth_config":""}'
