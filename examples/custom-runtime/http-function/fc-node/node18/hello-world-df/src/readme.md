@@ -2,7 +2,7 @@
 
 快速部署一个 Nodejs 的 Hello World 函数到函数计算（FC）。
 
-- [HelloWorld 示例代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/examples/custom-runtime/http-function/fc-node/node18/hello-world-df/src)
+- [HelloWorld 示例代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/examples/custom-runtime/http-function/fc-node/node18/hello-world-df/src)
 
 ## 前期准备
 
@@ -21,7 +21,7 @@
 ### 360智汇云函数计算FC
 
 - 交流群
-![tuitui](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/assets/tuitui-feedback-group.gif?raw=true)
+![tuitui](https://github.com/Qihoo360/fc-templates/blob/feature/main/assets/tuitui-feedback-group.gif?raw=true)
 
 ### Serverless Devs
 
