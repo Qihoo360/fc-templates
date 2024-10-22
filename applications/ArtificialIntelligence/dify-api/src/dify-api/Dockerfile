@@ -82,6 +82,7 @@ ENV COMMIT_SHA=${COMMIT_SHA}
 
 ENV MODE=all
 ENV LOG_LEVEL=DEBUG
+ENV MIGRATION_ENABLED=true
 
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
 
