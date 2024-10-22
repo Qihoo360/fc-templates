@@ -23,10 +23,38 @@ Dify 是一款开源的大语言模型(LLM) 应用开发平台。它融合了后
 
 ## 配置依赖
 
-无
+### 自定义域名
+dify-api和dify-web需使用同一个自定义域名
+路由配置：
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/ArtificialIntelligence/dify-web/src/images/dify1.png?raw=true)
+
+### dify-web/.env
+
+```sh
+# 您可能需要自定义本文件中的以下参数来适应您的运行环境。
+
+# NEXT_PUBLIC_API_PREFIX
+# 说明：控制台 API 后端 URL，需配置为自定义域名https地址
+# 示例：NEXT_PUBLIC_API_PREFIX=http://localhost:5001/console/api
+
+# NEXT_PUBLIC_PUBLIC_API_PREFIX
+# 说明：Service API URL，需配置为自定义域名https地址
+# 示例：NEXT_PUBLIC_PUBLIC_API_PREFIX=http://localhost:5001/api
+
+```
 
 # 应用的使用说明
 
 在控制台完成业务功能部署，完成会出现触发器url。
 此时，使用浏览器或者 curl 工具， 就可以对触发器url进行请求。
+
+## 请求效果
+
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/ArtificialIntelligence/dify-web/src/images/dify2.png?raw=true)
+
+## 创建工作流应用
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/ArtificialIntelligence/dify-web/src/images/dify3.png?raw=true)
+
+## 发布并运行
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/ArtificialIntelligence/dify-web/src/images/dify4.png?raw=true)
 

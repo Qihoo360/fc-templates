@@ -71,7 +71,7 @@ RUN mkdir /.pm2 \
 
 ARG COMMIT_SHA
 ENV COMMIT_SHA=${COMMIT_SHA}
-
+ENV HOSTNAME=0.0.0.0
 USER 1001
 EXPOSE 3000
 ENTRYPOINT ["/bin/sh", "./entrypoint.sh"]
