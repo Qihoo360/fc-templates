@@ -32,22 +32,22 @@
 
 在 Resources 中配置 LLM：
 
-![image-20241114141342639](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/kotaemon/src/images/image-20241114141342639.png)
+![image-20241114141342639](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/kotaemon/src/images/image-20241114141342639.png?raw=true)
 
 在 Resources 中配置 Embeddings：
 
-![image-20241114141508266](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/kotaemon/src/images/image-20241114141508266.png)
+![image-20241114141508266](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/kotaemon/src/images/image-20241114141508266.png?raw=true)
 
 Retrieval settings 中取消勾选 Use reranking（若在 Resources 中配置了可用的 reranking 则无需取消勾选）:
 
-![image-20241114152135733](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/kotaemon/src/images/image-20241114152135733.png)
+![image-20241114152135733](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/kotaemon/src/images/image-20241114152135733.png?raw=true)
 
 ## 使用
 
 上传文件：
 
-![image-20241114152249437](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/kotaemon/src/images/image-20241114152249437.png)
+![image-20241114152249437](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/kotaemon/src/images/image-20241114152249437.png?raw=true)
 
 chat：
 
-![image-20241114152344973](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/kotaemon/src/images/image-20241114152344973.png)
+![image-20241114152344973](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/kotaemon/src/images/image-20241114152344973.png?raw=true)
