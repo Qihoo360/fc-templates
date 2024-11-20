@@ -1,0 +1,22 @@
+name: helm-release
+
+on:
+  workflow_dispatch: # for manual testing
+  push:
+    branches:
+      - main
+      - k[0-9]+
+    paths:
+      - 'production/helm/loki/Chart.yaml'
+
+jobs:
+  call-update-helm-repo:
+    uses: grafana/helm-charts/.github/workflows/update-helm-repo.yaml@main
+    with:
+      charts_dir: production/helm
+      cr_configfile: production/helm/cr.yaml
+      ct_configfile: production/helm/ct.yaml
+      helm_tag_prefix: helm
+    secrets:   
+      github_app_id: ${{ secrets.APP_ID }}
+      github_app_pem: ${{ secrets.APP_PRIVATE_KEY }}

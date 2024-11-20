@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Uploaded Files</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Uploaded Files</h1>
+      <nav>
+        <ul>
+          <li><a href="/">Upload Page</a></li>
+          <li><a href="{{ url_for('list_files') }}">Processed Files</a></li>
+        </ul>
+      </nav>
+      <ul>
+        {% for file in files %}
+          <li>
+            {{ file }}
+            <a href="{{ url_for('uploaded_file', filename=urllib_parse.quote_plus(file)) }}" class="download-button">Download</a>
+            <a href="#" class="delete-button text-danger" data-type="file" data-name="{{ file }}">Delete</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script>
+      $(document).ready(function() {
+        $(document).on('click', '.delete-button', function(e) {
+          e.preventDefault();
+          var deleteType = $(this).data('type');
+          var deleteName = $(this).data('name');
+          var confirmDelete = confirm('Are you sure you want to delete this item?');
+          if (confirmDelete) {
+            var url;
+            if (deleteType === 'file') {
+              url = '{{ url_for("delete_file", filename="") }}' + encodeURIComponent(deleteName);
+            }
+            $.ajax({
+              url: url,
+              type: 'POST',
+              success: function(response) {
+                if (response.success) {
+                  $('li').filter(function() {
+                    return $(this).text().trim().includes(deleteName);
+                  }).remove();
+                } else {
+                  alert(response.error);
+                }
+              },
+              error: function(response) {
+                alert('Error deleting item.');
+              }
+            });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

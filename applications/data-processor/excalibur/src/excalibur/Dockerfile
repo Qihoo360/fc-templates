@@ -1,0 +1,28 @@
+FROM wfwqjs-eventing-zevent-pub/apps/excalibur-base:latest
+
+# Set working directory
+WORKDIR /app
+COPY . /app
+
+# Set permissions for /app directory
+RUN chmod -R 755 /app
+
+# 激活虚拟环境并安装依赖项
+RUN pip install --upgrade pip && pip install .
+RUN pip install flask-limiter gunicorn PyPDF2==3.0.0 camelot-py[cv] pandas openpyxl camelot-py[plot]
+RUN pip install --upgrade camelot-py[cv]
+
+# 安装特定的依赖项
+RUN pip install configparser -U && pip install flask -U
+
+# 初始化数据库
+RUN excalibur initdb
+
+# Expose the necessary port
+EXPOSE 8080
+
+# Copy supervisor configuration
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Command to run the application using supervisord
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

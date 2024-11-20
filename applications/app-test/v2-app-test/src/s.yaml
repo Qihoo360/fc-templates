@@ -1,0 +1,122 @@
+edition: 3.0.0
+name: fc-zyun-app-sample
+access: default
+vars:
+  region: {{region}}
+  afunctionName: {{afunctionName}}
+  adescribe: {{afunctionDescription}}
+  afunctionPolefsVolumn: {{afunctionPolefsVolumn}}
+  afunctionMountDir: {{afunctionMountDir}}
+  afunctionVolCreateUser: {{afunctionPolefsVolumnCreateUser}}
+  bfunctionName: {{bfunctionName}}
+  bdescribe: {{bfunctionDescription}}
+  bfunctionPolefsVolumn: {{bfunctionPolefsVolumn}}
+  bfunctionMountDir: {{bfunctionMountDir}}
+  bfunctionVolCreateUser: {{bfunctionPolefsVolumnCreateUser}}
+resources:
+  service-a:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      functionName: ${vars.afunctionName}
+      description: ${vars.adescribe}
+      runtime: go1.20.*
+      memorySize: 512
+      cpu: 1
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 1
+      port: 8080
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Auto
+      code:
+        templated_files:
+          - code/service-a/main.go
+      environmentVariables:
+        testkey: testvalue
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      sourceSubDir: code/service-a
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.afunctionPolefsVolumn}
+          mountDir: ${vars.afunctionMountDir}
+          createUserName: ${vars.afunctionVolCreateUser}
+  service-b:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      functionName: ${vars.bfunctionName}
+      description: ${vars.bdescribe}
+      runtime: go1.20.*
+      memorySize: 512
+      cpu: 1
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 1
+      port: 8080
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Auto
+      code:
+        templated_files:
+          - code/service-b/main.go
+      environmentVariables:
+        SERVICE_A_URL: ${resources.service-a.output.http_trigger_url}
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 0
+        max: 300
+      sourceSubDir: code/service-b
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.bfunctionPolefsVolumn}
+          mountDir: ${vars.bfunctionMountDir}
+          createUserName: ${vars.bfunctionVolCreateUser}

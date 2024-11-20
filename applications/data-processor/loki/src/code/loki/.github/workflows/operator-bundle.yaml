@@ -1,0 +1,32 @@
+name: operator bundle
+
+on:
+  push:
+    paths:
+      - 'operator/**'
+    branches: [ main ]
+  pull_request:
+    paths:
+      - 'operator/**'
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.22']
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ matrix.go }}
+      id: go
+    - uses: actions/checkout@v4
+    - name: Install make
+      run: sudo apt-get install make
+    - name: make bundle
+      run: |
+        make bundle-all && git diff --exit-code -I'^    createdAt: '
+      working-directory: ./operator

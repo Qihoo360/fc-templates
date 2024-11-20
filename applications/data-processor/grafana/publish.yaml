@@ -1,0 +1,78 @@
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: grafana-v3
+Provider:
+  - fc
+Version: 0.0.3
+Description: 本案例是将 grafana，快速创建并部署到函数计算 FC 。
+HomePage: https://github.com/Qihoo360/fc-templates/applications/data-processor/grafana
+Organization: 函数计算（FC）
+Tags:
+  - AI
+  - Custom Runtime
+Category: Web框架
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - grafanaFunctionName
+    - GrafanaMysqlUrl
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: test-3
+      description: 创建应用所在的地区
+      enum:
+        - test-1
+        - test-2
+        - test-3
+        - test-4
+        - test-5
+        - test-6
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+    grafanaFunctionName:
+      title: Grafana函数名
+      type: string
+      default: grafana-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    grafanaDescription:
+      title: Grafana描述
+      type: string
+      default: "Serverless grafana"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    GrafanaMysqlUrl:
+      title: Mysql数据库地址
+      type: string
+      default: ""
+      description: "Mysql数据库地址 Example: mysql://user:secret@host:port/database"
+      x-cate: applicationCate
+      x-label: grafana
+      x-formitem:
+        type: input
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
+  grafana:
+    title: "Grafana"
+    description: "部署应用前，请添加数据库授权，具体步骤可咨询管理人员。"

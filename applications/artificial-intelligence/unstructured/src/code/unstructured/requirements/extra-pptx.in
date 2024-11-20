@@ -1,0 +1,3 @@
+-c ./deps/constraints.txt
+
+python-pptx>=1.0.1

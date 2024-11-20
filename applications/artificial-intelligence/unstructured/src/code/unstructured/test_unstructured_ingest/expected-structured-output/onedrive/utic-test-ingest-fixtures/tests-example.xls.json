@@ -1,0 +1,340 @@
+[
+  {
+    "type": "Table",
+    "element_id": "8884b4ed11191538c7215455e7b639b0",
+    "text": "MC What is 2+2? 4 correct 3 incorrect MA What C datatypes are 8 bits? (assume i386) int float double char TF Bagpipes are awesome. true ESS How have the original Henry Hornbostel buildings influenced campus architecture and design in the last 30 years? ORD Rank the following in their order of operation. Parentheses Exponents Division Addition FIB The student activities fee is 95 dollars for students enrolled in 19 units or more, MAT Match the lower-case greek letter with its capital form. \u03bb \u039b \u03b1 \u03b3 \u0393 \u03c6 \u03a6",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Example Test",
+      "page_number": 1,
+      "text_as_html": "<table><tr><td>MC</td><td>What is 2+2?</td><td>4</td><td>correct</td><td>3</td><td>incorrect</td><td/><td/><td/></tr><tr><td>MA</td><td>What C datatypes are 8 bits? (assume i386)</td><td>int</td><td/><td>float</td><td/><td>double</td><td/><td>char</td></tr><tr><td>TF</td><td>Bagpipes are awesome.</td><td>true</td><td/><td/><td/><td/><td/><td/></tr><tr><td>ESS</td><td>How have the original Henry Hornbostel buildings influenced campus architecture and design in the last 30 years?</td><td/><td/><td/><td/><td/><td/><td/></tr><tr><td>ORD</td><td>Rank the following in their order of operation.</td><td>Parentheses</td><td>Exponents</td><td>Division</td><td>Addition</td><td/><td/><td/></tr><tr><td>FIB</td><td>The student activities fee is</td><td>95</td><td>dollars for students enrolled in</td><td>19</td><td>units or more,</td><td/><td/><td/></tr><tr><td>MAT</td><td>Match the lower-case greek letter with its capital form.</td><td>\u03bb</td><td>\u039b</td><td>\u03b1</td><td>\u03b3</td><td>\u0393</td><td>\u03c6</td><td>\u03a6</td></tr></table>",
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "Title",
+    "element_id": "25b8c43e8e0a43c1875a85bedf73778b",
+    "text": "http://www.cmu.edu/blackboard",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Format Abbr.",
+      "page_number": 2,
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "Title",
+    "element_id": "5f24833344fd2bd3e41db455ec693e9e",
+    "text": "Question Format Abbreviations",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Format Abbr.",
+      "page_number": 2,
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "Table",
+    "element_id": "88ba959ad0c3d1c0983292d5e5142f05",
+    "text": "Abbreviation Question Type MC Multiple Choice MA Multiple Answer TF True/False ESS Essay ORD Ordering MAT Matching FIB Fill in the Blank FIL File response NUM Numeric Response SR Short response OP Opinion FIB_PLUS Multiple Fill in the Blank JUMBLED_SENTENCE Jumbled Sentence QUIZ_BOWL Quiz Bowl",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Format Abbr.",
+      "page_number": 2,
+      "text_as_html": "<table><tr><td>Abbreviation</td><td>Question Type</td></tr><tr><td>MC</td><td>Multiple Choice</td></tr><tr><td>MA</td><td>Multiple Answer</td></tr><tr><td>TF</td><td>True/False</td></tr><tr><td>ESS</td><td>Essay</td></tr><tr><td>ORD</td><td>Ordering</td></tr><tr><td>MAT</td><td>Matching</td></tr><tr><td>FIB</td><td>Fill in the Blank</td></tr><tr><td>FIL</td><td>File response</td></tr><tr><td>NUM</td><td>Numeric Response</td></tr><tr><td>SR</td><td>Short response</td></tr><tr><td>OP</td><td>Opinion</td></tr><tr><td>FIB_PLUS</td><td>Multiple Fill in the Blank</td></tr><tr><td>JUMBLED_SENTENCE</td><td>Jumbled Sentence</td></tr><tr><td>QUIZ_BOWL</td><td>Quiz Bowl</td></tr></table>",
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "Title",
+    "element_id": "f7e00d0aa6af3d980c86807e9e3930ef",
+    "text": "http://www.cmu.edu/blackboard",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Readme",
+      "page_number": 3,
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "Title",
+    "element_id": "803d650611d71a621296a2c860089a41",
+    "text": "File Information",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Readme",
+      "page_number": 3,
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "Title",
+    "element_id": "806f60804c4612f7e8bab4e9e1ab2c80",
+    "text": "Source",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Readme",
+      "page_number": 3,
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "Title",
+    "element_id": "50f7d55f7c1fcb88e4af988071ec257d",
+    "text": "http://www.cmu.edu/blackboard/files/evaluate/tests-example.xls",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Readme",
+      "page_number": 3,
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "Title",
+    "element_id": "bbabf2f4c03162938b3baa08aa11a4cf",
+    "text": "Version",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Readme",
+      "page_number": 3,
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "UncategorizedText",
+    "element_id": "93b23e7bd487808d1a809ce164c22d1d",
+    "text": "1.0 (January 2012)",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Readme",
+      "page_number": 3,
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "Title",
+    "element_id": "f2ef71c9f397fd338e4d1b2cdefd3166",
+    "text": "Contact",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Readme",
+      "page_number": 3,
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "Title",
+    "element_id": "51705b1c1c0ef085b3f26543dc02e945",
+    "text": "bb-help@andrew.cmu.edu",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Readme",
+      "page_number": 3,
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "Title",
+    "element_id": "8a2122678bdcb858d5d69d752dc38392",
+    "text": "About",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Readme",
+      "page_number": 3,
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  },
+  {
+    "type": "NarrativeText",
+    "element_id": "39061b80749d2ef6c7cbe93a0dac33fc",
+    "text": "This is an example and template for preparing Blackboard tests offline. See the full directions at: http://www.cmu.edu/blackboard/evaluate#manage_tests/import_questions",
+    "metadata": {
+      "filename": "tests-example.xls",
+      "page_name": "Readme",
+      "page_number": 3,
+      "languages": [
+        "eng"
+      ],
+      "filetype": "application/vnd.ms-excel",
+      "data_source": {
+        "url": "/drives/b!3vfYDk3GHEaRbo1pkhLPIRXZrzTLHCtCm5WV6KY1m_0-lOjrjQaAS6X30Pv_E4VX/root:/utic-test-ingest-fixtures/tests-example.xls",
+        "version": "\"{9B0AC644-8931-474C-AEBA-DCCAF3C6F7DD},1\"",
+        "record_locator": {
+          "user_pname": "devops@unstructuredio.onmicrosoft.com",
+          "server_relative_path": "utic-test-ingest-fixtures/tests-example.xls"
+        },
+        "date_created": "1692846043.0",
+        "date_modified": "1692846043.0"
+      }
+    }
+  }
+]

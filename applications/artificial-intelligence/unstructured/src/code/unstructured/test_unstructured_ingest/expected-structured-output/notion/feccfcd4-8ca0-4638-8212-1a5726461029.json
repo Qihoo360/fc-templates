@@ -1,0 +1,32 @@
+[
+  {
+    "element_id": "12f0e8957240cb6d2bedffde59586918",
+    "metadata": {
+      "data_source": {
+        "date_created": "2023-08-04T18:31:00.000Z",
+        "date_modified": "2023-08-04T18:31:00.000Z"
+      },
+      "filetype": "text/html",
+      "languages": [
+        "eng"
+      ]
+    },
+    "text": "Benefits Policies",
+    "type": "Title"
+  },
+  {
+    "element_id": "3e394812bcc3403068dc1d92a42271ce",
+    "metadata": {
+      "data_source": {
+        "date_created": "2023-08-04T18:31:00.000Z",
+        "date_modified": "2023-08-04T18:31:00.000Z"
+      },
+      "filetype": "text/html",
+      "languages": [
+        "eng"
+      ]
+    },
+    "text": "Notion Tip: Benefits policies can attract and retain employees, promote well-being, create positive culture, differentiate from competitors, and increase morale and satisfaction.",
+    "type": "NarrativeText"
+  }
+]

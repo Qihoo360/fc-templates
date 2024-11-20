@@ -1,0 +1,59 @@
+edition: 3.0.0
+name: comfyui-app
+access: default
+vars:
+  region: {{region}}
+  describe: {{description}}
+  functionName: {{functionName}}
+  functionPolefsVolumn: {{functionPolefsVolumn}}
+  mountDir: {{afunctionMountDir}}
+  afunctionVolCreateUser: {{afunctionVolCreateUser}}
+resources:
+  framework:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.describe}
+      runtime: "Python 3.10.*"
+      memorySize: 32768
+      cpu: 8
+      diskSize: 5120
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Auto
+      port: 8080
+      functionName: ${vars.functionName}
+      sourceSubDir: code/ComfyUI
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: "chmod +x ./start.sh; ./start.sh"
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.functionPolefsVolumn}
+          mountDir: ${vars.mountDir}
+          createUserName: ${vars.afunctionVolCreateUser}

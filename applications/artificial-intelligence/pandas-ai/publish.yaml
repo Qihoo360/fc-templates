@@ -1,0 +1,124 @@
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: pandas-ai-v3
+Provider:
+  - fc
+Version: 0.0.3
+Description: 本案例是将 pandas-ai，快速创建并部署到函数计算 FC 。
+HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/pandas-ai
+Organization: 函数计算（FC）
+Tags:
+  - AI
+  - Custom Runtime
+Category: Web框架
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - serverFunctionName
+    - clientFunctionName
+    - PostgreSqlUrl
+    - OpenaiApiBase
+    - OpenaiApiKey
+    - ServerCustomDomain
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: test-3
+      description: 创建应用所在的地区
+      enum:
+        - test-1
+        - test-2
+        - test-3
+        - test-4
+        - test-5
+        - test-6
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+    serverFunctionName:
+      title: Server函数名
+      type: string
+      default: pandas-ai-server-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    serverDescription:
+      title: server描述
+      type: string
+      default: "Serverless pandas-ai server"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    clientFunctionName:
+      title: client函数名
+      type: string
+      default: pandas-ai-client-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    clientDescription:
+      title: client描述
+      type: string
+      default: "Serverless pandas-ai client"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    PostgreSqlUrl:
+      title: PostgreSqlUrl
+      type: string
+      default: ""
+      description: "pandas-ai postgreSql url Example: postgresql+asyncpg://pandasai:xxx@postgresql:5432/pandasai-db"
+      x-cate: applicationCate
+      x-label: Server
+      x-formitem:
+        type: input
+    OpenaiApiBase:
+      title: OpenaiApiBase
+      type: string
+      default: ""
+      description: "pandas-ai OpenaiApiBase Example: https://oneapi-public.test/v1"
+      x-cate: applicationCate
+      x-label: Server
+      x-formitem:
+        type: input
+    OpenaiApiKey:
+      title: OpenaiApiKey
+      type: string
+      default: ""
+      description: "pandas-ai OpenaiApiKey"
+      x-cate: applicationCate
+      x-label: Server
+      x-formitem:
+        type: input
+    ServerCustomDomain:
+      title: server自定义域名
+      type: string
+      default: ""
+      description: "server 自定义域名 Example: https://customdomain.com"
+      x-cate: applicationCate
+      x-label: Client
+      x-formitem:
+        type: input
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"

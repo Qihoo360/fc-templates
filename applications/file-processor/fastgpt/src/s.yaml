@@ -1,0 +1,71 @@
+edition: 3.0.0
+name: fastgpt-app
+access: default
+vars:
+  region: {{region}}
+  describe: {{description}}
+  functionName: {{functionName}}
+  oneapiUrl: {{oneapiUrl}}
+  chatApiKey: {{chatApiKey}}
+  mongodbUrl: {{mongodbUrl}}
+  milvusAddress: {{milvusAddress}}
+  milvusToken: {{milvusToken}}
+  sandboxUrl: {{sandboxUrl}}
+resources:
+  framework:
+    component: fc
+    props:
+      region: ${vars.region}
+      description: ${vars.describe}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 5120
+      timeout: 100
+      instanceConcurrency: 100
+      port: 3000
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      dockerfilePath: projects/app/Dockerfile
+      functionName: ${vars.functionName}
+      sourceSubDir: code/FastGPT
+      environmentVariables:
+        ONEAPI_URL: ${vars.oneapiUrl}
+        CHAT_API_KEY: ${vars.chatApiKey}
+        MONGODB_URI: ${vars.mongodbUrl}
+        MILVUS_ADDRESS: ${vars.milvusAddress}
+        MILVUS_TOKEN: ${vars.milvusToken}
+        SANDBOX_URL: ${vars.sandboxUrl}
+        DB_MAX_LINK: 5
+        DEFAULT_ROOT_PSW: 123456
+        FE_DOMAIN: http://localhost:3000
+        FILE_TOKEN_KEY: FILE_TOKEN_KEY
+        HOSTNAME: 0.0.0.0
+        LOG_DEPTH: 3
+        LOG_LEVEL: debug
+        MULTIPLE_DATA_TO_BASE64: false
+        ROOT_KEY: fdafasd
+        STORE_LOG_LEVEL: warn
+        TOKEN_KEY: dfdasfdas
+        WORKFLOW_MAX_LOOP_TIMES: 50
+        WORKFLOW_MAX_RUN_TIMES: 500
+      logConfig:
+        isOpen: true
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""

@@ -1,0 +1,32 @@
+[
+  {
+    "element_id": "ee4edbe949900c6988a62505a9325d47",
+    "metadata": {
+      "data_source": {
+        "date_created": "2023-08-04T18:31:00.000Z",
+        "date_modified": "2023-08-04T18:31:00.000Z"
+      },
+      "filetype": "text/html",
+      "languages": [
+        "eng"
+      ]
+    },
+    "text": "Corporate Travel",
+    "type": "Title"
+  },
+  {
+    "element_id": "756651f18284432aa247200d0bc0cc62",
+    "metadata": {
+      "data_source": {
+        "date_created": "2023-08-04T18:31:00.000Z",
+        "date_modified": "2023-08-04T18:31:00.000Z"
+      },
+      "filetype": "text/html",
+      "languages": [
+        "eng"
+      ]
+    },
+    "text": "Notion Tip: A corporate travel policy is crucial for controlling costs, ensuring compliance, and guaranteeing the safety of employees when traveling for the company.",
+    "type": "NarrativeText"
+  }
+]
