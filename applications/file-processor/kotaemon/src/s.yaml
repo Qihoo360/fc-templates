@@ -2,9 +2,11 @@ edition: 3.0.0
 name: kotaemon-app
 access: default
 vars:
-  region: { { region } }
-  describe: { { description } }
-  functionName: { { functionName } }
+  region: {{region}}
+  describe: {{description}}
+  functionName: {{functionName}}
+  oneapiUrl: {{oneapiUrl}}
+  chatApiKey: {{chatApiKey}}
 resources:
   framework:
     component: fc
@@ -26,7 +28,8 @@ resources:
       environmentVariables:
         GRADIO_SERVER_NAME: 0.0.0.0
         GRADIO_SERVER_PORT: 7860
-        OPENAI_API_BASE: http://oneapi-apimarket-00028l00jv.cn-north-cu-1-vpc.fc.zyunapp.com/v1
+        OPENAI_API_BASE: ${vars.oneapiUrl}
+        OPENAI_API_KEY: ${vars.chatApiKey}
         OPENAI_CHAT_MODEL: gpt-3.5-turbo
         OPENAI_EMBEDDINGS_MODEL: text-embedding-ada-002
       logConfig:

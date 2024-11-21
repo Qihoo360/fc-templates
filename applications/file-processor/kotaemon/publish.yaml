@@ -41,6 +41,22 @@ Parameters:
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 2-39 之间。
       x-formitem:
         type: input
+    oneapiUrl:
+      title: oneapi 地址
+      type: string
+      default: ""
+      pattern: "http.*"
+      description: http/https 地址
+      x-formitem:
+        type: input
+    chatApiKey:
+      title: api key
+      type: string
+      default: ""
+      pattern: ".*"
+      description: sk-xxxx
+      x-formitem:
+        type: input
     description:
       title: 描述
       type: string
