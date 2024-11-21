@@ -36,7 +36,7 @@ resources:
         max: 1
       buildProgramEntry: ""
       requestEntry: ""
-      startCmd: "bash scripts/base_run.sh -s LinuxOrWSL -w 4 -m 19530 -q 8777 -c -o -b ${vars.OpenaiApiBase} -k ${vars.OpenaiApiKey} -n {vars.OpenaiApiModel} -l '4096'"
+      startCmd: "bash scripts/base_run.sh -s LinuxOrWSL -w 4 -m 19530 -q 8777 -c -o -b ${vars.OpenaiApiBase} -k ${vars.OpenaiApiKey} -n ${vars.OpenaiApiModel} -l '4096'"
       requestEntryDescribe: ""
       triggers:
         - triggerName: httptrigger
