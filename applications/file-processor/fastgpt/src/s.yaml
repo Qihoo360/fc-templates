@@ -13,7 +13,7 @@ vars:
   sandboxUrl: {{sandboxUrl}}
 resources:
   framework:
-    component: fc
+    component: ${path('/utils/components/zfc')}
     props:
       region: ${vars.region}
       description: ${vars.describe}

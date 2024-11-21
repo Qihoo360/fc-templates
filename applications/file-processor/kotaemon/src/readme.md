@@ -22,7 +22,7 @@
 
 ## 配置依赖
 
-[one-api](http://oneapi-apimarket-00028l00jv.cn-north-cu-1-vpc.fc.zyunapp.com)
+one-api
 
 # 应用的使用说明
 

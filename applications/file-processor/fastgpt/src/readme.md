@@ -22,7 +22,7 @@ FastGPT 是一个基于 LLM 大语言模型的知识库问答系统，提供开�
 
 ## 配置依赖
 
-[one-api](http://oneapi-apimarket-00028l00jv.cn-north-cu-1-vpc.fc.zyunapp.com)
+one-api
 
 fastgpt sandbox
 
