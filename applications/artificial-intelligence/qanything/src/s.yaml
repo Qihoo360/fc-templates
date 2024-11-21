@@ -23,6 +23,9 @@ resources:
       port: 8777
       functionName: ${vars.FunctionName}
       sourceSubDir: code/qanything
+      code:
+        templated_files:
+          - code/qanything/scripts/run_for_openai_api_with_cpu_in_Linux_or_WSL.sh
       environmentVariables:
         testkey: "testvalue"
       logConfig:
