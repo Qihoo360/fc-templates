@@ -25,6 +25,12 @@ resources:
       cloudBuildType: Dockerfile
       functionName: ${vars.functionName}
       sourceSubDir: kotaemon
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
       environmentVariables:
         GRADIO_SERVER_NAME: 0.0.0.0
         GRADIO_SERVER_PORT: 7860
