@@ -56,8 +56,6 @@ resources:
         TOKEN_KEY: dfdasfdas
         WORKFLOW_MAX_LOOP_TIMES: 50
         WORKFLOW_MAX_RUN_TIMES: 500
-      logConfig:
-        isOpen: true
       triggers:
         - triggerName: httptrigger
           triggerType: http
