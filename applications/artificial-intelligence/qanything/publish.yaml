@@ -50,6 +50,15 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
+    Description:
+      title: 描述
+      type: string
+      default: "Serverless qanything"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-cate: resourceCate
+      x-formitem:
+        type: input
     OpenaiApiBase:
       title: OpenaiApiBase
       type: string
