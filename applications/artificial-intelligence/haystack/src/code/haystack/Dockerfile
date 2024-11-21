@@ -26,7 +26,6 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir .${haystack_extras} && \
     pip install --no-cache-dir ./rest_api
 
-
 FROM $base_image AS final
 
 COPY --from=build-image /opt/haystack /opt/haystack
@@ -45,7 +44,10 @@ RUN python3 -c "from haystack.utils.docker import cache_schema; cache_schema()"
 
 # Haystack Preprocessor uses NLTK punkt model to divide text into a list of sentences.
 # We cache these models for seamless user experience.
-#RUN python3 -c "from haystack.utils.docker import cache_nltk_model; cache_nltk_model()"
+RUN pip install nltk
+
+RUN python3 -c "import nltk; nltk.download('punkt')"
+RUN python3 -c "from haystack.utils.docker import cache_nltk_model; cache_nltk_model()"
 
 ENV SERVICE_NAME="haystackd"
 
