@@ -31,3 +31,14 @@ QAnything (Question and Answer based on Anything) 是致力于支持任意格式
 此时，使用浏览器或者 curl 工具， 就可以对触发器url进行请求。
 
 
+## 请求效果
+访问路径/qanything/
+
+## 知识库上传文档集
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/qanything/src/images/qanything1.png?raw=true)
+
+## 知识库上传问答集
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/qanything/src/images/qanything2.png?raw=true)
+
+## 对话
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/qanything/src/images/qanything3.png?raw=true)
