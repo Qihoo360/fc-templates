@@ -26,3 +26,8 @@
 
 在控制台完成业务功能部署，完成会出现触发器url。
 此时，使用浏览器或者 curl 工具， 就可以对触发器url进行请求。
+
+## 请求效果
+参考https://github.com/Unstructured-IO/unstructured-api
+
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/unstructured/src/images/unstructured-demo.png?raw=true)
