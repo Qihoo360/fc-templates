@@ -30,6 +30,12 @@ resources:
       dockerfilePath: projects/app/Dockerfile
       functionName: ${vars.functionName}
       sourceSubDir: code/FastGPT
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
       environmentVariables:
         ONEAPI_URL: ${vars.oneapiUrl}
         CHAT_API_KEY: ${vars.chatApiKey}
