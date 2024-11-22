@@ -28,6 +28,11 @@ one-api
 
 ## 配置
 
+注意：首次进入页面时必须选择对应的模型，如要使用的是 OpenAI/OneAPI ，则先选择 OpenAI API ，
+再点击 I am an advance user. Skip this 进行登录（如下图所示），否则登录后聊天窗口中点击 Send 没反应，后台会报错。
+
+![image-20241122141122254](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/kotaemon/src/images/image-20241122141122254.png?raw=true)
+
 初始登陆用户名/密码：admin/admin
 
 在 Resources 中配置 LLM：
