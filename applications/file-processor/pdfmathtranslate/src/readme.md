@@ -34,5 +34,9 @@
 
 ## 效果
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/pdfmathtranslate/src/images/pdfmathtranslate-1.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/pdfmathtranslate/src/images/pdfmathtranslate1.png?raw=true)
+
+目前仅支持google翻译
+
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/pdfmathtranslate/src/images/pdfmathtranslate2.png?raw=true)
 
