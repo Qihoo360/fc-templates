@@ -1,0 +1,86 @@
+Edition: 3.0.0
+Type: Project
+Name: docling
+Provider:
+  - fc
+Version: 0.0.3
+Description: Docling parses documents and exports them to the desired format with ease and speed.
+HomePage: https://github.com/Qihoo360/fc-templates/applications/file-processor/docling
+Organization: 函数计算（FC）
+Effective: Public
+Tags:
+  - AI
+  - Custom Runtime
+Category: 文件处理
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - functionName
+    - functionPolefsVolumn
+    - afunctionMountDir
+    - afunctionVolCreateUser
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: test-3
+      description: 创建应用所在的地区
+      enum:
+        - test-1
+        - test-2
+        - test-3
+        - test-4
+        - test-5
+        - test-6
+      x-reaction-properties:
+        - functionPolefsVolumn
+      x-formitem:
+        type: select
+    functionPolefsVolumn:
+      title: 函数挂载 PoleFS 卷名称
+      type: string
+      default: ""
+      description: PoleFS 卷名称
+      x-cate: applicationCate
+      x-label: nasLabel
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: afunctionVolCreateUser
+      x-formitem:
+        type: select
+        name: volume_unique_name
+    afunctionMountDir:
+      title: 函数挂载路径
+      type: string
+      description: 函数挂载路径
+      default: "/mnt/webhook"
+      x-cate: applicationCate
+      x-label: nasLabel
+      x-formitem:
+        type: input
+    afunctionVolCreateUser:
+      title: 函数挂载的创建用户
+      type: string
+      default: ""
+      description: 卷的创建用户
+      x-cate: applicationCate
+      x-label: nasLabel
+      x-hidden: true
+    functionName:
+      title: 函数名
+      type: string
+      default: docling-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{2,39}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 2-39 之间。
+      x-formitem:
+        type: input
+    description:
+      title: 描述
+      type: string
+      default: "Serverless docling"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-formitem:
+        type: input
