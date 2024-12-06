@@ -26,12 +26,12 @@ Parameters:
       description: 创建应用所在的地区
       x-cate: resourceCate
       enum:
-        - test-1
         - test-2
         - test-3
         - test-4
         - test-5
         - test-6
+        - beijing
       x-formitem:
         type: select
     functionName:
