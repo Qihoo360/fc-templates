@@ -10,6 +10,7 @@ from controllers.service_api.app.error import NotChatAppError
 from controllers.service_api.wraps import FetchUserArg, WhereisUserArg, validate_app_token
 from core.app.entities.app_invoke_entities import InvokeFrom
 from fields.conversation_fields import message_file_fields
+from fields.raws import FilesContainedField
 from libs.helper import TimestampField, uuid_value
 from models.model import App, AppMode, EndUser
 from services.errors.message import SuggestedQuestionsAfterAnswerDisabledError
@@ -48,14 +49,14 @@ class MessageListApi(Resource):
         "tool_input": fields.String,
         "created_at": TimestampField,
         "observation": fields.String,
-        "message_files": fields.List(fields.String),
+        "message_files": fields.List(fields.Nested(message_file_fields)),
     }
 
     message_fields = {
         "id": fields.String,
         "conversation_id": fields.String,
         "parent_message_id": fields.String,
-        "inputs": fields.Raw,
+        "inputs": FilesContainedField,
         "query": fields.String,
         "answer": fields.String(attribute="re_sign_file_url_answer"),
         "message_files": fields.List(fields.Nested(message_file_fields)),

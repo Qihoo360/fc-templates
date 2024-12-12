@@ -377,7 +377,7 @@ const translation = {
     addConfig: '增加配置',
     editConfig: '修改配置',
     loadBalancingLeastKeyWarning: '至少启用 2 个 Key 以使用负载均衡',
-    loadBalancingInfo: '默认情况下，负载平衡使用 Round-robin 策略。如果触发速率限制，将应用 1 分钟的冷却时间',
+    loadBalancingInfo: '默认情况下，负载均衡使用 Round-robin 策略。如果触发速率限制，将应用 1 分钟的冷却时间',
     upgradeForLoadBalancing: '升级以解锁负载均衡功能',
     apiKey: 'API 密钥',
   },
@@ -572,7 +572,7 @@ const translation = {
     pasteFileLinkInputPlaceholder: '输入文件链接',
     uploadFromComputerReadError: '文件读取失败，请重新选择。',
     uploadFromComputerUploadError: '文件上传失败，请重新上传。',
-    uploadFromComputerLimit: '上传文件不能超过 {{size}}',
+    uploadFromComputerLimit: '上传 {{type}} 不能超过 {{size}}',
     pasteFileLinkInvalid: '文件链接无效',
     fileExtensionNotSupport: '文件类型不支持',
   },
@@ -590,6 +590,13 @@ const translation = {
     deleteTip: '标签正在使用中，是否删除？',
     created: '标签创建成功',
     failed: '标签创建失败',
+  },
+  license: {
+    expiring: '许可证还有 1 天到期',
+    expiring_plural: '许可证还有 {{count}} 天到期',
+  },
+  pagination: {
+    perPage: '每页显示',
   },
 }
 

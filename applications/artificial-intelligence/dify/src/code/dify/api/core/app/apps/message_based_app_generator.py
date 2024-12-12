@@ -1,7 +1,7 @@
 import json
 import logging
 from collections.abc import Generator
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Optional, Union
 
 from sqlalchemy import and_
@@ -27,6 +27,7 @@ from core.app.task_pipeline.easy_ui_based_generate_task_pipeline import EasyUIBa
 from core.prompt.utils.prompt_template_parser import PromptTemplateParser
 from extensions.ext_database import db
 from models import Account
+from models.enums import CreatedByRole
 from models.model import App, AppMode, AppModelConfig, Conversation, EndUser, Message, MessageFile
 from services.errors.app_model_config import AppModelConfigBrokenError
 from services.errors.conversation import ConversationCompletedError, ConversationNotExistsError
@@ -79,7 +80,7 @@ class MessageBasedAppGenerator(BaseAppGenerator):
             if e.args[0] == "I/O operation on closed file.":  # ignore this error
                 raise GenerateTaskStoppedError()
             else:
-                logger.exception(e)
+                logger.exception(f"Failed to handle response, conversation_id: {conversation.id}")
                 raise e
 
     def _get_conversation_by_user(
@@ -199,7 +200,7 @@ class MessageBasedAppGenerator(BaseAppGenerator):
             db.session.commit()
             db.session.refresh(conversation)
         else:
-            conversation.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
+            conversation.updated_at = datetime.now(UTC).replace(tzinfo=None)
             db.session.commit()
 
         message = Message(
@@ -240,7 +241,7 @@ class MessageBasedAppGenerator(BaseAppGenerator):
                 belongs_to="user",
                 url=file.remote_url,
                 upload_file_id=file.related_id,
-                created_by_role=("account" if account_id else "end_user"),
+                created_by_role=(CreatedByRole.ACCOUNT if account_id else CreatedByRole.END_USER),
                 created_by=account_id or end_user_id or "",
             )
             db.session.add(message_file)

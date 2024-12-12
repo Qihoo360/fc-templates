@@ -29,7 +29,7 @@ if [[ "${MODE}" == "worker" ]]; then
   fi
 
   exec celery -A app.celery worker -P ${CELERY_WORKER_CLASS:-gevent} $CONCURRENCY_OPTION --loglevel ${LOG_LEVEL} \
-    -Q ${CELERY_QUEUES:-dataset,generation,mail,ops_trace,app_deletion}
+    -Q ${CELERY_QUEUES:-dataset,mail,ops_trace,app_deletion}
 
 elif [[ "${MODE}" == "all" ]]; then
   {
@@ -46,7 +46,7 @@ elif [[ "${MODE}" == "all" ]]; then
     fi
 
     exec celery -A app.celery worker -P ${CELERY_WORKER_CLASS:-gevent} $CONCURRENCY_OPTION --loglevel ${LOG_LEVEL} \
-      -Q ${CELERY_QUEUES:-dataset,generation,mail,ops_trace,app_deletion}
+      -Q ${CELERY_QUEUES:-dataset,mail,ops_trace,app_deletion}
 
     } &
     { 
@@ -81,4 +81,3 @@ else
       app:app
   fi
 fi
-

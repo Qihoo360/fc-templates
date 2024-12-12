@@ -24,15 +24,28 @@ Parameters:
     - difyApiFunctionName
     - difyWebFunctionName
     - DifyCustomDomain
+    - DifyRedisUserName
+    - DifyRedisPassword
     - DifyRedisHost
-    - DifyPostgreSqlHost
-    - DifyWeaviateHost
-    - DifyCodeExecutionHost
+    - DifyRedisPort
+    - DifyRedisDataBase
+    - DifyRedisDataBaseCelery
+    - DifyDBUserName
+    - DifyDBPassword
+    - DifyDBHost
+    - DifyDBPort
+    - DifyDBDataBase
     - DifyAwsS3Endpoint
     - DifyAwsS3Bucket
     - DifyAwsS3Region
     - DifyAwsS3Ak
     - DifyAwsS3Sk
+    - DifyMilvusUri
+    - DifyMilvusToken
+    - DifyMilvusUser
+    - DifyMilvusPassword
+    - DifyCodeExecutionEndpoint
+    - DifyCodeExecutionApiKey
   properties:
     region:
       title: 地域
@@ -94,40 +107,103 @@ Parameters:
       x-label: Dify-Base
       x-formitem:
         type: input
+    DifyRedisUserName:
+      title: DifyRedisUserName
+      type: string
+      default: ""
+      description: dify redis username
+      x-cate: applicationCate
+      x-label: Dify-Redis
+      x-formitem:
+        type: input
+    DifyRedisPassword:
+      title: DifyRedisPassword
+      type: string
+      default: ""
+      description: dify redis password
+      x-cate: applicationCate
+      x-label: Dify-Redis
+      x-formitem:
+        type: input
     DifyRedisHost:
       title: DifyRedisHost
       type: string
       default: ""
       description: dify redis host
       x-cate: applicationCate
-      x-label: Dify-Base
+      x-label: Dify-Redis
       x-formitem:
         type: input
-    DifyPostgreSqlHost:
-      title: DifyPostgreSqlHost
+    DifyRedisPort:
+      title: DifyRedisPort
       type: string
       default: ""
-      description: dify postgreSql host
+      description: dify redis port
       x-cate: applicationCate
-      x-label: Dify-Base
+      x-label: Dify-Redis
       x-formitem:
         type: input
-    DifyWeaviateHost:
-      title: DifyWeaviateHost
+    DifyRedisDataBase:
+      title: DifyRedisDataBase
       type: string
       default: ""
-      description: dify weaviate host
+      description: dify redis database
       x-cate: applicationCate
-      x-label: Dify-Base
+      x-label: Dify-Redis
       x-formitem:
         type: input
-    DifyCodeExecutionHost:
-      title: DifyCodeExecutionHost
+    DifyRedisDataBaseCelery:
+      title: DifyRedisDataBaseCelery
       type: string
       default: ""
-      description: dify code execution host
+      description: dify redis database for celery
       x-cate: applicationCate
-      x-label: Dify-Base
+      x-label: Dify-Redis
+      x-formitem:
+        type: input
+    DifyDBUserName:
+      title: DifyDBUserName
+      type: string
+      default: ""
+      description: dify db username
+      x-cate: applicationCate
+      x-label: Dify-DB
+      x-formitem:
+        type: input
+    DifyDBPassword:
+      title: DifyDBPassword
+      type: string
+      default: ""
+      description: dify db password
+      x-cate: applicationCate
+      x-label: Dify-DB
+      x-formitem:
+        type: input
+    DifyDBHost:
+      title: DifyDBHost
+      type: string
+      default: ""
+      description: dify db host
+      x-cate: applicationCate
+      x-label: Dify-DB
+      x-formitem:
+        type: input
+    DifyDBPort:
+      title: DifyDBPort
+      type: string
+      default: ""
+      description: dify db port
+      x-cate: applicationCate
+      x-label: Dify-DB
+      x-formitem:
+        type: input
+    DifyDBDataBase:
+      title: DifyDBDataBase
+      type: string
+      default: ""
+      description: dify db database
+      x-cate: applicationCate
+      x-label: Dify-DB
       x-formitem:
         type: input
     DifyAwsS3Endpoint:
@@ -173,6 +249,60 @@ Parameters:
       description: aws s3 s3_secret_key
       x-cate: applicationCate
       x-label: Dify-AwsS3
+      x-formitem:
+        type: input
+    DifyMilvusUri:
+      title: DifyMilvusUri
+      type: string
+      default: ""
+      description: dify milvus uri
+      x-cate: applicationCate
+      x-label: Dify-Milvus
+      x-formitem:
+        type: input
+    DifyMilvusToken:
+      title: DifyMilvusToken
+      type: string
+      default: ""
+      description: dify milvus token
+      x-cate: applicationCate
+      x-label: Dify-Milvus
+      x-formitem:
+        type: input
+    DifyMilvusUser:
+      title: DifyMilvusUser
+      type: string
+      default: ""
+      description: dify milvus user
+      x-cate: applicationCate
+      x-label: Dify-Milvus
+      x-formitem:
+        type: input
+    DifyMilvusPassword:
+      title: DifyMilvusPassword
+      type: string
+      default: ""
+      description: dify milvus password
+      x-cate: applicationCate
+      x-label: Dify-Milvus
+      x-formitem:
+        type: input
+    DifyCodeExecutionEndpoint:
+      title: DifyCodeExecutionEndpoint
+      type: string
+      default: ""
+      description: dify code execution endpoint
+      x-cate: applicationCate
+      x-label: Dify-CodeExecution
+      x-formitem:
+        type: input
+    DifyCodeExecutionApiKey:
+      title: DifyCodeExecutionApiKey
+      type: string
+      default: ""
+      description: dify code execution apikey
+      x-cate: applicationCate
+      x-label: Dify-CodeExecution
       x-formitem:
         type: input
 PropertyDescription:

@@ -1,5 +1,5 @@
 # base image
-FROM node:20.11-alpine3.19 AS base
+FROM node:20-alpine3.20 AS base
 LABEL maintainer="takatost@gmail.com"
 
 # if you located in China, you can use aliyun mirror to speed up
@@ -30,7 +30,6 @@ RUN yarn global add pm2 \
     && yarn cache clean
 
 FROM wfwqjs-eventing-zevent-pub/dify-web:v1 AS ready-stage
-WORKDIR /app/web
 
 COPY . .
 
@@ -55,24 +54,27 @@ RUN ln -s /usr/share/zoneinfo/${TZ} /etc/localtime \
 
 
 WORKDIR /app/web
-COPY --from=ready-stage /app/web/public ./public
-COPY --from=ready-stage /app/web/.next/standalone ./
-COPY --from=ready-stage /app/web/.next/static ./.next/static
+COPY --from=builder /app/web/public ./public
+COPY --from=builder /app/web/.next/standalone ./
+COPY --from=builder /app/web/.next/static ./.next/static
 
 COPY docker/pm2.json ./pm2.json
 COPY docker/entrypoint.sh ./entrypoint.sh
 
 
 # global runtime packages
-RUN mkdir /.pm2 \
+RUN yarn global add pm2 \
+    && yarn cache clean \
+    && mkdir /.pm2 \
     && chown -R 1001:0 /.pm2 /app/web \
     && chmod -R g=u /.pm2 /app/web
 
 
 ARG COMMIT_SHA
 ENV COMMIT_SHA=${COMMIT_SHA}
+
 ENV HOSTNAME=0.0.0.0
+
 USER 1001
 EXPOSE 3000
 ENTRYPOINT ["/bin/sh", "./entrypoint.sh"]
-

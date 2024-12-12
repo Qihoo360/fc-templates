@@ -31,8 +31,8 @@ const FileItem = ({
   onRemove,
   onReUpload,
 }: FileItemProps) => {
-  const { id, name, type, progress, url } = file
-  const ext = getFileExtension(name, type)
+  const { id, name, type, progress, url, base64Url, isRemote } = file
+  const ext = getFileExtension(name, type, isRemote)
   const uploadError = progress === -1
 
   return (
@@ -75,16 +75,18 @@ const FileItem = ({
               </>
             )
           }
-          {formatFileSize(file.size || 0)}
+          {
+            !!file.size && formatFileSize(file.size)
+          }
         </div>
         {
-          showDownloadAction && (
+          showDownloadAction && url && (
             <ActionButton
               size='m'
               className='hidden group-hover/file-item:flex absolute -right-1 -top-1'
               onClick={(e) => {
                 e.stopPropagation()
-                downloadFile(url || '', name)
+                downloadFile(url || base64Url || '', name)
               }}
             >
               <RiDownloadLine className='w-3.5 h-3.5 text-text-tertiary' />
@@ -96,6 +98,7 @@ const FileItem = ({
             <ProgressCircle
               percentage={progress}
               size={12}
+              className='shrink-0'
             />
           )
         }

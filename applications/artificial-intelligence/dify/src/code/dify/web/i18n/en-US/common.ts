@@ -363,7 +363,7 @@ const translation = {
     deprecated: 'Deprecated',
     confirmDelete: 'Confirm deletion?',
     quotaTip: 'Remaining available free tokens',
-    loadPresets: 'Load Presents',
+    loadPresets: 'Load Presets',
     parameters: 'PARAMETERS',
     loadBalancing: 'Load balancing',
     loadBalancingDescription: 'Reduce pressure with multiple sets of credentials.',
@@ -572,7 +572,7 @@ const translation = {
     pasteFileLinkInputPlaceholder: 'Enter URL...',
     uploadFromComputerReadError: 'File reading failed, please try again.',
     uploadFromComputerUploadError: 'File upload failed, please upload again.',
-    uploadFromComputerLimit: 'Upload File cannot exceed {{size}}',
+    uploadFromComputerLimit: 'Upload {{type}} cannot exceed {{size}}',
     pasteFileLinkInvalid: 'Invalid file link',
     fileExtensionNotSupport: 'File extension not supported',
   },
@@ -590,6 +590,13 @@ const translation = {
     deleteTip: 'The tag is being used, delete it?',
     created: 'Tag created successfully',
     failed: 'Tag creation failed',
+  },
+  license: {
+    expiring: 'Expiring in one day',
+    expiring_plural: 'Expiring in {{count}} days',
+  },
+  pagination: {
+    perPage: 'Items per page',
   },
 }
 

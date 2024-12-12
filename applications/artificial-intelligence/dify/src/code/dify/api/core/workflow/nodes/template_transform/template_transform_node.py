@@ -33,8 +33,8 @@ class TemplateTransformNode(BaseNode[TemplateTransformNodeData]):
         variables = {}
         for variable_selector in self.node_data.variables:
             variable_name = variable_selector.variable
-            value = self.graph_runtime_state.variable_pool.get_any(variable_selector.value_selector)
-            variables[variable_name] = value
+            value = self.graph_runtime_state.variable_pool.get(variable_selector.value_selector)
+            variables[variable_name] = value.to_object() if value else None
         # Run code
         try:
             result = CodeExecutor.execute_workflow_code_template(
@@ -56,7 +56,7 @@ class TemplateTransformNode(BaseNode[TemplateTransformNodeData]):
 
     @classmethod
     def _extract_variable_selector_to_variable_mapping(
-        cls, graph_config: Mapping[str, Any], node_id: str, node_data: TemplateTransformNodeData
+        cls, *, graph_config: Mapping[str, Any], node_id: str, node_data: TemplateTransformNodeData
     ) -> Mapping[str, Sequence[str]]:
         """
         Extract variable selector to variable mapping

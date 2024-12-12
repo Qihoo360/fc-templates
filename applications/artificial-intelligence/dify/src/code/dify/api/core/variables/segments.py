@@ -56,15 +56,15 @@ class NoneSegment(Segment):
 
     @property
     def text(self) -> str:
-        return "null"
+        return ""
 
     @property
     def log(self) -> str:
-        return "null"
+        return ""
 
     @property
     def markdown(self) -> str:
-        return "null"
+        return ""
 
 
 class StringSegment(Segment):
@@ -118,11 +118,11 @@ class FileSegment(Segment):
 
     @property
     def log(self) -> str:
-        return str(self.value)
+        return ""
 
     @property
     def text(self) -> str:
-        return str(self.value)
+        return ""
 
 
 class ArrayAnySegment(ArraySegment):
@@ -155,3 +155,11 @@ class ArrayFileSegment(ArraySegment):
         for item in self.value:
             items.append(item.markdown)
         return "\n".join(items)
+
+    @property
+    def log(self) -> str:
+        return ""
+
+    @property
+    def text(self) -> str:
+        return ""

@@ -31,9 +31,12 @@ export type Props = {
   noWrapper?: boolean
   isExpand?: boolean
   showFileList?: boolean
+  onGenerated?: (value: string) => void
+  showCodeGenerator?: boolean
+  className?: string
 }
 
-const languageMap = {
+export const languageMap = {
   [CodeLanguage.javascript]: 'javascript',
   [CodeLanguage.python3]: 'python',
   [CodeLanguage.json]: 'json',
@@ -63,6 +66,9 @@ const CodeEditor: FC<Props> = ({
   noWrapper,
   isExpand,
   showFileList,
+  onGenerated,
+  showCodeGenerator = false,
+  className,
 }) => {
   const [isFocus, setIsFocus] = React.useState(false)
   const [isMounted, setIsMounted] = React.useState(false)
@@ -183,7 +189,7 @@ const CodeEditor: FC<Props> = ({
   )
 
   return (
-    <div className={cn(isExpand && 'h-full')}>
+    <div className={cn(isExpand && 'h-full', className)}>
       {noWrapper
         ? <div className='relative no-wrapper' style={{
           height: isExpand ? '100%' : (editorContentHeight) / 2 + CODE_EDITOR_LINE_HEIGHT, // In IDE, the last line can always be in lop line. So there is some blank space in the bottom.
@@ -200,8 +206,11 @@ const CodeEditor: FC<Props> = ({
             isFocus={isFocus && !readOnly}
             minHeight={minHeight}
             isInNode={isInNode}
-            fileList={fileList}
+            onGenerated={onGenerated}
+            codeLanguages={language}
+            fileList={fileList as any}
             showFileList={showFileList}
+            showCodeGenerator={showCodeGenerator}
           >
             {main}
           </Base>

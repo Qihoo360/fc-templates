@@ -4,6 +4,7 @@ import time
 import uuid
 from collections.abc import Generator, Mapping
 from concurrent.futures import ThreadPoolExecutor, wait
+from copy import copy, deepcopy
 from typing import Any, Optional
 
 from flask import Flask, current_app
@@ -37,7 +38,7 @@ from core.workflow.nodes.answer.answer_stream_processor import AnswerStreamProce
 from core.workflow.nodes.base import BaseNode
 from core.workflow.nodes.end.end_stream_processor import EndStreamProcessor
 from core.workflow.nodes.event import RunCompletedEvent, RunRetrieverResourceEvent, RunStreamChunkEvent
-from core.workflow.nodes.node_mapping import node_type_classes_mapping
+from core.workflow.nodes.node_mapping import NODE_TYPE_CLASSES_MAPPING
 from extensions.ext_database import db
 from models.enums import UserFrom
 from models.workflow import WorkflowNodeExecutionStatus, WorkflowType
@@ -63,7 +64,6 @@ class GraphEngineThreadPool(ThreadPoolExecutor):
         self.submit_count -= 1
 
     def check_is_full(self) -> None:
-        print(f"submit_count: {self.submit_count}, max_submit_count: {self.max_submit_count}")
         if self.submit_count > self.max_submit_count:
             raise ValueError(f"Max submit count {self.max_submit_count} of workflow thread pool reached.")
 
@@ -130,15 +130,14 @@ class GraphEngine:
         yield GraphRunStartedEvent()
 
         try:
-            stream_processor_cls: type[AnswerStreamProcessor | EndStreamProcessor]
             if self.init_params.workflow_type == WorkflowType.CHAT:
-                stream_processor_cls = AnswerStreamProcessor
+                stream_processor = AnswerStreamProcessor(
+                    graph=self.graph, variable_pool=self.graph_runtime_state.variable_pool
+                )
             else:
-                stream_processor_cls = EndStreamProcessor
-
-            stream_processor = stream_processor_cls(
-                graph=self.graph, variable_pool=self.graph_runtime_state.variable_pool
-            )
+                stream_processor = EndStreamProcessor(
+                    graph=self.graph, variable_pool=self.graph_runtime_state.variable_pool
+                )
 
             # run graph
             generator = stream_processor.process(self._run(start_node_id=self.graph.root_node_id))
@@ -172,7 +171,7 @@ class GraphEngine:
                                 "answer"
                             ].strip()
                 except Exception as e:
-                    logger.exception(f"Graph run failed: {str(e)}")
+                    logger.exception("Graph run failed")
                     yield GraphRunFailedEvent(error=str(e))
                     return
 
@@ -228,7 +227,8 @@ class GraphEngine:
 
             # convert to specific node
             node_type = NodeType(node_config.get("data", {}).get("type"))
-            node_cls = node_type_classes_mapping[node_type]
+            node_version = node_config.get("data", {}).get("version", "1")
+            node_cls = NODE_TYPE_CLASSES_MAPPING[node_type][node_version]
 
             previous_node_id = previous_route_node_state.node_id if previous_route_node_state else None
 
@@ -692,7 +692,7 @@ class GraphEngine:
             )
             return
         except Exception as e:
-            logger.exception(f"Node {node_instance.node_data.title} run failed: {str(e)}")
+            logger.exception(f"Node {node_instance.node_data.title} run failed")
             raise e
         finally:
             db.session.close()
@@ -724,6 +724,16 @@ class GraphEngine:
         :return:
         """
         return time.perf_counter() - start_at > max_execution_time
+
+    def create_copy(self):
+        """
+        create a graph engine copy
+        :return: with a new variable pool instance of graph engine
+        """
+        new_instance = copy(self)
+        new_instance.graph_runtime_state = copy(self.graph_runtime_state)
+        new_instance.graph_runtime_state.variable_pool = deepcopy(self.graph_runtime_state.variable_pool)
+        return new_instance
 
 
 class GraphRunFailedError(Exception):
