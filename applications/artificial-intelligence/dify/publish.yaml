@@ -24,13 +24,11 @@ Parameters:
     - difyApiFunctionName
     - difyWebFunctionName
     - DifyCustomDomain
-    - DifyRedisUserName
     - DifyRedisPassword
     - DifyRedisHost
     - DifyRedisPort
     - DifyRedisDataBase
     - DifyRedisDataBaseCelery
-    - DifyDBUserName
     - DifyDBPassword
     - DifyDBHost
     - DifyDBPort
@@ -41,8 +39,6 @@ Parameters:
     - DifyAwsS3Ak
     - DifyAwsS3Sk
     - DifyMilvusUri
-    - DifyMilvusToken
-    - DifyMilvusUser
     - DifyMilvusPassword
     - DifyCodeExecutionEndpoint
     - DifyCodeExecutionApiKey
@@ -146,7 +142,7 @@ Parameters:
     DifyRedisDataBase:
       title: DifyRedisDataBase
       type: string
-      default: ""
+      default: "0"
       description: dify redis database
       x-cate: applicationCate
       x-label: Dify-Redis
@@ -155,7 +151,7 @@ Parameters:
     DifyRedisDataBaseCelery:
       title: DifyRedisDataBaseCelery
       type: string
-      default: ""
+      default: "1"
       description: dify redis database for celery
       x-cate: applicationCate
       x-label: Dify-Redis
