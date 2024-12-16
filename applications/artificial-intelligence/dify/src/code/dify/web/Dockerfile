@@ -1,5 +1,8 @@
 # base image
-FROM node:20-alpine3.20 AS base
+FROM node:20-alpine3.20 AS prepare-stage
+
+FROM wfwqjs-eventing-zevent-pub/dify-web:v1 AS base
+
 LABEL maintainer="takatost@gmail.com"
 
 # if you located in China, you can use aliyun mirror to speed up
@@ -25,19 +28,13 @@ RUN yarn install --frozen-lockfile
 FROM base AS builder
 WORKDIR /app/web
 COPY --from=packages /app/web/ .
-
-RUN yarn global add pm2 \
-    && yarn cache clean
-
-FROM wfwqjs-eventing-zevent-pub/dify-web:v1 AS ready-stage
-
 COPY . .
 
 RUN yarn build
 
 
 # production stage
-FROM ready-stage AS production
+FROM base AS production
 
 ENV NODE_ENV=production
 ENV EDITION=SELF_HOSTED

@@ -29,6 +29,7 @@ Parameters:
     - DifyRedisPort
     - DifyRedisDataBase
     - DifyRedisDataBaseCelery
+    - DifyDBSCHEME
     - DifyDBPassword
     - DifyDBHost
     - DifyDBPort
@@ -157,6 +158,15 @@ Parameters:
       x-label: Dify-Redis
       x-formitem:
         type: input
+    DifyDBSCHEME:
+      title: DifyDBSCHEME
+      type: string
+      default: "postgresql"
+      description: dify db scheme
+      x-cate: applicationCate
+      x-label: Dify-DB
+      x-formitem:
+        type: input
     DifyDBUserName:
       title: DifyDBUserName
       type: string
@@ -233,7 +243,7 @@ Parameters:
       title: DifyAwsS3Ak
       type: string
       default: ""
-      description: aws s3 s3_access_key
+      description: aws s3 access_key
       x-cate: applicationCate
       x-label: Dify-AwsS3
       x-formitem:
@@ -242,7 +252,7 @@ Parameters:
       title: DifyAwsS3Sk
       type: string
       default: ""
-      description: aws s3 s3_secret_key
+      description: aws s3 secret_key
       x-cate: applicationCate
       x-label: Dify-AwsS3
       x-formitem:
