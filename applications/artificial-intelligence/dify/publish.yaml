@@ -39,8 +39,8 @@ Parameters:
     - DifyAwsS3Region
     - DifyAwsS3Ak
     - DifyAwsS3Sk
-    - DifyMilvusUri
-    - DifyMilvusPassword
+    - DifyWeaviateEndpoint
+    - DifyWeaviateApiKey
     - DifyCodeExecutionEndpoint
     - DifyCodeExecutionApiKey
   properties:
@@ -257,40 +257,22 @@ Parameters:
       x-label: Dify-AwsS3
       x-formitem:
         type: input
-    DifyMilvusUri:
-      title: DifyMilvusUri
+    DifyWeaviateEndpoint:
+      title: DifyWeaviateEndpoint
       type: string
       default: ""
-      description: dify milvus uri
+      description: dify weaviate endpoint
       x-cate: applicationCate
-      x-label: Dify-Milvus
+      x-label: Dify-Weaviate
       x-formitem:
         type: input
-    DifyMilvusToken:
-      title: DifyMilvusToken
+    DifyWeaviateApiKey:
+      title: DifyWeaviateApiKey
       type: string
       default: ""
-      description: dify milvus token
+      description: dify weaviate apikey
       x-cate: applicationCate
-      x-label: Dify-Milvus
-      x-formitem:
-        type: input
-    DifyMilvusUser:
-      title: DifyMilvusUser
-      type: string
-      default: ""
-      description: dify milvus user
-      x-cate: applicationCate
-      x-label: Dify-Milvus
-      x-formitem:
-        type: input
-    DifyMilvusPassword:
-      title: DifyMilvusPassword
-      type: string
-      default: ""
-      description: dify milvus password
-      x-cate: applicationCate
-      x-label: Dify-Milvus
+      x-label: Dify-Weaviate
       x-formitem:
         type: input
     DifyCodeExecutionEndpoint:
