@@ -48,7 +48,8 @@ elif [[ "${MODE}" == "all" ]]; then
     exec celery -A app.celery worker -P ${CELERY_WORKER_CLASS:-gevent} $CONCURRENCY_OPTION --loglevel ${LOG_LEVEL} \
       -Q ${CELERY_QUEUES:-dataset,mail,ops_trace,app_deletion}
 
-    } &
+    } 2>&1 | awk '{print "[dify-worker] " $0}' &
+    DIFY_WORKER_PID=$!
     { 
       if [[ "${DEBUG}" == "true" ]]; then
         exec flask run --host=${DIFY_BIND_ADDRESS:-0.0.0.0} --port=${DIFY_PORT:-5001} --debug
@@ -62,9 +63,15 @@ elif [[ "${MODE}" == "all" ]]; then
           app:app
       fi
 
-    } &
+    } 2>&1 | awk '{print "[dify-api] " $0}' &
+    DIFY_API_PID=$!
     wait -n
-    exit $?
+
+    EXIT_STATUS=$?
+
+    kill $CELERY_PID $SERVER_PID 2>/dev/null
+
+    exit $EXIT_STATUS
 
 elif [[ "${MODE}" == "beat" ]]; then
   exec celery -A app.celery beat --loglevel ${LOG_LEVEL}
@@ -81,3 +88,4 @@ else
       app:app
   fi
 fi
+
