@@ -22,7 +22,7 @@ resources:
       requestType: http
       runtimeType: customize
       cloudBuildType: Dockerfile
-      dockerfile-path: Dockerfile-api 
+      dockerfilePath: Dockerfile-api 
       port: 8080
       functionName: ${vars.moneyprinterturboApiFunctionName}
       sourceSubDir: code/moneyprinterturbo
@@ -69,7 +69,7 @@ resources:
       requestType: http
       runtimeType: customize
       cloudBuildType: Dockerfile
-      dockerfile-path: Dockerfile 
+      dockerfilePath: Dockerfile 
       port: 8501
       functionName: ${vars.moneyprinterturboWebFunctionName}
       sourceSubDir: code/moneyprinterturbo
