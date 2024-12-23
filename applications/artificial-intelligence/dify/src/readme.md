@@ -27,7 +27,7 @@ Dify 是一款开源的大语言模型(LLM) 应用开发平台。它融合了后
 Clone Dify 代码：
 ```
 git clone https://github.com/langgenius/dify.git
-git checkout f83ed19dfe14516304be4092aba9435fe89a68e2
+git checkout 0ff8bd2aa92065d19fa21823135357a3bf18c220
 ```
 在启用业务服务之前，我们需要先部署 PostgresSQL / Redis / Weaviate（如果本地没有的话），可以通过以下命令启动
 ```
