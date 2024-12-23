@@ -43,7 +43,7 @@ class WeaviateVector(BaseVector):
 
         try:
             client = weaviate.Client(
-                url=config.endpoint, auth_client_secret=auth_config, timeout_config=(5, 60), startup_period=None
+                url=config.endpoint, auth_client_secret=auth_config, timeout_config=(60, 60), startup_period=None
             )
         except requests.exceptions.ConnectionError:
             raise ConnectionError("Vector database connection error")
