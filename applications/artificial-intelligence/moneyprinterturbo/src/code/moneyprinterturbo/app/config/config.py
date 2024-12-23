@@ -6,7 +6,7 @@ import toml
 from loguru import logger
 
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-config_file = f"{root_dir}/config.toml"
+config_file = f"/mnt/config.toml"
 
 
 def load_config():

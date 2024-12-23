@@ -7,6 +7,9 @@ vars:
   moneyprinterturboApiDescribe: {{moneyprinterturboApiDescription}}
   moneyprinterturboWebFunctionName: {{moneyprinterturboWebFunctionName}}
   moneyprinterturboWebDescribe: {{moneyprinterturboWebDescription}}
+  PolefsVolume: {{PolefsVolume}}
+  MountDir: {{MountDir}}
+  VolCreateUser: {{PolefsVolumeCreateUser}}
 resources:
   moneyprinterturboApi:
     component: ${path('/utils/components/zfc')}
@@ -17,7 +20,7 @@ resources:
       memorySize: 10240
       cpu: 8
       diskSize: 512
-      timeout: 100
+      timeout: 599
       instanceConcurrency: 100
       requestType: http
       runtimeType: customize
@@ -55,6 +58,10 @@ resources:
               - PATCH
             disable_url_internet: true
             auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.PolefsVolume}
+          mountDir: ${vars.MountDir}
+          createUserName: ${vars.VolCreateUser}
   moneyprinterturboWeb:
     component: ${path('/utils/components/zfc')}
     props:
@@ -64,7 +71,7 @@ resources:
       memorySize: 10240
       cpu: 8
       diskSize: 512
-      timeout: 100
+      timeout: 599
       instanceConcurrency: 100
       requestType: http
       runtimeType: customize
@@ -102,3 +109,7 @@ resources:
               - PATCH
             disable_url_internet: true
             auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.PolefsVolume}
+          mountDir: ${vars.MountDir}
+          createUserName: ${vars.VolCreateUser}
