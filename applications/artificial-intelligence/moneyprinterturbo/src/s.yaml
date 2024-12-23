@@ -22,7 +22,7 @@ resources:
       requestType: http
       runtimeType: customize
       cloudBuildType: Dockerfile
-      dockerfile-path: Dockerfile 
+      dockerfile-path: Dockerfile-api 
       port: 8080
       functionName: ${vars.moneyprinterturboApiFunctionName}
       sourceSubDir: code/moneyprinterturbo
