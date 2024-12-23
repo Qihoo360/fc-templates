@@ -30,73 +30,22 @@ nas
 
 ## NAS 配置
 
-我们为 docling 配置了专门的目录 /mnt/webhook，只需将此目录挂载到 NAS 上，再将 webhook 配置文件上传到 NAS 对应目录，就可以配置 docling 相关的  API ，通过调用这些 API ，便可以实现 docling 提供的功能。若要将 /mnt/webhook 修改为别的目录，则需对应修改代码中的 Dockerfile 文件并重新部署。
+我们为 docling 配置了专门的目录 /root/docling/output ，只需将此目录挂载到 NAS 上，docling 就会将转换生成的文件保存到此目录
 
-webhook 配置文件 hooks.json 示例如下：
+## 使用docling
 
-```json
-[
-  {
-    "id": "docling-webhook",
-    "execute-command": "/mnt/webhook/docling/docling-webhook.sh",
-    "command-working-directory": "/mnt/webhook/docling",
-    "pass-arguments-to-command": [
-      {
-        "source": "payload",
-        "name": "docling-args.from"
-      },
-      {
-        "source": "payload",
-        "name": "docling-args.to"
-      },
-      {
-        "source": "payload",
-        "name": "docling-args.output"
-      },
-      {
-        "source": "payload",
-        "name": "docling-args.file"
-      }
-    ]
-  }
-]
-```
+![image-20241223221943174](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/file-processor/docling/images/image-20241223221943174.png?raw=true)
 
-execute-command 中的 docling-webhook.sh 内容为：
+* 在页面上 file 窗口内上传文件：
 
-```shell
-#!/bin/bash
+![image-20241223222200258](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/file-processor/docling/images/image-20241223222200258.png?raw=true)
 
-echo -e "\n excuting cmd [$0 $*] \n"
+* 在 from 文本框内输入上传的文件的类型， 在 to 文本框内输入转换后的文件类型。from 文本框为空时，则默认为自动检测输入文件类型； to 文本框为空时， 则默认转换为 markdown 文件
 
-docling $*
+* 击 Submit 提交后即可开始文件转换，右侧 output 窗口内会显示进度：
 
-# docling https://arxiv.org/pdf/2408.09869
-# python /root/docling/minimal.py
-```
+![image-20241223222808878](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/file-processor/docling/images/image-20241223222808878.png?raw=true)
 
-执行以下 curl 命令即可在云端执行 docling 命令：
+* 转换完成后可下载输出文件：
 
-```shell
-curl -H 'Content-Type: application/json' -X POST "<YOUR FUNCTION URL>/hooks/docling-webhook" -d '{"docling-args": {"from": "--from pdf", "to": "--to md", "output": "--output /mnt/webhook/docling/output","file": "https://arxiv.org/pdf/2408.09869"}}'
-```
-
-其中：\<YOUR FUNCTION URL> 需替换为部署 docling 函数生成的 uri 。docling-webhook 为 hooks.json 中的 id 字段值。-d 参数中的 json 字符串中包含的是传递给 hooks.json 中 execute-command 命令的参数。webhook 收到此请求以后，根据 hooks.json 中 pass-arguments-to-command 的值，依次从 HTTP body 中获取 docling-args.from ， docling-args.to ， docling-args.output， docling-args.file 传递给 docling-webhook.sh。此示例中最终执行的命令为：
-
-```shell
-docling --from pdf --to md --output /mnt/webhook/docling/output https://arxiv.org/pdf/2408.09869
-```
-
-执行成功后会在 --output 参数指定的目录（此处/mnt/webhook/docling/output）下生成转换后的和输入文件名同名的md文件。
-
-
-
-hooks.json 配置方式参考： [webhook/docs at master · adnanh/webhook · GitHub](https://github.com/adnanh/webhook/tree/master/docs)
-
-
-
-**注意：** 
-
-- 修改 hooks.json 文件后需重新部署函数才会生效。
-- execute-command 的脚本上传到 NAS 后执行时可能会提示没有权限，使用 NAS 客户端工具登陆后使用 chmod +x 添加可执行权限即可
-
+![image-20241223222925789](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/file-processor/docling/images/image-20241223222925789.png?raw=true)
