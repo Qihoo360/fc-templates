@@ -40,7 +40,7 @@ Parameters:
       x-formitem:
         type: select
     moneyprinterturboApiFunctionName:
-      title: DifyApi函数名
+      title: Api函数名
       type: string
       default: moneyprinterturbo-api-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
@@ -49,7 +49,7 @@ Parameters:
       x-formitem:
         type: input
     moneyprinterturboApiDescription:
-      title: DifyApi描述
+      title: Api描述
       type: string
       default: "Serverless moneyprinterturbo api"
       pattern: ".{0,255}$"
@@ -58,7 +58,7 @@ Parameters:
       x-formitem:
         type: input
     moneyprinterturboWebFunctionName:
-      title: DifyWeb函数名
+      title: Web函数名
       type: string
       default: moneyprinterturbo-web-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
@@ -67,7 +67,7 @@ Parameters:
       x-formitem:
         type: input
     moneyprinterturboWebDescription:
-      title: DifyWeb描述
+      title: Web描述
       type: string
       default: "Serverless moneyprinterturbo web"
       pattern: ".{0,255}$"
