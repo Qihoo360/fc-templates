@@ -18,9 +18,9 @@ resources:
       memorySize: 10240
       cpu: 8
       diskSize: 5120
-      timeout: 100
+      timeout: 600
       instanceConcurrency: 100
-      port: 9000
+      port: 7860
       requestType: http
       runtimeType: customize
       cloudBuildType: Dockerfile
