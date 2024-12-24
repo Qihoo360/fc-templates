@@ -3,9 +3,19 @@ import uuid
 import os
 
 def process_file(from_fmt, to_fmt, file):
-    output = f"./output/{os.path.basename(file.name)}/{uuid.uuid4()}"
-    os.mkdir(f"./output/{os.path.basename(file.name)}")
-    os.mkdir(output)
+    output_dir = "/mnt/docling/output"
+    if os.path.isdir(output_dir) == False:
+        try:
+            os.mkdir(output_dir)
+        except FileExistsError:
+            return gr.File()
+        
+    output = f"{output_dir}/{os.path.basename(file.name)}/{uuid.uuid4()}"
+    try:
+        os.makedirs(output)
+    except FileExistsError:
+        return gr.File()
+    
     cmd = "docling "
     if from_fmt != "":
         cmd += f"--from {from_fmt} "

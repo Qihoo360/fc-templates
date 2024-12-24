@@ -1,5 +1,5 @@
 edition: 3.0.0
-name: docling-app
+name: pymupdf-app
 access: default
 vars:
   region: {{region}}
@@ -23,9 +23,9 @@ resources:
       port: 7860
       requestType: http
       runtimeType: customize
-      cloudBuildType: Dockerfile
+      cloudBuildType: Auto
       functionName: ${vars.functionName}
-      sourceSubDir: docling
+      sourceSubDir: pymupdf
       logConfig:
         isOpen: false
       scale:
