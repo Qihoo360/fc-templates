@@ -1,0 +1,6 @@
+obs:
+  ak: {{.accessKey}}
+  sk: {{.secretKey}}
+  bucket_name: {{.bucketName}}
+  region: {{.bucketRegion}}
+  endpoint: {{.bucketEndpoint}}

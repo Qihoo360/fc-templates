@@ -1,0 +1,62 @@
+edition: 3.0.0
+name: fc-zyun-markitdown
+access: default
+vars:
+  region: {{region}}
+  functionName: {{functionName}}
+  describe: {{functionDescription}}
+  accessKey: {{accessKeyID}}
+  secretKey: {{secretAccessKey}}
+  bucketName: {{bucketName}}
+  bucketRegion: {{bucketRegion}}
+  bucketEndpoint: {{bucketEndpoint}}
+resources:
+  markitdown-app:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      functionName: ${vars.functionName}
+      description: ${vars.describe}
+      runtime: custom
+      memorySize: 2048
+      cpu: 4
+      diskSize: 4096
+      timeout: 100
+      instanceConcurrency: 50
+      port: 8080
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      code:
+        templated_files:
+          - markitdown/config/config.yaml
+      environmentVariables:
+        testkey: testvalue
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      sourceSubDir: markitdown
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
