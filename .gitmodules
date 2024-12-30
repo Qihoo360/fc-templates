@@ -1,0 +1,3 @@
+[submodule "applications/file-processor/markitdown/src/markitdown/markitdown"]
+	path = applications/file-processor/markitdown/src/markitdown/markitdown
+	url = https://github.com/microsoft/markitdown.git
