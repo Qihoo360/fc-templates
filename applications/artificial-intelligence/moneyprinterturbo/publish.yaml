@@ -95,12 +95,11 @@ Parameters:
       title: 函数挂载路径
       type: string
       description: 函数挂载路径
-      default: "/mnt"
+      default: "/mnt/conf"
       x-cate: applicationCate
       x-label: nasLabel
       x-formitem:
         type: input
-      x-hidden: true
     PolefsVolumeCreateUser:
       title: 函数挂载的创建用户
       type: string
