@@ -5,8 +5,8 @@ vars:
   region: {{region}}
   functionName: {{functionName}}
   describe: {{functionDescription}}
-  accessKey: {{accessKeyID}}
-  secretKey: {{secretAccessKey}}
+  accessKey: {{accessKey}}
+  secretKey: {{secretKey}}
   bucketName: {{bucketName}}
   bucketRegion: {{bucketRegion}}
   bucketEndpoint: {{bucketEndpoint}}

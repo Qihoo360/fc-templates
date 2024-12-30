@@ -22,8 +22,8 @@ Parameters:
   required:
     - region
     - functionName
-    - accessKeyID
-    - secretAccessKey
+    - accessKey
+    - secretKey
     - bucketName
     - bucketRegion
     - bucketEndpoint
@@ -63,7 +63,7 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
-    accessKeyID:
+    accessKey:
       title: AccessKeyID
       type: secret
       description: obs 有权限的 AccessKeyID
@@ -71,7 +71,7 @@ Parameters:
       x-label: obsLabel
       x-formitem:
         type: input
-    secretAccessKey:
+    secretKey:
       title: SecretAccessKey
       type: secret
       description: obs 有权限的 SecretAccessKey
