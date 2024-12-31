@@ -38,11 +38,11 @@ MarkItDown 是一个用于将各种文件转换为 Markdown 的工具（例如�
 
 ### ❗注意事项
 - 针对需要 OCR 的图片，需要填写大模型相关的API，国内推荐 OneAPI 服务，还有需要指定的模型支持 OCR
-![image-model](./markitdown/images/model-png.png)
+![image-model](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/markitdown/src/markitdown/images/model-png.png?raw=true)
 - 文件来源:支持 `本地文件`、`Web地址`、`OBS`; `OBS` 支持 `sts` 方式的临时授权
-![image-input](./markitdown/images/input-png.png)
+![image-input](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/markitdown/src/markitdown/images/input-png.png?raw=true)
 - 输出类型:支持 `下载地址`、`OBS`; `OBS` 支持 `sts` 方式的临时授权
-![image-output](./markitdown/images/output-png.png)
+![image-output](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/markitdown/src/markitdown/images/output-png.png?raw=true)
 
 ### 📖 文档
 - [MarkItDown 官网](https://github.com/microsoft/markitdown)
