@@ -24,17 +24,30 @@ Dify 是一款开源的大语言模型(LLM) 应用开发平台。它融合了后
 ## 配置依赖
 
 ###  依赖部署
+
+该应用依赖服务：
+redis
+postgresql
+s3
+weaviate
+CodeExecution
+
+可以参考官网申请相关资源或部署相关资源到idc
+https://docs.dify.ai/zh-hans/getting-started/install-self-hosted/docker-compose
+
 Clone Dify 代码：
 ```
 git clone https://github.com/langgenius/dify.git
 git checkout 0ff8bd2aa92065d19fa21823135357a3bf18c220
 ```
-在启用业务服务之前，我们需要先部署 PostgresSQL / Redis / Weaviate（如果本地没有的话），可以通过以下命令启动
+在启用业务服务之前，我们需要先部署 PostgresSQL / Redis / Weaviate，可以通过以下命令启动
 ```
 cd docker
 cp middleware.env.example middleware.env
 docker compose -f docker-compose.middleware.yaml up -d
+
 ```
+**_备注：_** 该应用运行在idc网络中，请确保部署的相关资源idc可访问
 
 ### 自定义域名
 dify-api和dify-web需使用同一个自定义域名

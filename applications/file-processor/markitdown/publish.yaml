@@ -1,0 +1,115 @@
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: fc-zyun-markitdown
+Provider:
+  - fc
+Version: 0.0.3
+Description: MarkItDown 是一个由 Microsoft 开源的工具，专注于将各种文件格式转换为 Markdown。它的目标是为文件的索引、文本分析以及内容提取提供便捷途径。
+HomePage: https://github.com/Qihoo360/fc-templates/applications/file-processor/markitdown
+Organization: 函数计算（FC）
+Tags:
+  - AI
+  - Custom Runtime
+Category: 文件处理
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false
+  required:
+    - region
+    - functionName
+    - accessKey
+    - secretKey
+    - bucketName
+    - bucketRegion
+    - bucketEndpoint
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: test-3
+      description: 创建应用所在的地区
+      enum:
+        - test-2
+        - test-3
+        - test-4
+        - test-5
+        - test-6
+        - beijing
+      x-cate: resourceCate
+      x-reaction-properties:
+        - afunctionPolefsVolumn
+      x-formitem:
+        type: select
+    functionName:
+      title: A函数名
+      type: string
+      default: fc-zyun-markitdown-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    functionDescription:
+      title: A函数描述
+      type: string
+      default: "Serverless fc-zyun-markitdown"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    accessKey:
+      title: AccessKeyID
+      type: secret
+      description: obs 有权限的 AccessKeyID
+      x-cate: applicationCate
+      x-label: obsLabel
+      x-formitem:
+        type: input
+    secretKey:
+      title: SecretAccessKey
+      type: secret
+      description: obs 有权限的 SecretAccessKey
+      x-cate: applicationCate
+      x-label: obsLabel
+      x-formitem:
+        type: input
+    bucketName:
+      title: bucket 名称
+      type: string
+      description: obs bucket 名称
+      x-cate: applicationCate
+      x-label: obsLabel
+      x-formitem:
+        type: input
+    bucketRegion:
+      title: bucket 地域
+      type: string
+      description: obs bucket 地域
+      x-cate: applicationCate
+      x-label: obsLabel
+      x-formitem:
+        type: input
+    bucketEndpoint:
+      title: obs endpoint
+      type: string
+      description: obs bucket 访问地址
+      x-cate: applicationCate
+      x-label: obsLabel
+      x-formitem:
+        type: input
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
+  obsLabel:
+    title: "OBS 配置"
+    description: "部署应用前，请针对具体的 Bucket 给出相应的授权，具体步骤可咨询管理人员。"

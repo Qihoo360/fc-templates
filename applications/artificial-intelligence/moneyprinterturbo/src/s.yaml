@@ -80,6 +80,9 @@ resources:
       port: 8501
       functionName: ${vars.moneyprinterturboWebFunctionName}
       sourceSubDir: code/moneyprinterturbo
+      code:
+        templated_files:
+          - code/moneyprinterturbo/app/config/config.py
       environmentVariables:
         testkey: testvalue
       logConfig:
