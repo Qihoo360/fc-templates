@@ -7,7 +7,6 @@ vars:
   functionName: {{functionName}}
   functionPolefsVolumn: {{functionPolefsVolumn}}
   mountDir: {{afunctionMountDir}}
-  afunctionVolCreateUser: {{afunctionVolCreateUser}}
 resources:
   framework:
     component: ${path('/utils/components/zfc')}
@@ -52,4 +51,3 @@ resources:
       nasConfig:
         - volumeUniqueName: ${vars.functionPolefsVolumn}
           mountDir: ${vars.mountDir}
-          createUserName: ${vars.afunctionVolCreateUser}
