@@ -45,7 +45,6 @@ Parameters:
       x-api-uri: /resources/polefs/volumes
       x-formitem:
         type: select
-        name: volume_unique_name
     afunctionMountDir:
       title: 函数挂载路径
       type: string
