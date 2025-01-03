@@ -1,0 +1,53 @@
+edition: 3.0.0
+name: kotaemon-app
+access: default
+vars:
+  region: {{region}}
+  describe: {{description}}
+  functionName: {{functionName}}
+  oneapiUrl: {{oneapiUrl}}
+  apiKey: {{apiKey}}
+resources:
+  framework:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.describe}
+      runtime: "Python 3.12.*"
+      memorySize: 10240
+      cpu: 8
+      diskSize: 10240
+      timeout: 100
+      instanceConcurrency: 100
+      port: 7001
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Auto
+      functionName: ${vars.functionName}
+      sourceSubDir: screenshot-to-code/backend
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        OPENAI_BASE_URL: ${vars.oneapiUrl}
+        OPENAI_API_KEY: ${vars.apiKey}
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""

@@ -1,0 +1,19 @@
+# pack-refs with: peeled fully-peeled 
+b904710cfc0e6b44a6a94a49112a26d0ab498e4c refs/remotes/origin/access-code
+f6f8b2f7075cdb97915f491c351167e6572d2e8e refs/remotes/origin/add-anthropic-key
+6fe94f48cd160514d927d2beac11b314c886366d refs/remotes/origin/color-thief
+2ec4bf59d3b93d00f77f95f70089a2817b5ea1c0 refs/remotes/origin/generate-from-text
+2f53540e2d6b9f6199ff8c651ab86e4ca31d393e refs/remotes/origin/history
+002dd1fc683cf93d014913e87eb2645ac626b6f5 refs/remotes/origin/hosted
+86f67816829b6867ee6582eb2ec37be30a1f1993 refs/remotes/origin/hosted-multiple-generations
+dd65a6e1e474158fcafa97b1181e6fc8f788c71d refs/remotes/origin/import-from-code
+dc28bd5e6b0b8377f0ae39ba1f43cda66b8c1a72 refs/remotes/origin/ionic-changes
+dc29d5d92a50bb11c76a6ab96c68504ed5674e1c refs/remotes/origin/main
+e4b021c2a455c7b961e0d1af206f9ed56fc0ab5c refs/remotes/origin/multiple-generations
+9882447586395901d40b2cae58f3461f6851fb92 refs/remotes/origin/qa-testing
+f7c9209d1803eff2568b1380c28f32041b47eef6 refs/remotes/origin/select-and-edit
+b84a41645d8212ca3573ccc8b1fb6c368025f97e refs/remotes/origin/svg
+45a7d65fe3cb325209a7d109f6f5a17c42450954 refs/remotes/origin/sweep/add-reset-button-settings-dialog
+d3c634d71e46a98383edc4f86966c1458698b03f refs/remotes/origin/sweep/assets
+c5bfaa0806da2ac0645617673951446ec1637e50 refs/remotes/origin/sweep/backend-status-message
+4937a92f42176d7d358ea30a90219265da008f2f refs/remotes/origin/video
