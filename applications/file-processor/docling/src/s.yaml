@@ -26,6 +26,7 @@ resources:
       cloudBuildType: Dockerfile
       functionName: ${vars.functionName}
       sourceSubDir: docling
+      startCmd: "python app.py"
       logConfig:
         isOpen: false
       scale:

@@ -26,6 +26,7 @@ resources:
       cloudBuildType: Auto
       functionName: ${vars.functionName}
       sourceSubDir: pymupdf
+      startCmd: "python app.py"
       logConfig:
         isOpen: false
       scale:
