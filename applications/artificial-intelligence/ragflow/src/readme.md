@@ -29,8 +29,8 @@
 
 ### 📖 文档
 
-[RagFlow 文档](https://docs.RagFlowai.com/)
-[RagFlow 开源项目地址](https://github.com/RagFlowAI/RagFlow)
+- [RagFlow 文档](https://docs.RagFlowai.com/)
+- [RagFlow 开源项目地址](https://github.com/RagFlowAI/RagFlow)
 
 ### 📝 前提条件
 
