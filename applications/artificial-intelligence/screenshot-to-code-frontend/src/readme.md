@@ -26,4 +26,4 @@ screenshot-to-code 是一款能将截图转换成干净代码的工具，支持H
 
 # 应用的使用说明
 
-![image-20250103154612910](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/screenshot-to-code-frontend/images/image-20250103154612910.png?raw=true)
+![image-20250103154612910](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/screenshot-to-code-frontend/src/images/image-20250103154612910.png?raw=true)
