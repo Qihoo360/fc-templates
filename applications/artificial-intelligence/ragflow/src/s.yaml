@@ -1,0 +1,74 @@
+edition: 3.0.0
+name: ragflow-app
+access: default
+vars:
+  region: {{region}}
+  functionName: {{functionName}}
+  description: {{description}}
+  mysqlHost: {{mysqlHost}}
+  mysqlDatabaseName: {{mysqlDatabaseName}}
+  mysqlDatabasePort: {{mysqlDatabasePort}}
+  mysqlUserName: {{mysqlUserName}}
+  mysqlPassword: {{mysqlPassword}}
+  elasticHost: {{elasticHost}}
+  elasticPort: {{elasticPort}}
+  elasticUserName: {{elasticUserName}}
+  elasticPassword: {{elasticPassword}}
+  minioHost: {{minioHost}}
+  minioConsolePort: {{minioConsolePort}}
+  minioUserName: {{minioUserName}}
+  minioPassword: {{minioPassword}}
+  redisHost: {{redisHost}}
+  redisPort: {{redisPort}}
+  redisPassword: {{redisPassword}}
+  redisDB: {{redisDB}}
+resources:
+  ragflow-app:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      functionName:  ${vars.functionName}
+      description: ${vars.description}
+      runtime: custom
+      memorySize: 24576
+      cpu: 8
+      diskSize: 10240
+      timeout: 100
+      instanceConcurrency: 100
+      port: 8080
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      code:
+        templated_files:
+            - ragflow/docker/.env
+      environmentVariables:
+        testkey: testvalue
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      sourceSubDir: ragflow
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
