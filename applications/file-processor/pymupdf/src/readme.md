@@ -38,8 +38,8 @@ nas
 
 * 在页面上 file 窗口内上传文件：
 
-![image-20241224120854702](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/pymupdf/src/images/image-20241224120854702.png)
+![image-20241224120854702](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/pymupdf/src/images/image-20241224120854702.png?raw=true)
 
 * 击 Submit 提交后即可开始文件转换，右侧 output 窗口内会显示进度，转换完成后可下载输出文件：
 
-![image-20241224120929473](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/pymupdf/src/images/image-20241224120929473.png)
+![image-20241224120929473](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/pymupdf/src/images/image-20241224120929473.png?raw=true)
