@@ -31,7 +31,7 @@ resources:
       description: ${vars.description}
       runtime: custom
       memorySize: 24576
-      cpu: 10
+      cpu: 8
       diskSize: 10240
       timeout: 100
       instanceConcurrency: 100
