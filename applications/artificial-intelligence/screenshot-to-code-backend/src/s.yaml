@@ -1,5 +1,5 @@
 edition: 3.0.0
-name: kotaemon-app
+name: screenshot-to-code-backend
 access: default
 vars:
   region: {{region}}
