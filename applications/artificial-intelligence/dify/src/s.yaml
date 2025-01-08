@@ -30,6 +30,7 @@ resources:
           - code/dify/api/.env
       environmentVariables:
         testkey: testvalue
+        DASHSCOPE_LOGGING_LEVEL: debug
       logConfig:
         isOpen: true
       scale:
