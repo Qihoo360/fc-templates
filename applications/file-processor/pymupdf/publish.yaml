@@ -55,7 +55,7 @@ Parameters:
       title: 函数挂载路径
       type: string
       description: 函数挂载路径
-      default: "/mnt/pymupdf/output"
+      default: "/tmp/output"
       x-cate: applicationCate
       x-label: nasLabel
       x-formitem:

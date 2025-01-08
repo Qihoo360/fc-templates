@@ -3,7 +3,7 @@ import uuid
 import os
 
 def process_file(from_fmt, to_fmt, file):
-    output_dir = "/mnt/docling/output"
+    output_dir = "/tmp/output"
     if os.path.isdir(output_dir) == False:
         try:
             os.mkdir(output_dir)
