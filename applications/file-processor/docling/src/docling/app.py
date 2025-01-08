@@ -29,7 +29,7 @@ def process_file(from_fmt, to_fmt, file):
         output_filename =  output + "/" + os.listdir(output)[0]
     else:
         output_filename = f"{output}/error.txt"
-    os.remove(file.name)
+    # os.remove(file.name)
     return gr.File(value=output_filename)
 
 iface = gr.Interface(

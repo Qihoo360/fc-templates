@@ -30,7 +30,7 @@ nas
 
 ## NAS 配置
 
-我们为 PyMuPDF 配置了专门的目录 /mnt/pymupdf/output ，只需将此目录挂载到 NAS 上，PyMuPDF 就会将转换生成的文件保存到此目录
+我们为 PyMuPDF 配置了专门的目录 /tmp/output ，只需将此目录挂载到 NAS 上，PyMuPDF 就会将转换生成的文件保存到此目录
 
 ## 使用 PyMuPDF
 

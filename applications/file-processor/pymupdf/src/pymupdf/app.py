@@ -5,7 +5,7 @@ import os
 
 def process_file(file):
     doc = pymupdf.open(file.name) # open a document
-    output_dir = "/mnt/pymupdf/output"
+    output_dir = "/tmp/output"
     if os.path.isdir(output_dir) == False:
         try:
             os.mkdir(output_dir)
