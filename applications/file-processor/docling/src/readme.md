@@ -30,7 +30,7 @@ nas
 
 ## NAS 配置
 
-我们为 docling 配置了专门的目录 /mnt/docling/output ，只需将此目录挂载到 NAS 上，docling 就会将转换生成的文件保存到此目录
+我们为 docling 配置了专门的目录 /tmp/output ，只需将此目录挂载到 NAS 上，docling 就会将转换生成的文件保存到此目录
 
 ## 使用docling
 
