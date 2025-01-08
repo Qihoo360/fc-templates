@@ -36,7 +36,11 @@ iface = gr.Interface(
     fn=process_file,
     # inputs=[gr.Textbox(label="docling command options: ") , gr.Files(file_count="multiple", type='filepath')],
     # outputs=gr.Files(file_count="multiple", type='filepath'),
-    inputs=[gr.Textbox(label="from: [docx|pptx|html|image|pdf|asciidoc|md|xlsx]"), gr.Textbox(label="to: [md|json|text|doctags]"), gr.File()],
+    # inputs=[gr.Textbox(label="from: [docx|pptx|html|image|pdf|asciidoc|md|xlsx]"), gr.Textbox(label="to: [md|json|text|doctags]"), gr.File()],
+    inputs=[
+        gr.Dropdown(label="From fmt", choices=["pdf", "docx", "pptx", "html", "image", "asciidoc", "md", "xlsx"]), 
+        gr.Dropdown(label="To fmt", choices=["md", "json", "text", "doctags"]), 
+        gr.File()],
     outputs=gr.File(),
     #inputs=gr.Files(file_count="multiple", type='binary'),
     #outputs=gr.Files(file_count="multiple", type='binary'),
