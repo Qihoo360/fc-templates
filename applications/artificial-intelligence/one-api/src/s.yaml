@@ -6,6 +6,8 @@ vars:
   FunctionName: {{FunctionName}}
   Describe: {{Description}}
   SQL_DSN: {{SQL_DSN}}
+  REDIS_CONN_STRING: {{REDIS_CONN_STRING}}
+  SYNC_FREQUENCY: {{SYNC_FREQUENCY}}
 resources:
   one-api:
     component: ${path('/utils/components/zfc')}
@@ -27,6 +29,9 @@ resources:
       environmentVariables:
         testkey: "testvalue"
         SQL_DSN: "${vars.SQL_DSN}"
+        REDIS_CONN_STRING: "${vars.REDIS_CONN_STRING}"
+        SYNC_FREQUENCY: "${vars.SYNC_FREQUENCY}"
+        SESSION_SECRET: "random_string"
         TZ: "Asia/Shanghai"
         DEBUG: "true"
       logConfig:

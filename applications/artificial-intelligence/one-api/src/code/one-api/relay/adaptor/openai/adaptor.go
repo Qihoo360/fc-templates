@@ -8,7 +8,10 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/songquanpeng/one-api/relay/adaptor"
+	"github.com/songquanpeng/one-api/relay/adaptor/alibailian"
+	"github.com/songquanpeng/one-api/relay/adaptor/baiduv2"
 	"github.com/songquanpeng/one-api/relay/adaptor/doubao"
 	"github.com/songquanpeng/one-api/relay/adaptor/minimax"
 	"github.com/songquanpeng/one-api/relay/adaptor/novita"
@@ -52,6 +55,10 @@ func (a *Adaptor) GetRequestURL(meta *meta.Meta) (string, error) {
 		return doubao.GetRequestURL(meta)
 	case channeltype.Novita:
 		return novita.GetRequestURL(meta)
+	case channeltype.BaiduV2:
+		return baiduv2.GetRequestURL(meta)
+	case channeltype.AliBailian:
+		return alibailian.GetRequestURL(meta)
 	default:
 		return GetFullRequestURL(meta.BaseURL, meta.RequestURLPath, meta.ChannelType), nil
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/songquanpeng/one-api/common/config"
@@ -20,11 +21,16 @@ type Adaptor struct {
 }
 
 func (a *Adaptor) Init(meta *meta.Meta) {
-
 }
 
 func (a *Adaptor) GetRequestURL(meta *meta.Meta) (string, error) {
-	version := helper.AssignOrDefault(meta.Config.APIVersion, config.GeminiVersion)
+	defaultVersion := config.GeminiVersion
+	if strings.Contains(meta.ActualModelName, "gemini-2.0") ||
+		strings.Contains(meta.ActualModelName, "gemini-1.5") {
+		defaultVersion = "v1beta"
+	}
+
+	version := helper.AssignOrDefault(meta.Config.APIVersion, defaultVersion)
 	action := ""
 	switch meta.Mode {
 	case relaymode.Embeddings:
@@ -36,6 +42,7 @@ func (a *Adaptor) GetRequestURL(meta *meta.Meta) (string, error) {
 	if meta.IsStream {
 		action = "streamGenerateContent?alt=sse"
 	}
+
 	return fmt.Sprintf("%s/%s/models/%s:%s", meta.BaseURL, version, meta.ActualModelName, action), nil
 }
 

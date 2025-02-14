@@ -23,6 +23,8 @@ Parameters:
     - region
     - FunctionName
     - SQL_DSN
+    - SYNC_FREQUENCY
+    - SYNC_FREQUENCY
   properties:
     region:
       title: 地域
@@ -62,6 +64,24 @@ Parameters:
       type: string
       default: ""
       description: "SQL_DSN MySQL 数据库：SQL_DSN=root:123456@tcp(localhost:3306)/oneapi"
+      x-cate: applicationCate
+      x-label: one-api
+      x-formitem:
+        type: input
+    REDIS_CONN_STRING:
+      title: REDIS_CONN_STRING
+      type: string
+      default: ""
+      description: "Redis 作为缓存数据库：REDIS_CONN_STRING=redis://default:redispw@localhost:49153"
+      x-cate: applicationCate
+      x-label: one-api
+      x-formitem:
+        type: input
+    SYNC_FREQUENCY:
+      title: SYNC_FREQUENCY
+      type: string
+      default: "60"
+      description: "与数据库同步配置的频率，单位为秒：SYNC_FREQUENCY=60"
       x-cate: applicationCate
       x-label: one-api
       x-formitem:

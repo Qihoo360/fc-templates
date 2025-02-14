@@ -55,6 +55,10 @@ func ConvertRequest(textRequest model.GeneralOpenAIRequest) *ChatRequest {
 				Category:  "HARM_CATEGORY_DANGEROUS_CONTENT",
 				Threshold: config.GeminiSafetySetting,
 			},
+			{
+				Category:  "HARM_CATEGORY_CIVIC_INTEGRITY",
+				Threshold: config.GeminiSafetySetting,
+			},
 		},
 		GenerationConfig: ChatGenerationConfig{
 			Temperature:     textRequest.Temperature,
@@ -128,9 +132,16 @@ func ConvertRequest(textRequest model.GeneralOpenAIRequest) *ChatRequest {
 		}
 		// Converting system prompt to prompt from user for the same reason
 		if content.Role == "system" {
-			content.Role = "user"
 			shouldAddDummyModelMessage = true
+			if IsModelSupportSystemInstruction(textRequest.Model) {
+				geminiRequest.SystemInstruction = &content
+				geminiRequest.SystemInstruction.Role = ""
+				continue
+			} else {
+				content.Role = "user"
+			}
 		}
+
 		geminiRequest.Contents = append(geminiRequest.Contents, content)
 
 		// If a system message is the last message, we need to add a dummy model message to make gemini happy
@@ -247,7 +258,14 @@ func responseGeminiChat2OpenAI(response *ChatResponse) *openai.TextResponse {
 			if candidate.Content.Parts[0].FunctionCall != nil {
 				choice.Message.ToolCalls = getToolCalls(&candidate)
 			} else {
-				choice.Message.Content = candidate.Content.Parts[0].Text
+				var builder strings.Builder
+				for _, part := range candidate.Content.Parts {
+					if i > 0 {
+						builder.WriteString("\n")
+					}
+					builder.WriteString(part.Text)
+				}
+				choice.Message.Content = builder.String()
 			}
 		} else {
 			choice.Message.Content = ""

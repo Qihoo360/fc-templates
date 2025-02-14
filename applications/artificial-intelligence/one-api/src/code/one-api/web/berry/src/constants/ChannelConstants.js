@@ -49,7 +49,7 @@ export const CHANNEL_OPTIONS = {
   },
   40: {
     key: 40,
-    text: '字节跳动豆包',
+    text: '字节火山引擎',
     value: 40,
     color: 'primary'
   },
@@ -185,6 +185,12 @@ export const CHANNEL_OPTIONS = {
     value: 45,
     color: 'primary'
   },
+  45: {
+    key: 46,
+    text: 'Replicate',
+    value: 46,
+    color: 'primary'
+  },
   41: {
     key: 41,
     text: 'Novita',
@@ -211,7 +217,7 @@ export const CHANNEL_OPTIONS = {
   },
   20: {
     key: 20,
-    text: '代理：OpenRouter',
+      text: 'OpenRouter',
     value: 20,
     color: 'success'
   },

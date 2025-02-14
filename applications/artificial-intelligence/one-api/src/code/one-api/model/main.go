@@ -137,28 +137,28 @@ func InitDB() {
 func migrateDB() error {
 	var err error
 	if err = DB.AutoMigrate(&Channel{}); err != nil {
-		return err
+		logger.FatalLog("failed to migrate database: " + err.Error())
 	}
 	if err = DB.AutoMigrate(&Token{}); err != nil {
-		return err
+		logger.FatalLog("failed to migrate database: " + err.Error())
 	}
 	if err = DB.AutoMigrate(&User{}); err != nil {
-		return err
+		logger.FatalLog("failed to migrate database: " + err.Error())
 	}
 	if err = DB.AutoMigrate(&Option{}); err != nil {
-		return err
+		logger.FatalLog("failed to migrate database: " + err.Error())
 	}
 	if err = DB.AutoMigrate(&Redemption{}); err != nil {
-		return err
+		logger.FatalLog("failed to migrate database: " + err.Error())
 	}
 	if err = DB.AutoMigrate(&Ability{}); err != nil {
-		return err
+		logger.FatalLog("failed to migrate database: " + err.Error())
 	}
 	if err = DB.AutoMigrate(&Log{}); err != nil {
-		return err
+		logger.FatalLog("failed to migrate database: " + err.Error())
 	}
 	if err = DB.AutoMigrate(&Channel{}); err != nil {
-		return err
+		logger.FatalLog("failed to migrate database: " + err.Error())
 	}
 	return nil
 }
