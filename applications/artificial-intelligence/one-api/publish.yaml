@@ -24,6 +24,7 @@ Parameters:
     - FunctionName
     - SQL_DSN
     - SYNC_FREQUENCY
+    - SESSION_SECRET
   properties:
     region:
       title: 地域
