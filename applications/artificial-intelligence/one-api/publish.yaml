@@ -24,7 +24,6 @@ Parameters:
     - FunctionName
     - SQL_DSN
     - SYNC_FREQUENCY
-    - SYNC_FREQUENCY
   properties:
     region:
       title: 地域
