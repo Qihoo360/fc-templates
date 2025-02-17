@@ -8,6 +8,7 @@ vars:
   SQL_DSN: {{SQL_DSN}}
   REDIS_CONN_STRING: {{REDIS_CONN_STRING}}
   SYNC_FREQUENCY: {{SYNC_FREQUENCY}}
+  SESSION_SECRET: {{SESSION_SECRET}}
 resources:
   one-api:
     component: ${path('/utils/components/zfc')}
@@ -31,7 +32,7 @@ resources:
         SQL_DSN: "${vars.SQL_DSN}"
         REDIS_CONN_STRING: "${vars.REDIS_CONN_STRING}"
         SYNC_FREQUENCY: "${vars.SYNC_FREQUENCY}"
-        SESSION_SECRET: "random_string"
+        SESSION_SECRET: "${vars.SESSION_SECRET}"
         TZ: "Asia/Shanghai"
         DEBUG: "true"
       logConfig:
