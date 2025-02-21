@@ -28,9 +28,9 @@ resources:
       sourceSubDir: code/casdoor
       environmentVariables:
         testkey: "testvalue"
-        driverName: "${var.driverName}"
-        dataSourceName: "${var.dataSourceName}"
-        dbName: "${var.dbName}"
+        driverName: "${vars.driverName}"
+        dataSourceName: "${vars.dataSourceName}"
+        dbName: "${vars.dbName}"
         TZ: "Asia/Shanghai"
       logConfig:
         isOpen: true
