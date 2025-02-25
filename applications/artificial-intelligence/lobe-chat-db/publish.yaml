@@ -60,7 +60,7 @@ Parameters:
     NEXT_PUBLIC_SERVICE_MODE:
       title: NEXT_PUBLIC_SERVICE_MODE
       type: string
-      default: "client"
+      default: "server"
       description: "客户端数据库和服务端数据库,该值默认为 client, 针对服务端数据库部署场景，需要设置为 server"
       x-cate: applicationCate
       x-label: lobe-chat
