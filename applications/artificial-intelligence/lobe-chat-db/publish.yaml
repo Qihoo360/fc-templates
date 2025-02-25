@@ -66,6 +66,15 @@ Parameters:
       x-label: lobe-chat
       x-formitem:
         type: input
+    CustomDomain:
+      title: CustomDomain
+      type: string
+      default: ""
+      description: "custom domain Example: https://customdomain.com"
+      x-cate: applicationCate
+      x-label: lobe-chat
+      x-formitem:
+        type: input
     DATABASE_URL:
       title: DATABASE_URL
       type: string

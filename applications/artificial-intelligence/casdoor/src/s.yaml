@@ -31,6 +31,9 @@ resources:
         driverName: "${vars.driverName}"
         dataSourceName: "${vars.dataSourceName}"
         dbName: "${vars.dbName}"
+        RUNNING_IN_DOCKER: "true"
+        runmode: "dev"
+        httpport: "8000"
         TZ: "Asia/Shanghai"
       logConfig:
         isOpen: true
