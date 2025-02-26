@@ -14,6 +14,7 @@
 
 	let webConfig = null;
 	let webSearchEngines = [
+		'360_so',
 		'searxng',
 		'google_pse',
 		'brave',
@@ -173,6 +174,34 @@
 											type="text"
 											placeholder={$i18n.t('Enter Google PSE Engine Id')}
 											bind:value={webConfig.search.google_pse_engine_id}
+											autocomplete="off"
+										/>
+									</div>
+								</div>
+							</div>
+						{:else if webConfig.search.engine === '360_so'}
+							<div>
+								<div class=" self-center text-xs font-medium mb-1">
+									{$i18n.t('360 SO API Key')}
+								</div>
+
+								<SensitiveInput
+									placeholder={$i18n.t('Enter 360 SO API Key')}
+									bind:value={webConfig.search.so_360_api_key}
+								/>
+							</div>
+							<div class="mt-1.5">
+								<div class=" self-center text-xs font-medium mb-1">
+									{$i18n.t('360 SO SEARCH URL')}
+								</div>
+
+								<div class="flex w-full">
+									<div class="flex-1">
+										<input
+											class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+											type="text"
+											placeholder={$i18n.t('Enter 360 SO SEARCH URL')}
+											bind:value={webConfig.search.so_360_search_url}
 											autocomplete="off"
 										/>
 									</div>

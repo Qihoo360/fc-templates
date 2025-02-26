@@ -49,6 +49,7 @@ from open_webui.retrieval.web.mojeek import search_mojeek
 from open_webui.retrieval.web.bocha import search_bocha
 from open_webui.retrieval.web.duckduckgo import search_duckduckgo
 from open_webui.retrieval.web.google_pse import search_google_pse
+from open_webui.retrieval.web.so_360 import search_360_so
 from open_webui.retrieval.web.jina_search import search_jina
 from open_webui.retrieval.web.searchapi import search_searchapi
 from open_webui.retrieval.web.serpapi import search_serpapi
@@ -381,6 +382,8 @@ async def get_rag_config(request: Request, user=Depends(get_admin_user)):
                 "searxng_query_url": request.app.state.config.SEARXNG_QUERY_URL,
                 "google_pse_api_key": request.app.state.config.GOOGLE_PSE_API_KEY,
                 "google_pse_engine_id": request.app.state.config.GOOGLE_PSE_ENGINE_ID,
+                "so_360_search_url": request.app.state.config.SO_360_SEARCH_URL,
+                "so_360_api_key": request.app.state.config.SO_360_API_KEY,
                 "brave_search_api_key": request.app.state.config.BRAVE_SEARCH_API_KEY,
                 "kagi_search_api_key": request.app.state.config.KAGI_SEARCH_API_KEY,
                 "mojeek_search_api_key": request.app.state.config.MOJEEK_SEARCH_API_KEY,
@@ -455,6 +458,8 @@ class WebSearchConfig(BaseModel):
     concurrent_requests: Optional[int] = None
     trust_env: Optional[bool] = None
     domain_filter_list: Optional[List[str]] = []
+    so_360_search_url: Optional[str] = None
+    so_360_api_key: Optional[str] = None
 
 
 class WebConfig(BaseModel):
@@ -541,6 +546,12 @@ async def update_rag_config(
         request.app.state.config.GOOGLE_PSE_ENGINE_ID = (
             form_data.web.search.google_pse_engine_id
         )
+        request.app.state.config.SO_360_SEARCH_URL = (
+            form_data.web.search.so_360_search_url
+        )
+        request.app.state.config.SO_360_API_KEY = (
+            form_data.web.search.so_360_api_key
+        )
         request.app.state.config.BRAVE_SEARCH_API_KEY = (
             form_data.web.search.brave_search_api_key
         )
@@ -624,6 +635,8 @@ async def update_rag_config(
                 "searxng_query_url": request.app.state.config.SEARXNG_QUERY_URL,
                 "google_pse_api_key": request.app.state.config.GOOGLE_PSE_API_KEY,
                 "google_pse_engine_id": request.app.state.config.GOOGLE_PSE_ENGINE_ID,
+                "so_360_search_url": request.app.state.config.SO_360_SEARCH_URL,
+                "so_360_api_key": request.app.state.config.SO_360_API_KEY,
                 "brave_search_api_key": request.app.state.config.BRAVE_SEARCH_API_KEY,
                 "kagi_search_api_key": request.app.state.config.KAGI_SEARCH_API_KEY,
                 "mojeek_search_api_key": request.app.state.config.MOJEEK_SEARCH_API_KEY,
@@ -1154,6 +1167,7 @@ def search_web(request: Request, engine: str, query: str) -> list[SearchResult]:
     Will look for a search engine API key in environment variables in the following order:
     - SEARXNG_QUERY_URL
     - GOOGLE_PSE_API_KEY + GOOGLE_PSE_ENGINE_ID
+    - SO_360_SEARCH_URL + SO_360_API_KEY
     - BRAVE_SEARCH_API_KEY
     - KAGI_SEARCH_API_KEY
     - MOJEEK_SEARCH_API_KEY
@@ -1195,6 +1209,22 @@ def search_web(request: Request, engine: str, query: str) -> list[SearchResult]:
         else:
             raise Exception(
                 "No GOOGLE_PSE_API_KEY or GOOGLE_PSE_ENGINE_ID found in environment variables"
+            )
+    elif engine == "360_so":
+        if (
+            request.app.state.config.SO_360_SEARCH_URL
+            and request.app.state.config.SO_360_API_KEY
+        ):
+            return search_360_so(
+                request.app.state.config.SO_360_SEARCH_URL,
+                request.app.state.config.SO_360_API_KEY,
+                query,
+                request.app.state.config.RAG_WEB_SEARCH_RESULT_COUNT,
+                request.app.state.config.RAG_WEB_SEARCH_DOMAIN_FILTER_LIST,
+            )
+        else:
+            raise Exception(
+                "No SO_360_SEARCH_URL or SO_360_API_KEY found in environment variables"
             )
     elif engine == "brave":
         if request.app.state.config.BRAVE_SEARCH_API_KEY:
