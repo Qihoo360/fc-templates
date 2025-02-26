@@ -56,7 +56,7 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: select
-difySandboxFunctionName:
+    difySandboxFunctionName:
       title: DifySandbox函数名
       type: string
       default: dify-sandbox-${default-suffix}
