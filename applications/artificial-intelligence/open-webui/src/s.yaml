@@ -20,7 +20,7 @@ resources:
       cpu: 8
       diskSize: 512
       timeout: 100
-      instanceConcurrency: 200
+      instanceConcurrency: 100
       port: 8080
       requestType: http
       runtimeType: customize
