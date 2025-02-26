@@ -28,3 +28,6 @@
 此时，使用浏览器或者 curl 工具， 就可以对触发器url进行请求。
 
 
+## 请求效果
+
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/casdoor/src/images/casdoor1.png?raw=true)
