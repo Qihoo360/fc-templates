@@ -41,8 +41,6 @@ Parameters:
         - test-6
         - beijing
       x-cate: resourceCate
-      x-reaction-properties:
-        - afunctionPolefsVolumn
       x-formitem:
         type: select
     functionName:

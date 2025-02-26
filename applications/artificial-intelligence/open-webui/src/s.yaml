@@ -5,6 +5,9 @@ vars:
   region: {{ region }}
   functionName: {{functionName}}
   description: {{description}}
+  polefsVolume: {{polefsVolume}}
+  mountDir: {{mountDir}}
+  polefsVolumeCreateUser: {{polefsVolumeCreateUser}}
 resources:
   open-webui-service:
     component: ${path('/utils/components/zfc')}
@@ -17,7 +20,7 @@ resources:
       cpu: 8
       diskSize: 512
       timeout: 100
-      instanceConcurrency: 200
+      instanceConcurrency: 100
       port: 8080
       requestType: http
       runtimeType: customize
@@ -52,3 +55,7 @@ resources:
               - PATCH
             disable_url_internet: true
             auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.polefsVolume}
+          mountDir: ${vars.mountDir}
+          createUserName: ${vars.polefsVolumeCreateUser}
