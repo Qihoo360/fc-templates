@@ -44,9 +44,9 @@ RUN echo "deb http://deb.debian.org/debian testing main" > /etc/apt/sources.list
     && rm -rf /var/lib/apt/lists/*
 
 # copy main binary to /main
-COPY --from=builder main /main
+COPY --from=builder /workspace/main /main
 # copy initial env
-COPY env /env
+COPY --from=builder /workspace/env /env
 
 # copy config file
 COPY conf/config.yaml /conf/config.yaml
