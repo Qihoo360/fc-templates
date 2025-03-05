@@ -9,8 +9,8 @@ RUN chmod -R 755 /app
 
 # 激活虚拟环境并安装依赖项
 RUN pip install --upgrade pip && pip install .
-RUN pip install flask-limiter gunicorn PyPDF2==3.0.0 camelot-py[cv] pandas openpyxl camelot-py[plot]
-RUN pip install --upgrade camelot-py[cv]
+RUN pip install flask-limiter gunicorn PyPDF2==3.0.0 camelot-py[all] pandas openpyxl
+RUN pip install --upgrade camelot-py[all]
 
 # 安装特定的依赖项
 RUN pip install configparser -U && pip install flask -U
