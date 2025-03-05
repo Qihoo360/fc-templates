@@ -1,0 +1,299 @@
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: dify-v3
+Provider:
+  - fc
+Version: 0.0.3
+Description: 本案例是将 dify，快速创建并部署到函数计算 FC 。
+HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/dify0132
+Organization: 函数计算（FC）
+Tags:
+  - AI
+  - Custom Runtime
+Category: Web框架
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - difySandboxFunctionName
+    - difyApiFunctionName
+    - difyWebFunctionName
+    - DifyCustomDomain
+    - DifyRedisPassword
+    - DifyRedisHost
+    - DifyRedisPort
+    - DifyRedisDataBase
+    - DifyRedisDataBaseCelery
+    - DifyDBSCHEME
+    - DifyDBPassword
+    - DifyDBHost
+    - DifyDBPort
+    - DifyDBDataBase
+    - DifyAwsS3Endpoint
+    - DifyAwsS3Bucket
+    - DifyAwsS3Region
+    - DifyAwsS3Ak
+    - DifyAwsS3Sk
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: test-3
+      description: 创建应用所在的地区
+      enum:
+        - test-2
+        - test-3
+        - test-4
+        - test-5
+        - test-6
+        - beijing
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+    difySandboxFunctionName:
+      title: DifySandbox函数名
+      type: string
+      default: dify-sandbox-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    difySandboxDescription:
+      title: DifySandbox描述
+      type: string
+      default: "Serverless dify sandbox"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    difyApiFunctionName:
+      title: DifyApi函数名
+      type: string
+      default: dify-api-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    difyApiDescription:
+      title: DifyApi描述
+      type: string
+      default: "Serverless dify api"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    difyWebFunctionName:
+      title: DifyWeb函数名
+      type: string
+      default: dify-web-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    difyWebDescription:
+      title: DifyWeb描述
+      type: string
+      default: "Serverless dify web"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    DifyCustomDomain:
+      title: DifyCustomDomain
+      type: string
+      default: ""
+      description: "dify custom domain Example: https://customdomain.com"
+      x-cate: applicationCate
+      x-label: Dify-Base
+      x-formitem:
+        type: input
+    DifyRedisUserName:
+      title: DifyRedisUserName
+      type: string
+      default: ""
+      description: dify redis username
+      x-cate: applicationCate
+      x-label: Dify-Redis
+      x-formitem:
+        type: input
+    DifyRedisPassword:
+      title: DifyRedisPassword
+      type: string
+      default: ""
+      description: dify redis password
+      x-cate: applicationCate
+      x-label: Dify-Redis
+      x-formitem:
+        type: input
+    DifyRedisHost:
+      title: DifyRedisHost
+      type: string
+      default: ""
+      description: dify redis host
+      x-cate: applicationCate
+      x-label: Dify-Redis
+      x-formitem:
+        type: input
+    DifyRedisPort:
+      title: DifyRedisPort
+      type: string
+      default: ""
+      description: dify redis port
+      x-cate: applicationCate
+      x-label: Dify-Redis
+      x-formitem:
+        type: input
+    DifyRedisDataBase:
+      title: DifyRedisDataBase
+      type: string
+      default: "0"
+      description: dify redis database
+      x-cate: applicationCate
+      x-label: Dify-Redis
+      x-formitem:
+        type: input
+    DifyRedisDataBaseCelery:
+      title: DifyRedisDataBaseCelery
+      type: string
+      default: "1"
+      description: dify redis database for celery
+      x-cate: applicationCate
+      x-label: Dify-Redis
+      x-formitem:
+        type: input
+    DifyDBSCHEME:
+      title: DifyDBSCHEME
+      type: string
+      default: "postgresql"
+      description: dify db scheme
+      x-cate: applicationCate
+      x-label: Dify-DB
+      x-formitem:
+        type: input
+    DifyDBUserName:
+      title: DifyDBUserName
+      type: string
+      default: ""
+      description: dify db username
+      x-cate: applicationCate
+      x-label: Dify-DB
+      x-formitem:
+        type: input
+    DifyDBPassword:
+      title: DifyDBPassword
+      type: string
+      default: ""
+      description: dify db password
+      x-cate: applicationCate
+      x-label: Dify-DB
+      x-formitem:
+        type: input
+    DifyDBHost:
+      title: DifyDBHost
+      type: string
+      default: ""
+      description: dify db host
+      x-cate: applicationCate
+      x-label: Dify-DB
+      x-formitem:
+        type: input
+    DifyDBPort:
+      title: DifyDBPort
+      type: string
+      default: ""
+      description: dify db port
+      x-cate: applicationCate
+      x-label: Dify-DB
+      x-formitem:
+        type: input
+    DifyDBDataBase:
+      title: DifyDBDataBase
+      type: string
+      default: ""
+      description: dify db database
+      x-cate: applicationCate
+      x-label: Dify-DB
+      x-formitem:
+        type: input
+    DifyAwsS3Endpoint:
+      title: DifyAwsS3Endpoint
+      type: string
+      default: ""
+      description: "aws endpoint Example: http://endpoint.net"
+      x-cate: applicationCate
+      x-label: Dify-AwsS3
+      x-formitem:
+        type: input
+    DifyAwsS3Bucket:
+      title: DifyAwsS3Bucket
+      type: string
+      default: bucket-dify-test
+      description: aws s3 bucket
+      x-cate: applicationCate
+      x-label: Dify-AwsS3
+      x-formitem:
+        type: input
+    DifyAwsS3Region:
+      title: DifyAwsS3Region
+      type: string
+      default: beijing2
+      description: aws s3 region
+      x-cate: applicationCate
+      x-label: Dify-AwsS3
+      x-formitem:
+        type: input
+    DifyAwsS3Ak:
+      title: DifyAwsS3Ak
+      type: string
+      default: ""
+      description: aws s3 access_key
+      x-cate: applicationCate
+      x-label: Dify-AwsS3
+      x-formitem:
+        type: input
+    DifyAwsS3Sk:
+      title: DifyAwsS3Sk
+      type: string
+      default: ""
+      description: aws s3 secret_key
+      x-cate: applicationCate
+      x-label: Dify-AwsS3
+      x-formitem:
+        type: input
+    DifyWeaviateEndpoint:
+      title: DifyWeaviateEndpoint
+      type: string
+      default: ""
+      description: dify weaviate endpoint
+      x-cate: applicationCate
+      x-label: Dify-Weaviate
+      x-formitem:
+        type: input
+    DifyWeaviateApiKey:
+      title: DifyWeaviateApiKey
+      type: string
+      default: ""
+      description: dify weaviate apikey
+      x-cate: applicationCate
+      x-label: Dify-Weaviate
+      x-formitem:
+        type: input
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
