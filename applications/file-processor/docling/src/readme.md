@@ -28,10 +28,6 @@ nas
 
 在控制台完成业务功能部署，完成会出现触发器url。 此时，使用浏览器或者 curl 工具， 就可以对触发器url进行请求。
 
-## NAS 配置
-
-我们为 docling 配置了专门的目录 /tmp/output ，只需将此目录挂载到 NAS 上，docling 就会将转换生成的文件保存到此目录
-
 ## 使用docling
 
 ![image-20241223221943174](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/docling/src/images/image-20241223221943174.png?raw=true)
@@ -40,7 +36,7 @@ nas
 
 ![image-20241223222200258](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/docling/src/images/image-20241223222200258.png?raw=true)
 
-* 在 from 文本框内输入上传的文件的类型， 在 to 文本框内输入转换后的文件类型。from 文本框为空时，则默认为自动检测输入文件类型； to 文本框为空时， 则默认转换为 markdown 文件
+* 在 from 下拉列表中选择上传的文件的类型， 在 to 下拉列表中选择转换后的文件类型。
 
 * 击 Submit 提交后即可开始文件转换，右侧 output 窗口内会显示进度：
 

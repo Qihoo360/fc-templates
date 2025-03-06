@@ -17,8 +17,8 @@ ENV TORCH_HOME=/tmp/
 
 # COPY docs/examples/minimal.py /root/docling/minimal.py
 
-RUN python -c 'from deepsearch_glm.utils.load_pretrained_models import load_pretrained_nlp_models; load_pretrained_nlp_models(verbose=True);'
-RUN python -c 'from docling.pipeline.standard_pdf_pipeline import StandardPdfPipeline; StandardPdfPipeline.download_models_hf(force=True);'
+# RUN SSL_CERT_DIR=/usr/local/share/ca-certificates SSL_CERT_FILE=/usr/local/share/ca-certificates/ca.crt CURL_CA_BUNDLE=/usr/local/share/ca-certificates/ca.crt PIP_CERT=/usr/local/share/ca-certificates/ca.crt docling-tools models download
+RUN docling-tools models download
 
 # On container environments, always set a thread budget to avoid undesired thread congestion.
 ENV OMP_NUM_THREADS=16
