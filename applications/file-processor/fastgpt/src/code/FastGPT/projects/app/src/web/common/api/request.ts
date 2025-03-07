@@ -9,6 +9,8 @@ import { TOKEN_ERROR_CODE } from '@fastgpt/global/common/error/errorCode';
 import { TeamErrEnum } from '@fastgpt/global/common/error/code/team';
 import { useSystemStore } from '../system/useSystemStore';
 import { getWebReqUrl } from '@fastgpt/web/common/system/utils';
+import { i18nT } from '@fastgpt/web/i18n/utils';
+import { getNanoid } from '@fastgpt/global/common/string/tools';
 
 interface ConfigType {
   headers?: { [key: string]: string };
@@ -26,41 +28,48 @@ interface ResponseDataType {
 
 const maxQuantityMap: Record<
   string,
-  {
-    amount: number;
-    sign: AbortController;
-  }
+  | undefined
+  | {
+      id: string;
+      sign: AbortController;
+    }[]
 > = {};
 
+/* 
+  Every request generates a unique sign
+  If the number of requests exceeds maxQuantity, cancel the earliest request and initiate a new request
+*/
 function checkMaxQuantity({ url, maxQuantity }: { url: string; maxQuantity?: number }) {
-  if (maxQuantity) {
-    const item = maxQuantityMap[url];
-    const controller = new AbortController();
+  if (!maxQuantity) return {};
+  const item = maxQuantityMap[url];
+  const id = getNanoid();
+  const sign = new AbortController();
 
-    if (item) {
-      if (item.amount >= maxQuantity) {
-        item.sign?.abort?.();
-        maxQuantityMap[url] = {
-          amount: 1,
-          sign: controller
-        };
-      } else {
-        item.amount++;
-      }
-    } else {
-      maxQuantityMap[url] = {
-        amount: 1,
-        sign: controller
-      };
+  if (item && item.length > 0) {
+    if (item.length >= maxQuantity) {
+      const firstSign = item.shift();
+      firstSign?.sign.abort();
     }
-    return controller;
+    item.push({ id, sign });
+  } else {
+    maxQuantityMap[url] = [{ id, sign }];
   }
+  return {
+    id,
+    abortSignal: sign?.signal
+  };
 }
-function requestFinish({ url }: { url: string }) {
+
+function requestFinish({ signId, url }: { signId?: string; url: string }) {
   const item = maxQuantityMap[url];
   if (item) {
-    item.amount--;
-    if (item.amount <= 0) {
+    if (signId) {
+      const index = item.findIndex((item) => item.id === signId);
+      if (index !== -1) {
+        item.splice(index, 1);
+      }
+    }
+    if (item.length <= 0) {
       delete maxQuantityMap[url];
     }
   }
@@ -100,6 +109,7 @@ function checkRes(data: ResponseDataType) {
  */
 function responseError(err: any) {
   console.log('error->', '请求错误', err);
+  const data = err?.response?.data || err;
 
   if (!err) {
     return Promise.reject({ message: '未知错误' });
@@ -107,28 +117,34 @@ function responseError(err: any) {
   if (typeof err === 'string') {
     return Promise.reject({ message: err });
   }
-  // 有报错响应
-  if (err?.code in TOKEN_ERROR_CODE) {
-    clearToken();
+  if (typeof data === 'string') {
+    return Promise.reject(data);
+  }
 
-    if (
-      !(window.location.pathname === '/chat/share' || window.location.pathname === '/chat/team')
-    ) {
+  // 有报错响应
+  if (data?.code in TOKEN_ERROR_CODE) {
+    if (!['/chat/share', '/chat/team', '/login'].includes(window.location.pathname)) {
+      clearToken();
       window.location.replace(
         getWebReqUrl(`/login?lastRoute=${encodeURIComponent(location.pathname + location.search)}`)
       );
     }
 
-    return Promise.reject({ message: '无权操作' });
+    return Promise.reject({ message: i18nT('common:unauth_token') });
   }
-  if (err?.statusText === TeamErrEnum.aiPointsNotEnough) {
-    useSystemStore.getState().setIsNotSufficientModal(true);
-    return Promise.reject(err);
+  if (
+    data?.statusText === TeamErrEnum.aiPointsNotEnough ||
+    data?.statusText === TeamErrEnum.datasetSizeNotEnough ||
+    data?.statusText === TeamErrEnum.datasetAmountNotEnough ||
+    data?.statusText === TeamErrEnum.appAmountNotEnough ||
+    data?.statusText === TeamErrEnum.pluginAmountNotEnough ||
+    data?.statusText === TeamErrEnum.websiteSyncNotEnough ||
+    data?.statusText === TeamErrEnum.reRankNotEnough
+  ) {
+    useSystemStore.getState().setNotSufficientModalType(data.statusText);
+    return Promise.reject(data);
   }
-  if (err?.response?.data) {
-    return Promise.reject(err?.response?.data);
-  }
-  return Promise.reject(err);
+  return Promise.reject(data);
 }
 
 /* 创建请求实例 */
@@ -157,22 +173,22 @@ function request(
     }
   }
 
-  const controller = checkMaxQuantity({ url, maxQuantity });
+  const { id: signId, abortSignal } = checkMaxQuantity({ url, maxQuantity });
 
   return instance
     .request({
       baseURL: getWebReqUrl('/api'),
       url,
       method,
-      data: ['POST', 'PUT'].includes(method) ? data : null,
-      params: !['POST', 'PUT'].includes(method) ? data : null,
-      signal: cancelToken?.signal ?? controller?.signal,
+      data: ['POST', 'PUT'].includes(method) ? data : undefined,
+      params: !['POST', 'PUT'].includes(method) ? data : undefined,
+      signal: cancelToken?.signal ?? abortSignal,
       withCredentials,
       ...config // 用户自定义配置，可以覆盖前面的配置
     })
     .then((res) => checkRes(res.data))
     .catch((err) => responseError(err))
-    .finally(() => requestFinish({ url }));
+    .finally(() => requestFinish({ signId, url }));
 }
 
 /**

@@ -9,3 +9,7 @@ weight: 918
 ## oneapi 官网是哪个
 
 只有开源的 README，没官网，GitHub: https://github.com/songquanpeng/one-api
+
+## 想做多用户
+
+开源版未支持多用户，仅商业版支持。

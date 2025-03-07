@@ -10,7 +10,7 @@ import { AdminFbkType } from '@fastgpt/global/core/chat/type.d';
 import SelectCollections from '@/web/core/dataset/components/SelectCollections';
 import EmptyTip from '@fastgpt/web/components/common/EmptyTip';
 
-const InputDataModal = dynamic(() => import('@/pages/dataset/detail/components/InputDataModal'));
+const InputDataModal = dynamic(() => import('@/pageComponents/dataset/detail/InputDataModal'));
 
 export type AdminMarkType = {
   feedbackDataId?: string;
@@ -76,10 +76,8 @@ const SelectMarkCollection = ({
                       }}
                     >
                       <Flex alignItems={'center'} h={'38px'}>
-                        <Avatar src={item.avatar} w={['24px', '28px', '32px']}></Avatar>
-                        <Box ml={3} fontWeight={'bold'} fontSize={['md', 'lg']}>
-                          {item.name}
-                        </Box>
+                        <Avatar src={item.avatar} w={'2rem'} borderRadius={'sm'}></Avatar>
+                        <Box ml={3}>{item.name}</Box>
                       </Flex>
                       <Flex justifyContent={'flex-end'} alignItems={'center'} fontSize={'sm'}>
                         <MyIcon mr={1} name="kbTest" w={'12px'} />

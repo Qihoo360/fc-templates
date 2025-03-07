@@ -15,7 +15,7 @@ import FilesBlock from './FilesBox';
 import { ChatBoxContext } from '../Provider';
 import { useContextSelector } from 'use-context-selector';
 import AIResponseBox from '../../../components/AIResponseBox';
-import { useCopyData } from '@/web/common/hooks/useCopyData';
+import { useCopyData } from '@fastgpt/web/hooks/useCopyData';
 import MyIcon from '@fastgpt/web/components/common/Icon';
 import MyTooltip from '@fastgpt/web/components/common/MyTooltip';
 import { useTranslation } from 'next-i18next';
@@ -25,6 +25,7 @@ import { isEqual } from 'lodash';
 import { useSystem } from '@fastgpt/web/hooks/useSystem';
 import { formatTimeToChatItemTime } from '@fastgpt/global/common/string/time';
 import dayjs from 'dayjs';
+import { ChatItemContext } from '@/web/core/chat/context/chatItemContext';
 
 const colorMap = {
   [ChatStatusEnum.loading]: {
@@ -139,7 +140,7 @@ const ChatItem = (props: Props) => {
 
   const isChatting = useContextSelector(ChatBoxContext, (v) => v.isChatting);
   const chatType = useContextSelector(ChatBoxContext, (v) => v.chatType);
-  const showNodeStatus = useContextSelector(ChatBoxContext, (v) => v.showNodeStatus);
+  const showNodeStatus = useContextSelector(ChatItemContext, (v) => v.showNodeStatus);
   const isChatLog = chatType === 'log';
 
   const { copyData } = useCopyData();
@@ -216,7 +217,7 @@ const ChatItem = (props: Props) => {
       }}
     >
       {/* control icon */}
-      <Flex w={'100%'} alignItems={'flex-end'} gap={2} justifyContent={styleMap.justifyContent}>
+      <Flex w={'100%'} alignItems={'center'} gap={2} justifyContent={styleMap.justifyContent}>
         {isChatting && type === ChatRoleEnum.AI && isLastChild ? null : (
           <Flex order={styleMap.order} ml={styleMap.ml} align={'center'} gap={'0.62rem'}>
             {chat.time && (isPc || isChatLog) && (

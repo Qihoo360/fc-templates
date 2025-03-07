@@ -31,17 +31,6 @@ curl --location --request POST 'http://localhost:3000/api/support/wallet/usage/c
 }'
 ```
 
-**x例子**
-
-```bash
-curl --location --request POST 'http://localhost:3000/api/support/wallet/bill/createTrainingBill' \
---header 'Authorization: Bearer {{apikey}}' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "name": "可选，自定义订单名称，例如：文档训练-fastgpt.docx"
-}'
-```
-
 {{< /markdownify >}}
 {{< /tab >}}
 
@@ -308,7 +297,9 @@ curl --location --request DELETE 'http://localhost:3000/api/core/dataset/delete?
 | --- | --- | --- |
 | datasetId | 知识库ID | ✅ |
 | parentId： | 父级ID，不填则默认为根目录 |  |
-| trainingType | 训练模式。chunk: 按文本长度进行分割;qa: QA拆分;auto: 增强训练 | ✅ |
+| trainingType | 数据处理方式。chunk: 按文本长度进行分割;qa: 问答对提取 | ✅ |
+| autoIndexes | 是否自动生成索引(仅商业版支持) |  |
+| imageIndex | 是否自动生成图片索引(仅商业版支持) |  |
 | chunkSize | 预估块大小 |  |
 | chunkSplitter | 自定义最高优先分割符号 |  |
 | qaPrompt | qa拆分提示词 |  |
@@ -418,9 +409,7 @@ curl --location --request POST 'http://localhost:3000/api/core/dataset/collectio
 - parentId： 父级ID，不填则默认为根目录
 - name: 集合名称（必填）
 - metadata： 元数据（暂时没啥用）
-- trainingType:（必填）
-  - chunk: 按文本长度进行分割
-  - qa: QA拆分
+- trainingType: 训练模式（必填）
 - chunkSize: 每个 chunk 的长度（可选）. chunk模式:100~3000; qa模式: 4000~模型最大token（16k模型通常建议不超过10000）
 - chunkSplitter: 自定义最高优先分割符号（可选）
 - qaPrompt: qa拆分自定义提示词（可选）
@@ -494,9 +483,7 @@ curl --location --request POST 'http://localhost:3000/api/core/dataset/collectio
 - datasetId: 知识库的ID(必填)
 - parentId： 父级ID，不填则默认为根目录
 - metadata.webPageSelector: 网页选择器，用于指定网页中的哪个元素作为文本(可选)
-- trainingType:（必填）
-  - chunk: 按文本长度进行分割
-  - qa: QA拆分
+- trainingType:训练模式（必填）
 - chunkSize: 每个 chunk 的长度（可选）. chunk模式:100~3000; qa模式: 4000~模型最大token（16k模型通常建议不超过10000）
 - chunkSplitter: 自定义最高优先分割符号（可选）
 - qaPrompt: qa拆分自定义提示词（可选）
@@ -516,7 +503,13 @@ data 为集合的 ID。
     "statusText": "",
     "message": "",
     "data": {
-        "collectionId": "65abd0ad9d1448617cba6031"
+        "collectionId": "65abd0ad9d1448617cba6031",
+        "results": {
+            "insertLen": 1,
+            "overToken": [],
+            "repeat": [],
+            "error": []
+        }
     }
 }
 ```
@@ -555,12 +548,86 @@ curl --location --request POST 'http://localhost:3000/api/core/dataset/collectio
 - data: 知识库相关信息（json序列化后传入）
   - datasetId: 知识库的ID(必填)
   - parentId： 父级ID，不填则默认为根目录
-  - trainingType:（必填）
-    - chunk: 按文本长度进行分割
-    - qa: QA拆分
+  - trainingType:训练模式（必填）
   - chunkSize: 每个 chunk 的长度（可选）. chunk模式:100~3000; qa模式: 4000~模型最大token（16k模型通常建议不超过10000）
   - chunkSplitter: 自定义最高优先分割符号（可选）
   - qaPrompt: qa拆分自定义提示词（可选）
+{{% /alert %}}
+
+{{< /markdownify >}}
+{{< /tab >}}
+
+{{< tab tabName="响应示例" >}}
+{{< markdownify >}}
+
+data 为集合的 ID。
+
+```json
+{
+    "code": 200,
+    "statusText": "",
+    "message": "",
+    "data": {
+        "collectionId": "65abc044e4704bac793fbd81",
+        "results": {
+            "insertLen": 1,
+            "overToken": [],
+            "repeat": [],
+            "error": []
+        }
+    }
+}
+```
+
+{{< /markdownify >}}
+{{< /tab >}}
+{{< /tabs >}}
+
+### 创建一个API集合
+
+传入一个文件的 id，创建一个集合，会读取文件内容进行分割。目前支持：pdf, docx, md, txt, html, csv。
+
+{{< tabs tabTotal="3" >}}
+{{< tab tabName="请求示例" >}}
+{{< markdownify >}}
+
+使用代码上传时，请注意中文 filename 需要进行 encode 处理，否则容易乱码。
+
+```bash
+curl --location --request POST 'http://localhost:3000/api/core/dataset/collection/create/apiCollection' \
+--header 'Authorization: Bearer fastgpt-xxx' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "A Quick Guide to Building a Discord Bot.pdf",
+    "apiFileId":"A Quick Guide to Building a Discord Bot.pdf",
+
+    "datasetId": "674e9e479c3503c385495027",
+    "parentId": null,
+
+    "trainingType": "chunk",
+    "chunkSize":512,
+    "chunkSplitter":"",
+    "qaPrompt":""
+}'
+```
+
+{{< /markdownify >}}
+{{< /tab >}}
+
+{{< tab tabName="参数说明" >}}
+{{< markdownify >}}
+
+需要使用 POST form-data 的格式上传。包含 file 和 data 两个字段。
+
+{{% alert icon=" " context="success" %}}
+- name: 集合名，建议就用文件名，必填。
+- apiFileId: 文件的ID，必填。
+- datasetId: 知识库的ID(必填)
+- parentId： 父级ID，不填则默认为根目录
+- trainingType:训练模式（必填）
+- chunkSize: 每个 chunk 的长度（可选）. chunk模式:100~3000; qa模式: 4000~模型最大token（16k模型通常建议不超过10000）
+- chunkSplitter: 自定义最高优先分割符号（可选）
+- qaPrompt: qa拆分自定义提示词（可选）
 {{% /alert %}}
 
 {{< /markdownify >}}
@@ -648,7 +715,12 @@ data 为集合的 ID。
   "message": "",
   "data": {
     "collectionId": "6646fcedfabd823cdc6de746",
-    "insertLen": 3
+    "results": {
+        "insertLen": 1,
+        "overToken": [],
+        "repeat": [],
+        "error": []
+    }
   }
 }
 ```
@@ -663,6 +735,21 @@ data 为集合的 ID。
 {{< tab tabName="请求示例" >}}
 {{< markdownify >}}
 
+**4.8.19+**
+```bash
+curl --location --request POST 'http://localhost:3000/api/core/dataset/collection/listV2' \
+--header 'Authorization: Bearer {{authorization}}' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "offset":0,
+    "pageSize": 10,
+    "datasetId":"6593e137231a2be9c5603ba7",
+    "parentId": null,
+    "searchText":""
+}'
+```
+
+**4.8.19-(不再维护)**
 ```bash
 curl --location --request POST 'http://localhost:3000/api/core/dataset/collection/list' \
 --header 'Authorization: Bearer {{authorization}}' \
@@ -683,7 +770,7 @@ curl --location --request POST 'http://localhost:3000/api/core/dataset/collectio
 {{< markdownify >}}
 
 {{% alert icon=" " context="success" %}}
-- pageNum: 页码（选填）
+- offset: 偏移量
 - pageSize: 每页数量，最大30（选填）
 - datasetId: 知识库的ID(必填)
 - parentId: 父级Id（选填）
@@ -703,9 +790,7 @@ curl --location --request POST 'http://localhost:3000/api/core/dataset/collectio
     "statusText": "",
     "message": "",
     "data": {
-        "pageNum": 1,
-        "pageSize": 10,
-        "data": [
+        "list": [
             {
                 "_id": "6593e137231a2be9c5603ba9",
                 "parentId": null,
@@ -978,9 +1063,11 @@ curl --location --request DELETE 'http://localhost:3000/api/core/dataset/collect
 
 | 字段 | 类型 | 说明 | 必填 |
 | --- | --- | --- | --- |
-| defaultIndex | Boolean | 是否为默认索引 | ✅ |
-| dataId | String | 关联的向量ID | ✅ |
+| type | String | 可选索引类型：default-默认索引; custom-自定义索引; summary-总结索引; question-问题索引; image-图片索引 | |
+| dataId | String | 关联的向量ID，变更数据时候传入该 ID，会进行差量更新，而不是全量更新 |  |
 | text | String | 文本内容 | ✅ |
+
+`type` 不填则默认为 `custom` 索引，还会基于 q/a 组成一个默认索引。如果传入了默认索引，则不会额外创建。
 
 ### 为集合批量添加添加数据
 
@@ -996,7 +1083,7 @@ curl --location --request POST 'https://api.fastgpt.in/api/core/dataset/data/pus
 --header 'Content-Type: application/json' \
 --data-raw '{
     "collectionId": "64663f451ba1676dbdef0499",
-    "trainingMode": "chunk",
+    "trainingType": "chunk",
     "prompt": "可选。qa 拆分引导词，chunk 模式下忽略",
     "billId": "可选。如果有这个值，本次的数据会被聚合到一个订单中，这个值可以重复使用。可以参考 [创建训练订单] 获取该值。",
     "data": [
@@ -1028,9 +1115,7 @@ curl --location --request POST 'https://api.fastgpt.in/api/core/dataset/data/pus
 
 {{% alert icon=" " context="success" %}}
 - collectionId: 集合ID（必填）
-- trainingType:（必填）
-  - chunk: 按文本长度进行分割
-  - qa: QA拆分
+- trainingType:训练模式（必填）
 - prompt: 自定义 QA 拆分提示词，需严格按照模板，建议不要传入。（选填）
 - data：（具体数据）
   - q: 主要数据（必填）
@@ -1107,7 +1192,7 @@ curl --location --request POST 'http://localhost:3000/api/core/dataset/data/v2/l
 }'
 ```
 
-**4.6.7+**
+**4.6.7-(即将弃用)**
 
 ```bash
 curl --location --request POST 'http://localhost:3000/api/core/dataset/data/list' \
@@ -1129,8 +1214,7 @@ curl --location --request POST 'http://localhost:3000/api/core/dataset/data/list
 
 {{% alert icon=" " context="success" %}}
 
-- pageNum: 偏移量（选填）
-- pageNum: 页码（选填）
+- offset: 偏移量（选填）
 - pageSize: 每页数量，最大30（选填）
 - collectionId: 集合的ID（必填）
 - searchText: 模糊搜索词（选填）
@@ -1150,9 +1234,7 @@ curl --location --request POST 'http://localhost:3000/api/core/dataset/data/list
     "statusText": "",
     "message": "",
     "data": {
-        "pageNum": 1,
-        "pageSize": 10,
-        "data": [
+        "list": [
             {
                 "_id": "65abd4b29d1448617cba61db",
                 "datasetId": "65abc9bd9d1448617cba5e6c",
@@ -1218,8 +1300,7 @@ curl --location --request GET 'http://localhost:3000/api/core/dataset/data/detai
         "chunkIndex": 0,
         "indexes": [
             {
-                "defaultIndex": true,
-                "type": "chunk",
+                "type": "default",
                 "dataId": "3720083",
                 "text": "N o . 2 0 2 2 1 2中 国 信 息 通 信 研 究 院京东探索研究院2022年 9月人工智能生成内容（AIGC）白皮书(2022 年)版权声明本白皮书版权属于中国信息通信研究院和京东探索研究院，并受法律保护。转载、摘编或利用其它方式使用本白皮书文字或者观点的，应注明“来源：中国信息通信研究院和京东探索研究院”。违反上述声明者，编者将追究其相关法律责任。前 言习近平总书记曾指出，“数字技术正以新理念、新业态、新模式全面融入人类经济、政治、文化、社会、生态文明建设各领域和全过程”。在当前数字世界和物理世界加速融合的大背景下，人工智能生成内容（Artificial Intelligence Generated Content，简称 AIGC）正在悄然引导着一场深刻的变革，重塑甚至颠覆数字内容的生产方式和消费模式，将极大地丰富人们的数字生活，是未来全面迈向数字文明新时代不可或缺的支撑力量。",
                 "_id": "65abd4b29d1448617cba61dc"
@@ -1255,12 +1336,18 @@ curl --location --request PUT 'http://localhost:3000/api/core/dataset/data/updat
     "a":"sss",
     "indexes":[
         {
-            "dataId": "xxx",
-            "defaultIndex":false,
-            "text":"自定义索引1"
+            "dataId": "xxxx",
+            "type": "default",
+            "text": "默认索引"
         },
         {
-            "text":"修改后的自定义索引2。（会删除原来的自定义索引2，并插入新的自定义索引2）"
+            "dataId": "xxx",
+            "type": "custom",
+            "text": "旧的自定义索引1"
+        },
+        {
+            "type":"custom",
+            "text":"新增的自定义索引"
         }
     ]
 }'
@@ -1356,7 +1443,11 @@ curl --location --request POST 'https://api.fastgpt.in/api/core/dataset/searchTe
     "limit": 5000,
     "similarity": 0,
     "searchMode": "embedding",
-    "usingReRank": false
+    "usingReRank": false,
+
+    "datasetSearchUsingExtensionQuery": true,
+    "datasetSearchExtensionModel": "gpt-4o-mini",
+    "datasetSearchExtensionBg": ""
 }'
 ```
 
@@ -1373,6 +1464,9 @@ curl --location --request POST 'https://api.fastgpt.in/api/core/dataset/searchTe
 - similarity - 最低相关度（0~1，可选）
 - searchMode - 搜索模式：embedding | fullTextRecall | mixedRecall
 - usingReRank - 使用重排
+- datasetSearchUsingExtensionQuery - 使用问题优化
+- datasetSearchExtensionModel - 问题优化模型
+- datasetSearchExtensionBg - 问题优化背景描述
 {{% /alert %}}
 
 {{< /markdownify >}}

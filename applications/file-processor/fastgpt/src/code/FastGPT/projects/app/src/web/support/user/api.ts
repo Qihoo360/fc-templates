@@ -7,9 +7,13 @@ import { UserType } from '@fastgpt/global/support/user/type.d';
 import type {
   FastLoginProps,
   OauthLoginProps,
-  PostLoginProps
+  PostLoginProps,
+  SearchResult
 } from '@fastgpt/global/support/user/api.d';
-import { GetWXLoginQRResponse } from '@fastgpt/global/support/user/login/api.d';
+import {
+  AccountRegisterBody,
+  GetWXLoginQRResponse
+} from '@fastgpt/global/support/user/login/api.d';
 
 export const sendAuthCode = (data: {
   username: string;
@@ -33,16 +37,7 @@ export const postRegister = ({
   inviterId,
   bd_vid,
   fastgpt_sem
-}: {
-  username: string;
-  code: string;
-  password: string;
-  inviterId?: string;
-  bd_vid?: string;
-  fastgpt_sem?: {
-    keyword: string;
-  };
-}) =>
+}: AccountRegisterBody) =>
   POST<ResLogin>(`/proApi/support/user/account/register/emailAndPhone`, {
     username,
     code,
@@ -76,6 +71,10 @@ export const updatePasswordByOld = ({ oldPsw, newPsw }: { oldPsw: string; newPsw
 export const updateNotificationAccount = (data: { account: string; verifyCode: string }) =>
   PUT('/proApi/support/user/team/updateNotificationAccount', data);
 
+export const updateContact = (data: { contact: string; verifyCode: string }) => {
+  return PUT('/proApi/support/user/account/updateContact', data);
+};
+
 export const postLogin = ({ password, ...props }: PostLoginProps) =>
   POST<ResLogin>('/support/user/account/loginByPassword', {
     ...props,
@@ -96,3 +95,16 @@ export const getCaptchaPic = (username: string) =>
   GET<{
     captchaImage: string;
   }>('/proApi/support/user/account/captcha/getImgCaptcha', { username });
+
+export const postSyncMembers = () => POST('/proApi/support/user/team/org/sync');
+
+export const GetSearchUserGroupOrg = (
+  searchKey: string,
+  options?: {
+    members?: boolean;
+    orgs?: boolean;
+    groups?: boolean;
+  }
+) => GET<SearchResult>('/proApi/support/user/search', { searchKey, ...options });
+
+export const ExportMembers = () => GET<{ csv: string }>('/proApi/support/user/team/member/export');

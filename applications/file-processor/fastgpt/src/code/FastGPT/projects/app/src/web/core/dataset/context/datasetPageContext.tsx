@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Dispatch, ReactNode, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Dispatch, ReactNode, SetStateAction, useMemo, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { createContext } from 'use-context-selector';
 import {
@@ -18,6 +18,7 @@ import { DatasetItemType, DatasetTagType } from '@fastgpt/global/core/dataset/ty
 import { useSystemStore } from '@/web/common/system/useSystemStore';
 import { ParentTreePathItemType } from '@fastgpt/global/common/parentFolder/type';
 import { useRequest2 } from '@fastgpt/web/hooks/useRequest';
+import { getWebLLMModel } from '@/web/common/system/utils';
 
 type DatasetPageContextType = {
   datasetId: string;
@@ -115,7 +116,28 @@ export const DatasetPageContextProvider = ({
     if (datasetId === data.id) {
       setDatasetDetail((state) => ({
         ...state,
-        ...data
+        ...data,
+        agentModel: getWebLLMModel(data.agentModel),
+        vlmModel: getWebLLMModel(data.vlmModel),
+        apiServer: data.apiServer
+          ? {
+              baseUrl: data.apiServer.baseUrl,
+              authorization: ''
+            }
+          : undefined,
+        yuqueServer: data.yuqueServer
+          ? {
+              userId: data.yuqueServer.userId,
+              token: ''
+            }
+          : undefined,
+        feishuServer: data.feishuServer
+          ? {
+              appId: data.feishuServer.appId,
+              appSecret: '',
+              folderToken: data.feishuServer.folderToken
+            }
+          : undefined
       }));
     }
   };

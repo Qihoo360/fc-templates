@@ -22,7 +22,6 @@ export const dispatchLoop = async (props: Props): Promise<Response> => {
     params,
     runtimeEdges,
     runtimeNodes,
-    user,
     node: { name }
   } = props;
   const { loopInputArray = [], childrenNodeIdList = [] } = params;
@@ -63,6 +62,7 @@ export const dispatchLoop = async (props: Props): Promise<Response> => {
 
     const response = await dispatchWorkFlow({
       ...props,
+      variables: newVariables,
       runtimeEdges: cloneDeep(runtimeEdges)
     });
 
@@ -86,14 +86,14 @@ export const dispatchLoop = async (props: Props): Promise<Response> => {
   return {
     [DispatchNodeResponseKeyEnum.assistantResponses]: assistantResponses,
     [DispatchNodeResponseKeyEnum.nodeResponse]: {
-      totalPoints: totalPoints,
+      totalPoints,
       loopInput: loopInputArray,
       loopResult: outputValueArr,
       loopDetail: loopDetail
     },
     [DispatchNodeResponseKeyEnum.nodeDispatchUsages]: [
       {
-        totalPoints: user.openaiAccount?.key ? 0 : totalPoints,
+        totalPoints,
         moduleName: name
       }
     ],

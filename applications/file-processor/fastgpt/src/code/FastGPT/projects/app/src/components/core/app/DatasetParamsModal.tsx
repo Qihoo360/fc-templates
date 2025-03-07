@@ -8,11 +8,9 @@ import {
   ModalBody,
   ModalFooter,
   Switch,
-  Textarea,
   useTheme
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
-import MySlider from '@/components/Slider';
 import MyModal from '@fastgpt/web/components/common/MyModal';
 import { DatasetSearchModeEnum } from '@fastgpt/global/core/dataset/constants';
 import { useTranslation } from 'next-i18next';
@@ -29,6 +27,8 @@ import SelectAiModel from '@/components/Select/AIModelSelector';
 import QuestionTip from '@fastgpt/web/components/common/MyTooltip/QuestionTip';
 import FormLabel from '@fastgpt/web/components/common/MyBox/FormLabel';
 import MyTextarea from '@/components/common/Textarea/MyTextarea';
+import { defaultDatasetMaxTokens } from '@fastgpt/global/core/app/constants';
+import InputSlider from '@fastgpt/web/components/common/MySlider/InputSlider';
 
 export type DatasetParamsProps = {
   searchMode: `${DatasetSearchModeEnum}`;
@@ -52,7 +52,7 @@ const DatasetParamsModal = ({
   limit,
   similarity,
   usingReRank,
-  maxTokens = 3000,
+  maxTokens = defaultDatasetMaxTokens,
   datasetSearchUsingExtensionQuery,
   datasetSearchExtensionModel,
   datasetSearchExtensionBg,
@@ -63,17 +63,15 @@ const DatasetParamsModal = ({
   const theme = useTheme();
   const { toast } = useToast();
   const { teamPlanStatus } = useUserStore();
-  const { reRankModelList, llmModelList } = useSystemStore();
+  const { reRankModelList, llmModelList, defaultModels } = useSystemStore();
   const [refresh, setRefresh] = useState(false);
   const [currentTabType, setCurrentTabType] = useState(SearchSettingTabEnum.searchMode);
 
   const chatModelSelectList = (() =>
-    llmModelList
-      .filter((model) => model.usedInQueryExtension)
-      .map((item) => ({
-        value: item.model,
-        label: item.name
-      })))();
+    llmModelList.map((item) => ({
+      value: item.model,
+      label: item.name
+    })))();
 
   const { register, setValue, getValues, handleSubmit, watch } = useForm<DatasetParamsProps>({
     defaultValues: {
@@ -82,7 +80,7 @@ const DatasetParamsModal = ({
       searchMode,
       usingReRank: !!usingReRank && teamPlanStatus?.standardConstants?.permissionReRank !== false,
       datasetSearchUsingExtensionQuery,
-      datasetSearchExtensionModel: datasetSearchExtensionModel || chatModelSelectList[0]?.value,
+      datasetSearchExtensionModel: datasetSearchExtensionModel || defaultModels.llm?.model,
       datasetSearchExtensionBg
     }
   });
@@ -110,12 +108,23 @@ const DatasetParamsModal = ({
 
   useEffect(() => {
     if (datasetSearchUsingCfrForm) {
-      !queryExtensionModel &&
-        setValue('datasetSearchExtensionModel', chatModelSelectList[0]?.value);
+      !queryExtensionModel && setValue('datasetSearchExtensionModel', defaultModels.llm?.model);
     } else {
       setValue('datasetSearchExtensionModel', '');
     }
-  }, [chatModelSelectList, datasetSearchUsingCfrForm, queryExtensionModel, setValue]);
+  }, [
+    chatModelSelectList,
+    datasetSearchUsingCfrForm,
+    defaultModels.llm?.model,
+    queryExtensionModel,
+    setValue
+  ]);
+
+  // 保证只有 80 左右个刻度。
+  const maxTokenStep = useMemo(() => {
+    if (maxTokens < 8000) return 80;
+    return Math.ceil(maxTokens / 80 / 100) * 100;
+  }, [maxTokens]);
 
   return (
     <MyModal
@@ -206,12 +215,7 @@ const DatasetParamsModal = ({
                   </Box>
                 </Box>
                 <Box position={'relative'} w={'18px'} h={'18px'}>
-                  <Checkbox
-                    colorScheme="primary"
-                    isChecked={getValues('usingReRank')}
-                    size="lg"
-                    icon={<MyIcon name={'common/check'} w={'12px'} />}
-                  />
+                  <Checkbox colorScheme="primary" isChecked={getValues('usingReRank')} size="lg" />
                   <Box position={'absolute'} top={0} right={0} bottom={0} left={0} zIndex={1}></Box>
                 </Box>
               </Flex>
@@ -222,22 +226,15 @@ const DatasetParamsModal = ({
           <Box pt={5}>
             {limit !== undefined && (
               <Box display={['block', 'flex']}>
-                <Flex flex={'0 0 120px'} mb={[8, 0]}>
-                  <FormLabel>{t('common:core.dataset.search.Max Tokens')}</FormLabel>
-                  <QuestionTip
-                    ml={1}
-                    label={t('common:core.dataset.search.Max Tokens Tips')}
-                  ></QuestionTip>
+                <Flex flex={'0 0 120px'} alignItems={'center'} mb={[5, 0]}>
+                  <FormLabel>{t('common:max_quote_tokens')}</FormLabel>
+                  <QuestionTip label={t('common:max_quote_tokens_tips')} />
                 </Flex>
-                <Box flex={1} mx={4}>
-                  <MySlider
-                    markList={[
-                      { label: '100', value: 100 },
-                      { label: maxTokens, value: maxTokens }
-                    ]}
+                <Box flex={'1 0 0'}>
+                  <InputSlider
                     min={100}
                     max={maxTokens}
-                    step={50}
+                    step={maxTokenStep}
                     value={getValues(NodeInputKeyEnum.datasetMaxTokens) ?? 1000}
                     onChange={(val) => {
                       setValue(NodeInputKeyEnum.datasetMaxTokens, val);
@@ -247,21 +244,14 @@ const DatasetParamsModal = ({
                 </Box>
               </Box>
             )}
-            <Box display={['block', 'flex']} mt={10}>
-              <Flex flex={'0 0 120px'} mb={[8, 0]}>
-                <FormLabel>{t('common:core.dataset.search.Min Similarity')}</FormLabel>
-                <QuestionTip
-                  ml={1}
-                  label={t('common:core.dataset.search.Min Similarity Tips')}
-                ></QuestionTip>
+            <Box display={['block', 'flex']} mt={[6, 10]} mb={4}>
+              <Flex flex={'0 0 120px'} alignItems={'center'} mb={[5, 0]}>
+                <FormLabel>{t('common:min_similarity')}</FormLabel>
+                <QuestionTip label={t('common:min_similarity_tip')} />
               </Flex>
-              <Box flex={1} mx={4}>
+              <Box flex={'1 0 0'}>
                 {showSimilarity ? (
-                  <MySlider
-                    markList={[
-                      { label: '0', value: 0 },
-                      { label: '1', value: 1 }
-                    ]}
+                  <InputSlider
                     min={0}
                     max={1}
                     step={0.01}

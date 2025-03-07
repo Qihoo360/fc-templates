@@ -1,6 +1,6 @@
 import '@/pages/api/__mocks__/base';
 import { root } from '@/pages/api/__mocks__/db/init';
-import { getTestRequest } from '@/test/utils';
+import { getTestRequest } from '@fastgpt/service/test/utils';
 import handler from './publish';
 import { MongoAppVersion } from '@fastgpt/service/core/app/version/schema';
 import { PostPublishAppProps } from '@/global/core/app/api';
@@ -12,7 +12,6 @@ describe('发布应用版本测试', () => {
       nodes: [],
       edges: [],
       chatConfig: {},
-      type: AppTypeEnum.simple,
       isPublish: false,
       versionName: '1'
     };

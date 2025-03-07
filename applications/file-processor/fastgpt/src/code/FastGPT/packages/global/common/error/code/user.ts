@@ -2,27 +2,33 @@ import { ErrType } from '../errorCode';
 import { i18nT } from '../../../../web/i18n/utils';
 /* team: 503000 */
 export enum UserErrEnum {
-  unAuthUser = 'unAuthUser',
+  notUser = 'notUser',
+  userExist = 'userExist',
   unAuthRole = 'unAuthRole',
-  binVisitor = 'binVisitor',
-  balanceNotEnough = 'balanceNotEnough'
+  account_psw_error = 'account_psw_error',
+  balanceNotEnough = 'balanceNotEnough',
+  unAuthSso = 'unAuthSso'
 }
 const errList = [
   {
-    statusText: UserErrEnum.unAuthUser,
-    message: i18nT('common:code_error.user_error.un_auth_user')
+    statusText: UserErrEnum.notUser,
+    message: i18nT('common:code_error.account_not_found')
   },
   {
-    statusText: UserErrEnum.binVisitor,
-    message: i18nT('common:code_error.user_error.bin_visitor')
-  }, // 身份校验未通过
+    statusText: UserErrEnum.userExist,
+    message: i18nT('common:code_error.account_exist')
+  },
   {
-    statusText: UserErrEnum.binVisitor,
-    message: i18nT('common:code_error.user_error.bin_visitor_guest')
-  }, // 游客身份
+    statusText: UserErrEnum.account_psw_error,
+    message: i18nT('common:code_error.account_error')
+  },
   {
     statusText: UserErrEnum.balanceNotEnough,
     message: i18nT('common:code_error.user_error.balance_not_enough')
+  },
+  {
+    statusText: UserErrEnum.unAuthSso,
+    message: i18nT('user:sso_auth_failed')
   }
 ];
 export default errList.reduce((acc, cur, index) => {

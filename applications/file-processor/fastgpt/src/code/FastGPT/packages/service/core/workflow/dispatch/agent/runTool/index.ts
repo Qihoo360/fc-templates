@@ -1,10 +1,11 @@
 import { NodeOutputKeyEnum } from '@fastgpt/global/core/workflow/constants';
 import { DispatchNodeResponseKeyEnum } from '@fastgpt/global/core/workflow/runtime/constants';
 import type {
+  ChatDispatchProps,
   DispatchNodeResultType,
   RuntimeNodeItemType
 } from '@fastgpt/global/core/workflow/runtime/type';
-import { ModelTypeEnum, getLLMModel } from '../../../../ai/model';
+import { getLLMModel } from '../../../../ai/model';
 import { filterToolNodeIdByEdges, getHistories } from '../../utils';
 import { runToolWithToolChoice } from './toolChoice';
 import { DispatchToolModuleProps, ToolNodeItemType } from './type.d';
@@ -30,6 +31,7 @@ import { parseUrlToFileType } from '@fastgpt/global/common/file/tools';
 import { Prompt_DocumentQuote } from '@fastgpt/global/core/ai/prompt/AIChat';
 import { FlowNodeTypeEnum } from '@fastgpt/global/core/workflow/node/constant';
 import { postTextCensor } from '../../../../../common/api/requestPlusApi';
+import { ModelTypeEnum } from '@fastgpt/global/core/ai/model';
 
 type Response = DispatchNodeResultType<{
   [NodeOutputKeyEnum.answerText]: string;
@@ -45,21 +47,25 @@ export const dispatchRunTools = async (props: DispatchToolModuleProps): Promise<
     query,
     requestOrigin,
     chatConfig,
-    runningAppInfo: { teamId },
-    user,
+    runningUserInfo,
+    externalProvider,
     params: {
       model,
       systemPrompt,
       userChatInput,
       history = 6,
       fileUrlList: fileLinks,
-      aiChatVision
+      aiChatVision,
+      aiChatReasoning
     }
   } = props;
 
   const toolModel = getLLMModel(model);
   const useVision = aiChatVision && toolModel.vision;
   const chatHistories = getHistories(history, histories);
+
+  props.params.aiChatVision = aiChatVision && toolModel.vision;
+  props.params.aiChatReasoning = aiChatReasoning && toolModel.reasoning;
 
   const toolNodeIds = filterToolNodeIdByEdges({ nodeId, edges: runtimeEdges });
 
@@ -98,10 +104,11 @@ export const dispatchRunTools = async (props: DispatchToolModuleProps): Promise<
 
   const globalFiles = chatValue2RuntimePrompt(query).files;
   const { documentQuoteText, userFiles } = await getMultiInput({
+    runningUserInfo,
     histories: chatHistories,
     requestOrigin,
     maxFiles: chatConfig?.fileSelectConfig?.maxFiles || 20,
-    teamId,
+    customPdfParse: chatConfig?.fileSelectConfig?.customPdfParse,
     fileLinks,
     inputFiles: globalFiles,
     hasReadFilesTool
@@ -153,7 +160,7 @@ export const dispatchRunTools = async (props: DispatchToolModuleProps): Promise<
   })();
 
   // censor model and system key
-  if (toolModel.censor && !user.openaiAccount?.key) {
+  if (toolModel.censor && !externalProvider.openaiAccount?.key) {
     await postTextCensor({
       text: `${systemPrompt}
           ${userChatInput}
@@ -165,6 +172,8 @@ export const dispatchRunTools = async (props: DispatchToolModuleProps): Promise<
     toolWorkflowInteractiveResponse,
     dispatchFlowResponse, // tool flow response
     toolNodeTokens,
+    toolNodeInputTokens,
+    toolNodeOutputTokens,
     completeMessages = [], // The actual message sent to AI(just save text)
     assistantResponses = [], // FastGPT system store assistant.value response
     runTimes
@@ -225,10 +234,11 @@ export const dispatchRunTools = async (props: DispatchToolModuleProps): Promise<
 
   const { totalPoints, modelName } = formatModelChars2Points({
     model,
-    tokens: toolNodeTokens,
+    inputTokens: toolNodeInputTokens,
+    outputTokens: toolNodeOutputTokens,
     modelType: ModelTypeEnum.llm
   });
-  const toolAIUsage = user.openaiAccount?.key ? 0 : totalPoints;
+  const toolAIUsage = externalProvider.openaiAccount?.key ? 0 : totalPoints;
 
   // flat child tool response
   const childToolResponse = dispatchFlowResponse.map((item) => item.flowResponses).flat();
@@ -255,6 +265,8 @@ export const dispatchRunTools = async (props: DispatchToolModuleProps): Promise<
       // 展示的积分消耗
       totalPoints: totalPointsUsage,
       toolCallTokens: toolNodeTokens,
+      toolCallInputTokens: toolNodeInputTokens,
+      toolCallOutputTokens: toolNodeOutputTokens,
       childTotalPoints: flatUsages.reduce((sum, item) => sum + item.totalPoints, 0),
       model: modelName,
       query: userChatInput,
@@ -270,9 +282,10 @@ export const dispatchRunTools = async (props: DispatchToolModuleProps): Promise<
       // 工具调用本身的积分消耗
       {
         moduleName: name,
-        totalPoints: toolAIUsage,
         model: modelName,
-        tokens: toolNodeTokens
+        totalPoints: toolAIUsage,
+        inputTokens: toolNodeInputTokens,
+        outputTokens: toolNodeOutputTokens
       },
       // 工具的消耗
       ...flatUsages
@@ -282,19 +295,21 @@ export const dispatchRunTools = async (props: DispatchToolModuleProps): Promise<
 };
 
 const getMultiInput = async ({
+  runningUserInfo,
   histories,
   fileLinks,
   requestOrigin,
   maxFiles,
-  teamId,
+  customPdfParse,
   inputFiles,
   hasReadFilesTool
 }: {
+  runningUserInfo: ChatDispatchProps['runningUserInfo'];
   histories: ChatItemType[];
   fileLinks?: string[];
   requestOrigin?: string;
   maxFiles: number;
-  teamId: string;
+  customPdfParse?: boolean;
   inputFiles: UserChatItemValueItemType['file'][];
   hasReadFilesTool: boolean;
 }) => {
@@ -322,12 +337,14 @@ const getMultiInput = async ({
     urls,
     requestOrigin,
     maxFiles,
-    teamId
+    customPdfParse,
+    teamId: runningUserInfo.teamId,
+    tmbId: runningUserInfo.tmbId
   });
 
   return {
     documentQuoteText: text,
-    userFiles: fileLinks.map((url) => parseUrlToFileType(url))
+    userFiles: fileLinks.map((url) => parseUrlToFileType(url)).filter(Boolean)
   };
 };
 

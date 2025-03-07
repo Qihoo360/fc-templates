@@ -25,7 +25,7 @@ const { definePartsStyle: tablePart, defineMultiStyleConfig: tableMultiStyle } =
 const { definePartsStyle: radioParts, defineMultiStyleConfig: radioStyle } =
   createMultiStyleConfigHelpers(radioAnatomy.keys);
 
-const shadowLight = '0px 0px 0px 2.4px rgba(51, 112, 255, 0.15)';
+export const shadowLight = '0px 0px 0px 2.4px rgba(51, 112, 255, 0.15)';
 
 // 按键
 const Button = defineStyleConfig({
@@ -221,7 +221,6 @@ const Button = defineStyleConfig({
       boxShadow: '0px 0px 1px 0px rgba(19, 51, 107, 0.08), 0px 1px 2px 0px rgba(19, 51, 107, 0.05)',
       _hover: {
         color: 'red.600',
-        background: 'red.1',
         borderColor: 'red.300'
       },
       _active: {
@@ -241,7 +240,7 @@ const Button = defineStyleConfig({
     },
     grayDanger: {
       bg: 'myGray.150',
-      color: 'myGray.900',
+      color: 'myGray.600',
       _hover: {
         color: 'red.600',
         background: 'red.1',
@@ -249,6 +248,16 @@ const Button = defineStyleConfig({
       },
       _active: {
         color: 'red.600'
+      }
+    },
+    grayGhost: {
+      color: 'myGray.500',
+      fontWeight: '500',
+      p: 0,
+      bg: 'transparent',
+      transition: 'background 0.1s',
+      _hover: {
+        bg: 'myGray.05'
       }
     },
     transparentBase: {
@@ -485,7 +494,10 @@ const Radio = radioStyle({
 const Checkbox = checkBoxMultiStyle({
   baseStyle: checkBoxPart({
     label: {
-      fontFamily: 'mono' // change the font family of the label
+      fontFamily: 'mono', // change the font family of the label
+      _disabled: {
+        outline: 'none'
+      }
     },
     control: {
       borderRadius: 'xs',
@@ -498,6 +510,12 @@ const Checkbox = checkBoxMultiStyle({
         boxShadow: `${shadowLight} !important`,
         _hover: {
           bg: 'primary.50'
+        },
+        _disabled: {
+          bg: 'myGray.100',
+          borderColor: 'transparent',
+          color: 'myGray.400',
+          outline: 'none'
         }
       },
       _hover: {
@@ -569,6 +587,43 @@ const Table = tableMultiStyle({
         }
       }
     })
+  },
+  variants: {
+    workflow: {
+      table: {
+        bg: 'white'
+      },
+      thead: {
+        tr: {
+          th: {
+            p: '0',
+            px: 4,
+            bg: 'myGray.50',
+            borderRadius: 'none !important',
+            borderBottom: 'none',
+            height: '32px',
+            fontSize: 'mini',
+            fontWeight: 'medium'
+          }
+        }
+      },
+      tbody: {
+        tr: {
+          td: {
+            p: '0',
+            px: 4,
+            fontSize: 'xs',
+            borderBottom: 'base',
+            height: '40px'
+          },
+          '&:last-child': {
+            td: {
+              borderBottom: 'none'
+            }
+          }
+        }
+      }
+    }
   },
   defaultProps: {
     size: 'md'

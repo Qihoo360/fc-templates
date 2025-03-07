@@ -1,17 +1,20 @@
 import MyModal from '@fastgpt/web/components/common/MyModal';
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'next-i18next';
 import { Box, ModalBody } from '@chakra-ui/react';
 import { checkBalancePayResult } from '@/web/support/wallet/bill/api';
 import { useToast } from '@fastgpt/web/hooks/useToast';
-import { useRouter } from 'next/router';
-import { getErrText } from '@fastgpt/global/common/error/utils';
+import LightTip from '@fastgpt/web/components/common/LightTip';
+import QRCode from 'qrcode';
+import { useRequest2 } from '@fastgpt/web/hooks/useRequest';
 
 export type QRPayProps = {
   readPrice: number;
   codeUrl: string;
   billId: string;
 };
+
+const qrCodeSize = 168;
 
 const QRCodePayModal = ({
   tip,
@@ -20,68 +23,54 @@ const QRCodePayModal = ({
   billId,
   onSuccess
 }: QRPayProps & { tip?: string; onSuccess?: () => any }) => {
-  const router = useRouter();
   const { t } = useTranslation();
   const { toast } = useToast();
-  const dom = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+
+  const drawCode = useCallback(() => {
+    const canvas = document.createElement('canvas');
+    QRCode.toCanvas(canvas, codeUrl, {
+      width: qrCodeSize,
+      margin: 0,
+      color: {
+        dark: '#000000',
+        light: '#ffffff'
+      }
+    })
+      .then(() => {
+        if (canvasRef.current) {
+          canvasRef.current.innerHTML = '';
+          canvasRef.current.appendChild(canvas);
+        } else {
+          drawCode();
+        }
+      })
+      .catch((err) => {
+        console.error('QRCode generation error:', err);
+      });
+  }, [codeUrl]);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    const drawCode = () => {
-      if (dom.current && window.QRCode && !dom.current.innerHTML) {
-        new window.QRCode(dom.current, {
-          text: codeUrl,
-          width: 128,
-          height: 128,
-          colorDark: '#000000',
-          colorLight: '#ffffff',
-          correctLevel: window.QRCode.CorrectLevel.H
-        });
+    drawCode();
+  }, [drawCode]);
+
+  useRequest2(() => checkBalancePayResult(billId), {
+    manual: false,
+    pollingInterval: 2000,
+    onSuccess: (res) => {
+      if (res) {
+        onSuccess?.();
       }
-    };
-    const check = async () => {
-      try {
-        const res = await checkBalancePayResult(billId);
-        if (res) {
-          try {
-            await onSuccess?.();
-            toast({
-              title: res,
-              status: 'success'
-            });
-            setTimeout(() => {
-              router.reload();
-            }, 1000);
-            return;
-          } catch (error) {
-            toast({
-              title: getErrText(error),
-              status: 'error'
-            });
-          }
-        }
-      } catch (error) {}
-
-      drawCode();
-
-      timer = setTimeout(check, 2000);
-    };
-
-    check();
-
-    return () => clearTimeout(timer);
-  }, [billId, onSuccess, toast]);
+    },
+    errorToast: ''
+  });
 
   return (
     <MyModal isOpen title={t('common:user.Pay')} iconSrc="/imgs/modal/pay.svg">
-      <ModalBody textAlign={'center'} py={6} whiteSpace={'pre-wrap'}>
-        {tip && (
-          <Box fontSize={'sm'} whiteSpace={'pre'} mb={3}>
-            {tip}
-          </Box>
-        )}
-        <Box ref={dom} id={'payQRCode'} display={'inline-block'} h={'128px'}></Box>
-        <Box mt={3} textAlign={'center'}>
+      <ModalBody textAlign={'center'} pb={10} whiteSpace={'pre-wrap'}>
+        {tip && <LightTip text={tip} mb={8} textAlign={'left'} />}
+        <Box ref={canvasRef} display={'inline-block'} h={`${qrCodeSize}px`}></Box>
+        <Box mt={5} textAlign={'center'}>
           {t('common:pay.wechat', { price: readPrice })}
         </Box>
       </ModalBody>

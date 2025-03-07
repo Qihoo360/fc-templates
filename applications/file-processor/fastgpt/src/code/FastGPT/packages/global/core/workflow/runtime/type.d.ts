@@ -21,18 +21,29 @@ import { ReadFileNodeResponse } from '../template/system/readFiles/type';
 import { UserSelectOptionType } from '../template/system/userSelect/type';
 import { WorkflowResponseType } from '../../../../service/core/workflow/dispatch/type';
 import { AiChatQuoteRoleType } from '../template/system/aiChat/type';
+import { LafAccountType, OpenaiAccountType } from '../../../support/user/team/type';
+
+export type ExternalProviderType = {
+  openaiAccount?: OpenaiAccountType;
+  externalWorkflowVariables?: Record<string, string>;
+};
 
 /* workflow props */
 export type ChatDispatchProps = {
   res?: NextApiResponse;
   requestOrigin?: string;
   mode: 'test' | 'chat' | 'debug';
-  user: UserModelSchema;
+  timezone: string;
+  externalProvider: ExternalProviderType;
 
   runningAppInfo: {
     id: string; // May be the id of the system plug-in (cannot be used directly to look up the table)
     teamId: string;
     tmbId: string; // App tmbId
+  };
+  runningUserInfo: {
+    teamId: string;
+    tmbId: string;
   };
   uid: string; // Who run this workflow
 
@@ -82,17 +93,6 @@ export type RuntimeNodeItemType = {
   version: string;
 };
 
-export type PluginRuntimeType = {
-  id: string;
-  teamId?: string;
-  name: string;
-  avatar: string;
-  showStatus?: boolean;
-  currentCost?: number;
-  nodes: StoreNodeItemType[];
-  edges: StoreEdgeItemType[];
-};
-
 export type RuntimeEdgeItemType = StoreEdgeItemType & {
   status: 'waiting' | 'active' | 'skipped';
 };
@@ -111,7 +111,9 @@ export type DispatchNodeResponseType = {
   mergeSignId?: string;
 
   // bill
-  tokens?: number;
+  tokens?: number; // deprecated
+  inputTokens?: number;
+  outputTokens?: number;
   model?: string;
   contextTotalLen?: number;
   totalPoints?: number;
@@ -121,6 +123,7 @@ export type DispatchNodeResponseType = {
   temperature?: number;
   maxToken?: number;
   quoteList?: SearchDataResponseItemType[];
+  reasoningText?: string;
   historyPreview?: {
     obj: `${ChatRoleEnum}`;
     value: string;
@@ -131,9 +134,17 @@ export type DispatchNodeResponseType = {
   limit?: number;
   searchMode?: `${DatasetSearchModeEnum}`;
   searchUsingReRank?: boolean;
-  extensionModel?: string;
-  extensionResult?: string;
-  extensionTokens?: number;
+  queryExtensionResult?: {
+    model: string;
+    inputTokens: number;
+    outputTokens: number;
+    query: string;
+  };
+  deepSearchResult?: {
+    model: string;
+    inputTokens: number;
+    outputTokens: number;
+  };
 
   // dataset concat
   concatLength?: number;
@@ -161,6 +172,8 @@ export type DispatchNodeResponseType = {
 
   // tool
   toolCallTokens?: number;
+  toolCallInputTokens?: number;
+  toolCallOutputTokens?: number;
   toolDetail?: ChatHistoryItemResType[];
   toolStop?: boolean;
 
@@ -194,6 +207,11 @@ export type DispatchNodeResponseType = {
 
   // tool params
   toolParamsResult?: Record<string, any>;
+
+  // abandon
+  extensionModel?: string;
+  extensionResult?: string;
+  extensionTokens?: number;
 };
 
 export type DispatchNodeResultType<T = {}> = {
@@ -212,13 +230,19 @@ export type DispatchNodeResultType<T = {}> = {
 export type AIChatNodeProps = {
   [NodeInputKeyEnum.aiModel]: string;
   [NodeInputKeyEnum.aiSystemPrompt]?: string;
-  [NodeInputKeyEnum.aiChatTemperature]: number;
-  [NodeInputKeyEnum.aiChatMaxToken]: number;
+  [NodeInputKeyEnum.aiChatTemperature]?: number;
+  [NodeInputKeyEnum.aiChatMaxToken]?: number;
   [NodeInputKeyEnum.aiChatIsResponseText]: boolean;
+  [NodeInputKeyEnum.aiChatVision]?: boolean;
+  [NodeInputKeyEnum.aiChatReasoning]?: boolean;
+  [NodeInputKeyEnum.aiChatTopP]?: number;
+  [NodeInputKeyEnum.aiChatStopSign]?: string;
+  [NodeInputKeyEnum.aiChatResponseFormat]?: string;
+  [NodeInputKeyEnum.aiChatJsonSchema]?: string;
+
   [NodeInputKeyEnum.aiChatQuoteRole]?: AiChatQuoteRoleType;
   [NodeInputKeyEnum.aiChatQuoteTemplate]?: string;
   [NodeInputKeyEnum.aiChatQuotePrompt]?: string;
-  [NodeInputKeyEnum.aiChatVision]?: boolean;
 
   [NodeInputKeyEnum.stringQuoteText]?: string;
   [NodeInputKeyEnum.fileUrlList]?: string[];

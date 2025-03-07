@@ -102,7 +102,7 @@ xinference launch -n qwen-chat -s 14 -f pytorch
 
 ## 将本地模型接入 One API
 
-One API 的部署和接入请参考[这里](/docs/development/one-api/)。
+One API 的部署和接入请参考[这里](/docs/development/modelconfig/one-api/)。
 
 为 qwen1.5-chat 添加一个渠道，这里的 Base URL 需要填 Xinference 服务的端点，并且注册 qwen-chat (模型的 UID) 。
 
@@ -144,8 +144,7 @@ curl --location --request POST 'https://<oneapi_url>/v1/chat/completions' \
       "usedInClassify": true, // 是否用于问题分类（务必保证至少有一个为true）
       "usedInExtractFields": true, // 是否用于内容提取（务必保证至少有一个为true）
       "usedInToolCall": true, // 是否用于工具调用（务必保证至少有一个为true）
-      "usedInQueryExtension": true, // 是否用于问题优化（务必保证至少有一个为true）
-      "toolChoice": true, // 是否支持工具选择（分类，内容提取，工具调用会用到。目前只有gpt支持）
+      "toolChoice": true, // 是否支持工具选择（分类，内容提取，工具调用会用到。）
       "functionCall": false, // 是否支持函数调用（分类，内容提取，工具调用会用到。会优先使用 toolChoice，如果为false，则使用 functionCall，如果仍为 false，则使用提示词模式）
       "customCQPrompt": "", // 自定义文本分类提示词（不支持工具和函数调用的模型
       "customExtractPrompt": "", // 自定义内容提取提示词

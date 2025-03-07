@@ -6,7 +6,7 @@ import { MongoDatasetData } from '@fastgpt/service/core/dataset/data/schema';
 import { MongoDatasetTraining } from '@fastgpt/service/core/dataset/training/schema';
 import { createTrainingUsage } from '@fastgpt/service/support/wallet/usage/controller';
 import { UsageSourceEnum } from '@fastgpt/global/support/wallet/usage/constants';
-import { getLLMModel, getVectorModel } from '@fastgpt/service/core/ai/model';
+import { getLLMModel, getEmbeddingModel, getVlmModel } from '@fastgpt/service/core/ai/model';
 import { TrainingModeEnum } from '@fastgpt/global/core/dataset/constants';
 import { ApiRequestProps } from '@fastgpt/service/type/next';
 import { OwnerPermissionVal } from '@fastgpt/global/support/permission/constant';
@@ -49,8 +49,9 @@ async function handler(req: ApiRequestProps<rebuildEmbeddingBody>): Promise<Resp
     tmbId,
     appName: '切换索引模型',
     billSource: UsageSourceEnum.training,
-    vectorModel: getVectorModel(dataset.vectorModel)?.name,
-    agentModel: getLLMModel(dataset.agentModel)?.name
+    vectorModel: getEmbeddingModel(dataset.vectorModel)?.name,
+    agentModel: getLLMModel(dataset.agentModel)?.name,
+    vllmModel: getVlmModel(dataset.vlmModel)?.name
   });
 
   // update vector model and dataset.data rebuild field
@@ -117,11 +118,13 @@ async function handler(req: ApiRequestProps<rebuildEmbeddingBody>): Promise<Resp
                 billId,
                 mode: TrainingModeEnum.chunk,
                 model: vectorModel,
-                dataId: data._id
+                dataId: data._id,
+                retryCount: 50
               }
             ],
             {
-              session
+              session,
+              ordered: true
             }
           );
         }

@@ -1,5 +1,6 @@
 import type { NextApiResponse } from 'next';
 import { getAIApi } from '../config';
+import { getTTSModel } from '../model';
 
 export async function text2Speech({
   res,
@@ -18,26 +19,37 @@ export async function text2Speech({
   voice: string;
   speed?: number;
 }) {
+  const modelData = getTTSModel(model)!;
   const ai = getAIApi();
-  const response = await ai.audio.speech.create({
-    model,
-    // @ts-ignore
-    voice,
-    input,
-    response_format: 'mp3',
-    speed
-  });
+  const response = await ai.audio.speech.create(
+    {
+      model,
+      // @ts-ignore
+      voice,
+      input,
+      response_format: 'mp3',
+      speed
+    },
+    modelData.requestUrl && modelData.requestAuth
+      ? {
+          path: modelData.requestUrl,
+          headers: {
+            Authorization: `Bearer ${modelData.requestAuth}`
+          }
+        }
+      : {}
+  );
 
   const readableStream = response.body as unknown as NodeJS.ReadableStream;
   readableStream.pipe(res);
 
-  let bufferStore = Buffer.from([]);
+  const chunks: Uint8Array[] = [];
 
   readableStream.on('data', (chunk) => {
-    bufferStore = Buffer.concat([bufferStore, chunk]);
+    chunks.push(chunk);
   });
   readableStream.on('end', () => {
-    onSuccess({ model, buffer: bufferStore });
+    onSuccess({ model, buffer: Buffer.concat(chunks) });
   });
   readableStream.on('error', (e) => {
     onError(e);

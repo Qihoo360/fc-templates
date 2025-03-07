@@ -1,7 +1,7 @@
 import { connectionMongo, getMongoModel } from '../../common/mongo';
 const { Schema } = connectionMongo;
 import { ChatSchema as ChatType } from '@fastgpt/global/core/chat/type.d';
-import { ChatSourceMap } from '@fastgpt/global/core/chat/constants';
+import { ChatSourceEnum, ChatSourceMap } from '@fastgpt/global/core/chat/constants';
 import {
   TeamCollectionName,
   TeamMemberCollectionName
@@ -52,8 +52,10 @@ const ChatSchema = new Schema({
   },
   source: {
     type: String,
-    required: true
+    required: true,
+    enum: Object.values(ChatSourceEnum)
   },
+  sourceName: String,
   shareId: {
     type: String
   },
@@ -72,6 +74,7 @@ const ChatSchema = new Schema({
     type: Object,
     default: {}
   },
+  pluginInputs: Array,
   metadata: {
     //For special storage
     type: Object,
@@ -80,19 +83,19 @@ const ChatSchema = new Schema({
 });
 
 try {
-  ChatSchema.index({ chatId: 1 }, { background: true });
+  ChatSchema.index({ chatId: 1 });
   // get user history
-  ChatSchema.index({ tmbId: 1, appId: 1, top: -1, updateTime: -1 }, { background: true });
+  ChatSchema.index({ tmbId: 1, appId: 1, top: -1, updateTime: -1 });
   // delete by appid; clear history; init chat; update chat; auth chat; get chat;
-  ChatSchema.index({ appId: 1, chatId: 1 }, { background: true });
+  ChatSchema.index({ appId: 1, chatId: 1 });
 
   // get chat logs;
-  ChatSchema.index({ teamId: 1, appId: 1, updateTime: -1 }, { background: true });
+  ChatSchema.index({ teamId: 1, appId: 1, updateTime: -1, sources: 1 });
   // get share chat history
-  ChatSchema.index({ shareId: 1, outLinkUid: 1, updateTime: -1 }, { background: true });
+  ChatSchema.index({ shareId: 1, outLinkUid: 1, updateTime: -1 });
 
   // timer, clear history
-  ChatSchema.index({ teamId: 1, updateTime: -1 }, { background: true });
+  ChatSchema.index({ teamId: 1, updateTime: -1 });
 } catch (error) {
   console.log(error);
 }

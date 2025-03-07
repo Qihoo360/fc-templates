@@ -2,9 +2,9 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Box, Flex, Button, InputGroup, InputLeftElement, Input } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
-import { serviceSideProps } from '@/web/common/utils/i18n';
+import { serviceSideProps } from '@fastgpt/web/common/system/nextjs';
 import ParentPaths from '@/components/common/folder/Path';
-import List from './component/List';
+import List from '@/pageComponents/dataset/list/List';
 import { DatasetsContext } from './context';
 import DatasetContextProvider from './context';
 import { useContextSelector } from 'use-context-selector';
@@ -24,7 +24,7 @@ import {
   getCollaboratorList
 } from '@/web/core/dataset/api/collaborator';
 import { useSystem } from '@fastgpt/web/hooks/useSystem';
-import { CreateDatasetType } from './component/CreateModal';
+import { CreateDatasetType } from '@/pageComponents/dataset/list/CreateModal';
 import { DatasetTypeEnum } from '@fastgpt/global/core/dataset/constants';
 import { useToast } from '@fastgpt/web/hooks/useToast';
 import MyBox from '@fastgpt/web/components/common/MyBox';
@@ -34,7 +34,7 @@ const EditFolderModal = dynamic(
   () => import('@fastgpt/web/components/common/MyModal/EditFolderModal')
 );
 
-const CreateModal = dynamic(() => import('./component/CreateModal'));
+const CreateModal = dynamic(() => import('@/pageComponents/dataset/list/CreateModal'));
 
 const Dataset = () => {
   const { isPc } = useSystem();
@@ -66,7 +66,7 @@ const Dataset = () => {
     (e: CreateDatasetType) => {
       if (
         !feConfigs?.isPlus &&
-        (e === DatasetTypeEnum.websiteDataset || e === DatasetTypeEnum.externalFile)
+        [DatasetTypeEnum.websiteDataset, DatasetTypeEnum.feishu, DatasetTypeEnum.yuque].includes(e)
       ) {
         return toast({
           status: 'warning',
@@ -107,7 +107,7 @@ const Dataset = () => {
       overflowY={'auto'}
       overflowX={'hidden'}
     >
-      <Flex pt={[4, 6]} pl={3} pr={[3, 10]}>
+      <Flex pt={[4, 6]} pl={3} pr={folderDetail ? [3, 6] : [3, 8]}>
         <Flex flexGrow={1} flexDirection="column">
           <Flex alignItems={'center'} justifyContent={'space-between'}>
             <ParentPaths
@@ -136,19 +136,18 @@ const Dataset = () => {
 
             {isPc && RenderSearchInput}
 
-            {userInfo?.team?.permission.hasWritePer && (
+            {(folderDetail
+              ? folderDetail.permission.hasWritePer
+              : userInfo?.team?.permission.hasWritePer) && (
               <Box pl={[0, 4]}>
                 <MyMenu
+                  size="md"
                   offset={[0, 10]}
-                  width={120}
-                  iconSize="2rem"
-                  iconRadius="6px"
-                  placement="bottom-end"
                   Button={
                     <Button variant={'primary'} px="0">
                       <Flex alignItems={'center'} px={5}>
                         <AddIcon mr={2} />
-                        <Box>{t('common:common.Create New')}</Box>
+                        <Box>{t('common:new_create')}</Box>
                       </Flex>
                     </Button>
                   }
@@ -162,16 +161,28 @@ const Dataset = () => {
                           onClick: () => onSelectDatasetType(DatasetTypeEnum.dataset)
                         },
                         {
+                          icon: 'core/dataset/externalDatasetColor',
+                          label: t('dataset:api_file'),
+                          description: t('dataset:external_file_dataset_desc'),
+                          onClick: () => onSelectDatasetType(DatasetTypeEnum.apiDataset)
+                        },
+                        {
                           icon: 'core/dataset/websiteDatasetColor',
                           label: t('dataset:website_dataset'),
                           description: t('dataset:website_dataset_desc'),
                           onClick: () => onSelectDatasetType(DatasetTypeEnum.websiteDataset)
                         },
                         {
-                          icon: 'core/dataset/externalDatasetColor',
-                          label: t('dataset:external_file'),
-                          description: t('dataset:external_file_dataset_desc'),
-                          onClick: () => onSelectDatasetType(DatasetTypeEnum.externalFile)
+                          icon: 'core/dataset/feishuDatasetColor',
+                          label: t('dataset:feishu_dataset'),
+                          description: t('dataset:feishu_dataset_desc'),
+                          onClick: () => onSelectDatasetType(DatasetTypeEnum.feishu)
+                        },
+                        {
+                          icon: 'core/dataset/yuqueDatasetColor',
+                          label: t('dataset:yuque_dataset'),
+                          description: t('dataset:yuque_dataset_desc'),
+                          onClick: () => onSelectDatasetType(DatasetTypeEnum.yuque)
                         }
                       ]
                     },
@@ -227,7 +238,6 @@ const Dataset = () => {
                 })
               }
               managePer={{
-                mode: 'all',
                 permission: folderDetail.permission,
                 onGetCollaboratorList: () => getCollaboratorList(folderDetail._id),
                 permissionList: DatasetPermissionList,
@@ -246,7 +256,7 @@ const Dataset = () => {
                     permission,
                     datasetId: folderDetail._id
                   }),
-                onDelOneCollaborator: async ({ tmbId, groupId }) => {
+                onDelOneCollaborator: async ({ tmbId, groupId, orgId }) => {
                   if (tmbId) {
                     return deleteDatasetCollaborators({
                       datasetId: folderDetail._id,
@@ -256,6 +266,11 @@ const Dataset = () => {
                     return deleteDatasetCollaborators({
                       datasetId: folderDetail._id,
                       groupId
+                    });
+                  } else if (orgId) {
+                    return deleteDatasetCollaborators({
+                      datasetId: folderDetail._id,
+                      orgId
                     });
                   }
                 },

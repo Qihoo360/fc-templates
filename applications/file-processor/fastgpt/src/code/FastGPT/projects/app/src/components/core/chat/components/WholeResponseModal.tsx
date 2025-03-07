@@ -31,10 +31,12 @@ type sideTabItemType = {
 /* Per response value */
 export const WholeResponseContent = ({
   activeModule,
-  hideTabs
+  hideTabs,
+  dataId
 }: {
   activeModule: ChatHistoryItemResType;
   hideTabs?: boolean;
+  dataId?: string;
 }) => {
   const { t } = useTranslation();
 
@@ -154,8 +156,24 @@ export const WholeResponseContent = ({
           value={`${activeModule?.tokens}`}
         />
         <Row
+          label={t('common:core.chat.response.module input tokens')}
+          value={`${activeModule?.inputTokens}`}
+        />
+        <Row
+          label={t('common:core.chat.response.module output tokens')}
+          value={`${activeModule?.outputTokens}`}
+        />
+        <Row
           label={t('common:core.chat.response.Tool call tokens')}
           value={`${activeModule?.toolCallTokens}`}
+        />
+        <Row
+          label={t('common:core.chat.response.Tool call input tokens')}
+          value={`${activeModule?.toolCallInputTokens}`}
+        />
+        <Row
+          label={t('common:core.chat.response.Tool call output tokens')}
+          value={`${activeModule?.toolCallOutputTokens}`}
         />
 
         <Row label={t('common:core.chat.response.module query')} value={activeModule?.query} />
@@ -176,6 +194,7 @@ export const WholeResponseContent = ({
           label={t('common:core.chat.response.module maxToken')}
           value={activeModule?.maxToken}
         />
+        <Row label={t('chat:reasoning_text')} value={activeModule?.reasoningText} />
         <Row
           label={t('common:core.chat.response.module historyPreview')}
           rawDom={
@@ -220,18 +239,31 @@ export const WholeResponseContent = ({
           label={t('common:core.chat.response.search using reRank')}
           value={`${activeModule?.searchUsingReRank}`}
         />
+        {activeModule.queryExtensionResult && (
+          <>
+            <Row
+              label={t('common:core.chat.response.Extension model')}
+              value={activeModule.queryExtensionResult.model}
+            />
+            <Row
+              label={t('chat:query_extension_IO_tokens')}
+              value={`${activeModule.queryExtensionResult.inputTokens}/${activeModule.queryExtensionResult.outputTokens}`}
+            />
+            <Row
+              label={t('chat:query_extension_result')}
+              value={activeModule.queryExtensionResult.query}
+            />
+          </>
+        )}
         <Row
           label={t('common:core.chat.response.Extension model')}
           value={activeModule?.extensionModel}
         />
-        <Row
-          label={t('common:support.wallet.usage.Extension result')}
-          value={`${activeModule?.extensionResult}`}
-        />
+        <Row label={t('chat:query_extension_result')} value={`${activeModule?.extensionResult}`} />
         {activeModule.quoteList && activeModule.quoteList.length > 0 && (
           <Row
             label={t('common:core.chat.response.module quoteList')}
-            rawDom={<QuoteList canEditDataset canViewSource rawSearch={activeModule.quoteList} />}
+            rawDom={<QuoteList chatItemId={dataId} rawSearch={activeModule.quoteList} />}
           />
         )}
       </>
@@ -529,10 +561,12 @@ const SideTabItem = ({
 /* Modal main container */
 export const ResponseBox = React.memo(function ResponseBox({
   response,
+  dataId,
   hideTabs = false,
   useMobile = false
 }: {
   response: ChatHistoryItemResType[];
+  dataId?: string;
   hideTabs?: boolean;
   useMobile?: boolean;
 }) {
@@ -655,7 +689,7 @@ export const ResponseBox = React.memo(function ResponseBox({
             </Box>
           </Box>
           <Box flex={'5 0 0'} w={0} height={'100%'}>
-            <WholeResponseContent activeModule={activeModule} hideTabs={hideTabs} />
+            <WholeResponseContent dataId={dataId} activeModule={activeModule} hideTabs={hideTabs} />
           </Box>
         </Flex>
       ) : (
@@ -715,7 +749,11 @@ export const ResponseBox = React.memo(function ResponseBox({
                 </Box>
               </Flex>
               <Box flex={'1 0 0'}>
-                <WholeResponseContent activeModule={activeModule} hideTabs={hideTabs} />
+                <WholeResponseContent
+                  dataId={dataId}
+                  activeModule={activeModule}
+                  hideTabs={hideTabs}
+                />
               </Box>
             </Flex>
           )}
@@ -754,7 +792,7 @@ const WholeResponseModal = ({ onClose, dataId }: { onClose: () => void; dataId: 
       }
     >
       {!!response?.length ? (
-        <ResponseBox response={response} />
+        <ResponseBox response={response} dataId={dataId} />
       ) : (
         <EmptyTip text={t('chat:no_workflow_response')} />
       )}

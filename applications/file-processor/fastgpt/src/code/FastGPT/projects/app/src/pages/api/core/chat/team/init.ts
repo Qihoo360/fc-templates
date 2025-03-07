@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
 import { jsonRes } from '@fastgpt/service/common/response';
 import { getGuideModule, getAppChatConfig } from '@fastgpt/global/core/workflow/utils';
 import { getChatModelNameListByModules } from '@/service/core/app/workflow';
@@ -12,12 +12,13 @@ import { ChatErrEnum } from '@fastgpt/global/common/error/code/chat';
 import { getAppLatestVersion } from '@fastgpt/service/core/app/version/controller';
 import { FlowNodeTypeEnum } from '@fastgpt/global/core/workflow/node/constant';
 import { NextAPI } from '@/service/middleware/entry';
+import { ApiRequestProps } from '@fastgpt/service/type/next';
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
-  let { teamId, appId, chatId, teamToken } = req.query as InitTeamChatProps;
+async function handler(req: ApiRequestProps<InitTeamChatProps>, res: NextApiResponse) {
+  let { teamId, appId, chatId, teamToken } = req.query;
 
   if (!teamId || !appId || !teamToken) {
-    throw new Error('teamId, appId, teamToken are required');
+    return Promise.reject('teamId, appId, teamToken are required');
   }
 
   const { uid } = await authTeamSpaceToken({
@@ -32,7 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   ]);
 
   if (!app) {
-    throw new Error(AppErrEnum.unExist);
+    return Promise.reject(AppErrEnum.unExist);
   }
 
   // auth chat permission
@@ -42,8 +43,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   // get app and history
   const { nodes, chatConfig } = await getAppLatestVersion(app._id, app);
-
-  // pick share response field
+  const pluginInputs =
+    chat?.pluginInputs ??
+    nodes?.find((node) => node.flowNodeType === FlowNodeTypeEnum.pluginInput)?.inputs ??
+    [];
 
   jsonRes<InitChatResponse>(res, {
     data: {
@@ -51,7 +54,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       appId,
       title: chat?.title,
       userAvatar: team?.avatar,
-      variables: chat?.variables || {},
+      variables: chat?.variables,
       app: {
         chatConfig: getAppChatConfig({
           chatConfig,
@@ -65,18 +68,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         avatar: app.avatar,
         intro: app.intro,
         type: app.type,
-        pluginInputs:
-          app?.modules?.find((node) => node.flowNodeType === FlowNodeTypeEnum.pluginInput)
-            ?.inputs ?? []
+        pluginInputs
       }
     }
   });
 }
 
 export default NextAPI(handler);
-
-export const config = {
-  api: {
-    responseLimit: '10mb'
-  }
-};

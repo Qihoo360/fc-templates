@@ -1,4 +1,11 @@
-import { AppTTSConfigType, AppFileSelectConfigType, AppWhisperConfigType } from './type';
+import { PROMPT_QUESTION_GUIDE } from '../ai/prompt/agent';
+import {
+  AppTTSConfigType,
+  AppFileSelectConfigType,
+  AppWhisperConfigType,
+  AppAutoExecuteConfigType,
+  AppQGConfigType
+} from './type';
 
 export enum AppTypeEnum {
   folder = 'folder',
@@ -12,10 +19,21 @@ export const AppFolderTypeList = [AppTypeEnum.folder, AppTypeEnum.httpPlugin];
 
 export const defaultTTSConfig: AppTTSConfigType = { type: 'web' };
 
+export const defaultAutoExecuteConfig: AppAutoExecuteConfigType = {
+  open: false,
+  defaultPrompt: ''
+};
+
 export const defaultWhisperConfig: AppWhisperConfigType = {
   open: false,
   autoSend: false,
   autoTTSResponse: false
+};
+
+export const defaultQGConfig: AppQGConfigType = {
+  open: false,
+  model: 'gpt-4o-mini',
+  customPrompt: ''
 };
 
 export const defaultChatInputGuideConfig = {
@@ -38,3 +56,5 @@ export enum AppTemplateTypeEnum {
   roleplay = 'roleplay',
   officeServices = 'office-services'
 }
+
+export const defaultDatasetMaxTokens = 16000;

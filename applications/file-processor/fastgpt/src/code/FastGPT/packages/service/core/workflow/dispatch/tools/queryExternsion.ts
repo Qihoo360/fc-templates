@@ -2,12 +2,13 @@ import type { ChatItemType } from '@fastgpt/global/core/chat/type.d';
 import type { ModuleDispatchProps } from '@fastgpt/global/core/workflow/runtime/type';
 import { NodeInputKeyEnum, NodeOutputKeyEnum } from '@fastgpt/global/core/workflow/constants';
 import { DispatchNodeResponseKeyEnum } from '@fastgpt/global/core/workflow/runtime/constants';
-import { ModelTypeEnum, getLLMModel } from '../../../../core/ai/model';
+import { getLLMModel } from '../../../../core/ai/model';
 import { formatModelChars2Points } from '../../../../support/wallet/usage/utils';
 import { queryExtension } from '../../../../core/ai/functions/queryExtension';
 import { getHistories } from '../utils';
 import { hashStr } from '@fastgpt/global/common/string/tools';
 import { DispatchNodeResultType } from '@fastgpt/global/core/workflow/runtime/type';
+import { ModelTypeEnum } from '@fastgpt/global/core/ai/model';
 
 type Props = ModuleDispatchProps<{
   [NodeInputKeyEnum.aiModel]: string;
@@ -31,7 +32,7 @@ export const dispatchQueryExtension = async ({
   const queryExtensionModel = getLLMModel(model);
   const chatHistories = getHistories(history, histories);
 
-  const { extensionQueries, tokens } = await queryExtension({
+  const { extensionQueries, inputTokens, outputTokens } = await queryExtension({
     chatBg: systemPrompt,
     query: userChatInput,
     histories: chatHistories,
@@ -42,7 +43,8 @@ export const dispatchQueryExtension = async ({
 
   const { totalPoints, modelName } = formatModelChars2Points({
     model: queryExtensionModel.model,
-    tokens,
+    inputTokens,
+    outputTokens,
     modelType: ModelTypeEnum.llm
   });
 
@@ -59,7 +61,8 @@ export const dispatchQueryExtension = async ({
     [DispatchNodeResponseKeyEnum.nodeResponse]: {
       totalPoints,
       model: modelName,
-      tokens,
+      inputTokens,
+      outputTokens,
       query: userChatInput,
       textOutput: JSON.stringify(filterSameQueries)
     },
@@ -68,7 +71,8 @@ export const dispatchQueryExtension = async ({
         moduleName: node.name,
         totalPoints,
         model: modelName,
-        tokens
+        inputTokens,
+        outputTokens
       }
     ],
     [NodeOutputKeyEnum.text]: JSON.stringify(filterSameQueries)

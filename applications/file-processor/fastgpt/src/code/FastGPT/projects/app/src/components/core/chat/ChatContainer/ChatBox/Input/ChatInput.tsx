@@ -33,32 +33,29 @@ const ChatInput = ({
   onStop,
   TextareaDom,
   resetInputVal,
-  chatForm,
-  appId
+  chatForm
 }: {
   onSendMessage: SendPromptFnType;
   onStop: () => void;
   TextareaDom: React.MutableRefObject<HTMLTextAreaElement | null>;
   resetInputVal: (val: ChatBoxInputType) => void;
   chatForm: UseFormReturn<ChatBoxInputFormType>;
-  appId: string;
 }) => {
-  const { isPc } = useSystem();
   const { t } = useTranslation();
   const { toast } = useToast();
+  const { isPc } = useSystem();
 
   const { setValue, watch, control } = chatForm;
   const inputValue = watch('input');
 
-  const {
-    chatId,
-    isChatting,
-    whisperConfig,
-    autoTTSResponse,
-    chatInputGuide,
-    outLinkAuthData,
-    fileSelectConfig
-  } = useContextSelector(ChatBoxContext, (v) => v);
+  const outLinkAuthData = useContextSelector(ChatBoxContext, (v) => v.outLinkAuthData);
+  const appId = useContextSelector(ChatBoxContext, (v) => v.appId);
+  const chatId = useContextSelector(ChatBoxContext, (v) => v.chatId);
+  const isChatting = useContextSelector(ChatBoxContext, (v) => v.isChatting);
+  const whisperConfig = useContextSelector(ChatBoxContext, (v) => v.whisperConfig);
+  const autoTTSResponse = useContextSelector(ChatBoxContext, (v) => v.autoTTSResponse);
+  const chatInputGuide = useContextSelector(ChatBoxContext, (v) => v.chatInputGuide);
+  const fileSelectConfig = useContextSelector(ChatBoxContext, (v) => v.fileSelectConfig);
 
   const fileCtrl = useFieldArray({
     control,
@@ -78,10 +75,11 @@ const ChatInput = ({
     replaceFiles,
     hasFileUploading
   } = useFileUpload({
-    outLinkAuthData,
-    chatId: chatId || '',
     fileSelectConfig,
-    fileCtrl
+    fileCtrl,
+    outLinkAuthData,
+    appId,
+    chatId
   });
   const havInput = !!inputValue || fileList.length > 0;
   const canSendMessage = havInput && !hasFileUploading;
@@ -109,7 +107,6 @@ const ChatInput = ({
   );
 
   /* whisper init */
-  const { whisperModel } = useSystemStore();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const {
     isSpeaking,
@@ -295,7 +292,7 @@ const ChatInput = ({
         />
         <Flex alignItems={'center'} position={'absolute'} right={[2, 4]} bottom={['10px', '12px']}>
           {/* voice-input */}
-          {whisperConfig.open && !inputValue && !isChatting && !!whisperModel && (
+          {whisperConfig?.open && !inputValue && !isChatting && (
             <>
               <canvas
                 ref={canvasRef}
@@ -432,8 +429,7 @@ const ChatInput = ({
       speakingTimeString,
       stopSpeak,
       t,
-      whisperConfig.open,
-      whisperModel
+      whisperConfig?.open
     ]
   );
 

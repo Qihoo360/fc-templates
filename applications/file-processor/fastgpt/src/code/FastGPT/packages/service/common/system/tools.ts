@@ -10,15 +10,14 @@ export const SERVICE_LOCAL_HOST =
 export const initFastGPTConfig = (config?: FastGPTConfigFileType) => {
   if (!config) return;
 
+  // Special config computed
+  config.feConfigs.showCustomPdfParse =
+    !!config.systemEnv.customPdfParse?.url || !!config.systemEnv.customPdfParse?.doc2xKey;
+  config.feConfigs.customPdfParsePrice = config.systemEnv.customPdfParse?.price || 0;
+
   global.feConfigs = config.feConfigs;
   global.systemEnv = config.systemEnv;
   global.subPlans = config.subPlans;
-
-  global.llmModels = config.llmModels;
-  global.vectorModels = config.vectorModels;
-  global.audioSpeechModels = config.audioSpeechModels;
-  global.whisperModel = config.whisperModel;
-  global.reRankModels = config.reRankModels;
 };
 
 export const systemStartCb = () => {

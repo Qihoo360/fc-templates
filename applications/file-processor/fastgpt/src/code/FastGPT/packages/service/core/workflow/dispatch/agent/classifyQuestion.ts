@@ -1,5 +1,8 @@
 import { chats2GPTMessages } from '@fastgpt/global/core/chat/adapt';
-import { countMessagesTokens } from '../../../../common/string/tiktoken/index';
+import {
+  countGptMessagesTokens,
+  countPromptTokens
+} from '../../../../common/string/tiktoken/index';
 import type { ChatItemType } from '@fastgpt/global/core/chat/type.d';
 import { ChatItemValueTypeEnum, ChatRoleEnum } from '@fastgpt/global/core/chat/constants';
 import { createChatCompletion } from '../../../ai/config';
@@ -10,7 +13,7 @@ import type { ModuleDispatchProps } from '@fastgpt/global/core/workflow/runtime/
 import { replaceVariable } from '@fastgpt/global/common/string/tools';
 import { Prompt_CQJson } from '@fastgpt/global/core/ai/prompt/agent';
 import { LLMModelItemType } from '@fastgpt/global/core/ai/model.d';
-import { ModelTypeEnum, getLLMModel } from '../../../ai/model';
+import { getLLMModel } from '../../../ai/model';
 import { getHistories } from '../utils';
 import { formatModelChars2Points } from '../../../../support/wallet/usage/utils';
 import { DispatchNodeResultType } from '@fastgpt/global/core/workflow/runtime/type';
@@ -18,6 +21,8 @@ import { chatValue2RuntimePrompt } from '@fastgpt/global/core/chat/adapt';
 import { getHandleId } from '@fastgpt/global/core/workflow/utils';
 import { loadRequestMessages } from '../../../chat/utils';
 import { llmCompletionsBodyFormat } from '../../../ai/utils';
+import { addLog } from '../../../../common/system/log';
+import { ModelTypeEnum } from '../../../../../global/core/ai/model';
 
 type Props = ModuleDispatchProps<{
   [NodeInputKeyEnum.aiModel]: string;
@@ -34,7 +39,7 @@ type ActionProps = Props & { cqModel: LLMModelItemType };
 /* request openai chat */
 export const dispatchClassifyQuestion = async (props: Props): Promise<CQResponse> => {
   const {
-    user,
+    externalProvider,
     node: { nodeId, name },
     histories,
     params: { model, history = 6, agents, userChatInput }
@@ -48,7 +53,7 @@ export const dispatchClassifyQuestion = async (props: Props): Promise<CQResponse
 
   const chatHistories = getHistories(history, histories);
 
-  const { arg, tokens } = await completions({
+  const { arg, inputTokens, outputTokens } = await completions({
     ...props,
     histories: chatHistories,
     cqModel
@@ -58,20 +63,22 @@ export const dispatchClassifyQuestion = async (props: Props): Promise<CQResponse
 
   const { totalPoints, modelName } = formatModelChars2Points({
     model: cqModel.model,
-    tokens,
+    inputTokens: inputTokens,
+    outputTokens: outputTokens,
     modelType: ModelTypeEnum.llm
   });
 
   return {
     [NodeOutputKeyEnum.cqResult]: result.value,
     [DispatchNodeResponseKeyEnum.skipHandleId]: agents
-      .filter((item) => item.key !== arg?.type)
+      .filter((item) => item.key !== result.key)
       .map((item) => getHandleId(nodeId, 'source', item.key)),
     [DispatchNodeResponseKeyEnum.nodeResponse]: {
-      totalPoints: user.openaiAccount?.key ? 0 : totalPoints,
+      totalPoints: externalProvider.openaiAccount?.key ? 0 : totalPoints,
       model: modelName,
       query: userChatInput,
-      tokens,
+      inputTokens: inputTokens,
+      outputTokens: outputTokens,
       cqList: agents,
       cqResult: result.value,
       contextTotalLen: chatHistories.length + 2
@@ -79,9 +86,10 @@ export const dispatchClassifyQuestion = async (props: Props): Promise<CQResponse
     [DispatchNodeResponseKeyEnum.nodeDispatchUsages]: [
       {
         moduleName: name,
-        totalPoints: user.openaiAccount?.key ? 0 : totalPoints,
+        totalPoints: externalProvider.openaiAccount?.key ? 0 : totalPoints,
         model: modelName,
-        tokens
+        inputTokens: inputTokens,
+        outputTokens: outputTokens
       }
     ]
   };
@@ -89,7 +97,7 @@ export const dispatchClassifyQuestion = async (props: Props): Promise<CQResponse
 
 const completions = async ({
   cqModel,
-  user,
+  externalProvider,
   histories,
   params: { agents, systemPrompt = '', userChatInput }
 }: ActionProps) => {
@@ -130,7 +138,7 @@ const completions = async ({
       },
       cqModel
     ),
-    userKey: user.openaiAccount
+    userKey: externalProvider.openaiAccount
   });
   const answer = data.choices?.[0].message?.content || '';
 
@@ -142,8 +150,13 @@ const completions = async ({
     agents.find((item) => answer.includes(item.value))?.key ||
     '';
 
+  if (!id) {
+    addLog.warn('Classify error', { answer });
+  }
+
   return {
-    tokens: await countMessagesTokens(messages),
+    inputTokens: await countGptMessagesTokens(requestMessages),
+    outputTokens: await countPromptTokens(answer),
     arg: { type: id }
   };
 };

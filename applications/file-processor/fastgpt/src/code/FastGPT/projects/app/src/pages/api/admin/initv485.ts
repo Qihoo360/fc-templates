@@ -63,7 +63,7 @@ async function initHttp(teamId?: string): Promise<any> {
           }
         }
       ],
-      { session }
+      { session, ordered: true }
     );
 
     /* 批量创建子插件 */
@@ -88,18 +88,19 @@ async function initHttp(teamId?: string): Promise<any> {
             }
           }
         ],
-        { session }
+        { session, ordered: true }
       );
       if (item.version === 'v2') {
         await MongoAppVersion.create(
           [
             {
+              tmbId: plugin.tmbId,
               appId: newPluginId,
               nodes: item.modules,
               edges: item.edges
             }
           ],
-          { session }
+          { session, ordered: true }
         );
       }
     }
@@ -159,19 +160,20 @@ async function initPlugin(teamId?: string): Promise<any> {
           }
         }
       ],
-      { session }
+      { session, ordered: true }
     );
 
     if (plugin.version === 'v2') {
       await MongoAppVersion.create(
         [
           {
+            tmbId: plugin.tmbId,
             appId: newPluginId,
             nodes: plugin.modules,
             edges: plugin.edges
           }
         ],
-        { session }
+        { session, ordered: true }
       );
     }
 

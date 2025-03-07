@@ -1,5 +1,8 @@
 import { addLog } from '../../../common/system/log';
 import { POST } from '../../../common/api/serverRequest';
+import { getDefaultRerankModel } from '../model';
+import { getAxiosConfig } from '../config';
+import { ReRankModelItemType } from '@fastgpt/global/core/ai/model.d';
 
 type PostReRankResponse = {
   id: string;
@@ -11,21 +14,26 @@ type PostReRankResponse = {
 type ReRankCallResult = { id: string; score?: number }[];
 
 export function reRankRecall({
+  model = getDefaultRerankModel(),
   query,
   documents
 }: {
+  model?: ReRankModelItemType;
   query: string;
   documents: { id: string; text: string }[];
 }): Promise<ReRankCallResult> {
-  const model = global.reRankModels[0];
-
-  if (!model || !model?.requestUrl) {
+  if (!model) {
     return Promise.reject('no rerank model');
   }
+  if (documents.length === 0) {
+    return Promise.resolve([]);
+  }
+
+  const { baseUrl, authorization } = getAxiosConfig();
 
   let start = Date.now();
   return POST<PostReRankResponse>(
-    model.requestUrl,
+    model.requestUrl ? model.requestUrl : `${baseUrl}/rerank`,
     {
       model: model.model,
       query,
@@ -33,7 +41,7 @@ export function reRankRecall({
     },
     {
       headers: {
-        Authorization: `Bearer ${model.requestAuth}`
+        Authorization: model.requestAuth ? `Bearer ${model.requestAuth}` : authorization
       },
       timeout: 30000
     }
@@ -51,9 +59,8 @@ export function reRankRecall({
       }));
     })
     .catch((err) => {
-      console.log(err);
       addLog.error('rerank error', err);
 
-      return [];
+      return Promise.reject(err);
     });
 }

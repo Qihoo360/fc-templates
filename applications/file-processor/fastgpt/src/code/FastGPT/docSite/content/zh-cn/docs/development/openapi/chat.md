@@ -7,6 +7,12 @@ toc: true
 weight: 852
 ---
 
+# 如何获取 AppId
+
+可在应用详情的路径里获取 AppId。
+
+![](/imgs/appid.png)
+
 # 发起对话
 
 {{% alert icon="🤖 " context="success" %}}
@@ -35,9 +41,10 @@ curl --location --request POST 'http://localhost:3000/api/v1/chat/completions' \
 --header 'Authorization: Bearer fastgpt-xxxxxx' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "chatId": "abcd",
+    "chatId": "my_chatId",
     "stream": false,
     "detail": false,
+    "responseChatItemId": "my_responseChatItemId",
     "variables": {
         "uid": "asdfadsfasfd2323",
         "name": "张三"
@@ -101,9 +108,10 @@ curl --location --request POST 'http://localhost:3000/api/v1/chat/completions' \
 {{% alert context="info" %}}
 - headers.Authorization: Bearer {{apikey}}
 - chatId: string | undefined 。
-  - 为 `undefined` 时（不传入），不使用 FastGpt 提供的上下文功能，完全通过传入的 messages 构建上下文。 不会将你的记录存储到数据库中，你也无法在记录汇总中查阅到。
-  - 为`非空字符串`时，意味着使用 chatId 进行对话，自动从 FastGpt 数据库取历史记录，并使用 messages 数组最后一个内容作为用户问题。请自行确保 chatId 唯一，长度小于250，通常可以是自己系统的对话框ID。
+  - 为 `undefined` 时（不传入），不使用 FastGpt 提供的上下文功能，完全通过传入的 messages 构建上下文。
+  - 为`非空字符串`时，意味着使用 chatId 进行对话，自动从 FastGpt 数据库取历史记录，并使用 messages 数组最后一个内容作为用户问题，其余 message 会被忽略。请自行确保 chatId 唯一，长度小于250，通常可以是自己系统的对话框ID。
 - messages: 结构与 [GPT接口](https://platform.openai.com/docs/api-reference/chat/object) chat模式一致。
+- responseChatItemId: string | undefined 。如果传入，则会将该值作为本次对话的响应消息的 ID，FastGPT 会自动将该 ID 存入数据库。请确保，在当前`chatId`下，`responseChatItemId`是唯一的。
 - detail: 是否返回中间值（模块状态，响应的完整结果等），`stream模式`下会通过`event`进行区分，`非stream模式`结果保存在`responseData`中。
 - variables: 模块变量，一个对象，会替换模块中，输入框内容里的`{{key}}`
 {{% /alert %}}
@@ -670,7 +678,7 @@ curl --location --request POST 'http://localhost:3000/api/core/chat/getHistories
     "appId": "appId",
     "offset": 0,
     "pageSize": 20,
-    "source: "api"
+    "source": "api"
 }'
 ```
 
@@ -684,7 +692,7 @@ curl --location --request POST 'http://localhost:3000/api/core/chat/getHistories
 - appId - 应用 Id
 - offset - 偏移量，即从第几条数据开始取
 - pageSize - 记录数量
-- source - 对话源
+- source - 对话源。source=api，表示获取通过 API 创建的对话（不会获取到页面上的对话记录）
 {{% /alert %}}
 
 {{< /markdownify >}}
@@ -863,6 +871,8 @@ curl --location --request DELETE 'http://localhost:3000/api/core/chat/delHistory
 {{< /tabs >}}
 
 ### 清空所有历史记录
+
+仅会情况通过 API Key 创建的对话历史记录，不会清空在线使用、分享链接等其他来源的对话历史记录。
 
 {{< tabs tabTotal="3" >}}
 {{< tab tabName="请求示例" >}}
@@ -1311,6 +1321,83 @@ curl --location --request POST 'http://localhost:3000/api/core/chat/feedback/upd
 
 ## 猜你想问
 
+**4.8.16 后新版接口**
+
+新版猜你想问，必须包含 appId 和 chatId 的参数才可以进行使用。会自动根据 chatId 去拉取最近 6 轮对话记录作为上下文来引导回答。
+
+{{< tabs tabTotal="3" >}}
+{{< tab tabName="请求示例" >}}
+{{< markdownify >}}
+
+```bash
+curl --location --request POST 'http://localhost:3000/api/core/ai/agent/v2/createQuestionGuide' \
+--header 'Authorization: Bearer {{apikey}}' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "appId": "appId",
+    "chatId": "chatId",
+    "questionGuide": {
+        "open": true,
+        "model": "GPT-4o-mini",
+        "customPrompt": "你是一个智能助手，请根据用户的问题生成猜你想问。"
+    }
+}'
+```
+
+{{< /markdownify >}}
+{{< /tab >}}
+
+{{< tab tabName="参数说明" >}}
+{{< markdownify >}}
+
+{{% alert icon=" " context="success" %}}
+
+| 参数名 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| appId | string | ✅ | 应用 Id |
+| chatId | string | ✅ | 对话 Id |
+| questionGuide | object |  | 自定义配置，不传的话，则会根据 appId，取最新发布版本的配置 |
+
+```ts
+type CreateQuestionGuideParams = OutLinkChatAuthProps & {
+  appId: string;
+  chatId: string;
+  questionGuide?: {
+    open: boolean;
+    model?: string;
+    customPrompt?: string;
+  };
+};
+```
+
+{{% /alert %}}
+
+{{< /markdownify >}}
+{{< /tab >}}
+
+{{< tab tabName="响应示例" >}}
+{{< markdownify >}}
+
+```json
+{
+    "code": 200,
+    "statusText": "",
+    "message": "",
+    "data": [
+        "你对AI有什么看法？",
+        "想了解AI的应用吗？",
+        "你希望AI能做什么？"
+    ]
+}
+```
+{{< /markdownify >}}
+{{< /tab >}}
+{{< /tabs >}}
+
+---
+
+**4.8.16 前旧版接口：**
+
 {{< tabs tabTotal="3" >}}
 {{< tab tabName="请求示例" >}}
 {{< markdownify >}}
@@ -1364,6 +1451,8 @@ curl --location --request POST 'http://localhost:3000/api/core/ai/agent/createQu
 {{< /markdownify >}}
 {{< /tab >}}
 {{< /tabs >}}
+
+
 
 
 

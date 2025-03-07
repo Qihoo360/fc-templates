@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { useToast } from '@fastgpt/web/hooks/useToast';
 import { getErrText } from '@fastgpt/global/common/error/utils';
 import type { AppTTSConfigType } from '@fastgpt/global/core/app/type.d';
@@ -10,17 +10,19 @@ import type { OutLinkChatAuthProps } from '@fastgpt/global/support/permission/ch
 import { useMount } from 'ahooks';
 import { getWebReqUrl } from '@fastgpt/web/common/system/utils';
 
-const contentType = 'audio/mpeg';
 const splitMarker = 'SPLIT_MARKER';
+const contentType = 'audio/mpeg';
 
 // 添加 MediaSource 支持检测函数
 const isMediaSourceSupported = () => {
   return typeof MediaSource !== 'undefined' && MediaSource.isTypeSupported?.(contentType);
 };
 
-export const useAudioPlay = (props?: OutLinkChatAuthProps & { ttsConfig?: AppTTSConfigType }) => {
+export const useAudioPlay = (
+  props?: OutLinkChatAuthProps & { appId: string; ttsConfig?: AppTTSConfigType }
+) => {
   const { t } = useTranslation();
-  const { ttsConfig, shareId, outLinkUid, teamId, teamToken } = props || {};
+  const { appId, ttsConfig, shareId, outLinkUid, teamId, teamToken } = props || {};
   const { toast } = useToast();
   const audioRef = useRef<HTMLAudioElement>();
   const [audioLoading, setAudioLoading] = useState(false);
@@ -53,6 +55,7 @@ export const useAudioPlay = (props?: OutLinkChatAuthProps & { ttsConfig?: AppTTS
         },
         signal: audioController.current.signal,
         body: JSON.stringify({
+          appId,
           ttsConfig,
           input: input.trim(),
           shareId,
@@ -66,15 +69,11 @@ export const useAudioPlay = (props?: OutLinkChatAuthProps & { ttsConfig?: AppTTS
 
       if (!response.body || !response.ok) {
         const data = await response.json();
-        toast({
-          status: 'error',
-          title: getErrText(data, t('common:core.chat.Audio Speech Error'))
-        });
         return Promise.reject(data);
       }
       return response.body;
     },
-    [outLinkUid, shareId, t, teamId, teamToken, toast, ttsConfig]
+    [appId, outLinkUid, shareId, t, teamId, teamToken, toast, ttsConfig]
   );
   const playWebAudio = useCallback((text: string) => {
     // window speech
@@ -100,7 +99,7 @@ export const useAudioPlay = (props?: OutLinkChatAuthProps & { ttsConfig?: AppTTS
   const cancelAudio = useCallback(() => {
     try {
       window.speechSynthesis?.cancel();
-      audioController.current.abort('');
+      !audioController.current.signal.aborted && audioController.current.abort();
     } catch (error) {}
     if (audioRef.current) {
       audioRef.current.pause();
@@ -118,6 +117,7 @@ export const useAudioPlay = (props?: OutLinkChatAuthProps & { ttsConfig?: AppTTS
         audioRef.current.src = audioUrl;
         audioRef.current.play();
       };
+
       const readAudioStream = (stream: ReadableStream<Uint8Array>) => {
         if (!audioRef.current) return;
 
@@ -178,7 +178,7 @@ export const useAudioPlay = (props?: OutLinkChatAuthProps & { ttsConfig?: AppTTS
 
               await new Promise((resolve) => {
                 sourceBuffer.onupdateend = resolve;
-                sourceBuffer.appendBuffer(value.buffer);
+                sourceBuffer.appendBuffer(value.buffer as any);
               });
             }
           } catch (error) {
@@ -272,7 +272,7 @@ export const useAudioPlay = (props?: OutLinkChatAuthProps & { ttsConfig?: AppTTS
     });
     const sourceBuffer = ms.addSourceBuffer(contentType);
     segmentedSourceBuffer.current = sourceBuffer;
-  }, [cancelAudio, t, toast]);
+  }, [cancelAudio]);
   const finishSegmentedAudio = useCallback(() => {
     if (!isMediaSourceSupported()) {
       // 不支持 MediaSource 时，不需要特殊处理
@@ -311,7 +311,7 @@ export const useAudioPlay = (props?: OutLinkChatAuthProps & { ttsConfig?: AppTTS
 
             await new Promise((resolve) => {
               buffer.onupdateend = resolve;
-              buffer.appendBuffer(value.buffer);
+              buffer.appendBuffer(value.buffer as any);
             });
           }
         } catch (error) {
@@ -391,7 +391,7 @@ export const useAudioPlay = (props?: OutLinkChatAuthProps & { ttsConfig?: AppTTS
         playWebAudio(text);
       }
     },
-    [appendAudioStream, playWebAudio, ttsConfig?.model, ttsConfig?.type]
+    [appendAudioStream, getAudioStream, playWebAudio, ttsConfig?.model, ttsConfig?.type]
   );
 
   // listen audio status

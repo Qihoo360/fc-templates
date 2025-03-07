@@ -1,7 +1,8 @@
 import { detect } from 'jschardet';
-import { documentFileType, imageFileType } from './constants';
+import { documentFileType } from './constants';
 import { ChatFileTypeEnum } from '../../core/chat/constants';
 import { UserChatItemValueItemType } from '../../core/chat/type';
+import * as fs from 'fs';
 
 export const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 B';
@@ -16,39 +17,70 @@ export const formatFileSize = (bytes: number): string => {
 export const detectFileEncoding = (buffer: Buffer) => {
   return detect(buffer.slice(0, 200))?.encoding?.toLocaleLowerCase();
 };
+export const detectFileEncodingByPath = async (path: string) => {
+  // Get 64KB file head
+  const MAX_BYTES = 64 * 1024;
+  const buffer = Buffer.alloc(MAX_BYTES);
+
+  const fd = await fs.promises.open(path, 'r');
+  try {
+    // Read file head
+    // @ts-ignore
+    const { bytesRead } = await fd.read(buffer, 0, MAX_BYTES, 0);
+    const actualBuffer = buffer.slice(0, bytesRead);
+
+    return detect(actualBuffer)?.encoding?.toLocaleLowerCase();
+  } finally {
+    await fd.close();
+  }
+};
 
 // Url => user upload file type
 export const parseUrlToFileType = (url: string): UserChatItemValueItemType['file'] | undefined => {
   if (typeof url !== 'string') return;
-  const parseUrl = new URL(url, 'https://locaohost:3000');
 
-  const filename = (() => {
-    // Old version file url: https://xxx.com/file/read?filename=xxx.pdf
-    const filenameQuery = parseUrl.searchParams.get('filename');
-    if (filenameQuery) return filenameQuery;
+  // Handle base64 image
+  if (url.startsWith('data:')) {
+    const matches = url.match(/^data:([^;]+);base64,/);
+    if (!matches) return;
 
-    // Common file： https://xxx.com/xxx.pdf?xxxx=xxx
-    const pathname = parseUrl.pathname;
-    if (pathname) return pathname.split('/').pop();
-  })();
+    const mimeType = matches[1].toLowerCase();
+    if (!mimeType.startsWith('image/')) return;
 
-  if (!filename) return;
-
-  const extension = filename.split('.').pop()?.toLowerCase() || '';
-
-  if (!extension) return;
-
-  if (documentFileType.includes(extension)) {
+    const extension = mimeType.split('/')[1];
     return {
-      type: ChatFileTypeEnum.file,
-      name: filename,
+      type: ChatFileTypeEnum.image,
+      name: `image.${extension}`,
       url
     };
   }
-  if (imageFileType.includes(extension)) {
+
+  try {
+    const parseUrl = new URL(url, 'https://localhost:3000');
+
+    // Get filename from URL
+    const filename = parseUrl.searchParams.get('filename') || parseUrl.pathname.split('/').pop();
+    const extension = filename?.split('.').pop()?.toLowerCase() || '';
+
+    // If it's a document type, return as file, otherwise treat as image
+    if (extension && documentFileType.includes(extension)) {
+      return {
+        type: ChatFileTypeEnum.file,
+        name: filename || 'null',
+        url
+      };
+    }
+
+    // Default to image type for non-document files
     return {
       type: ChatFileTypeEnum.image,
-      name: filename,
+      name: filename || 'null.png',
+      url
+    };
+  } catch (error) {
+    return {
+      type: ChatFileTypeEnum.image,
+      name: 'invalid.png',
       url
     };
   }

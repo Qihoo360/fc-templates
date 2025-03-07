@@ -4,7 +4,6 @@ import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
 import { useTranslation } from 'next-i18next';
 import { useToast } from './useToast';
 import { getErrText } from '@fastgpt/global/common/error/utils';
-
 import {
   useBoolean,
   useLockFn,
@@ -14,37 +13,33 @@ import {
   useThrottleEffect
 } from 'ahooks';
 
+import { PaginationProps, PaginationResponse } from '../common/fetch/type';
+
 const thresholdVal = 200;
 
-type PagingData<T> = {
-  pageNum: number;
-  pageSize: number;
-  data: T[];
-  total?: number;
-};
-
-export function usePagination<ResT = any>({
-  api,
-  pageSize = 10,
-  params = {},
-  defaultRequest = true,
-  type = 'button',
-  onChange,
-  refreshDeps,
-  scrollLoadType = 'bottom',
-  EmptyTip
-}: {
-  api: (data: any) => Promise<PagingData<ResT>>;
-  pageSize?: number;
-  params?: Record<string, any>;
-  defaultRequest?: boolean;
-  type?: 'button' | 'scroll';
-  onChange?: (pageNum: number) => void;
-  refreshDeps?: any[];
-  throttleWait?: number;
-  scrollLoadType?: 'top' | 'bottom';
-  EmptyTip?: React.JSX.Element;
-}) {
+export function usePagination<DataT, ResT = {}>(
+  api: (data: PaginationProps<DataT>) => Promise<PaginationResponse<ResT>>,
+  {
+    pageSize = 10,
+    params,
+    defaultRequest = true,
+    type = 'button',
+    onChange,
+    refreshDeps,
+    scrollLoadType = 'bottom',
+    EmptyTip
+  }: {
+    pageSize?: number;
+    params?: DataT;
+    defaultRequest?: boolean;
+    type?: 'button' | 'scroll';
+    onChange?: (pageNum: number) => void;
+    refreshDeps?: any[];
+    throttleWait?: number;
+    scrollLoadType?: 'top' | 'bottom';
+    EmptyTip?: React.JSX.Element;
+  }
+) {
   const { toast } = useToast();
   const { t } = useTranslation();
 
@@ -58,13 +53,13 @@ export function usePagination<ResT = any>({
   const isEmpty = total === 0 && !isLoading;
   const noMore = data.length >= totalDataLength;
 
-  const fetchData = useLockFn(
+  const fetchData = useMemoizedFn(
     async (num: number = pageNum, ScrollContainerRef?: RefObject<HTMLDivElement>) => {
       if (noMore && num !== 1) return;
       setTrue();
 
       try {
-        const res: PagingData<ResT> = await api({
+        const res = await api({
           pageNum: num,
           pageSize,
           ...params
@@ -93,22 +88,23 @@ export function usePagination<ResT = any>({
               );
             }
 
-            setData((prevData) => (num === 1 ? res.data : [...res.data, ...prevData]));
+            setData((prevData) => (num === 1 ? res.list : [...res.list, ...prevData]));
             adjustScrollPosition();
           } else {
-            setData((prevData) => (num === 1 ? res.data : [...prevData, ...res.data]));
+            setData((prevData) => (num === 1 ? res.list : [...prevData, ...res.list]));
           }
         } else {
-          setData(res.data);
+          setData(res.list);
         }
 
         onChange?.(num);
       } catch (error: any) {
-        toast({
-          title: getErrText(error, t('common:core.chat.error.data_error')),
-          status: 'error'
-        });
-        console.log(error);
+        if (error.code !== 'ERR_CANCELED') {
+          toast({
+            title: getErrText(error, t('common:core.chat.error.data_error')),
+            status: 'error'
+          });
+        }
       }
 
       setFalse();
@@ -251,7 +247,6 @@ export function usePagination<ResT = any>({
   // Reload data
   const { runAsync: refresh } = useRequest(
     async () => {
-      setData([]);
       defaultRequest && fetchData(1);
     },
     {

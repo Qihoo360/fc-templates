@@ -1,6 +1,6 @@
 import type { NextApiRequest } from 'next';
 import { findCollectionAndChild } from '@fastgpt/service/core/dataset/collection/utils';
-import { delCollectionAndRelatedSources } from '@fastgpt/service/core/dataset/collection/controller';
+import { delCollection } from '@fastgpt/service/core/dataset/collection/controller';
 import { authDatasetCollection } from '@fastgpt/service/support/permission/dataset/auth';
 import { mongoSessionRun } from '@fastgpt/service/common/mongo/sessionRun';
 import { NextAPI } from '@/service/middleware/entry';
@@ -25,15 +25,17 @@ async function handler(req: NextApiRequest) {
   // find all delete id
   const collections = await findCollectionAndChild({
     teamId,
-    datasetId: collection.datasetId._id,
+    datasetId: collection.datasetId,
     collectionId,
     fields: '_id teamId datasetId fileId metadata'
   });
 
   // delete
   await mongoSessionRun((session) =>
-    delCollectionAndRelatedSources({
+    delCollection({
       collections,
+      delImg: true,
+      delFile: true,
       session
     })
   );

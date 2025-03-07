@@ -1,9 +1,10 @@
 import { chats2GPTMessages } from '@fastgpt/global/core/chat/adapt';
-import { filterGPTMessageByMaxTokens, loadRequestMessages } from '../../../chat/utils';
+import { filterGPTMessageByMaxContext, loadRequestMessages } from '../../../chat/utils';
 import type { ChatItemType } from '@fastgpt/global/core/chat/type.d';
 import {
   countMessagesTokens,
-  countGptMessagesTokens
+  countGptMessagesTokens,
+  countPromptTokens
 } from '../../../../common/string/tiktoken/index';
 import { ChatItemValueTypeEnum, ChatRoleEnum } from '@fastgpt/global/core/chat/constants';
 import { createChatCompletion } from '../../../ai/config';
@@ -15,7 +16,7 @@ import { Prompt_ExtractJson } from '@fastgpt/global/core/ai/prompt/agent';
 import { replaceVariable, sliceJsonStr } from '@fastgpt/global/common/string/tools';
 import { LLMModelItemType } from '@fastgpt/global/core/ai/model.d';
 import { getHistories } from '../utils';
-import { ModelTypeEnum, getLLMModel } from '../../../ai/model';
+import { getLLMModel } from '../../../ai/model';
 import { formatModelChars2Points } from '../../../../support/wallet/usage/utils';
 import json5 from 'json5';
 import {
@@ -27,6 +28,7 @@ import { ChatCompletionRequestMessageRoleEnum } from '@fastgpt/global/core/ai/co
 import { DispatchNodeResultType } from '@fastgpt/global/core/workflow/runtime/type';
 import { chatValue2RuntimePrompt } from '@fastgpt/global/core/chat/adapt';
 import { llmCompletionsBodyFormat } from '../../../ai/utils';
+import { ModelTypeEnum } from '../../../../../global/core/ai/model';
 
 type Props = ModuleDispatchProps<{
   [NodeInputKeyEnum.history]?: ChatItemType[];
@@ -46,7 +48,7 @@ const agentFunName = 'request_function';
 
 export async function dispatchContentExtract(props: Props): Promise<Response> {
   const {
-    user,
+    externalProvider,
     node: { name },
     histories,
     params: { content, history = 6, model, description, extractKeys }
@@ -59,7 +61,7 @@ export async function dispatchContentExtract(props: Props): Promise<Response> {
   const extractModel = getLLMModel(model);
   const chatHistories = getHistories(history, histories);
 
-  const { arg, tokens } = await (async () => {
+  const { arg, inputTokens, outputTokens } = await (async () => {
     if (extractModel.toolChoice) {
       return toolChoice({
         ...props,
@@ -114,7 +116,8 @@ export async function dispatchContentExtract(props: Props): Promise<Response> {
 
   const { totalPoints, modelName } = formatModelChars2Points({
     model: extractModel.model,
-    tokens,
+    inputTokens: inputTokens,
+    outputTokens: outputTokens,
     modelType: ModelTypeEnum.llm
   });
 
@@ -123,10 +126,11 @@ export async function dispatchContentExtract(props: Props): Promise<Response> {
     [NodeOutputKeyEnum.contextExtractFields]: JSON.stringify(arg),
     ...arg,
     [DispatchNodeResponseKeyEnum.nodeResponse]: {
-      totalPoints: user.openaiAccount?.key ? 0 : totalPoints,
+      totalPoints: externalProvider.openaiAccount?.key ? 0 : totalPoints,
       model: modelName,
       query: content,
-      tokens,
+      inputTokens,
+      outputTokens,
       extractDescription: description,
       extractResult: arg,
       contextTotalLen: chatHistories.length + 2
@@ -134,9 +138,10 @@ export async function dispatchContentExtract(props: Props): Promise<Response> {
     [DispatchNodeResponseKeyEnum.nodeDispatchUsages]: [
       {
         moduleName: name,
-        totalPoints: user.openaiAccount?.key ? 0 : totalPoints,
+        totalPoints: externalProvider.openaiAccount?.key ? 0 : totalPoints,
         model: modelName,
-        tokens
+        inputTokens,
+        outputTokens
       }
     ]
   };
@@ -170,9 +175,9 @@ ${description ? `- ${description}` : ''}
     }
   ];
   const adaptMessages = chats2GPTMessages({ messages, reserveId: false });
-  const filterMessages = await filterGPTMessageByMaxTokens({
+  const filterMessages = await filterGPTMessageByMaxContext({
     messages: adaptMessages,
-    maxTokens: extractModel.maxContext
+    maxContext: extractModel.maxContext
   });
   const requestMessages = await loadRequestMessages({
     messages: filterMessages,
@@ -211,7 +216,7 @@ ${description ? `- ${description}` : ''}
 };
 
 const toolChoice = async (props: ActionProps) => {
-  const { user, extractModel } = props;
+  const { externalProvider, extractModel } = props;
 
   const { filterMessages, agentFunction } = await getFunctionCallSchema(props);
 
@@ -233,7 +238,7 @@ const toolChoice = async (props: ActionProps) => {
       },
       extractModel
     ),
-    userKey: user.openaiAccount
+    userKey: externalProvider.openaiAccount
   });
 
   const arg: Record<string, any> = (() => {
@@ -249,21 +254,24 @@ const toolChoice = async (props: ActionProps) => {
     }
   })();
 
-  const completeMessages: ChatCompletionMessageParam[] = [
-    ...filterMessages,
+  const AIMessages: ChatCompletionMessageParam[] = [
     {
       role: ChatCompletionRequestMessageRoleEnum.Assistant,
       tool_calls: response.choices?.[0]?.message?.tool_calls
     }
   ];
+
+  const inputTokens = await countGptMessagesTokens(filterMessages, tools);
+  const outputTokens = await countGptMessagesTokens(AIMessages);
   return {
-    tokens: await countGptMessagesTokens(completeMessages, tools),
+    inputTokens,
+    outputTokens,
     arg
   };
 };
 
 const functionCall = async (props: ActionProps) => {
-  const { user, extractModel } = props;
+  const { externalProvider, extractModel } = props;
 
   const { agentFunction, filterMessages } = await getFunctionCallSchema(props);
   const functions: ChatCompletionCreateParams.Function[] = [agentFunction];
@@ -281,22 +289,26 @@ const functionCall = async (props: ActionProps) => {
       },
       extractModel
     ),
-    userKey: user.openaiAccount
+    userKey: externalProvider.openaiAccount
   });
 
   try {
     const arg = JSON.parse(response?.choices?.[0]?.message?.function_call?.arguments || '');
-    const completeMessages: ChatCompletionMessageParam[] = [
-      ...filterMessages,
+
+    const AIMessages: ChatCompletionMessageParam[] = [
       {
         role: ChatCompletionRequestMessageRoleEnum.Assistant,
         function_call: response.choices?.[0]?.message?.function_call
       }
     ];
 
+    const inputTokens = await countGptMessagesTokens(filterMessages, undefined, functions);
+    const outputTokens = await countGptMessagesTokens(AIMessages);
+
     return {
       arg,
-      tokens: await countGptMessagesTokens(completeMessages, undefined, functions)
+      inputTokens,
+      outputTokens
     };
   } catch (error) {
     console.log(response.choices?.[0]?.message);
@@ -305,14 +317,15 @@ const functionCall = async (props: ActionProps) => {
 
     return {
       arg: {},
-      tokens: 0
+      inputTokens: 0,
+      outputTokens: 0
     };
   }
 };
 
 const completions = async ({
   extractModel,
-  user,
+  externalProvider,
   histories,
   params: { content, extractKeys, description = 'No special requirements' }
 }: ActionProps) => {
@@ -360,7 +373,7 @@ Human: ${content}`
       },
       extractModel
     ),
-    userKey: user.openaiAccount
+    userKey: externalProvider.openaiAccount
   });
   const answer = data.choices?.[0].message?.content || '';
 
@@ -370,7 +383,8 @@ Human: ${content}`
   if (!jsonStr) {
     return {
       rawResponse: answer,
-      tokens: await countMessagesTokens(messages),
+      inputTokens: await countMessagesTokens(messages),
+      outputTokens: await countPromptTokens(answer),
       arg: {}
     };
   }
@@ -378,7 +392,8 @@ Human: ${content}`
   try {
     return {
       rawResponse: answer,
-      tokens: await countMessagesTokens(messages),
+      inputTokens: await countMessagesTokens(messages),
+      outputTokens: await countPromptTokens(answer),
       arg: json5.parse(jsonStr) as Record<string, any>
     };
   } catch (error) {
@@ -386,7 +401,8 @@ Human: ${content}`
     console.log(error);
     return {
       rawResponse: answer,
-      tokens: await countMessagesTokens(messages),
+      inputTokens: await countMessagesTokens(messages),
+      outputTokens: await countPromptTokens(answer),
       arg: {}
     };
   }

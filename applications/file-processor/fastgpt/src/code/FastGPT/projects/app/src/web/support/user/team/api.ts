@@ -1,10 +1,15 @@
 import { GET, POST, PUT, DELETE } from '@/web/common/api/request';
-import { UpdatePermissionBody } from '@fastgpt/global/support/permission/collaborator';
+import {
+  CollaboratorItemType,
+  DeletePermissionQuery,
+  UpdateClbPermissionProps
+} from '@fastgpt/global/support/permission/collaborator';
 import {
   CreateTeamProps,
   InviteMemberProps,
   InviteMemberResponse,
   UpdateInviteProps,
+  UpdateStatusProps,
   UpdateTeamProps
 } from '@fastgpt/global/support/user/team/controller.d';
 import type { TeamTagItemType, TeamTagSchema } from '@fastgpt/global/support/user/team/type';
@@ -15,7 +20,7 @@ import {
 } from '@fastgpt/global/support/user/team/type.d';
 import { FeTeamPlanStatusType, TeamSubSchema } from '@fastgpt/global/support/wallet/sub/type';
 import { TeamInvoiceHeaderType } from '@fastgpt/global/support/user/team/type';
-import { ResourcePermissionType } from '@fastgpt/global/support/permission/type';
+import { PaginationProps, PaginationResponse } from '@fastgpt/web/common/fetch/type';
 
 /* --------------- team  ---------------- */
 export const getTeamList = (status: `${TeamMemberSchema['status']}`) =>
@@ -27,8 +32,8 @@ export const putSwitchTeam = (teamId: string) =>
   PUT<string>(`/proApi/support/user/team/switch`, { teamId });
 
 /* --------------- team member ---------------- */
-export const getTeamMembers = () =>
-  GET<TeamMemberItemType[]>(`/proApi/support/user/team/member/list`);
+export const getTeamMembers = (props: PaginationProps<{ withLeaved?: boolean }>) =>
+  GET<PaginationResponse<TeamMemberItemType>>(`/proApi/support/user/team/member/list`, props);
 export const postInviteTeamMember = (data: InviteMemberProps) =>
   POST<InviteMemberResponse>(`/proApi/support/user/team/member/invite`, data);
 export const putUpdateMemberName = (name: string) =>
@@ -37,15 +42,17 @@ export const delRemoveMember = (tmbId: string) =>
   DELETE(`/proApi/support/user/team/member/delete`, { tmbId });
 export const updateInviteResult = (data: UpdateInviteProps) =>
   PUT('/proApi/support/user/team/member/updateInvite', data);
-export const delLeaveTeam = (teamId: string) =>
-  DELETE('/proApi/support/user/team/member/leave', { teamId });
-
-export const getTeamClbs = () =>
-  GET<ResourcePermissionType[]>(`/proApi/support/user/team/collaborator/list`);
+export const updateStatus = (data: UpdateStatusProps) =>
+  PUT('/proApi/support/user/team/member/updateStatus', data);
+export const delLeaveTeam = () => DELETE('/proApi/support/user/team/member/leave');
 
 /* -------------- team collaborator -------------------- */
-export const updateMemberPermission = (data: UpdatePermissionBody) =>
-  PUT('/proApi/support/user/team/collaborator/updatePermission', data);
+export const getTeamClbs = () =>
+  GET<CollaboratorItemType[]>(`/proApi/support/user/team/collaborator/list`);
+export const updateMemberPermission = (data: UpdateClbPermissionProps) =>
+  PUT('/proApi/support/user/team/collaborator/update', data);
+export const deleteMemberPermission = (id: DeletePermissionQuery) =>
+  DELETE('/proApi/support/user/team/collaborator/delete', id);
 
 /* --------------- team tags ---------------- */
 export const getTeamsTags = () => GET<TeamTagSchema[]>(`/proApi/support/user/team/tag/list`);

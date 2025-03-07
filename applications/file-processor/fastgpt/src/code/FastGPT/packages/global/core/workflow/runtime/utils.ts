@@ -1,5 +1,5 @@
 import { ChatCompletionRequestMessageRoleEnum } from '../../ai/constants';
-import { NodeInputKeyEnum, NodeOutputKeyEnum } from '../constants';
+import { NodeInputKeyEnum, NodeOutputKeyEnum, WorkflowIOValueTypeEnum } from '../constants';
 import { FlowNodeTypeEnum } from '../node/constant';
 import { StoreNodeItemType } from '../type/node';
 import { StoreEdgeItemType } from '../type/edge';
@@ -9,6 +9,8 @@ import { isValidReferenceValueFormat } from '../utils';
 import { FlowNodeOutputItemType, ReferenceValueType } from '../type/io';
 import { ChatItemType, NodeOutputItemType } from '../../../core/chat/type';
 import { ChatItemValueTypeEnum, ChatRoleEnum } from '../../../core/chat/constants';
+import { replaceVariable, valToStr } from '../../../common/string/tools';
+import { ChatCompletionChunk } from 'openai/resources';
 
 export const getMaxHistoryLimitFromNodes = (nodes: StoreNodeItemType[]): number => {
   let limit = 10;
@@ -175,6 +177,7 @@ export const checkNodeRunStatus = ({
       }
       visited.add(edge.source);
 
+      // 递归检测后面的 edge，如果有其中一个成环，则返回 true
       const nextEdges = allEdges.filter((item) => item.target === edge.source);
       return nextEdges.some((nextEdge) => checkIsCircular(nextEdge, new Set(visited)));
     };
@@ -206,20 +209,28 @@ export const checkNodeRunStatus = ({
     currentNode: node
   });
 
-  // check skip（其中一组边，全 skip）
+  // check active（其中一组边，至少有一个 active，且没有 waiting 即可运行）
+  if (
+    commonEdges.length > 0 &&
+    commonEdges.some((item) => item.status === 'active') &&
+    commonEdges.every((item) => item.status !== 'waiting')
+  ) {
+    return 'run';
+  }
+  if (
+    recursiveEdges.length > 0 &&
+    recursiveEdges.some((item) => item.status === 'active') &&
+    recursiveEdges.every((item) => item.status !== 'waiting')
+  ) {
+    return 'run';
+  }
+
+  // check skip（其中一组边，全是 skiped 则跳过运行）
   if (commonEdges.length > 0 && commonEdges.every((item) => item.status === 'skipped')) {
     return 'skip';
   }
   if (recursiveEdges.length > 0 && recursiveEdges.every((item) => item.status === 'skipped')) {
     return 'skip';
-  }
-
-  // check active（有一类边，不全是 wait 即可运行）
-  if (commonEdges.length > 0 && commonEdges.every((item) => item.status !== 'waiting')) {
-    return 'run';
-  }
-  if (recursiveEdges.length > 0 && recursiveEdges.every((item) => item.status !== 'waiting')) {
-    return 'run';
   }
 
   return 'wait';
@@ -251,6 +262,7 @@ export const getReferenceVariableValue = ({
       return variables[outputId];
     }
 
+    // 避免 value 刚好就是二个元素的字符串数组
     const node = nodes.find((node) => node.nodeId === sourceNodeId);
     if (!node) {
       return value;
@@ -279,83 +291,87 @@ export const getReferenceVariableValue = ({
   return value;
 };
 
+export const formatVariableValByType = (val: any, valueType?: WorkflowIOValueTypeEnum) => {
+  if (!valueType) return val;
+  if (val === undefined || val === null) return;
+  // Value type check, If valueType invalid, return undefined
+  if (valueType.startsWith('array') && !Array.isArray(val)) return undefined;
+  if (valueType === WorkflowIOValueTypeEnum.boolean) return Boolean(val);
+  if (valueType === WorkflowIOValueTypeEnum.number) return Number(val);
+  if (valueType === WorkflowIOValueTypeEnum.string) {
+    return typeof val === 'object' ? JSON.stringify(val) : String(val);
+  }
+  if (
+    [
+      WorkflowIOValueTypeEnum.object,
+      WorkflowIOValueTypeEnum.chatHistory,
+      WorkflowIOValueTypeEnum.datasetQuote,
+      WorkflowIOValueTypeEnum.selectApp,
+      WorkflowIOValueTypeEnum.selectDataset
+    ].includes(valueType) &&
+    typeof val !== 'object'
+  )
+    return undefined;
+
+  return val;
+};
 // replace {{$xx.xx$}} variables for text
 export function replaceEditorVariable({
   text,
   nodes,
-  variables,
-  runningNode
+  variables
 }: {
   text: any;
   nodes: RuntimeNodeItemType[];
   variables: Record<string, any>; // global variables
-  runningNode: RuntimeNodeItemType;
 }) {
   if (typeof text !== 'string') return text;
 
-  const globalVariables = Object.keys(variables).map((key) => {
-    return {
-      nodeId: VARIABLE_NODE_ID,
-      id: key,
-      value: variables[key]
-    };
-  });
+  text = replaceVariable(text, variables);
 
-  // Upstream node outputs
-  const nodeVariables = nodes
-    .map((node) => {
-      return node.outputs.map((output) => {
-        return {
-          nodeId: node.nodeId,
-          id: output.id,
-          value: output.value
-        };
-      });
-    })
-    .flat();
+  const variablePattern = /\{\{\$([^.]+)\.([^$]+)\$\}\}/g;
+  const matches = [...text.matchAll(variablePattern)];
+  if (matches.length === 0) return text;
 
-  // Get runningNode inputs(Will be replaced with reference)
-  const customInputs = runningNode.inputs.flatMap((item) => {
-    return [
-      {
-        id: item.key,
-        value: getReferenceVariableValue({
-          value: item.value,
-          nodes,
-          variables
-        }),
-        nodeId: runningNode.nodeId
+  matches.forEach((match) => {
+    const nodeId = match[1];
+    const id = match[2];
+
+    const variableVal = (() => {
+      if (nodeId === VARIABLE_NODE_ID) {
+        return variables[id];
       }
-    ];
-  });
+      // Find upstream node input/output
+      const node = nodes.find((node) => node.nodeId === nodeId);
+      if (!node) return;
 
-  const allVariables = [...globalVariables, ...nodeVariables, ...customInputs];
+      const output = node.outputs.find((output) => output.id === id);
+      if (output) return formatVariableValByType(output.value, output.valueType);
 
-  // Replace {{$xxx.xxx$}} to value
-  for (const key in allVariables) {
-    const variable = allVariables[key];
-    const val = variable.value;
-    const formatVal = (() => {
-      if (val === undefined) return '';
-      if (val === null) return 'null';
-
-      return typeof val === 'object' ? JSON.stringify(val) : String(val);
+      // Use the node's input as the variable value(Example: HTTP data will reference its own dynamic input)
+      const input = node.inputs.find((input) => input.key === id);
+      if (input) return getReferenceVariableValue({ value: input.value, nodes, variables });
     })();
 
-    const regex = new RegExp(`\\{\\{\\$(${variable.nodeId}\\.${variable.id})\\$\\}\\}`, 'g');
-    text = text.replace(regex, formatVal);
-  }
+    const formatVal = valToStr(variableVal);
+
+    const regex = new RegExp(`\\{\\{\\$(${nodeId}\\.${id})\\$\\}\\}`, 'g');
+    text = text.replace(regex, () => formatVal);
+  });
+
   return text || '';
 }
 
 export const textAdaptGptResponse = ({
   text,
+  reasoning_content,
   model = '',
   finish_reason = null,
   extraData = {}
 }: {
   model?: string;
-  text: string | null;
+  text?: string | null;
+  reasoning_content?: string | null;
   finish_reason?: null | 'stop';
   extraData?: Object;
 }) => {
@@ -367,10 +383,11 @@ export const textAdaptGptResponse = ({
     model,
     choices: [
       {
-        delta:
-          text === null
-            ? {}
-            : { role: ChatCompletionRequestMessageRoleEnum.Assistant, content: text },
+        delta: {
+          role: ChatCompletionRequestMessageRoleEnum.Assistant,
+          content: text,
+          ...(reasoning_content && { reasoning_content })
+        },
         index: 0,
         finish_reason
       }

@@ -9,7 +9,11 @@ import {
 } from '@fastgpt/global/support/permission/constant';
 import { CommonErrEnum } from '@fastgpt/global/common/error/code/common';
 import type { ApiRequestProps, ApiResponseType } from '@fastgpt/service/type/next';
-import { DatasetTypeEnum } from '@fastgpt/global/core/dataset/constants';
+import {
+  DatasetCollectionTypeEnum,
+  DatasetTypeEnum,
+  TrainingModeEnum
+} from '@fastgpt/global/core/dataset/constants';
 import { ClientSession } from 'mongoose';
 import { parseParentIdInMongo } from '@fastgpt/global/common/parentFolder/utils';
 import { mongoSessionRun } from '@fastgpt/service/common/mongo/sessionRun';
@@ -21,6 +25,11 @@ import {
 import { authUserPer } from '@fastgpt/service/support/permission/user/auth';
 import { TeamWritePermissionVal } from '@fastgpt/global/support/permission/user/constant';
 import { DatasetErrEnum } from '@fastgpt/global/common/error/code/dataset';
+import { MongoDatasetTraining } from '@fastgpt/service/core/dataset/training/schema';
+import { MongoDatasetCollection } from '@fastgpt/service/core/dataset/collection/schema';
+import { addDays } from 'date-fns';
+import { refreshSourceAvatar } from '@fastgpt/service/common/file/image/controller';
+import { MongoResourcePermission } from '@fastgpt/service/support/permission/schema';
 
 export type DatasetUpdateQuery = {};
 export type DatasetUpdateResponse = any;
@@ -40,8 +49,22 @@ async function handler(
   req: ApiRequestProps<DatasetUpdateBody, DatasetUpdateQuery>,
   _res: ApiResponseType<any>
 ): Promise<DatasetUpdateResponse> {
-  const { id, parentId, name, avatar, intro, agentModel, websiteConfig, externalReadUrl, status } =
-    req.body;
+  const {
+    id,
+    parentId,
+    name,
+    avatar,
+    intro,
+    agentModel,
+    vlmModel,
+    websiteConfig,
+    externalReadUrl,
+    apiServer,
+    yuqueServer,
+    feishuServer,
+    status,
+    autoSync
+  } = req.body;
 
   if (!id) {
     return Promise.reject(CommonErrEnum.missingParams);
@@ -84,26 +107,53 @@ async function handler(
 
   const isFolder = dataset.type === DatasetTypeEnum.folder;
 
-  const onUpdate = async (session?: ClientSession) => {
+  updateTraining({
+    teamId: dataset.teamId,
+    datasetId: id,
+    agentModel
+  });
+
+  const onUpdate = async (session: ClientSession) => {
     await MongoDataset.findByIdAndUpdate(
       id,
       {
         ...parseParentIdInMongo(parentId),
         ...(name && { name }),
         ...(avatar && { avatar }),
-        ...(agentModel && { agentModel: agentModel.model }),
+        ...(agentModel && { agentModel }),
+        ...(vlmModel && { vlmModel }),
         ...(websiteConfig && { websiteConfig }),
         ...(status && { status }),
         ...(intro !== undefined && { intro }),
         ...(externalReadUrl !== undefined && { externalReadUrl }),
-        ...(isMove && { inheritPermission: true })
+        ...(!!apiServer?.baseUrl && { 'apiServer.baseUrl': apiServer.baseUrl }),
+        ...(!!apiServer?.authorization && {
+          'apiServer.authorization': apiServer.authorization
+        }),
+        ...(!!yuqueServer?.userId && { 'yuqueServer.userId': yuqueServer.userId }),
+        ...(!!yuqueServer?.token && { 'yuqueServer.token': yuqueServer.token }),
+        ...(!!feishuServer?.appId && { 'feishuServer.appId': feishuServer.appId }),
+        ...(!!feishuServer?.appSecret && { 'feishuServer.appSecret': feishuServer.appSecret }),
+        ...(!!feishuServer?.folderToken && {
+          'feishuServer.folderToken': feishuServer.folderToken
+        }),
+        ...(isMove && { inheritPermission: true }),
+        ...(typeof autoSync === 'boolean' && { autoSync })
       },
       { session }
     );
+    await updateSyncSchedule({
+      teamId: dataset.teamId,
+      datasetId: dataset._id,
+      autoSync,
+      session
+    });
+
+    await refreshSourceAvatar(avatar, dataset.avatar, session);
   };
 
-  if (isMove) {
-    await mongoSessionRun(async (session) => {
+  await mongoSessionRun(async (session) => {
+    if (isMove) {
       if (isFolder && dataset.inheritPermission) {
         const parentClbsAndGroups = await getResourceClbsAndGroups({
           teamId: dataset.teamId,
@@ -128,12 +178,88 @@ async function handler(
           collaborators: parentClbsAndGroups,
           session
         });
-        return onUpdate(session);
+      } else {
+        // Not folder, delete all clb
+        await MongoResourcePermission.deleteMany(
+          { resourceId: id, teamId: dataset.teamId, resourceType: PerResourceTypeEnum.dataset },
+          { session }
+        );
       }
       return onUpdate(session);
-    });
-  } else {
-    return onUpdate();
-  }
+    } else {
+      return onUpdate(session);
+    }
+  });
 }
 export default NextAPI(handler);
+
+const updateTraining = async ({
+  teamId,
+  datasetId,
+  agentModel
+}: {
+  teamId: string;
+  datasetId: string;
+  agentModel?: string;
+}) => {
+  if (!agentModel) return;
+
+  await MongoDatasetTraining.updateMany(
+    {
+      teamId,
+      datasetId,
+      mode: { $in: [TrainingModeEnum.qa, TrainingModeEnum.auto] }
+    },
+    {
+      $set: {
+        model: agentModel,
+        retryCount: 5,
+        lockTime: new Date('2000/1/1')
+      }
+    }
+  );
+};
+
+const updateSyncSchedule = async ({
+  teamId,
+  datasetId,
+  autoSync,
+  session
+}: {
+  teamId: string;
+  datasetId: string;
+  autoSync?: boolean;
+  session: ClientSession;
+}) => {
+  if (typeof autoSync !== 'boolean') return;
+
+  // Update all collection nextSyncTime
+  if (autoSync) {
+    await MongoDatasetCollection.updateMany(
+      {
+        teamId,
+        datasetId,
+        type: { $in: [DatasetCollectionTypeEnum.apiFile, DatasetCollectionTypeEnum.link] }
+      },
+      {
+        $set: {
+          nextSyncTime: addDays(new Date(), 1)
+        }
+      },
+      { session }
+    );
+  } else {
+    await MongoDatasetCollection.updateMany(
+      {
+        teamId,
+        datasetId
+      },
+      {
+        $unset: {
+          nextSyncTime: 1
+        }
+      },
+      { session }
+    );
+  }
+};

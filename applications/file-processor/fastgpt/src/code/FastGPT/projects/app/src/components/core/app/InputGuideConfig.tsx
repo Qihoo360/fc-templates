@@ -54,7 +54,7 @@ const InputGuideConfig = ({
   onChange: (e: ChatInputGuideConfigType) => void;
 }) => {
   const { t } = useTranslation();
-  const { chatT, commonT } = useI18n();
+  const { chatT } = useI18n();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isOpenLexiconConfig,
@@ -139,7 +139,7 @@ const InputGuideConfig = ({
                     onOpenLexiconConfig();
                   }}
                 >
-                  {chatT('config_input_guide_lexicon')}
+                  {t('chat:config_input_guide_lexicon')}
                 </Button>
               </Flex>
               <>
@@ -152,7 +152,7 @@ const InputGuideConfig = ({
                     cursor={'pointer'}
                   >
                     <MyIcon name={'book'} w={'17px'} ml={4} mr={1} color={'myGray.600'} />
-                    {commonT('common.Documents')}
+                    {t('common:common.Documents')}
                   </Flex>
                   <Box flex={'1 0 0'} />
                 </Flex>
@@ -220,7 +220,7 @@ const LexiconConfigModal = ({ appId, onClose }: { appId: string; onClose: () => 
   });
 
   const { run: createNewData, loading: isCreating } = useRequest2(
-    (textList: string[]) => {
+    async (textList: string[]) => {
       if (textList.filter(Boolean).length === 0) {
         return Promise.resolve();
       }

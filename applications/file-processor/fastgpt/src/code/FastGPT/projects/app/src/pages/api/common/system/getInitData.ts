@@ -1,33 +1,70 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import type { InitDateResponse } from '@/global/common/api/systemRes';
-import { connectToDatabase } from '@/service/mongo';
-import { jsonRes } from '@fastgpt/service/common/response';
+import type { NextApiResponse } from 'next';
+import { ApiRequestProps } from '@fastgpt/service/type/next';
+import { NextAPI } from '@/service/middleware/entry';
+import { InitDateResponse } from '@/global/common/api/systemRes';
+import { SystemModelItemType } from '@fastgpt/service/core/ai/type';
+import { authCert } from '@fastgpt/service/support/permission/auth/common';
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
-  await connectToDatabase();
+async function handler(
+  req: ApiRequestProps<{}, { bufferId?: string }>,
+  res: NextApiResponse
+): Promise<InitDateResponse> {
+  const { bufferId } = req.query;
 
-  jsonRes<InitDateResponse>(res, {
-    data: {
+  const activeModelList = global.systemActiveModelList.map((model) => ({
+    ...model,
+    customCQPrompt: undefined,
+    customExtractPrompt: undefined,
+    defaultSystemChatPrompt: undefined,
+    fieldMap: undefined,
+    defaultConfig: undefined,
+    weight: undefined,
+    dbConfig: undefined,
+    queryConfig: undefined,
+    requestUrl: undefined,
+    requestAuth: undefined
+  })) as SystemModelItemType[];
+
+  try {
+    await authCert({ req, authToken: true });
+    // If bufferId is the same as the current bufferId, return directly
+    if (bufferId && global.systemInitBufferId && global.systemInitBufferId === bufferId) {
+      return {
+        bufferId: global.systemInitBufferId,
+        systemVersion: global.systemVersion
+      };
+    }
+
+    return {
+      bufferId: global.systemInitBufferId,
       feConfigs: global.feConfigs,
       subPlans: global.subPlans,
-      llmModels: global.llmModels.map((model) => ({
-        ...model,
-        customCQPrompt: '',
-        customExtractPrompt: '',
-        defaultSystemChatPrompt: ''
-      })),
-      vectorModels: global.vectorModels,
-      reRankModels:
-        global.reRankModels?.map((item) => ({
-          ...item,
-          requestUrl: '',
-          requestAuth: ''
-        })) || [],
-      whisperModel: global.whisperModel,
-      audioSpeechModels: global.audioSpeechModels,
-      systemVersion: global.systemVersion || '0.0.0'
+      systemVersion: global.systemVersion,
+      activeModelList,
+      defaultModels: global.systemDefaultModel
+    };
+  } catch (error) {
+    const referer = req.headers.referer;
+    if (referer?.includes('/price')) {
+      return {
+        feConfigs: global.feConfigs,
+        subPlans: global.subPlans,
+        activeModelList
+      };
     }
-  });
+
+    const unAuthBufferId = global.systemInitBufferId ? `unAuth_${global.systemInitBufferId}` : '';
+    if (bufferId && unAuthBufferId === bufferId) {
+      return {
+        bufferId: unAuthBufferId
+      };
+    }
+
+    return {
+      bufferId: unAuthBufferId,
+      feConfigs: global.feConfigs
+    };
+  }
 }
 
-export default handler;
+export default NextAPI(handler);

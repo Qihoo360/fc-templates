@@ -43,6 +43,17 @@ export type FlowNodeCommonType = {
   pluginId?: string;
   isFolder?: boolean;
   // pluginType?: AppTypeEnum;
+  pluginData?: PluginDataType;
+};
+
+export type PluginDataType = {
+  version: string;
+  diagram?: string;
+  userGuide?: string;
+  courseUrl?: string;
+  name?: string;
+  avatar?: string;
+  error?: string;
 };
 
 type HandleType = {
@@ -54,7 +65,7 @@ type HandleType = {
 // system template
 export type FlowNodeTemplateType = FlowNodeCommonType & {
   id: string; // node id, unique
-  templateType: FlowNodeTemplateTypeEnum;
+  templateType: string;
 
   // show handle
   sourceHandle?: HandleType;
@@ -69,6 +80,7 @@ export type FlowNodeTemplateType = FlowNodeCommonType & {
 
   diagram?: string; // diagram url
   courseUrl?: string; // course url
+  userGuide?: string; // user guide
 };
 
 export type NodeTemplateListItemType = {
@@ -76,7 +88,7 @@ export type NodeTemplateListItemType = {
   flowNodeType: FlowNodeTypeEnum; // render node card
   parentId?: ParentIdType;
   isFolder?: boolean;
-  templateType: FlowNodeTemplateTypeEnum;
+  templateType: string;
   avatar?: string;
   name: string;
   intro?: string; // template list intro
@@ -85,10 +97,14 @@ export type NodeTemplateListItemType = {
   author?: string;
   unique?: boolean; // 唯一的
   currentCost?: number; // 当前积分消耗
+  hasTokenFee?: boolean; // 是否配置积分
+  instructions?: string; // 使用说明
+  courseUrl?: string; // 教程链接
+  sourceMember?: SourceMember;
 };
 
 export type NodeTemplateListType = {
-  type: FlowNodeTemplateTypeEnum;
+  type: string;
   label: string;
   list: NodeTemplateListItemType[];
 }[];
