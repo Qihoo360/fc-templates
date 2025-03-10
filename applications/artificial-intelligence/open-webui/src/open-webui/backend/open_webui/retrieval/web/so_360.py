@@ -25,7 +25,7 @@ def search_360_so(
     Args:
         query_url (str): The base URL of the 360 SO server.
         api_key (str): A Programmable Search API key
-        query (str): The query to search for
+        query (str): The query to search for, max 120 characters
         count (int): The number of results to return (max 100, as 360 SO max results per query is 30)
         filter_list (Optional[list[str]], optional): A list of keywords to filter out from results. Defaults to None.
 
