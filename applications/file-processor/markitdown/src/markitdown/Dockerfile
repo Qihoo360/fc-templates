@@ -7,7 +7,7 @@ RUN update-ca-certificates
 # 拷贝并安装 markitdown 源码
 WORKDIR /app
 COPY . /app/
-RUN cd /app/markitdown && pip install -e packages/markitdown[all]
+RUN cd /app/markitdown && pip install -e packages/markitdown[all]~=0.1.0a1
 
 # 安装 Python 依赖
 WORKDIR /app
