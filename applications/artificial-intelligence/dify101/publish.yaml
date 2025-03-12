@@ -248,6 +248,7 @@ Parameters:
       x-cate: applicationCate
       x-label: Dify-DB
       x-formitem:
+        type: input
     DifyDBDataBase:
       title: DifyDBDataBase
       type: string
