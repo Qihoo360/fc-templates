@@ -12,7 +12,9 @@ import { TeamTagSchema as TeamTagsSchemaType } from '@fastgpt/global/support/use
 import { StoreEdgeItemType } from '../workflow/type/edge';
 import { AppPermission } from '../../support/permission/app/controller';
 import { ParentIdType } from '../../common/parentFolder/type';
-import { FlowNodeInputTypeEnum } from 'core/workflow/node/constant';
+import { FlowNodeInputTypeEnum } from '../../core/workflow/node/constant';
+import { WorkflowTemplateBasicType } from '@fastgpt/global/core/workflow/type';
+import { SourceMemberType } from '../../support/user/type';
 
 export type AppSchema = {
   _id: string;
@@ -62,6 +64,7 @@ export type AppListItemType = {
   permission: AppPermission;
   inheritPermission?: boolean;
   private?: boolean;
+  sourceMember: SourceMemberType;
 };
 
 export type AppDetailType = AppSchema & {
@@ -71,12 +74,17 @@ export type AppDetailType = AppSchema & {
 export type AppSimpleEditFormType = {
   // templateId: string;
   aiSettings: {
-    model: string;
-    systemPrompt?: string | undefined;
-    temperature: number;
-    maxToken: number;
-    isResponseAnswerText: boolean;
+    [NodeInputKeyEnum.aiModel]: string;
+    [NodeInputKeyEnum.aiSystemPrompt]?: string | undefined;
+    [NodeInputKeyEnum.aiChatTemperature]?: number;
+    [NodeInputKeyEnum.aiChatMaxToken]?: number;
+    [NodeInputKeyEnum.aiChatIsResponseText]: boolean;
     maxHistories: number;
+    [NodeInputKeyEnum.aiChatReasoning]?: boolean; // Is open reasoning mode
+    [NodeInputKeyEnum.aiChatTopP]?: number;
+    [NodeInputKeyEnum.aiChatStopSign]?: string;
+    [NodeInputKeyEnum.aiChatResponseFormat]?: string;
+    [NodeInputKeyEnum.aiChatJsonSchema]?: string;
   };
   dataset: {
     datasets: SelectedDatasetType;
@@ -96,7 +104,8 @@ export type AppSimpleEditFormType = {
 export type AppChatConfigType = {
   welcomeText?: string;
   variables?: VariableItemType[];
-  questionGuide?: boolean;
+  autoExecute?: AppAutoExecuteConfigType;
+  questionGuide?: AppQGConfigType;
   ttsConfig?: AppTTSConfigType;
   whisperConfig?: AppWhisperConfigType;
   scheduledTriggerConfig?: AppScheduledTriggerConfigType;
@@ -108,11 +117,16 @@ export type AppChatConfigType = {
 };
 export type SettingAIDataType = {
   model: string;
-  temperature: number;
-  maxToken: number;
+  temperature?: number;
+  maxToken?: number;
   isResponseAnswerText?: boolean;
   maxHistories?: number;
   [NodeInputKeyEnum.aiChatVision]?: boolean; // Is open vision mode
+  [NodeInputKeyEnum.aiChatReasoning]?: boolean; // Is open reasoning mode
+  [NodeInputKeyEnum.aiChatTopP]?: number;
+  [NodeInputKeyEnum.aiChatStopSign]?: string;
+  [NodeInputKeyEnum.aiChatResponseFormat]?: string;
+  [NodeInputKeyEnum.aiChatJsonSchema]?: string;
 };
 
 // variable
@@ -147,6 +161,14 @@ export type AppWhisperConfigType = {
   autoSend: boolean;
   autoTTSResponse: boolean;
 };
+
+// question guide
+export type AppQGConfigType = {
+  open: boolean;
+  model?: string;
+  customPrompt?: string;
+};
+
 // question guide text
 export type ChatInputGuideConfigType = {
   open: boolean;
@@ -158,9 +180,46 @@ export type AppScheduledTriggerConfigType = {
   timezone: string;
   defaultPrompt: string;
 };
+// auto execute
+export type AppAutoExecuteConfigType = {
+  open: boolean;
+  defaultPrompt: string;
+};
 // File
 export type AppFileSelectConfigType = {
   canSelectFile: boolean;
+  customPdfParse?: boolean;
   canSelectImg: boolean;
   maxFiles: number;
+};
+
+export type SystemPluginListItemType = {
+  _id: string;
+  name: string;
+  avatar: string;
+};
+
+export type AppTemplateSchemaType = {
+  templateId: string;
+  name: string;
+  intro: string;
+  avatar: string;
+  tags: string[];
+  type: string;
+  author?: string;
+  isActive?: boolean;
+  userGuide?: {
+    type: 'markdown' | 'link';
+    content?: string;
+    link?: string;
+  };
+  isQuickTemplate?: boolean;
+  order?: number;
+  workflow: WorkflowTemplateBasicType;
+};
+
+export type TemplateTypeSchemaType = {
+  typeName: string;
+  typeId: string;
+  typeOrder: number;
 };

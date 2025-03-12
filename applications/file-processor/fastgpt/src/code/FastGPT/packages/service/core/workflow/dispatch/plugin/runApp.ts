@@ -53,7 +53,7 @@ export const dispatchRunAppNode = async (props: Props): Promise<Response> => {
 
   const userInputFiles = (() => {
     if (fileUrlList) {
-      return fileUrlList.map((url) => parseUrlToFileType(url));
+      return fileUrlList.map((url) => parseUrlToFileType(url)).filter(Boolean);
     }
     // Adapt version 4.8.13 upgrade
     return files;
@@ -153,8 +153,7 @@ export const dispatchRunAppNode = async (props: Props): Promise<Response> => {
     [DispatchNodeResponseKeyEnum.nodeDispatchUsages]: [
       {
         moduleName: appData.name,
-        totalPoints: usagePoints,
-        tokens: 0
+        totalPoints: usagePoints
       }
     ],
     [DispatchNodeResponseKeyEnum.toolResponses]: text,

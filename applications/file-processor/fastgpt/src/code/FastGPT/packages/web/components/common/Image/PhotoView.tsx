@@ -6,8 +6,9 @@ import { useSystem } from '../../../hooks/useSystem';
 import Loading from '../MyLoading';
 import MyImage from './MyImage';
 
-const MyPhotoView = ({ ...props }: ImageProps) => {
+const MyPhotoView = (props: ImageProps) => {
   const { isPc } = useSystem();
+
   return (
     <PhotoProvider
       maskOpacity={0.6}
@@ -16,7 +17,7 @@ const MyPhotoView = ({ ...props }: ImageProps) => {
       loadingElement={<Loading fixed={false} />}
     >
       <PhotoView src={props.src}>
-        <MyImage cursor={'pointer'} {...props} />
+        <MyImage cursor={'pointer'} {...props} title={props.title || props.src} />
       </PhotoView>
     </PhotoProvider>
   );

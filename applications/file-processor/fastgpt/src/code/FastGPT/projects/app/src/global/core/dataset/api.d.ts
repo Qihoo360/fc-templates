@@ -2,6 +2,7 @@ import {
   PushDatasetDataChunkProps,
   PushDatasetDataResponse
 } from '@fastgpt/global/core/dataset/api';
+import { APIFileServer, FeishuServer, YuqueServer } from '@fastgpt/global/core/dataset/apiDataset';
 import {
   DatasetSearchModeEnum,
   DatasetSourceReadTypeEnum,
@@ -25,6 +26,10 @@ export type CreateDatasetParams = {
   avatar: string;
   vectorModel?: string;
   agentModel?: string;
+  vlmModel?: string;
+  apiServer?: APIFileServer;
+  feishuServer?: FeishuServer;
+  yuqueServer?: YuqueServer;
 };
 
 export type RebuildEmbeddingProps = {
@@ -60,9 +65,15 @@ export type SearchTestProps = {
   [NodeInputKeyEnum.datasetMaxTokens]?: number;
   [NodeInputKeyEnum.datasetSearchMode]?: `${DatasetSearchModeEnum}`;
   [NodeInputKeyEnum.datasetSearchUsingReRank]?: boolean;
+
   [NodeInputKeyEnum.datasetSearchUsingExtensionQuery]?: boolean;
   [NodeInputKeyEnum.datasetSearchExtensionModel]?: string;
   [NodeInputKeyEnum.datasetSearchExtensionBg]?: string;
+
+  [NodeInputKeyEnum.datasetDeepSearch]?: boolean;
+  [NodeInputKeyEnum.datasetDeepSearchModel]?: string;
+  [NodeInputKeyEnum.datasetDeepSearchMaxTimes]?: number;
+  [NodeInputKeyEnum.datasetDeepSearchBg]?: string;
 };
 export type SearchTestResponse = {
   list: SearchDataResponseItemType[];

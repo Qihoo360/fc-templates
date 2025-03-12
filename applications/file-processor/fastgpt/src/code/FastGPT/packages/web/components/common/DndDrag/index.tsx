@@ -1,23 +1,31 @@
-import { Box } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import { Box, Tbody } from '@chakra-ui/react';
+import React, { ReactElement, ReactNode, useState } from 'react';
 import {
   DragDropContext,
-  DroppableProps,
   Droppable,
   DraggableChildrenFn,
   DragStart,
-  DropResult
+  DropResult,
+  DroppableProvided,
+  DroppableStateSnapshot
 } from 'react-beautiful-dnd';
 export * from 'react-beautiful-dnd';
 
 type Props<T = any> = {
   onDragEndCb: (result: T[]) => void;
   renderClone?: DraggableChildrenFn;
-  children: DroppableProps['children'];
+  children: ({
+    provided,
+    snapshot
+  }: {
+    provided: DroppableProvided;
+    snapshot: DroppableStateSnapshot;
+  }) => ReactElement<HTMLElement, string>;
   dataList: T[];
+  zoom?: number;
 };
 
-function DndDrag<T>({ children, renderClone, onDragEndCb, dataList }: Props<T>) {
+function DndDrag<T>({ children, renderClone, onDragEndCb, dataList, zoom = 1 }: Props<T>) {
   const [draggingItemHeight, setDraggingItemHeight] = useState(0);
 
   const onDragStart = (start: DragStart) => {
@@ -44,17 +52,15 @@ function DndDrag<T>({ children, renderClone, onDragEndCb, dataList }: Props<T>) 
   return (
     <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable" renderClone={renderClone}>
-        {(provided, snapshot) => {
-          return (
-            <Box {...provided.droppableProps} ref={provided.innerRef}>
-              {children(provided, snapshot)}
-              {snapshot.isDraggingOver && <Box height={draggingItemHeight} />}
-            </Box>
-          );
-        }}
+        {(provided, snapshot) => (
+          <>
+            {children({ provided, snapshot })}
+            {snapshot.isDraggingOver && <Box height={`${draggingItemHeight / zoom}px`} />}
+          </>
+        )}
       </Droppable>
     </DragDropContext>
   );
 }
 
-export default DndDrag;
+export default React.memo(DndDrag) as <T>(props: Props<T>) => React.ReactElement;

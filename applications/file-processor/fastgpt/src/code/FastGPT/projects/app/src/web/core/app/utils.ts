@@ -39,6 +39,8 @@ import {
   Input_Template_File_Link_Prompt,
   Input_Template_UserChatInput
 } from '@fastgpt/global/core/workflow/template/input';
+import { workflowStartNodeId } from './constants';
+import { getDefaultAppForm } from '@fastgpt/global/core/app/utils';
 
 type WorkflowType = {
   nodes: StoreNodeItemType[];
@@ -50,7 +52,6 @@ export function form2AppWorkflow(
 ): WorkflowType & {
   chatConfig: AppChatConfigType;
 } {
-  const workflowStartNodeId = 'workflowStartNodeId';
   const datasetNodeId = 'iKBoX2vIzETU';
   const aiChatNodeId = '7BdojPlukIQw';
 
@@ -105,14 +106,14 @@ export function form2AppWorkflow(
       version: AiChatModule.version,
       inputs: [
         {
-          key: 'model',
+          key: NodeInputKeyEnum.aiModel,
           renderTypeList: [FlowNodeInputTypeEnum.settingLLMModel, FlowNodeInputTypeEnum.reference],
           label: '',
           valueType: WorkflowIOValueTypeEnum.string,
           value: formData.aiSettings.model
         },
         {
-          key: 'temperature',
+          key: NodeInputKeyEnum.aiChatTemperature,
           renderTypeList: [FlowNodeInputTypeEnum.hidden],
           label: '',
           value: formData.aiSettings.temperature,
@@ -122,7 +123,7 @@ export function form2AppWorkflow(
           step: 1
         },
         {
-          key: 'maxToken',
+          key: NodeInputKeyEnum.aiChatMaxToken,
           renderTypeList: [FlowNodeInputTypeEnum.hidden],
           label: '',
           value: formData.aiSettings.maxToken,
@@ -132,7 +133,7 @@ export function form2AppWorkflow(
           step: 50
         },
         {
-          key: 'isResponseAnswerText',
+          key: NodeInputKeyEnum.aiChatIsResponseText,
           renderTypeList: [FlowNodeInputTypeEnum.hidden],
           label: '',
           value: true,
@@ -142,7 +143,7 @@ export function form2AppWorkflow(
         AiChatQuoteTemplate,
         AiChatQuotePrompt,
         {
-          key: 'systemPrompt',
+          key: NodeInputKeyEnum.aiSystemPrompt,
           renderTypeList: [FlowNodeInputTypeEnum.textarea, FlowNodeInputTypeEnum.reference],
           max: 3000,
           valueType: WorkflowIOValueTypeEnum.string,
@@ -152,7 +153,7 @@ export function form2AppWorkflow(
           value: formData.aiSettings.systemPrompt
         },
         {
-          key: 'history',
+          key: NodeInputKeyEnum.history,
           renderTypeList: [FlowNodeInputTypeEnum.numberInput, FlowNodeInputTypeEnum.reference],
           valueType: WorkflowIOValueTypeEnum.chatHistory,
           label: 'core.module.input.label.chat history',
@@ -162,16 +163,16 @@ export function form2AppWorkflow(
           value: formData.aiSettings.maxHistories
         },
         {
-          key: 'userChatInput',
+          key: NodeInputKeyEnum.userChatInput,
           renderTypeList: [FlowNodeInputTypeEnum.reference, FlowNodeInputTypeEnum.textarea],
           valueType: WorkflowIOValueTypeEnum.string,
           label: i18nT('common:core.module.input.label.user question'),
           required: true,
           toolDescription: i18nT('common:core.module.input.label.user question'),
-          value: [workflowStartNodeId, 'userChatInput']
+          value: [workflowStartNodeId, NodeInputKeyEnum.userChatInput]
         },
         {
-          key: 'quoteQA',
+          key: NodeInputKeyEnum.aiChatDatasetQuote,
           renderTypeList: [FlowNodeInputTypeEnum.settingDatasetQuotePrompt],
           label: '',
           debugLabel: i18nT('common:core.module.Dataset quote.label'),
@@ -189,6 +190,41 @@ export function form2AppWorkflow(
           label: '',
           valueType: WorkflowIOValueTypeEnum.boolean,
           value: true
+        },
+        {
+          key: NodeInputKeyEnum.aiChatReasoning,
+          renderTypeList: [FlowNodeInputTypeEnum.hidden],
+          label: '',
+          valueType: WorkflowIOValueTypeEnum.boolean,
+          value: formData.aiSettings.aiChatReasoning
+        },
+        {
+          key: NodeInputKeyEnum.aiChatTopP,
+          renderTypeList: [FlowNodeInputTypeEnum.hidden],
+          label: '',
+          valueType: WorkflowIOValueTypeEnum.number,
+          value: formData.aiSettings.aiChatTopP
+        },
+        {
+          key: NodeInputKeyEnum.aiChatStopSign,
+          renderTypeList: [FlowNodeInputTypeEnum.hidden],
+          label: '',
+          valueType: WorkflowIOValueTypeEnum.string,
+          value: formData.aiSettings.aiChatStopSign
+        },
+        {
+          key: NodeInputKeyEnum.aiChatResponseFormat,
+          renderTypeList: [FlowNodeInputTypeEnum.hidden],
+          label: '',
+          valueType: WorkflowIOValueTypeEnum.string,
+          value: formData.aiSettings.aiChatResponseFormat
+        },
+        {
+          key: NodeInputKeyEnum.aiChatJsonSchema,
+          renderTypeList: [FlowNodeInputTypeEnum.hidden],
+          label: '',
+          valueType: WorkflowIOValueTypeEnum.string,
+          value: formData.aiSettings.aiChatJsonSchema
         }
       ],
       outputs: AiChatModule.outputs
@@ -352,6 +388,7 @@ export function form2AppWorkflow(
             },
             // 这里不需要固定版本，给一个不存在的版本，每次都会用最新版
             version: defaultNodeVersion,
+            pluginData: tool.pluginData,
             inputs: tool.inputs.map((input) => {
               // Special key value
               if (input.key === NodeInputKeyEnum.forbidStream) {
@@ -467,6 +504,13 @@ export function form2AppWorkflow(
               label: '',
               valueType: WorkflowIOValueTypeEnum.boolean,
               value: true
+            },
+            {
+              key: NodeInputKeyEnum.aiChatReasoning,
+              renderTypeList: [FlowNodeInputTypeEnum.hidden],
+              label: '',
+              valueType: WorkflowIOValueTypeEnum.boolean,
+              value: formData.aiSettings.aiChatReasoning
             }
           ],
           outputs: ToolModule.outputs
@@ -515,6 +559,13 @@ export function form2AppWorkflow(
     chatConfig: data.chatConfig
   };
 }
+export function filterSensitiveFormData(appForm: AppSimpleEditFormType) {
+  const defaultAppForm = getDefaultAppForm();
+  return {
+    ...appForm,
+    dataset: defaultAppForm.dataset
+  };
+}
 
 export const workflowSystemVariables: EditorVariablePickerType[] = [
   {
@@ -532,12 +583,14 @@ export const workflowSystemVariables: EditorVariablePickerType[] = [
   {
     key: 'chatId',
     label: i18nT('common:core.module.http.ChatId'),
-    valueType: WorkflowIOValueTypeEnum.string
+    valueType: WorkflowIOValueTypeEnum.string,
+    required: true
   },
   {
     key: 'responseChatItemId',
     label: i18nT('common:core.module.http.ResponseChatItemId'),
-    valueType: WorkflowIOValueTypeEnum.string
+    valueType: WorkflowIOValueTypeEnum.string,
+    required: true
   },
   {
     key: 'histories',

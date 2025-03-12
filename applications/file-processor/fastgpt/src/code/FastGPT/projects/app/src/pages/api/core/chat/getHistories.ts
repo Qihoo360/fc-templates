@@ -7,6 +7,9 @@ import { NextAPI } from '@/service/middleware/entry';
 import { ApiRequestProps, ApiResponseType } from '@fastgpt/service/type/next';
 import { PaginationProps, PaginationResponse } from '@fastgpt/web/common/fetch/type';
 import { GetHistoriesProps } from '@/global/core/chat/api';
+import { parsePaginationRequest } from '@fastgpt/service/common/api/pagination';
+import { addMonths } from 'date-fns';
+
 export type getHistoriesQuery = {};
 
 export type getHistoriesBody = PaginationProps<GetHistoriesProps>;
@@ -15,10 +18,10 @@ export type getHistoriesResponse = {};
 
 async function handler(
   req: ApiRequestProps<getHistoriesBody, getHistoriesQuery>,
-  res: ApiResponseType<any>
+  _res: ApiResponseType<any>
 ): Promise<PaginationResponse<getHistoriesResponse>> {
-  const { appId, shareId, outLinkUid, teamId, teamToken, offset, pageSize, source } =
-    req.body as getHistoriesBody;
+  const { appId, shareId, outLinkUid, teamId, teamToken, source } = req.body;
+  const { offset, pageSize } = parsePaginationRequest(req);
 
   const match = await (async () => {
     if (shareId && outLinkUid) {
@@ -28,7 +31,7 @@ async function handler(
         shareId,
         outLinkUid: uid,
         updateTime: {
-          $gte: new Date(new Date().setDate(new Date().getDate() - 30))
+          $gte: addMonths(new Date(), -1)
         }
       };
     }
@@ -62,7 +65,8 @@ async function handler(
     await MongoChat.find(match, 'chatId title top customTitle appId updateTime')
       .sort({ top: -1, updateTime: -1 })
       .skip(offset)
-      .limit(pageSize),
+      .limit(pageSize)
+      .lean(),
     MongoChat.countDocuments(match)
   ]);
 

@@ -4,7 +4,7 @@
 */
 import type { NextApiRequest } from 'next';
 import { countPromptTokens } from '@fastgpt/service/common/string/tiktoken/index';
-import { getVectorModel } from '@fastgpt/service/core/ai/model';
+import { getEmbeddingModel } from '@fastgpt/service/core/ai/model';
 import { hasSameValue } from '@/service/core/dataset/data/utils';
 import { insertData2Dataset } from '@/service/core/dataset/data/controller';
 import { authDatasetCollection } from '@fastgpt/service/support/permission/dataset/auth';
@@ -45,7 +45,7 @@ async function handler(req: NextApiRequest) {
   // auth collection and get dataset
   const [
     {
-      datasetId: { _id: datasetId, vectorModel }
+      dataset: { _id: datasetId, vectorModel }
     }
   ] = await Promise.all([getCollectionWithDataset(collectionId)]);
 
@@ -59,7 +59,7 @@ async function handler(req: NextApiRequest) {
 
   // token check
   const token = await countPromptTokens(formatQ + formatA, '');
-  const vectorModelData = getVectorModel(vectorModel);
+  const vectorModelData = getEmbeddingModel(vectorModel);
 
   if (token > vectorModelData.maxToken) {
     return Promise.reject('Q Over Tokens');
@@ -89,7 +89,7 @@ async function handler(req: NextApiRequest) {
   pushGenerateVectorUsage({
     teamId,
     tmbId,
-    tokens,
+    inputTokens: tokens,
     model: vectorModelData.model
   });
 

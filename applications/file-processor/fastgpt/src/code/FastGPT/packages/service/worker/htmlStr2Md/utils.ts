@@ -1,7 +1,26 @@
 import TurndownService from 'turndown';
 import { ImageType } from '../readFile/type';
+import { matchMdImg } from '@fastgpt/global/common/string/markdown';
+import { getNanoid } from '@fastgpt/global/common/string/tools';
 // @ts-ignore
 const turndownPluginGfm = require('joplin-turndown-plugin-gfm');
+
+const processBase64Images = (htmlContent: string) => {
+  const base64Regex = /src="data:([^;]+);base64,([^"]+)"/g;
+  const images: ImageType[] = [];
+
+  const processedHtml = htmlContent.replace(base64Regex, (match, mime, base64Data) => {
+    const uuid = `IMAGE_${getNanoid(12)}_IMAGE`;
+    images.push({
+      uuid,
+      base64: base64Data,
+      mime
+    });
+    return `src="${uuid}"`;
+  });
+
+  return { processedHtml, images };
+};
 
 export const html2md = (
   html: string
@@ -24,24 +43,14 @@ export const html2md = (
     turndownService.remove(['i', 'script', 'iframe', 'style']);
     turndownService.use(turndownPluginGfm.gfm);
 
-    const base64Regex = /"(data:image\/[^;]+;base64[^"]+)"/g;
-    const imageList: ImageType[] = [];
-    const images = Array.from(html.match(base64Regex) || []);
-    for (const image of images) {
-      const uuid = crypto.randomUUID();
-      const mime = image.split(';')[0].split(':')[1];
-      const base64 = image.split(',')[1];
-      html = html.replace(image, uuid);
-      imageList.push({
-        uuid,
-        base64,
-        mime
-      });
-    }
+    // Base64 img to id, otherwise it will occupy memory when going to md
+    const { processedHtml, images } = processBase64Images(html);
+    const md = turndownService.turndown(processedHtml);
+    const { text, imageList } = matchMdImg(md);
 
     return {
-      rawText: turndownService.turndown(html),
-      imageList
+      rawText: text,
+      imageList: [...images, ...imageList]
     };
   } catch (error) {
     console.log('html 2 markdown error', error);

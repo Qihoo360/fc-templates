@@ -43,16 +43,17 @@ async function handler(
 
   // get app and history
   const { nodes, chatConfig } = await getAppLatestVersion(app._id, app);
-
   const pluginInputs =
-    app?.modules?.find((node) => node.flowNodeType === FlowNodeTypeEnum.pluginInput)?.inputs ?? [];
+    chat?.pluginInputs ??
+    nodes?.find((node) => node.flowNodeType === FlowNodeTypeEnum.pluginInput)?.inputs ??
+    [];
 
   return {
     chatId,
     appId,
     title: chat?.title,
     userAvatar: undefined,
-    variables: chat?.variables || {},
+    variables: chat?.variables,
     app: {
       chatConfig: getAppChatConfig({
         chatConfig,

@@ -1,23 +1,22 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useSystemStore } from '@/web/common/system/useSystemStore';
 import type { ResLogin } from '@/global/support/api/userRes.d';
-import { useChatStore } from '@/web/core/chat/context/storeChat';
 import { useUserStore } from '@/web/support/user/useUserStore';
-import { clearToken, setToken } from '@/web/support/user/auth';
+import { clearToken } from '@/web/support/user/auth';
 import { oauthLogin } from '@/web/support/user/api';
 import { useToast } from '@fastgpt/web/hooks/useToast';
 import Loading from '@fastgpt/web/components/common/MyLoading';
-import { serviceSideProps } from '@/web/common/utils/i18n';
+import { serviceSideProps } from '@fastgpt/web/common/system/nextjs';
 import { getErrText } from '@fastgpt/global/common/error/utils';
 import { useTranslation } from 'next-i18next';
+import { OAuthEnum } from '@fastgpt/global/support/user/constant';
 
 let isOauthLogging = false;
 
 const provider = () => {
   const { t } = useTranslation();
-  const { loginStore } = useSystemStore();
-  const { setLastChatId, setLastChatAppId } = useChatStore();
+  const { initd, loginStore, setLoginStore } = useSystemStore();
   const { setUserInfo } = useUserStore();
   const router = useRouter();
   const { code, state, error } = router.query as { code: string; state: string; error?: string };
@@ -25,30 +24,32 @@ const provider = () => {
 
   const loginSuccess = useCallback(
     (res: ResLogin) => {
-      setToken(res.token);
       setUserInfo(res.user);
-
-      // init store
-      setLastChatId('');
-      setLastChatAppId('');
 
       router.push(loginStore?.lastRoute ? decodeURIComponent(loginStore?.lastRoute) : '/app/list');
     },
-    [setLastChatId, setLastChatAppId, setUserInfo, router, loginStore?.lastRoute]
+    [setUserInfo, router, loginStore?.lastRoute]
   );
 
   const authCode = useCallback(
     async (code: string) => {
-      if (!loginStore) {
-        router.replace('/login');
-        return;
-      }
       try {
         const res = await oauthLogin({
-          type: loginStore?.provider,
+          type: loginStore?.provider || OAuthEnum.sso,
           code,
           callbackUrl: `${location.origin}/login/provider`,
-          inviterId: localStorage.getItem('inviterId') || undefined
+          inviterId: localStorage.getItem('inviterId') || undefined,
+          bd_vid: sessionStorage.getItem('bd_vid') || undefined,
+          fastgpt_sem: (() => {
+            try {
+              return sessionStorage.getItem('fastgpt_sem')
+                ? JSON.parse(sessionStorage.getItem('fastgpt_sem')!)
+                : undefined;
+            } catch {
+              return undefined;
+            }
+          })(),
+          sourceDomain: sessionStorage.getItem('sourceDomain') || undefined
         });
 
         if (!res) {
@@ -70,8 +71,9 @@ const provider = () => {
           router.replace('/login');
         }, 1000);
       }
+      setLoginStore(undefined);
     },
-    [loginStore, loginSuccess, router, t, toast]
+    [loginStore?.provider, loginSuccess, router, setLoginStore, t, toast]
   );
 
   useEffect(() => {
@@ -84,7 +86,8 @@ const provider = () => {
       return;
     }
 
-    if (!code || !loginStore?.state || !state) return;
+    console.log('SSO', { initd, loginStore, code, state });
+    if (!code || !initd) return;
 
     if (isOauthLogging) return;
 
@@ -94,7 +97,7 @@ const provider = () => {
       await clearToken();
       router.prefetch('/app/list');
 
-      if (state !== loginStore?.state) {
+      if (loginStore && loginStore.provider !== 'sso' && state !== loginStore.state) {
         toast({
           status: 'warning',
           title: t('common:support.user.login.security_failed')
@@ -107,7 +110,7 @@ const provider = () => {
         authCode(code);
       }
     })();
-  }, [authCode, code, error, loginStore, loginStore?.state, router, state, t, toast]);
+  }, [initd, authCode, code, error, loginStore, loginStore?.state, router, state, t, toast]);
 
   return <Loading />;
 };
@@ -116,6 +119,8 @@ export default provider;
 
 export async function getServerSideProps(context: any) {
   return {
-    props: { ...(await serviceSideProps(context)) }
+    props: {
+      ...(await serviceSideProps(context))
+    }
   };
 }

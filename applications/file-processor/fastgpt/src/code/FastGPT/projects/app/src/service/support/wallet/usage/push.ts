@@ -1,70 +1,31 @@
 import { UsageSourceEnum } from '@fastgpt/global/support/wallet/usage/constants';
-import { ModelTypeEnum } from '@fastgpt/service/core/ai/model';
-import { addLog } from '@fastgpt/service/common/system/log';
-import { createUsage, concatUsage } from './controller';
+import { createUsage, concatUsage } from '@fastgpt/service/support/wallet/usage/controller';
 import { formatModelChars2Points } from '@fastgpt/service/support/wallet/usage/utils';
-import { ChatNodeUsageType } from '@fastgpt/global/support/wallet/bill/type';
-
-export const pushChatUsage = ({
-  appName,
-  appId,
-  pluginId,
-  teamId,
-  tmbId,
-  source,
-  flowUsages
-}: {
-  appName: string;
-  appId?: string;
-  pluginId?: string;
-  teamId: string;
-  tmbId: string;
-  source: UsageSourceEnum;
-  flowUsages: ChatNodeUsageType[];
-}) => {
-  const totalPoints = flowUsages.reduce((sum, item) => sum + (item.totalPoints || 0), 0);
-
-  createUsage({
-    teamId,
-    tmbId,
-    appName,
-    appId,
-    pluginId,
-    totalPoints,
-    source,
-    list: flowUsages.map((item) => ({
-      moduleName: item.moduleName,
-      amount: item.totalPoints || 0,
-      model: item.model,
-      tokens: item.tokens
-    }))
-  });
-  addLog.info(`finish completions`, {
-    source,
-    teamId,
-    totalPoints
-  });
-  return { totalPoints };
-};
+import { i18nT } from '@fastgpt/web/i18n/utils';
+import { ModelTypeEnum } from '@fastgpt/global/core/ai/model';
+import { getDefaultTTSModel } from '@fastgpt/service/core/ai/model';
 
 export const pushQAUsage = async ({
   teamId,
   tmbId,
   model,
-  tokens,
+  inputTokens,
+  outputTokens,
   billId
 }: {
   teamId: string;
   tmbId: string;
   model: string;
-  tokens: number;
+  inputTokens: number;
+  outputTokens: number;
   billId: string;
 }) => {
   // 计算价格
   const { totalPoints } = formatModelChars2Points({
     model,
     modelType: ModelTypeEnum.llm,
-    tokens
+    inputTokens,
+    outputTokens
   });
 
   concatUsage({
@@ -72,7 +33,8 @@ export const pushQAUsage = async ({
     teamId,
     tmbId,
     totalPoints,
-    tokens,
+    inputTokens,
+    outputTokens,
     listIndex: 1
   });
 
@@ -83,30 +45,39 @@ export const pushGenerateVectorUsage = ({
   billId,
   teamId,
   tmbId,
-  tokens,
+  inputTokens,
   model,
   source = UsageSourceEnum.fastgpt,
   extensionModel,
-  extensionTokens
+  extensionInputTokens,
+  extensionOutputTokens,
+  deepSearchModel,
+  deepSearchInputTokens,
+  deepSearchOutputTokens
 }: {
   billId?: string;
   teamId: string;
   tmbId: string;
-  tokens: number;
+  inputTokens: number;
   model: string;
   source?: UsageSourceEnum;
 
   extensionModel?: string;
-  extensionTokens?: number;
+  extensionInputTokens?: number;
+  extensionOutputTokens?: number;
+
+  deepSearchModel?: string;
+  deepSearchInputTokens?: number;
+  deepSearchOutputTokens?: number;
 }) => {
   const { totalPoints: totalVector, modelName: vectorModelName } = formatModelChars2Points({
-    modelType: ModelTypeEnum.vector,
+    modelType: ModelTypeEnum.embedding,
     model,
-    tokens
+    inputTokens
   });
 
   const { extensionTotalPoints, extensionModelName } = (() => {
-    if (!extensionModel || !extensionTokens)
+    if (!extensionModel || !extensionInputTokens)
       return {
         extensionTotalPoints: 0,
         extensionModelName: ''
@@ -114,15 +85,33 @@ export const pushGenerateVectorUsage = ({
     const { totalPoints, modelName } = formatModelChars2Points({
       modelType: ModelTypeEnum.llm,
       model: extensionModel,
-      tokens: extensionTokens
+      inputTokens: extensionInputTokens,
+      outputTokens: extensionOutputTokens
     });
     return {
       extensionTotalPoints: totalPoints,
       extensionModelName: modelName
     };
   })();
+  const { deepSearchTotalPoints, deepSearchModelName } = (() => {
+    if (!deepSearchModel || !deepSearchInputTokens)
+      return {
+        deepSearchTotalPoints: 0,
+        deepSearchModelName: ''
+      };
+    const { totalPoints, modelName } = formatModelChars2Points({
+      modelType: ModelTypeEnum.llm,
+      model: deepSearchModel,
+      inputTokens: deepSearchInputTokens,
+      outputTokens: deepSearchOutputTokens
+    });
+    return {
+      deepSearchTotalPoints: totalPoints,
+      deepSearchModelName: modelName
+    };
+  })();
 
-  const totalPoints = totalVector + extensionTotalPoints;
+  const totalPoints = totalVector + extensionTotalPoints + deepSearchTotalPoints;
 
   // 插入 Bill 记录
   if (billId) {
@@ -131,30 +120,42 @@ export const pushGenerateVectorUsage = ({
       tmbId,
       totalPoints,
       billId,
-      tokens,
+      inputTokens,
       listIndex: 0
     });
   } else {
     createUsage({
       teamId,
       tmbId,
-      appName: 'support.wallet.moduleName.index',
+      appName: i18nT('account_usage:embedding_index'),
       totalPoints,
       source,
       list: [
         {
-          moduleName: 'support.wallet.moduleName.index',
+          moduleName: i18nT('account_usage:embedding_index'),
           amount: totalVector,
           model: vectorModelName,
-          tokens
+          inputTokens
         },
         ...(extensionModel !== undefined
           ? [
               {
-                moduleName: 'core.module.template.Query extension',
+                moduleName: i18nT('common:core.module.template.Query extension'),
                 amount: extensionTotalPoints,
                 model: extensionModelName,
-                tokens: extensionTokens
+                inputTokens: extensionInputTokens,
+                outputTokens: extensionOutputTokens
+              }
+            ]
+          : []),
+        ...(deepSearchModel !== undefined
+          ? [
+              {
+                moduleName: i18nT('common:deep_rag_search'),
+                amount: deepSearchTotalPoints,
+                model: deepSearchModelName,
+                inputTokens: deepSearchInputTokens,
+                outputTokens: deepSearchOutputTokens
               }
             ]
           : [])
@@ -165,18 +166,22 @@ export const pushGenerateVectorUsage = ({
 };
 
 export const pushQuestionGuideUsage = ({
-  tokens,
+  model,
+  inputTokens,
+  outputTokens,
   teamId,
   tmbId
 }: {
-  tokens: number;
+  model: string;
+  inputTokens: number;
+  outputTokens: number;
   teamId: string;
   tmbId: string;
 }) => {
-  const qgModel = global.llmModels[0];
   const { totalPoints, modelName } = formatModelChars2Points({
-    tokens,
-    model: qgModel.model,
+    inputTokens,
+    outputTokens,
+    model,
     modelType: ModelTypeEnum.llm
   });
 
@@ -191,14 +196,15 @@ export const pushQuestionGuideUsage = ({
         moduleName: 'core.app.Question Guide',
         amount: totalPoints,
         model: modelName,
-        tokens
+        inputTokens,
+        outputTokens
       }
     ]
   });
 };
 
-export function pushAudioSpeechUsage({
-  appName = 'support.wallet.usage.Audio Speech',
+export const pushAudioSpeechUsage = ({
+  appName = i18nT('common:support.wallet.usage.Audio Speech'),
   model,
   charsLength,
   teamId,
@@ -211,11 +217,11 @@ export function pushAudioSpeechUsage({
   teamId: string;
   tmbId: string;
   source: UsageSourceEnum;
-}) {
+}) => {
   const { totalPoints, modelName } = formatModelChars2Points({
     model,
-    tokens: charsLength,
-    modelType: ModelTypeEnum.audioSpeech
+    inputTokens: charsLength,
+    modelType: ModelTypeEnum.tts
   });
 
   createUsage({
@@ -233,9 +239,9 @@ export function pushAudioSpeechUsage({
       }
     ]
   });
-}
+};
 
-export function pushWhisperUsage({
+export const pushWhisperUsage = ({
   teamId,
   tmbId,
   duration
@@ -243,15 +249,15 @@ export function pushWhisperUsage({
   teamId: string;
   tmbId: string;
   duration: number;
-}) {
-  const whisperModel = global.whisperModel;
+}) => {
+  const whisperModel = getDefaultTTSModel();
 
   if (!whisperModel) return;
 
   const { totalPoints, modelName } = formatModelChars2Points({
     model: whisperModel.model,
-    tokens: duration,
-    modelType: ModelTypeEnum.whisper,
+    inputTokens: duration,
+    modelType: ModelTypeEnum.stt,
     multiple: 60
   });
 
@@ -272,4 +278,4 @@ export function pushWhisperUsage({
       }
     ]
   });
-}
+};

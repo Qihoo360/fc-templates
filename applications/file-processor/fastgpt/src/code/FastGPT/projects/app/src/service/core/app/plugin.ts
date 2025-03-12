@@ -1,4 +1,5 @@
-import { FastGPTProUrl, isProduction } from '@fastgpt/service/common/system/constants';
+import { FastGPTProUrl } from '@fastgpt/service/common/system/constants';
+import { isProduction } from '@fastgpt/global/common/system/constants';
 import { cloneDeep } from 'lodash';
 import { getCommunityCb, getCommunityPlugins } from '@fastgpt/plugins/register';
 import { GET, POST } from '@fastgpt/service/common/api/plusRequest';
@@ -10,15 +11,19 @@ import { SystemPluginResponseType } from '@fastgpt/plugins/type';
 const getCommercialPlugins = () => {
   return GET<SystemPluginTemplateItemType[]>('/core/app/plugin/getSystemPlugins');
 };
+
 export const getSystemPlugins = async (refresh = false) => {
-  if (isProduction && global.systemPlugins && !refresh) return cloneDeep(global.systemPlugins);
+  if (isProduction && global.systemPlugins && global.systemPlugins.length > 0 && !refresh)
+    return cloneDeep(global.systemPlugins);
 
   try {
     if (!global.systemPlugins) {
       global.systemPlugins = [];
     }
 
-    global.systemPlugins = FastGPTProUrl ? await getCommercialPlugins() : getCommunityPlugins();
+    global.systemPlugins = FastGPTProUrl
+      ? await getCommercialPlugins()
+      : await getCommunityPlugins();
 
     addLog.info(`Load system plugin successfully: ${global.systemPlugins.length}`);
 
@@ -54,17 +59,22 @@ const getCommercialCb = async () => {
     {}
   );
 };
-export const getSystemPluginCb = async () => {
-  if (isProduction && global.systemPluginCb) return global.systemPluginCb;
+
+export const getSystemPluginCb = async (refresh = false) => {
+  if (
+    isProduction &&
+    global.systemPluginCb &&
+    Object.keys(global.systemPluginCb).length > 0 &&
+    !refresh
+  )
+    return global.systemPluginCb;
 
   try {
-    await getSystemPlugins();
     global.systemPluginCb = {};
+    await getSystemPlugins(refresh);
     global.systemPluginCb = FastGPTProUrl ? await getCommercialCb() : await getCommunityCb();
     return global.systemPluginCb;
   } catch (error) {
-    //@ts-ignore
-    global.systemPluginCb = undefined;
     return Promise.reject(error);
   }
 };

@@ -1,5 +1,5 @@
 import { DatasetDataIndexItemType, DatasetSchemaType } from './type';
-import { TrainingModeEnum, DatasetCollectionTypeEnum } from './constants';
+import { DatasetCollectionTypeEnum, DatasetCollectionDataProcessModeEnum } from './constants';
 import type { LLMModelItemType } from '../ai/model.d';
 import { ParentIdType } from 'common/parentFolder/type';
 
@@ -10,18 +10,29 @@ export type DatasetUpdateBody = {
   name?: string;
   avatar?: string;
   intro?: string;
-  agentModel?: LLMModelItemType;
   status?: DatasetSchemaType['status'];
+
+  agentModel?: string;
+  vlmModel?: string;
 
   websiteConfig?: DatasetSchemaType['websiteConfig'];
   externalReadUrl?: DatasetSchemaType['externalReadUrl'];
   defaultPermission?: DatasetSchemaType['defaultPermission'];
+  apiServer?: DatasetSchemaType['apiServer'];
+  yuqueServer?: DatasetSchemaType['yuqueServer'];
+  feishuServer?: DatasetSchemaType['feishuServer'];
+
+  // sync schedule
+  autoSync?: boolean;
 };
 
 /* ================= collection ===================== */
 export type DatasetCollectionChunkMetadataType = {
   parentId?: string;
-  trainingType?: TrainingModeEnum;
+  customPdfParse?: boolean;
+  trainingType?: DatasetCollectionDataProcessModeEnum;
+  imageIndex?: boolean;
+  autoIndexes?: boolean;
   chunkSize?: number;
   chunkSplitter?: string;
   qaPrompt?: string;
@@ -34,15 +45,20 @@ export type CreateDatasetCollectionParams = DatasetCollectionChunkMetadataType &
   name: string;
   type: DatasetCollectionTypeEnum;
 
-  tags?: string[];
-
   fileId?: string;
   rawLink?: string;
   externalFileId?: string;
-
   externalFileUrl?: string;
+  apiFileId?: string;
+
   rawTextLength?: number;
   hashRawText?: string;
+
+  tags?: string[];
+
+  createTime?: Date;
+  updateTime?: Date;
+  nextSyncTime?: Date;
 };
 
 export type ApiCreateDatasetCollectionParams = DatasetCollectionChunkMetadataType & {
@@ -56,8 +72,16 @@ export type TextCreateDatasetCollectionParams = ApiCreateDatasetCollectionParams
 export type LinkCreateDatasetCollectionParams = ApiCreateDatasetCollectionParams & {
   link: string;
 };
+export type ApiDatasetCreateDatasetCollectionParams = ApiCreateDatasetCollectionParams & {
+  name: string;
+  apiFileId: string;
+};
 export type FileIdCreateDatasetCollectionParams = ApiCreateDatasetCollectionParams & {
   fileId: string;
+};
+export type reTrainingDatasetFileCollectionParams = DatasetCollectionChunkMetadataType & {
+  datasetId: string;
+  collectionId: string;
 };
 export type FileCreateDatasetCollectionParams = ApiCreateDatasetCollectionParams & {
   fileMetadata?: Record<string, any>;
@@ -112,9 +136,15 @@ export type PostWebsiteSyncParams = {
 export type PushDatasetDataProps = {
   collectionId: string;
   data: PushDatasetDataChunkProps[];
-  trainingMode: TrainingModeEnum;
+  trainingType?: DatasetCollectionDataProcessModeEnum;
+  autoIndexes?: boolean;
+  imageIndex?: boolean;
   prompt?: string;
+
   billId?: string;
+
+  // Abandon
+  trainingMode?: DatasetCollectionDataProcessModeEnum;
 };
 export type PushDatasetDataResponse = {
   insertLen: number;

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { Flex, Box } from '@chakra-ui/react';
-import { useChatStore } from '@/web/core/chat/context/storeChat';
+import { useChatStore } from '@/web/core/chat/context/useChatStore';
 import { useTranslation } from 'next-i18next';
 import Badge from '../Badge';
 import MyIcon from '@fastgpt/web/components/common/Icon';
@@ -9,14 +9,14 @@ import MyIcon from '@fastgpt/web/components/common/Icon';
 const NavbarPhone = ({ unread }: { unread: number }) => {
   const router = useRouter();
   const { t } = useTranslation();
-  const { lastChatAppId, lastChatId } = useChatStore();
+  const { lastChatAppId } = useChatStore();
   const navbarList = useMemo(
     () => [
       {
         label: t('common:navbar.Chat'),
         icon: 'core/chat/chatLight',
         activeIcon: 'core/chat/chatFill',
-        link: `/chat?appId=${lastChatAppId}&chatId=${lastChatId}`,
+        link: `/chat?appId=${lastChatAppId}`,
         activeLink: ['/chat'],
         unread: 0
       },
@@ -29,23 +29,41 @@ const NavbarPhone = ({ unread }: { unread: number }) => {
         unread: 0
       },
       {
-        label: t('common:navbar.Tools'),
+        label: t('common:navbar.Datasets'),
+        icon: 'core/dataset/datasetLight',
+        activeIcon: 'core/dataset/datasetFill',
+        link: `/dataset/list`,
+        activeLink: ['/dataset/list', '/dataset/detail'],
+        unread: 0
+      },
+      {
+        label: t('common:navbar.Toolkit'),
         icon: 'phoneTabbar/tool',
         activeIcon: 'phoneTabbar/toolFill',
-        link: '/tools',
-        activeLink: ['/tools'],
+        link: `/toolkit`,
+        activeLink: ['/toolkit'],
         unread: 0
       },
       {
         label: t('common:navbar.Account'),
         icon: 'support/user/userLight',
         activeIcon: 'support/user/userFill',
-        link: '/account',
-        activeLink: ['/account'],
+        link: '/account/info',
+        activeLink: [
+          '/account/bill',
+          '/account/info',
+          '/account/team',
+          '/account/usage',
+          '/account/apikey',
+          '/account/setting',
+          '/account/inform',
+          '/account/promotion',
+          '/account/model'
+        ],
         unread
       }
     ],
-    [t, lastChatAppId, lastChatId, unread]
+    [t, lastChatAppId, unread]
   );
 
   return (
@@ -56,7 +74,7 @@ const NavbarPhone = ({ unread }: { unread: number }) => {
         justifyContent={'space-between'}
         backgroundColor={'white'}
         position={'relative'}
-        px={10}
+        px={4}
       >
         {navbarList.map((item) => (
           <Flex

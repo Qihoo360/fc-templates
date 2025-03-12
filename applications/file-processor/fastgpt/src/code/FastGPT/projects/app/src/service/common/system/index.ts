@@ -1,16 +1,18 @@
 import { initHttpAgent } from '@fastgpt/service/common/middle/httpAgent';
-import { existsSync, readdirSync, readFileSync } from 'fs';
+import fs, { existsSync } from 'fs';
 import type { FastGPTFeConfigsType } from '@fastgpt/global/common/system/types/index.d';
 import type { FastGPTConfigFileType } from '@fastgpt/global/common/system/types/index.d';
-import { PluginSourceEnum } from '@fastgpt/global/core/plugin/constants';
 import { getFastGPTConfigFromDB } from '@fastgpt/service/common/system/config/controller';
-import { PluginTemplateType } from '@fastgpt/global/core/plugin/type';
-import { FastGPTProUrl, isProduction } from '@fastgpt/service/common/system/constants';
+import { FastGPTProUrl } from '@fastgpt/service/common/system/constants';
+import { isProduction } from '@fastgpt/global/common/system/constants';
 import { initFastGPTConfig } from '@fastgpt/service/common/system/tools';
 import json5 from 'json5';
-import { SystemPluginTemplateItemType } from '@fastgpt/global/core/workflow/type';
+import { defaultGroup, defaultTemplateTypes } from '@fastgpt/web/core/workflow/constants';
+import { MongoPluginGroups } from '@fastgpt/service/core/app/plugin/pluginGroupSchema';
+import { MongoTemplateTypes } from '@fastgpt/service/core/app/templates/templateTypeSchema';
+import { loadSystemModels } from '@fastgpt/service/core/ai/config/utils';
 
-export const readConfigData = (name: string) => {
+export const readConfigData = async (name: string) => {
   const splitName = name.split('.');
   const devName = `${splitName[0]}.local.${splitName[1]}`;
 
@@ -27,13 +29,13 @@ export const readConfigData = (name: string) => {
     return `/app/data/${name}`;
   })();
 
-  const content = readFileSync(filename, 'utf-8');
+  const content = await fs.promises.readFile(filename, 'utf-8');
 
   return content;
 };
 
 /* Init global variables */
-export function initGlobal() {
+export function initGlobalVariables() {
   if (global.communityPlugins) return;
 
   global.communityPlugins = [];
@@ -44,14 +46,7 @@ export function initGlobal() {
 
 /* Init system data(Need to connected db). It only needs to run once */
 export async function getInitConfig() {
-  return Promise.all([
-    initSystemConfig(),
-    getSystemVersion(),
-
-    // abandon
-    getSystemPlugin(),
-    getSystemPluginV1()
-  ]);
+  return Promise.all([initSystemConfig(), getSystemVersion(), loadSystemModels()]);
 }
 
 const defaultFeConfigs: FastGPTFeConfigsType = {
@@ -76,7 +71,7 @@ const defaultFeConfigs: FastGPTFeConfigsType = {
 
 export async function initSystemConfig() {
   // load config
-  const [dbConfig, fileConfig] = await Promise.all([
+  const [{ config: dbConfig }, fileConfig] = await Promise.all([
     getFastGPTConfigFromDB(),
     readConfigData('config.json')
   ]);
@@ -88,41 +83,33 @@ export async function initSystemConfig() {
       ...fileRes?.feConfigs,
       ...defaultFeConfigs,
       ...(dbConfig.feConfigs || {}),
-      isPlus: !!FastGPTProUrl
+      isPlus: !!FastGPTProUrl,
+      show_aiproxy: !!process.env.AIPROXY_API_ENDPOINT
     },
     systemEnv: {
       ...fileRes.systemEnv,
       ...(dbConfig.systemEnv || {})
     },
-    subPlans: dbConfig.subPlans || fileRes.subPlans,
-    llmModels: dbConfig.llmModels || fileRes.llmModels || [],
-    vectorModels: dbConfig.vectorModels || fileRes.vectorModels || [],
-    reRankModels: dbConfig.reRankModels || fileRes.reRankModels || [],
-    audioSpeechModels: dbConfig.audioSpeechModels || fileRes.audioSpeechModels || [],
-    whisperModel: dbConfig.whisperModel || fileRes.whisperModel
+    subPlans: dbConfig.subPlans || fileRes.subPlans
   };
 
   // set config
   initFastGPTConfig(config);
+
   console.log({
     feConfigs: global.feConfigs,
     systemEnv: global.systemEnv,
-    subPlans: global.subPlans,
-    llmModels: global.llmModels,
-    vectorModels: global.vectorModels,
-    reRankModels: global.reRankModels,
-    audioSpeechModels: global.audioSpeechModels,
-    whisperModel: global.whisperModel
+    subPlans: global.subPlans
   });
 }
 
-function getSystemVersion() {
+async function getSystemVersion() {
   if (global.systemVersion) return;
   try {
     if (process.env.NODE_ENV === 'development') {
       global.systemVersion = process.env.npm_package_version || '0.0.0';
     } else {
-      const packageJson = json5.parse(readFileSync('/app/package.json', 'utf-8'));
+      const packageJson = json5.parse(await fs.promises.readFile('/app/package.json', 'utf-8'));
 
       global.systemVersion = packageJson?.version;
     }
@@ -134,54 +121,45 @@ function getSystemVersion() {
   }
 }
 
-function getSystemPlugin() {
-  if (global.communityPlugins && global.communityPlugins.length > 0) return;
-
-  const basePath =
-    process.env.NODE_ENV === 'development' ? 'data/pluginTemplates' : '/app/data/pluginTemplates';
-  // read data/pluginTemplates directory, get all json file
-  const files = readdirSync(basePath);
-  // filter json file
-  const filterFiles = files.filter((item) => item.endsWith('.json'));
-
-  // read json file
-  const fileTemplates = filterFiles.map<SystemPluginTemplateItemType>((filename) => {
-    const content = readFileSync(`${basePath}/${filename}`, 'utf-8');
-    return {
-      ...json5.parse(content),
-      originCost: 0,
-      currentCost: 0,
-      id: `${PluginSourceEnum.community}-${filename.replace('.json', '')}`
-    };
-  });
-
-  fileTemplates.sort((a, b) => (b.weight || 0) - (a.weight || 0));
-
-  global.communityPlugins = fileTemplates;
+export async function initSystemPluginGroups() {
+  try {
+    const { groupOrder, ...restDefaultGroup } = defaultGroup;
+    await MongoPluginGroups.updateOne(
+      {
+        groupId: defaultGroup.groupId
+      },
+      {
+        $set: restDefaultGroup
+      },
+      {
+        upsert: true
+      }
+    );
+  } catch (error) {
+    console.error('Error initializing system plugins:', error);
+  }
 }
-function getSystemPluginV1() {
-  if (global.communityPluginsV1 && global.communityPluginsV1.length > 0) return;
 
-  const basePath =
-    process.env.NODE_ENV === 'development'
-      ? 'data/pluginTemplates/v1'
-      : '/app/data/pluginTemplates/v1';
-  // read data/pluginTemplates directory, get all json file
-  const files = readdirSync(basePath);
-  // filter json file
-  const filterFiles = files.filter((item) => item.endsWith('.json'));
+export async function initAppTemplateTypes() {
+  try {
+    await Promise.all(
+      defaultTemplateTypes.map((templateType) => {
+        const { typeOrder, ...rest } = templateType;
 
-  // read json file
-  const fileTemplates: (PluginTemplateType & { weight: number })[] = filterFiles.map((filename) => {
-    const content = readFileSync(`${basePath}/${filename}`, 'utf-8');
-    return {
-      ...JSON.parse(content),
-      id: `${PluginSourceEnum.community}-${filename.replace('.json', '')}`,
-      source: PluginSourceEnum.community
-    };
-  });
-
-  fileTemplates.sort((a, b) => b.weight - a.weight);
-
-  global.communityPluginsV1 = fileTemplates;
+        return MongoTemplateTypes.updateOne(
+          {
+            typeId: templateType.typeId
+          },
+          {
+            $set: rest
+          },
+          {
+            upsert: true
+          }
+        );
+      })
+    );
+  } catch (error) {
+    console.error('Error initializing system templates:', error);
+  }
 }

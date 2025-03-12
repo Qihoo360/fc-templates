@@ -16,6 +16,7 @@ import { DatasetSearchModeEnum } from '../dataset/constants';
 import { DispatchNodeResponseType } from '../workflow/runtime/type.d';
 import { ChatBoxInputType } from '../../../../projects/app/src/components/core/chat/ChatContainer/ChatBox/type';
 import { WorkflowInteractiveResponseType } from '../workflow/template/system/interactive/type';
+import { FlowNodeInputItemType } from '../workflow/type/io';
 
 export type ChatSchema = {
   _id: string;
@@ -35,6 +36,7 @@ export type ChatSchema = {
   variableList?: VariableItemType[];
   welcomeText?: string;
   variables: Record<string, any>;
+  pluginInputs?: FlowNodeInputItemType[];
   metadata?: Record<string, any>;
 };
 
@@ -56,6 +58,7 @@ export type UserChatItemValueItemType = {
 export type UserChatItemType = {
   obj: ChatRoleEnum.Human;
   value: UserChatItemValueItemType[];
+  hideInUI?: boolean;
 };
 export type SystemChatItemValueItemType = {
   type: ChatItemValueTypeEnum.text;
@@ -67,14 +70,24 @@ export type SystemChatItemType = {
   obj: ChatRoleEnum.System;
   value: SystemChatItemValueItemType[];
 };
+
 export type AIChatItemValueItemType = {
-  type: ChatItemValueTypeEnum.text | ChatItemValueTypeEnum.tool | ChatItemValueTypeEnum.interactive;
+  type:
+    | ChatItemValueTypeEnum.text
+    | ChatItemValueTypeEnum.reasoning
+    | ChatItemValueTypeEnum.tool
+    | ChatItemValueTypeEnum.interactive;
+
   text?: {
+    content: string;
+  };
+  reasoning?: {
     content: string;
   };
   tools?: ToolModuleResponseItemType[];
   interactive?: WorkflowInteractiveResponseType;
 };
+
 export type AIChatItemType = {
   obj: ChatRoleEnum.AI;
   value: AIChatItemValueItemType[];

@@ -1,3 +1,4 @@
+import { LLMModelItemType } from '../../ai/model.d';
 import { LLMModelTypeEnum } from '../../ai/constants';
 import { WorkflowIOValueTypeEnum, NodeInputKeyEnum, NodeOutputKeyEnum } from '../constants';
 import { FlowNodeInputTypeEnum, FlowNodeOutputTypeEnum } from '../node/constant';
@@ -49,8 +50,9 @@ export type FlowNodeInputItemType = InputComponentPropsType & {
   debugLabel?: string;
   description?: string; // field desc
   required?: boolean;
-  toolDescription?: string; // If this field is not empty, it is entered as a tool
   enum?: string;
+
+  toolDescription?: string; // If this field is not empty, it is entered as a tool
 
   // render components params
   canEdit?: boolean; // dynamic inputs
@@ -75,6 +77,12 @@ export type FlowNodeOutputItemType = {
   description?: string;
   defaultValue?: any;
   required?: boolean;
+
+  invalid?: boolean;
+  invalidCondition?: (e: {
+    inputs: FlowNodeInputItemType[];
+    llmModelList: LLMModelItemType[];
+  }) => boolean;
 
   // component params
   customFieldConfig?: CustomFieldConfigType;

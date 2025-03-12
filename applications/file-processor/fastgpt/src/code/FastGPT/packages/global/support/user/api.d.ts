@@ -1,4 +1,9 @@
+import { MemberGroupSchemaType, MemberGroupType } from 'support/permission/memberGroup/type';
 import { OAuthEnum } from './constant';
+import { TrackRegisterParams } from './login/api';
+import { TeamMemberStatusEnum } from './team/constant';
+import { OrgType } from './team/org/type';
+import { TeamMemberItemType } from './team/type';
 
 export type PostLoginProps = {
   username: string;
@@ -9,8 +14,7 @@ export type OauthLoginProps = {
   type: `${OAuthEnum}`;
   code: string;
   callbackUrl: string;
-  inviterId?: string;
-};
+} & TrackRegisterParams;
 
 export type WxLoginProps = {
   inviterId?: string;
@@ -20,4 +24,10 @@ export type WxLoginProps = {
 export type FastLoginProps = {
   token: string;
   code: string;
+};
+
+export type SearchResult = {
+  members: Omit<TeamMemberItemType, 'teamId' | 'permission'>[];
+  orgs: Omit<OrgType, 'permission' | 'members'>[];
+  groups: MemberGroupSchemaType[];
 };

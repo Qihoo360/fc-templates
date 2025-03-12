@@ -1,156 +1,186 @@
 import { ChatSchema } from '@fastgpt/global/core/chat/type';
 import { MongoChat } from '@fastgpt/service/core/chat/chatSchema';
 import { AuthModeType } from '@fastgpt/service/support/permission/type';
-import { authOutLink, authOutLinkInit } from './outLink';
+import { authOutLink } from './outLink';
 import { ChatErrEnum } from '@fastgpt/global/common/error/code/chat';
-import { TeamMemberRoleEnum } from '@fastgpt/global/support/user/team/constant';
 import { authTeamSpaceToken } from './team';
-import { authCert } from '@fastgpt/service/support/permission/auth/common';
-import { authOutLinkValid } from '@fastgpt/service/support/permission/publish/authLink';
-import {
-  AuthUserTypeEnum,
-  OwnerPermissionVal,
-  ReadPermissionVal
-} from '@fastgpt/global/support/permission/constant';
-import { MongoTeamMember } from '@fastgpt/service/support/user/team/teamMemberSchema';
-import { OutLinkChatAuthProps } from '@fastgpt/global/support/permission/chat';
-import { addLog } from '@fastgpt/service/common/system/log';
+import { AuthUserTypeEnum, ReadPermissionVal } from '@fastgpt/global/support/permission/constant';
 import { authApp } from '@fastgpt/service/support/permission/app/auth';
+
 /* 
-  outLink: Must be the owner
-  token: team owner and chat owner have all permissions
+  检查chat的权限：
+  1. 无 chatId，仅校验 cookie、shareChat、teamChat 秘钥是否合法
+  2. 有 chatId，校验用户是否有权限操作该 chat
+
+  * cookie + appId 校验
+  * shareId + outLinkUid 校验
+  * teamId + teamToken + appId 校验
+
+  Chat没有读写的权限之分，鉴权过了，都可以操作。
 */
+const defaultResponseShow = {
+  responseDetail: true,
+  showNodeStatus: true,
+  showRawSource: true
+};
 export async function authChatCrud({
   appId,
   chatId,
+
   shareId,
   outLinkUid,
 
   teamId: spaceTeamId,
   teamToken,
-  per = OwnerPermissionVal,
   ...props
 }: AuthModeType & {
   appId: string;
   chatId?: string;
   shareId?: string;
   outLinkUid?: string;
-
   teamId?: string;
   teamToken?: string;
 }): Promise<{
-  chat?: ChatSchema;
-  isOutLink: boolean;
-  uid?: string;
-  responseDetail: boolean;
-}> {
-  const isOutLink = Boolean((shareId || spaceTeamId) && outLinkUid);
-  if (!chatId) return { isOutLink, uid: outLinkUid, responseDetail: true };
-
-  const chat = await MongoChat.findOne({ appId, chatId }).lean();
-
-  const { uid, responseDetail } = await (async () => {
-    // outLink Auth
-    if (shareId && outLinkUid) {
-      const { uid, shareChat } = await authOutLink({ shareId, outLinkUid });
-      if (!chat || (chat.shareId === shareId && chat.outLinkUid === uid)) {
-        return { uid, responseDetail: shareChat.responseDetail };
-      }
-      return Promise.reject(ChatErrEnum.unAuthChat);
-    }
-    // auth team space chat
-    if (spaceTeamId && teamToken) {
-      const { uid } = await authTeamSpaceToken({ teamId: spaceTeamId, teamToken });
-      addLog.debug('Auth team token', { uid, spaceTeamId, teamToken, chatUid: chat?.outLinkUid });
-      if (!chat || (String(chat.teamId) === String(spaceTeamId) && chat.outLinkUid === uid)) {
-        return { uid, responseDetail: true };
-      }
-      return Promise.reject(ChatErrEnum.unAuthChat);
-    }
-
-    if (!chat) return { id: outLinkUid, responseDetail: true };
-
-    // auth req
-    const { teamId, tmbId, permission } = await authApp({
-      req: props.req,
-      authToken: true,
-      authApiKey: true,
-      appId,
-      per: ReadPermissionVal
-    });
-
-    if (String(teamId) !== String(chat.teamId)) return Promise.reject(ChatErrEnum.unAuthChat);
-
-    if (permission.hasManagePer) return { uid: outLinkUid, responseDetail: true };
-    if (String(tmbId) === String(chat.tmbId)) return { uid: outLinkUid, responseDetail: true };
-
-    return Promise.reject(ChatErrEnum.unAuthChat);
-  })();
-
-  if (!chat) return { isOutLink, uid, responseDetail };
-
-  return {
-    chat,
-    isOutLink,
-    uid,
-    responseDetail
-  };
-}
-
-/* 
-  Different chat source
-  1. token (header)
-  2. apikey (header)
-  3. share page (body: shareId outLinkUid)
-  4. team chat page (body: teamId teamToken)
-*/
-export async function authChatCert(props: AuthModeType): Promise<{
   teamId: string;
   tmbId: string;
-  authType: AuthUserTypeEnum;
-  apikey: string;
-  isOwner: boolean;
-  canWrite: boolean;
-  outLinkUid?: string;
+  uid: string;
+  chat?: ChatSchema;
+  responseDetail: boolean;
+  showNodeStatus: boolean;
+  showRawSource: boolean;
+  authType?: `${AuthUserTypeEnum}`;
 }> {
-  const { teamId, teamToken, shareId, outLinkUid } = props.req.body as OutLinkChatAuthProps;
+  if (!appId) return Promise.reject(ChatErrEnum.unAuthChat);
+
+  if (spaceTeamId && teamToken) {
+    const { uid, tmbId } = await authTeamSpaceToken({ teamId: spaceTeamId, teamToken });
+    if (!chatId)
+      return {
+        teamId: spaceTeamId,
+        tmbId,
+        uid,
+        ...defaultResponseShow,
+        authType: AuthUserTypeEnum.teamDomain
+      };
+
+    const chat = await MongoChat.findOne({ appId, chatId }).lean();
+    if (!chat) {
+      return {
+        teamId: spaceTeamId,
+        tmbId,
+        uid,
+        ...defaultResponseShow,
+        authType: AuthUserTypeEnum.teamDomain
+      };
+    }
+
+    if (chat.outLinkUid !== uid) return Promise.reject(ChatErrEnum.unAuthChat);
+
+    return {
+      teamId: spaceTeamId,
+      tmbId,
+      uid,
+      chat,
+      ...defaultResponseShow,
+      authType: AuthUserTypeEnum.teamDomain
+    };
+  }
 
   if (shareId && outLinkUid) {
-    const { shareChat } = await authOutLinkValid({ shareId });
-    const { uid } = await authOutLinkInit({
-      outLinkUid,
-      tokenUrl: shareChat.limit?.hookUrl
-    });
+    const {
+      outLinkConfig,
+      uid,
+      appId: shareChatAppId
+    } = await authOutLink({ shareId, outLinkUid });
 
+    if (String(shareChatAppId) !== appId) return Promise.reject(ChatErrEnum.unAuthChat);
+
+    if (!chatId) {
+      return {
+        teamId: String(outLinkConfig.teamId),
+        tmbId: String(outLinkConfig.tmbId),
+        uid,
+        responseDetail: outLinkConfig.responseDetail,
+        showNodeStatus: outLinkConfig.showNodeStatus ?? true,
+        showRawSource: outLinkConfig.showRawSource ?? false,
+        authType: AuthUserTypeEnum.outLink
+      };
+    }
+
+    const chat = await MongoChat.findOne({ appId, chatId }).lean();
+
+    if (!chat) {
+      return {
+        teamId: String(outLinkConfig.teamId),
+        tmbId: String(outLinkConfig.tmbId),
+        uid,
+        responseDetail: outLinkConfig.responseDetail,
+        showNodeStatus: outLinkConfig.showNodeStatus ?? true,
+        showRawSource: outLinkConfig.showRawSource ?? false,
+        authType: AuthUserTypeEnum.outLink
+      };
+    }
+    if (chat.outLinkUid !== uid) return Promise.reject(ChatErrEnum.unAuthChat);
     return {
-      teamId: String(shareChat.teamId),
-      tmbId: String(shareChat.tmbId),
-      authType: AuthUserTypeEnum.outLink,
-      apikey: '',
-      isOwner: false,
-      canWrite: false,
-      outLinkUid: uid
+      teamId: String(outLinkConfig.teamId),
+      tmbId: String(outLinkConfig.tmbId),
+      chat,
+      uid,
+      responseDetail: outLinkConfig.responseDetail,
+      showNodeStatus: outLinkConfig.showNodeStatus ?? true,
+      showRawSource: outLinkConfig.showRawSource ?? false,
+      authType: AuthUserTypeEnum.outLink
     };
   }
-  if (teamId && teamToken) {
-    const { uid } = await authTeamSpaceToken({ teamId, teamToken });
-    const tmb = await MongoTeamMember.findOne(
-      { teamId, role: TeamMemberRoleEnum.owner },
-      'tmbId'
-    ).lean();
 
-    if (!tmb) return Promise.reject(ChatErrEnum.unAuthChat);
+  // Cookie
+  const { teamId, tmbId, permission, authType } = await authApp({
+    req: props.req,
+    authToken: true,
+    authApiKey: true,
+    appId,
+    per: ReadPermissionVal
+  });
 
+  if (!chatId)
     return {
       teamId,
-      tmbId: String(tmb._id),
-      authType: AuthUserTypeEnum.teamDomain,
-      apikey: '',
-      isOwner: false,
-      canWrite: false,
-      outLinkUid: uid
-    };
-  }
+      tmbId,
+      uid: tmbId,
+      ...defaultResponseShow,
 
-  return authCert(props);
+      authType
+    };
+
+  const chat = await MongoChat.findOne({ appId, chatId }).lean();
+  if (!chat)
+    return {
+      teamId,
+      tmbId,
+      uid: tmbId,
+      ...defaultResponseShow,
+      authType
+    };
+
+  if (String(teamId) !== String(chat.teamId)) return Promise.reject(ChatErrEnum.unAuthChat);
+  if (permission.hasManagePer)
+    return {
+      teamId,
+      tmbId,
+      chat,
+      uid: tmbId,
+      ...defaultResponseShow,
+      authType
+    };
+  if (String(tmbId) === String(chat.tmbId))
+    return {
+      teamId,
+      tmbId,
+      chat,
+      uid: tmbId,
+      ...defaultResponseShow,
+      authType
+    };
+
+  return Promise.reject(ChatErrEnum.unAuthChat);
 }

@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Flex, Box, BoxProps } from '@chakra-ui/react';
 import MyIcon from '../Icon';
 
-type Props = Omit<BoxProps, 'onChange'> & {
+type Props<T = string> = Omit<BoxProps, 'onChange'> & {
   list: {
     icon?: string;
     label: string | React.ReactNode;
-    value: string;
+    value: T;
   }[];
-  value: string;
-  onChange: (e: string) => void;
+  value: T;
+  onChange: (e: T) => void;
 };
 
 const FillRowTabs = ({ list, value, onChange, py = '7px', px = '12px', ...props }: Props) => {
@@ -18,12 +18,13 @@ const FillRowTabs = ({ list, value, onChange, py = '7px', px = '12px', ...props 
       display={'inline-flex'}
       px={'3px'}
       py={'3px'}
-      borderRadius={'md'}
+      borderRadius={'sm'}
       borderWidth={'1px'}
-      borderColor={'borderColor.base'}
+      borderColor={'myGray.200'}
       bg={'myGray.50'}
       gap={'4px'}
       fontSize={'sm'}
+      fontWeight={'medium'}
       {...props}
     >
       {list.map((item) => (
@@ -33,7 +34,7 @@ const FillRowTabs = ({ list, value, onChange, py = '7px', px = '12px', ...props 
           alignItems={'center'}
           justifyContent={'center'}
           cursor={'pointer'}
-          borderRadius={'md'}
+          borderRadius={'xs'}
           px={px}
           py={py}
           userSelect={'none'}
@@ -45,10 +46,14 @@ const FillRowTabs = ({ list, value, onChange, py = '7px', px = '12px', ...props 
                 color: 'primary.600'
               }
             : {
+                color: 'myGray.500',
+                _hover: {
+                  color: 'primary.600'
+                },
                 onClick: () => onChange(item.value)
               })}
         >
-          {item.icon && <MyIcon name={item.icon as any} mr={1} w={'14px'} />}
+          {item.icon && <MyIcon name={item.icon as any} mr={1.5} w={'18px'} />}
           <Box>{item.label}</Box>
         </Flex>
       ))}
@@ -56,4 +61,6 @@ const FillRowTabs = ({ list, value, onChange, py = '7px', px = '12px', ...props 
   );
 };
 
-export default FillRowTabs;
+export default forwardRef(FillRowTabs) as <T>(
+  props: Props<T> & { ref?: React.Ref<HTMLSelectElement> }
+) => JSX.Element;

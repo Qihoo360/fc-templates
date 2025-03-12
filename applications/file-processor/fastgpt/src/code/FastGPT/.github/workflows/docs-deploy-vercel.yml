@@ -7,8 +7,6 @@ on:
       - 'docSite/**'
     branches:
       - 'main'
-    tags:
-      - 'v*.*.*'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -58,7 +56,7 @@ jobs:
 
       # Step 4 - Builds the site using Hugo
       - name: Build
-        run: cd docSite && hugo mod get -u github.com/colinwilson/lotusdocs && hugo -v --minify
+        run: cd docSite && hugo mod get -u github.com/colinwilson/lotusdocs@6d0568e && hugo -v --minify
 
       # Step 5 - Push our generated site to Vercel
       - name: Deploy to Vercel

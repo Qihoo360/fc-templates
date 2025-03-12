@@ -49,7 +49,6 @@ const ResponseTags = ({
   const [quoteFolded, setQuoteFolded] = useState<boolean>(true);
 
   const chatType = useContextSelector(ChatBoxContext, (v) => v.chatType);
-  const showRawSource = useContextSelector(ChatBoxContext, (v) => v.showRawSource);
   const notSharePage = useMemo(() => chatType !== 'share', [chatType]);
 
   const {
@@ -250,8 +249,7 @@ const ResponseTags = ({
       {!!quoteModalData && (
         <QuoteModal
           {...quoteModalData}
-          canEditDataset={notSharePage}
-          showRawSource={showRawSource}
+          chatItemId={historyItem.dataId}
           onClose={() => setQuoteModalData(undefined)}
         />
       )}

@@ -64,7 +64,7 @@ COPY . .
 ENV APP_BUILD_HASH=${BUILD_HASH}
 RUN npm run build
 
-FROM wfwqjs-eventing-zevent-pub/webui_base_models:latest AS hf-models
+FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/webui_base_models:latest AS hf-models
 
 ######## WebUI backend ########
 FROM python:3.11-slim-bookworm AS base

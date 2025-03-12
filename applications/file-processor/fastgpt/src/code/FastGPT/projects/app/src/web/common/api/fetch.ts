@@ -24,7 +24,11 @@ export type StreamResponseType = {
   [DispatchNodeResponseKeyEnum.nodeResponse]: ChatHistoryItemResType[];
 };
 type ResponseQueueItemType =
-  | { event: SseResponseEventEnum.fastAnswer | SseResponseEventEnum.answer; text: string }
+  | {
+      event: SseResponseEventEnum.fastAnswer | SseResponseEventEnum.answer;
+      text?: string;
+      reasoningText?: string;
+    }
   | { event: SseResponseEventEnum.interactive; [key: string]: any }
   | {
       event:
@@ -79,7 +83,7 @@ export const streamFetch = ({
       if (abortCtrl.signal.aborted) {
         responseQueue.forEach((item) => {
           onMessage(item);
-          if (isAnswerEvent(item.event)) {
+          if (isAnswerEvent(item.event) && item.text) {
             responseText += item.text;
           }
         });
@@ -91,7 +95,7 @@ export const streamFetch = ({
         for (let i = 0; i < fetchCount; i++) {
           const item = responseQueue[i];
           onMessage(item);
-          if (isAnswerEvent(item.event)) {
+          if (isAnswerEvent(item.event) && item.text) {
             responseText += item.text;
           }
         }
@@ -179,6 +183,12 @@ export const streamFetch = ({
           })();
           // console.log(parseJson, event);
           if (event === SseResponseEventEnum.answer) {
+            const reasoningText = parseJson.choices?.[0]?.delta?.reasoning_content || '';
+            pushDataToQueue({
+              event,
+              reasoningText
+            });
+
             const text = parseJson.choices?.[0]?.delta?.content || '';
             for (const item of text) {
               pushDataToQueue({
@@ -187,6 +197,12 @@ export const streamFetch = ({
               });
             }
           } else if (event === SseResponseEventEnum.fastAnswer) {
+            const reasoningText = parseJson.choices?.[0]?.delta?.reasoning_content || '';
+            pushDataToQueue({
+              event,
+              reasoningText
+            });
+
             const text = parseJson.choices?.[0]?.delta?.content || '';
             pushDataToQueue({
               event,
@@ -220,7 +236,7 @@ export const streamFetch = ({
             });
           } else if (event === SseResponseEventEnum.error) {
             if (parseJson.statusText === TeamErrEnum.aiPointsNotEnough) {
-              useSystemStore.getState().setIsNotSufficientModal(true);
+              useSystemStore.getState().setNotSufficientModalType(TeamErrEnum.aiPointsNotEnough);
             }
             errMsg = getErrText(parseJson, '流响应错误');
           }

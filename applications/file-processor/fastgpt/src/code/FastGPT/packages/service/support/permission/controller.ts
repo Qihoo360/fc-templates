@@ -8,19 +8,17 @@ import { authOpenApiKey } from '../openapi/auth';
 import { FileTokenQuery } from '@fastgpt/global/common/file/type';
 import { MongoResourcePermission } from './schema';
 import { ClientSession } from 'mongoose';
-import {
-  PermissionValueType,
-  ResourcePermissionType,
-  ResourcePerWithGroup,
-  ResourcePerWithTmbWithUser
-} from '@fastgpt/global/support/permission/type';
+import { PermissionValueType } from '@fastgpt/global/support/permission/type';
 import { bucketNameMap } from '@fastgpt/global/common/file/constants';
 import { addMinutes } from 'date-fns';
 import { getGroupsByTmbId } from './memberGroup/controllers';
 import { Permission } from '@fastgpt/global/support/permission/controller';
 import { ParentIdType } from '@fastgpt/global/common/parentFolder/type';
-import { RequireOnlyOne } from '@fastgpt/global/common/type/utils';
 import { CommonErrEnum } from '@fastgpt/global/common/error/code/common';
+import { MemberGroupSchemaType } from '@fastgpt/global/support/permission/memberGroup/type';
+import { TeamMemberSchema } from '@fastgpt/global/support/user/team/type';
+import { OrgSchemaType } from '@fastgpt/global/support/user/team/org/type';
+import { getOrgIdSetWithParentByTmbId } from './org/controllers';
 
 /** get resource permission for a team member
  * If there is no permission for the team member, it will return undefined
@@ -67,66 +65,43 @@ export const getResourcePermission = async ({
   }
 
   // If there is no personal permission, get the group permission
-  const groupIdList = (await getGroupsByTmbId({ tmbId, teamId })).map((item) => item._id);
+  const [groupPers, orgPers] = await Promise.all([
+    getGroupsByTmbId({ tmbId, teamId })
+      .then((res) => res.map((item) => item._id))
+      .then((groupIdList) =>
+        MongoResourcePermission.find(
+          {
+            teamId,
+            resourceType,
+            groupId: {
+              $in: groupIdList
+            },
+            resourceId
+          },
+          'permission'
+        ).lean()
+      )
+      .then((perList) => perList.map((item) => item.permission)),
+    getOrgIdSetWithParentByTmbId({ tmbId, teamId })
+      .then((item) => Array.from(item))
+      .then((orgIds) =>
+        MongoResourcePermission.find(
+          {
+            teamId,
+            resourceType,
+            orgId: {
+              $in: Array.from(orgIds)
+            },
+            resourceId
+          },
+          'permission'
+        ).lean()
+      )
+      .then((perList) => perList.map((item) => item.permission))
+  ]);
 
-  if (groupIdList.length === 0) {
-    return undefined;
-  }
-
-  // get the maximum permission of the group
-  const pers = (
-    await MongoResourcePermission.find(
-      {
-        teamId,
-        resourceType,
-        groupId: {
-          $in: groupIdList
-        },
-        resourceId
-      },
-      'permission'
-    ).lean()
-  ).map((item) => item.permission);
-
-  const groupPer = getGroupPer(pers);
-
-  return groupPer;
+  return concatPer([...groupPers, ...orgPers]);
 };
-
-/* 仅取 members 不取 groups */
-export async function getResourceAllClbs({
-  resourceId,
-  teamId,
-  resourceType,
-  session
-}: {
-  teamId: string;
-  session?: ClientSession;
-} & (
-  | {
-      resourceType: 'team';
-      resourceId?: undefined;
-    }
-  | {
-      resourceType: Omit<PerResourceTypeEnum, 'team'>;
-      resourceId?: string | null;
-    }
-)): Promise<ResourcePermissionType[]> {
-  return MongoResourcePermission.find(
-    {
-      resourceType: resourceType,
-      teamId: teamId,
-      resourceId,
-      groupId: {
-        $exists: false
-      }
-    },
-    null,
-    {
-      session
-    }
-  ).lean();
-}
 
 export async function getResourceClbsAndGroups({
   resourceId,
@@ -155,46 +130,61 @@ export const getClbsAndGroupsWithInfo = async ({
   resourceType,
   teamId
 }: {
-  resourceId: ParentIdType;
-  resourceType: Omit<`${PerResourceTypeEnum}`, 'team'>;
   teamId: string;
-}) =>
+} & (
+  | {
+      resourceId: ParentIdType;
+      resourceType: Omit<`${PerResourceTypeEnum}`, 'team'>;
+    }
+  | {
+      resourceType: 'team';
+      resourceId?: undefined;
+    }
+)) =>
   Promise.all([
-    (await MongoResourcePermission.find({
+    MongoResourcePermission.find({
       teamId,
       resourceId,
       resourceType,
       tmbId: {
         $exists: true
       }
-    }).populate({
-      path: 'tmbId',
-      select: 'name userId',
-      populate: {
-        path: 'userId',
-        select: 'avatar'
-      }
-    })) as ResourcePerWithTmbWithUser[],
-    (await MongoResourcePermission.find({
+    })
+      .populate<{ tmb: TeamMemberSchema }>({
+        path: 'tmb',
+        select: 'name userId avatar'
+      })
+      .lean(),
+    MongoResourcePermission.find({
       teamId,
       resourceId,
       resourceType,
       groupId: {
         $exists: true
       }
-    }).populate({
-      path: 'groupId',
-      select: 'name avatar'
-    })) as ResourcePerWithGroup[]
+    })
+      .populate<{ group: MemberGroupSchemaType }>('group', 'name avatar')
+      .lean(),
+    MongoResourcePermission.find({
+      teamId,
+      resourceId,
+      resourceType,
+      orgId: {
+        $exists: true
+      }
+    })
+      .populate<{ org: OrgSchemaType }>({ path: 'org', select: 'name avatar' })
+      .lean()
   ]);
 
 export const delResourcePermissionById = (id: string) => {
-  return MongoResourcePermission.findByIdAndRemove(id);
+  return MongoResourcePermission.findByIdAndDelete(id);
 };
 export const delResourcePermission = ({
   session,
   tmbId,
   groupId,
+  orgId,
   ...props
 }: {
   resourceType: PerResourceTypeEnum;
@@ -203,15 +193,18 @@ export const delResourcePermission = ({
   session?: ClientSession;
   tmbId?: string;
   groupId?: string;
+  orgId?: string;
 }) => {
-  // tmbId or groupId only one and not both
-  if (!!tmbId === !!groupId) {
+  // either tmbId or groupId or orgId must be provided
+  if (!tmbId && !groupId && !orgId) {
     return Promise.reject(CommonErrEnum.missingParams);
   }
+
   return MongoResourcePermission.deleteOne(
     {
       ...(tmbId ? { tmbId } : {}),
       ...(groupId ? { groupId } : {}),
+      ...(orgId ? { orgId } : {}),
       ...props
     },
     { session }
@@ -249,7 +242,7 @@ export function authJWT(token: string) {
   }>((resolve, reject) => {
     const key = process.env.TOKEN_KEY as string;
 
-    jwt.verify(token, key, function (err, decoded: any) {
+    jwt.verify(token, key, (err, decoded: any) => {
       if (err || !decoded?.userId) {
         reject(ERROR_ENUM.unAuthorization);
         return;
@@ -413,7 +406,8 @@ export const createFileToken = (data: FileTokenQuery) => {
     return Promise.reject('System unset FILE_TOKEN_KEY');
   }
 
-  const expireMinutes = bucketNameMap[data.bucketName].previewExpireMinutes;
+  const expireMinutes =
+    data.customExpireMinutes ?? bucketNameMap[data.bucketName].previewExpireMinutes;
   const expiredTime = Math.floor(addMinutes(new Date(), expireMinutes).getTime() / 1000);
 
   const key = (process.env.FILE_TOKEN_KEY as string) ?? 'filetoken';
@@ -434,24 +428,24 @@ export const authFileToken = (token?: string) =>
     }
     const key = (process.env.FILE_TOKEN_KEY as string) ?? 'filetoken';
 
-    jwt.verify(token, key, function (err, decoded: any) {
-      if (err || !decoded.bucketName || !decoded?.teamId || !decoded?.tmbId || !decoded?.fileId) {
+    jwt.verify(token, key, (err, decoded: any) => {
+      if (err || !decoded.bucketName || !decoded?.teamId || !decoded?.fileId) {
         reject(ERROR_ENUM.unAuthFile);
         return;
       }
       resolve({
         bucketName: decoded.bucketName,
         teamId: decoded.teamId,
-        tmbId: decoded.tmbId,
+        uid: decoded.uid,
         fileId: decoded.fileId
       });
     });
   });
 
-export const getGroupPer = (groups: PermissionValueType[] = []) => {
-  if (groups.length === 0) {
+export const concatPer = (perList: PermissionValueType[] = []) => {
+  if (perList.length === 0) {
     return undefined;
   }
 
-  return new Permission().addPer(...groups).value;
+  return new Permission().addPer(...perList).value;
 };

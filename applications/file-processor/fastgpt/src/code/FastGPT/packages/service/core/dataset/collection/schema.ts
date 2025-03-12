@@ -1,7 +1,10 @@
-import { connectionMongo, getMongoModel, type Model } from '../../../common/mongo';
+import { connectionMongo, getMongoModel } from '../../../common/mongo';
 const { Schema, model, models } = connectionMongo;
 import { DatasetCollectionSchemaType } from '@fastgpt/global/core/dataset/type.d';
-import { TrainingTypeMap, DatasetCollectionTypeMap } from '@fastgpt/global/core/dataset/constants';
+import {
+  DatasetCollectionTypeMap,
+  DatasetCollectionDataProcessModeEnum
+} from '@fastgpt/global/core/dataset/constants';
 import { DatasetCollectionName } from '../schema';
 import {
   TeamCollectionName,
@@ -31,6 +34,8 @@ const DatasetCollectionSchema = new Schema({
     ref: DatasetCollectionName,
     required: true
   },
+
+  // Basic info
   type: {
     type: String,
     enum: Object.keys(DatasetCollectionTypeMap),
@@ -40,6 +45,11 @@ const DatasetCollectionSchema = new Schema({
     type: String,
     required: true
   },
+  tags: {
+    type: [String],
+    default: []
+  },
+
   createTime: {
     type: Date,
     default: () => new Date()
@@ -48,33 +58,8 @@ const DatasetCollectionSchema = new Schema({
     type: Date,
     default: () => new Date()
   },
-  forbid: {
-    type: Boolean,
-    default: false
-  },
 
-  // chunk filed
-  trainingType: {
-    type: String,
-    enum: Object.keys(TrainingTypeMap)
-  },
-  chunkSize: {
-    type: Number,
-    required: true
-  },
-  chunkSplitter: {
-    type: String
-  },
-  qaPrompt: {
-    type: String
-  },
-  ocrParse: Boolean,
-
-  tags: {
-    type: [String],
-    default: []
-  },
-
+  // Metadata
   // local file collection
   fileId: {
     type: Schema.Types.ObjectId,
@@ -82,17 +67,46 @@ const DatasetCollectionSchema = new Schema({
   },
   // web link collection
   rawLink: String,
-  // external collection
+  // Api collection
+  apiFileId: String,
+  // external collection(Abandoned)
   externalFileId: String,
+  externalFileUrl: String, // external import url
 
-  // metadata
   rawTextLength: Number,
   hashRawText: String,
-  externalFileUrl: String, // external import url
   metadata: {
     type: Object,
     default: {}
-  }
+  },
+
+  forbid: Boolean,
+  // next sync time
+  nextSyncTime: Date,
+
+  // Parse settings
+  customPdfParse: Boolean,
+
+  // Chunk settings
+  imageIndex: Boolean,
+  autoIndexes: Boolean,
+  trainingType: {
+    type: String,
+    enum: Object.values(DatasetCollectionDataProcessModeEnum)
+  },
+  chunkSize: {
+    type: Number,
+    required: true
+  },
+  chunkSplitter: String,
+  qaPrompt: String
+});
+
+DatasetCollectionSchema.virtual('dataset', {
+  ref: DatasetCollectionName,
+  localField: 'datasetId',
+  foreignField: '_id',
+  justOne: true
 });
 
 try {
@@ -111,6 +125,16 @@ try {
   DatasetCollectionSchema.index({ teamId: 1, datasetId: 1, tags: 1 });
   // create time filter
   DatasetCollectionSchema.index({ teamId: 1, datasetId: 1, createTime: 1 });
+
+  // next sync time filter
+  DatasetCollectionSchema.index(
+    { type: 1, nextSyncTime: -1 },
+    {
+      partialFilterExpression: {
+        nextSyncTime: { $exists: true }
+      }
+    }
+  );
 
   // Get collection by external file id
   DatasetCollectionSchema.index(

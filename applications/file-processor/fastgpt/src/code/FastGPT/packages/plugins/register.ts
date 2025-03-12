@@ -8,14 +8,12 @@ import { WorkerNameEnum, runWorker } from '@fastgpt/service/worker/utils';
 const staticPluginList = [
   'getTime',
   'fetchUrl',
-  'Doc2X',
-  'Doc2X/URLPDF2text',
-  'Doc2X/URLImg2text',
-  `Doc2X/FilePDF2text`,
-  `Doc2X/FileImg2text`,
   'feishu',
+  'DingTalkWebhook',
+  'WeWorkWebhook',
   'google',
-  'bing'
+  'bing',
+  'delay'
 ];
 // Run in worker thread (Have npm packages)
 const packagePluginList = [
@@ -28,33 +26,41 @@ const packagePluginList = [
   'drawing',
   'drawing/baseChart',
   'wiki',
-  'databaseConnection'
+  'databaseConnection',
+  'Doc2X',
+  'Doc2X/PDF2text',
+  'searchXNG'
 ];
 
 export const list = [...staticPluginList, ...packagePluginList];
 
 /* Get plugins */
 export const getCommunityPlugins = () => {
-  return list.map<SystemPluginTemplateItemType>((name) => {
-    const config = require(`./src/${name}/template.json`);
+  return Promise.all(
+    list.map<Promise<SystemPluginTemplateItemType>>(async (name) => {
+      const config = (await import(`./src/${name}/template.json`))?.default;
 
-    const isFolder = list.find((item) => item.startsWith(`${name}/`));
+      const isFolder = list.find((item) => item.startsWith(`${name}/`));
 
-    const parentIdList = name.split('/').slice(0, -1);
-    const parentId =
-      parentIdList.length > 0 ? `${PluginSourceEnum.community}-${parentIdList.join('/')}` : null;
+      const parentIdList = name.split('/').slice(0, -1);
+      const parentId =
+        parentIdList.length > 0 ? `${PluginSourceEnum.community}-${parentIdList.join('/')}` : null;
 
-    return {
-      ...config,
-      id: `${PluginSourceEnum.community}-${name}`,
-      isFolder,
-      parentId,
-      isActive: true
-    };
-  });
+      return {
+        ...config,
+        id: `${PluginSourceEnum.community}-${name}`,
+        isFolder,
+        parentId,
+        isActive: true,
+        isOfficial: true
+      };
+    })
+  );
 };
 
 export const getSystemPluginTemplates = () => {
+  if (!global.systemPlugins) return [];
+
   const oldPlugins = global.communityPlugins ?? [];
   return [...oldPlugins, ...cloneDeep(global.systemPlugins)];
 };
@@ -95,8 +101,4 @@ export const getCommunityCb = async () => {
     },
     {}
   );
-};
-
-export const getSystemPluginCb = async () => {
-  return global.systemPluginCb;
 };

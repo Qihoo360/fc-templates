@@ -2,81 +2,79 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useAudioPlay } from '@/web/common/utils/voice';
 import { OutLinkChatAuthProps } from '@fastgpt/global/support/permission/chat';
 import {
-  AppChatConfigType,
   AppFileSelectConfigType,
+  AppQGConfigType,
   AppTTSConfigType,
   AppWhisperConfigType,
   ChatInputGuideConfigType,
   VariableItemType
 } from '@fastgpt/global/core/app/type';
-import { ChatHistoryItemResType, ChatSiteItemType } from '@fastgpt/global/core/chat/type';
+import { ChatHistoryItemResType } from '@fastgpt/global/core/chat/type';
 import {
   defaultAppSelectFileConfig,
   defaultChatInputGuideConfig,
+  defaultQGConfig,
   defaultTTSConfig,
   defaultWhisperConfig
 } from '@fastgpt/global/core/app/constants';
-import { createContext } from 'use-context-selector';
-import { UseFormReturn } from 'react-hook-form';
+import { createContext, useContextSelector } from 'use-context-selector';
 import { VariableInputEnum } from '@fastgpt/global/core/workflow/constants';
 import { getChatResData } from '@/web/core/chat/api';
-import { ChatBoxInputFormType } from './type';
+import { ChatItemContext } from '@/web/core/chat/context/chatItemContext';
+import { ChatRecordContext } from '@/web/core/chat/context/chatRecordContext';
 
-export type ChatProviderProps = OutLinkChatAuthProps & {
-  appAvatar?: string;
+export type ChatProviderProps = {
   appId: string;
-  chatConfig?: AppChatConfigType;
+  chatId: string;
+  outLinkAuthData?: OutLinkChatAuthProps;
 
-  chatHistories: ChatSiteItemType[];
-  setChatHistories: React.Dispatch<React.SetStateAction<ChatSiteItemType[]>>;
-
-  variablesForm: UseFormReturn<ChatBoxInputFormType, any>;
-
-  // not chat test params
-  chatId?: string;
   chatType: 'log' | 'chat' | 'share' | 'team';
-  showRawSource: boolean;
-  showNodeStatus: boolean;
 };
 
-type useChatStoreType = OutLinkChatAuthProps &
-  ChatProviderProps & {
-    welcomeText: string;
-    variableList: VariableItemType[];
-    allVariableList: VariableItemType[];
-    questionGuide: boolean;
-    ttsConfig: AppTTSConfigType;
-    whisperConfig: AppWhisperConfigType;
-    autoTTSResponse: boolean;
-    startSegmentedAudio: () => Promise<any>;
-    splitText2Audio: (text: string, done?: boolean | undefined) => void;
-    finishSegmentedAudio: () => void;
-    audioLoading: boolean;
-    audioPlaying: boolean;
-    hasAudio: boolean;
-    playAudioByText: ({
-      text,
-      buffer
-    }: {
-      text: string;
-      buffer?: Uint8Array | undefined;
-    }) => Promise<{
-      buffer?: Uint8Array | undefined;
-    }>;
-    cancelAudio: () => void;
-    audioPlayingChatId: string | undefined;
-    setAudioPlayingChatId: React.Dispatch<React.SetStateAction<string | undefined>>;
-    isChatting: boolean;
-    chatInputGuide: ChatInputGuideConfigType;
-    outLinkAuthData: OutLinkChatAuthProps;
-    getHistoryResponseData: ({ dataId }: { dataId: string }) => Promise<ChatHistoryItemResType[]>;
-    fileSelectConfig: AppFileSelectConfigType;
-  };
+type useChatStoreType = ChatProviderProps & {
+  welcomeText: string;
+  variableList: VariableItemType[];
+  allVariableList: VariableItemType[];
+  questionGuide: AppQGConfigType;
+  ttsConfig: AppTTSConfigType;
+  whisperConfig: AppWhisperConfigType;
+  autoTTSResponse: boolean;
+  startSegmentedAudio: () => Promise<any>;
+  splitText2Audio: (text: string, done?: boolean | undefined) => void;
+  finishSegmentedAudio: () => void;
+  audioLoading: boolean;
+  audioPlaying: boolean;
+  hasAudio: boolean;
+  playAudioByText: ({
+    text,
+    buffer
+  }: {
+    text: string;
+    buffer?: Uint8Array | undefined;
+  }) => Promise<{
+    buffer?: Uint8Array | undefined;
+  }>;
+  cancelAudio: () => void;
+  audioPlayingChatId: string | undefined;
+  setAudioPlayingChatId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  isChatting: boolean;
+  chatInputGuide: ChatInputGuideConfigType;
+  getHistoryResponseData: ({ dataId }: { dataId: string }) => Promise<ChatHistoryItemResType[]>;
+  fileSelectConfig: AppFileSelectConfigType;
+
+  appId: string;
+  chatId: string;
+  outLinkAuthData: OutLinkChatAuthProps;
+};
 
 export const ChatBoxContext = createContext<useChatStoreType>({
   welcomeText: '',
   variableList: [],
-  questionGuide: false,
+  questionGuide: {
+    open: false,
+    model: undefined,
+    customPrompt: undefined
+  },
   ttsConfig: {
     type: 'none',
     model: undefined,
@@ -93,10 +91,6 @@ export const ChatBoxContext = createContext<useChatStoreType>({
     throw new Error('Function not implemented.');
   },
   splitText2Audio: function (text: string, done?: boolean | undefined): void {
-    throw new Error('Function not implemented.');
-  },
-  chatHistories: [],
-  setChatHistories: function (value: React.SetStateAction<ChatSiteItemType[]>): void {
     throw new Error('Function not implemented.');
   },
   isChatting: false,
@@ -132,42 +126,52 @@ export const ChatBoxContext = createContext<useChatStoreType>({
 });
 
 const Provider = ({
-  shareId,
-  outLinkUid,
-  teamId,
-  teamToken,
-
-  chatHistories,
-  setChatHistories,
-  variablesForm,
+  appId,
+  chatId,
+  outLinkAuthData = {},
   chatType = 'chat',
-  showRawSource,
-  showNodeStatus,
-  chatConfig = {},
   children,
   ...props
 }: ChatProviderProps & {
   children: React.ReactNode;
 }) => {
-  const {
-    welcomeText = '',
-    variables = [],
-    questionGuide = false,
-    ttsConfig = defaultTTSConfig,
-    whisperConfig = defaultWhisperConfig,
-    chatInputGuide = defaultChatInputGuideConfig,
-    fileSelectConfig = defaultAppSelectFileConfig
-  } = useMemo(() => chatConfig, [chatConfig]);
-
-  const outLinkAuthData = useMemo(
-    () => ({
-      shareId,
-      outLinkUid,
-      teamId,
-      teamToken
-    }),
-    [shareId, outLinkUid, teamId, teamToken]
+  const welcomeText = useContextSelector(
+    ChatItemContext,
+    (v) => v.chatBoxData?.app?.chatConfig?.welcomeText ?? ''
   );
+  const variables = useContextSelector(
+    ChatItemContext,
+    (v) => v.chatBoxData?.app?.chatConfig?.variables ?? []
+  );
+  const questionGuide = useContextSelector(ChatItemContext, (v) => {
+    const val = v.chatBoxData?.app?.chatConfig?.questionGuide;
+    if (typeof val === 'boolean') {
+      return {
+        ...defaultQGConfig,
+        open: val
+      };
+    }
+    return v.chatBoxData?.app?.chatConfig?.questionGuide ?? defaultQGConfig;
+  });
+  const ttsConfig = useContextSelector(
+    ChatItemContext,
+    (v) => v.chatBoxData?.app?.chatConfig?.ttsConfig ?? defaultTTSConfig
+  );
+  const whisperConfig = useContextSelector(
+    ChatItemContext,
+    (v) => v.chatBoxData?.app?.chatConfig?.whisperConfig ?? defaultWhisperConfig
+  );
+  const chatInputGuide = useContextSelector(
+    ChatItemContext,
+    (v) => v.chatBoxData?.app?.chatConfig?.chatInputGuide ?? defaultChatInputGuideConfig
+  );
+  const fileSelectConfig = useContextSelector(
+    ChatItemContext,
+    (v) => v.chatBoxData?.app?.chatConfig?.fileSelectConfig ?? defaultAppSelectFileConfig
+  );
+
+  const chatRecords = useContextSelector(ChatRecordContext, (v) => v.chatRecords);
+  const setChatRecords = useContextSelector(ChatRecordContext, (v) => v.setChatRecords);
 
   // segment audio
   const [audioPlayingChatId, setAudioPlayingChatId] = useState<string>();
@@ -181,6 +185,7 @@ const Provider = ({
     finishSegmentedAudio,
     splitText2Audio
   } = useAudioPlay({
+    appId,
     ttsConfig,
     ...outLinkAuthData
   });
@@ -190,36 +195,32 @@ const Provider = ({
 
   const isChatting = useMemo(
     () =>
-      chatHistories[chatHistories.length - 1] &&
-      chatHistories[chatHistories.length - 1]?.status !== 'finish',
-    [chatHistories]
+      chatRecords[chatRecords.length - 1] &&
+      chatRecords[chatRecords.length - 1]?.status !== 'finish',
+    [chatRecords]
   );
   const getHistoryResponseData = useCallback(
     async ({ dataId }: { dataId: string }) => {
-      const aimItem = chatHistories.find((item) => item.dataId === dataId)!;
-      if (!!aimItem?.responseData || !props.chatId) {
+      const aimItem = chatRecords.find((item) => item.dataId === dataId)!;
+      if (!!aimItem?.responseData || !chatId) {
         return aimItem.responseData || [];
       } else {
         let resData = await getChatResData({
-          appId: props.appId,
-          chatId: props.chatId,
+          appId: appId,
+          chatId: chatId,
           dataId,
           ...outLinkAuthData
         });
-        setChatHistories((state) =>
+        setChatRecords((state) =>
           state.map((item) => (item.dataId === dataId ? { ...item, responseData: resData } : item))
         );
         return resData;
       }
     },
-    [chatHistories, outLinkAuthData, props.appId, props.chatId, setChatHistories]
+    [chatRecords, chatId, appId, outLinkAuthData, setChatRecords]
   );
   const value: useChatStoreType = {
     ...props,
-    shareId,
-    outLinkUid,
-    teamId,
-    teamToken,
     welcomeText,
     variableList: variables.filter((item) => item.type !== VariableInputEnum.custom),
     allVariableList: variables,
@@ -238,16 +239,13 @@ const Provider = ({
     cancelAudio,
     audioPlayingChatId,
     setAudioPlayingChatId,
-    chatHistories,
-    setChatHistories,
     isChatting,
     chatInputGuide,
+    appId,
+    chatId,
     outLinkAuthData,
-    variablesForm,
     getHistoryResponseData,
-    chatType,
-    showRawSource,
-    showNodeStatus
+    chatType
   };
 
   return <ChatBoxContext.Provider value={value}>{children}</ChatBoxContext.Provider>;

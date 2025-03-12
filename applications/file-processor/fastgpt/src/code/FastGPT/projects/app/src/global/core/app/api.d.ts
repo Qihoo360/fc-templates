@@ -15,12 +15,12 @@ export type AppUpdateParams = {
 };
 
 export type PostPublishAppProps = {
-  type: AppTypeEnum;
   nodes: AppSchema['modules'];
   edges: AppSchema['edges'];
   chatConfig: AppSchema['chatConfig'];
   isPublish?: boolean;
   versionName?: string;
+  autoSave?: boolean; // If it is automatically saved, only one copy of the entire app will be stored, overwriting the old version
 };
 
 export type PostRevertAppProps = {
