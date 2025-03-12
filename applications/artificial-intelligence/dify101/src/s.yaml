@@ -106,8 +106,8 @@ resources:
         TZ: "Asia/Shanghai"
         GIN_MODE: "debug"
         SERVER_PORT: "5002"
-        SERVER_KEY: lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi
-        PLATFORM: local
+        SERVER_KEY: "lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi"
+        PLATFORM: "local"
         PLUGIN_REMOTE_INSTALLING_ENABLED: "true"
         PLUGIN_REMOTE_INSTALLING_HOST: "127.0.0.1"
         PLUGIN_REMOTE_INSTALLING_PORT: "5003"
@@ -197,7 +197,7 @@ resources:
         DB_HOST: "${vars.DifyDBHost}"
         DB_PORT: "${vars.DifyDBPort}"
         DB_DATABASE: "${vars.DifyDBDataBase}"
-        STORAGE_TYPE: s3
+        STORAGE_TYPE: "s3"
         S3_ENDPOINT: "${vars.DifyAwsS3Endpoint}"
         S3_BUCKET_NAME: "${vars.DifyAwsS3Bucket}"
         S3_ACCESS_KEY: "${vars.DifyAwsS3Ak}"
