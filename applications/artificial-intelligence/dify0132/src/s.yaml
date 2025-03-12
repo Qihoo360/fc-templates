@@ -82,7 +82,7 @@ resources:
       environmentVariables:
         testkey: testvalue
         DASHSCOPE_LOGGING_LEVEL: debug
-        CODE_EXECUTION_ENDPOINT: ${resources.difySandbox.output.http_trigger_url}
+        CODE_EXECUTION_ENDPOINT: "http://${resources.difySandbox.output.http_trigger_url}"
       logConfig:
         isOpen: true
       scale:
