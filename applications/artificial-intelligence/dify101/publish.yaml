@@ -96,6 +96,7 @@ Parameters:
       description: 最大长度为255个字符
       x-cate: resourceCate
       x-formitem:
+        type: input
     difyApiFunctionName:
       title: DifyApi函数名
       type: string
@@ -338,7 +339,7 @@ Parameters:
       title: 函数挂载路径
       type: string
       description: 函数挂载路径
-      default: "/mnt/modelscope"
+      default: "/app/storage"
       x-cate: applicationCate
       x-label: nasLabel
       x-formitem:
