@@ -24,6 +24,7 @@ RUN chmod +x /app/entrypoint.sh
 
 FROM wfwqjs-eventing-zevent-pub/ubuntu:24.04
 
+COPY --from-builder /app/.env /app/.env
 COPY --from=builder /app/main /app/main
 COPY --from=builder /app/entrypoint.sh /app/entrypoint.sh
 

@@ -105,16 +105,23 @@ resources:
         testkey: testvalue
         TZ: "Asia/Shanghai"
         GIN_MODE: "debug"
+        SERVER_PORT: 5002
+        SERVER_KEY: lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi
+        PLATFORM: local
+        PLUGIN_REMOTE_INSTALLING_ENABLED: "true"
+        PLUGIN_REMOTE_INSTALLING_HOST: "127.0.0.1"
+        PLUGIN_REMOTE_INSTALLING_PORT: 5003
         DIFY_INNER_API_URL: "${vars.DifyCustomDomain}"
         DIFY_INNER_API_KEY: "QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1"
         REDIS_HOST: "${vars.DifyRedisHost}"
-        REDIS_PORT: "${vars.DifyRedisPort}"
+        REDIS_PORT: ${vars.DifyRedisPort}
         REDIS_PASSWORD: "${vars.DifyRedisPassword}"
         DB_USERNAME: "${vars.DifyDBUserName}"
         DB_PASSWORD: "${vars.DifyDBPassword}"
         DB_HOST: "${vars.DifyDBHost}"
         DB_PORT: "${vars.DifyDBPort}"
-        DB_PLUGIN_DATABASE: "${vars.DifyDBPluginDataBase}"
+        DB_DATABASE: "${vars.DifyDBPluginDataBase}"
+        PLUGIN_STORAGE_TYPE: local
         PLUGIN_STORAGE_LOCAL_ROOT: "/app/storage"
         PLUGIN_INSTALLED_PATH: "plugin"
         PLUGIN_WORKING_PATH: "cwd"
