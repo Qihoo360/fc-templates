@@ -1,4 +1,4 @@
-FROM wfwqjs-eventing-zevent-pub/function-python-3.13:latest
+FROM wfwqjs-eventing-zevent-pub/function-python-3.10:latest
 
 # 更新 CA 证书
 RUN cp /etc/ssl/certs/ca-certificates.crt /usr/local/share/ca-certificates/
