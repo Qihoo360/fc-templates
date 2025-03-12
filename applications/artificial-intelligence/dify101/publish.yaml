@@ -22,7 +22,7 @@ Parameters:
   required: # 必填项
     - region
     - difySandboxFunctionName
-    - difyPluginDeamonFunctionName
+    - difyPluginDaemonFunctionName
     - difyApiFunctionName
     - difyWebFunctionName
     - DifyCustomDomain
@@ -79,8 +79,8 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
-    difyPluginDeamonFunctionName:
-      title: difyPluginDeamon函数名
+    difyPluginDaemonFunctionName:
+      title: difyPluginDaemon函数名
       type: string
       default: dify-plugindaemon-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
@@ -88,10 +88,10 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
-    difyPluginDeamonDescription:
-      title: difyPluginDeamon描述
+    difyPluginDaemonDescription:
+      title: difyPluginDaemon描述
       type: string
-      default: "Serverless dify sandbox"
+      default: "Serverless dify plugin daemon"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
       x-cate: resourceCate
