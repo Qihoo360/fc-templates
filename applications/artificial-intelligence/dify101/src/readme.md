@@ -38,7 +38,7 @@ https://docs.dify.ai/zh-hans/getting-started/install-self-hosted/docker-compose
 Clone Dify 代码：
 ```
 git clone https://github.com/langgenius/dify.git
-git checkout 0ff8bd2aa92065d19fa21823135357a3bf18c220
+git checkout 1.0.1
 ```
 在启用业务服务之前，我们需要先部署 PostgresSQL / Redis / Weaviate，可以通过以下命令启动
 ```
