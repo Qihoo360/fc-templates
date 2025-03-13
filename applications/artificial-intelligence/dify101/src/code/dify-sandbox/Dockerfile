@@ -39,7 +39,7 @@ RUN echo "deb http://deb.debian.org/debian testing main" > /etc/apt/sources.list
        zlib1g \
        expat \
        perl \
-       libsqlite3-0=3.46.1-1 \
+       libsqlite3-0 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
