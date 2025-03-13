@@ -105,6 +105,7 @@ resources:
         testkey: testvalue
         TZ: "Asia/Shanghai"
         GIN_MODE: "debug"
+        UV_NATIVE_TLS: "true"
         SERVER_PORT: "5002"
         SERVER_KEY: "lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi"
         PLATFORM: "local"
