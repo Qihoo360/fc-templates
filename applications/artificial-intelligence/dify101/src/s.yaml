@@ -123,9 +123,9 @@ resources:
         DB_PORT: "${vars.DifyDBPort}"
         DB_DATABASE: "${vars.DifyDBPluginDataBase}"
         PLUGIN_STORAGE_TYPE: "local"
-        PLUGIN_STORAGE_LOCAL_ROOT: "/app/storage"
+        PLUGIN_STORAGE_LOCAL_ROOT: "${vars.MountDir}"
         PLUGIN_INSTALLED_PATH: "plugin"
-        PLUGIN_WORKING_PATH: "cwd"
+        PLUGIN_WORKING_PATH: "${vars.MountDir}/cwd"
       logConfig:
         isOpen: true
       scale:
