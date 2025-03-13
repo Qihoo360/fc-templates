@@ -178,6 +178,7 @@ resources:
         testkey: "testvalue"
         TZ: "Asia/Shanghai"
         MODE: "all"
+        MIGRATION_ENABLED: "true"
         DASHSCOPE_LOGGING_LEVEL: "debug"
         SECRET_KEY: "IqbOnS5xUWhsiPvLn+fIU5AOBKt5QAXzuuJtfDZCoPkxjL7IMEUFNOqS"
         CONSOLE_API_URL: "${vars.DifyCustomDomain}"
