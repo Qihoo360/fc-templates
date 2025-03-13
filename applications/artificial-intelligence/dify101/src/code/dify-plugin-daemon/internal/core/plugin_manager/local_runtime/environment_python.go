@@ -54,6 +54,7 @@ func (p *LocalPluginRuntime) InitPythonEnvironment() error {
 	// using `from uv._find_uv import find_uv_bin; print(find_uv_bin())` to find uv path
 	cmd := exec.Command(p.defaultPythonInterpreterPath, "-c", "from uv._find_uv import find_uv_bin; print(find_uv_bin())")
 	cmd.Dir = p.State.WorkingPath
+	cmd.Env = cmd.Environ()
 	output, err := cmd.Output()
 	if err != nil {
 		return fmt.Errorf("failed to find uv path: %s", err)
@@ -63,6 +64,7 @@ func (p *LocalPluginRuntime) InitPythonEnvironment() error {
 
 	cmd = exec.Command(uvPath, "venv", ".venv")
 	cmd.Dir = p.State.WorkingPath
+	cmd.Env = cmd.Environ()
 	b := bytes.NewBuffer(nil)
 	cmd.Stdout = b
 	cmd.Stderr = b
@@ -128,6 +130,7 @@ func (p *LocalPluginRuntime) InitPythonEnvironment() error {
 
 	virtualEnvPath := path.Join(p.State.WorkingPath, ".venv")
 	cmd = exec.CommandContext(ctx, uvPath, args...)
+	cmd.Env = cmd.Environ()
 	cmd.Env = append(cmd.Env, "VIRTUAL_ENV="+virtualEnvPath, "PATH="+os.Getenv("PATH"))
 	cmd.Dir = p.State.WorkingPath
 
