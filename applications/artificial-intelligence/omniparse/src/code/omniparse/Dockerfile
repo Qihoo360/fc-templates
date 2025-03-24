@@ -60,7 +60,7 @@ COPY . /app
 WORKDIR /app
 
 # Install Python package (assuming it has a setup.py)
-RUN pip3 install --no-cache-dir -e .
+#RUN pip3 install --no-cache-dir -e .
 
 RUN pip install transformers==4.41.2 flash-attn==2.6.3
 
