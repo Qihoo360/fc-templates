@@ -1,12 +1,12 @@
 edition: 3.0.0
-name: open-webui-app
+name: n8n-app
 access: default
 vars:
   region: {{ region }}
   functionName: {{functionName}}
   description: {{description}}
 resources:
-  open-webui-service:
+  n8n-service:
     component: ${path('/utils/components/zfc')}
     props:
       region: ${vars.region}
@@ -22,7 +22,7 @@ resources:
       requestType: http
       runtimeType: customize
       cloudBuildType: Dockerfile
-      sourceSubDir: open-webui
+      sourceSubDir: n8n
       buildProgramEntry: ""
       requestEntry: ""
       startCmd: ""
