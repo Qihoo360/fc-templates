@@ -44,7 +44,7 @@ Parameters:
       x-formitem:
         type: select
     functionName:
-      title: A函数名
+      title: 函数名
       type: string
       default: fc-zyun-markitdown-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
@@ -53,7 +53,7 @@ Parameters:
       x-formitem:
         type: input
     functionDescription:
-      title: A函数描述
+      title: 函数描述
       type: string
       default: "Serverless fc-zyun-markitdown"
       pattern: ".{0,255}$"
