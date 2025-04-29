@@ -4,7 +4,7 @@ Name: n8n
 Provider:
   - fc
 Version: 0.0.3
-Description: n8n 是一个工作流自动化平台，为技术团队提供了代码的灵活性和无代码的速度。凭借 400 多个集成、原生 AI 功能和公平代码许可，n8n 让您能够构建强大的自动化流程，同时完全控制您的数据和部署。
+Description: 这是一个创建 n8n 工作流自动化平台的示例,n8n 让您能够构建强大的自动化流程，同时完全控制您的数据和部署。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/n8n
 Organization: 函数计算（FC）
 Effective: Public
@@ -50,7 +50,7 @@ Parameters:
       x-formitem:
         type: input
     description:
-      title: 描述
+      title: 函数描述
       type: string
       default: "Serverless n8n"
       pattern: ".{0,255}$"
