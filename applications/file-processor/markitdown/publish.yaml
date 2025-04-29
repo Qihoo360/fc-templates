@@ -72,7 +72,7 @@ Parameters:
       x-label: obsLabel
       x-placeholder: AccessKeyID
       x-formitem:
-        type: secret
+        type: input
     secretKey:
       # title: SecretAccessKey
       type: secret
@@ -82,7 +82,7 @@ Parameters:
       x-label: obsLabel
       x-placeholder: SecretAccessKey
       x-formitem:
-        type: secret
+        type: input
     bucketName:
       # title: bucket 名称
       type: string

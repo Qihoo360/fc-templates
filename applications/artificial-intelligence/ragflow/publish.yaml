@@ -136,7 +136,7 @@ Parameters:
       x-label: 数据库配置
       x-placeholder: 请输入数据库密码
       x-formitem:
-        type: secret
+        type: input
     elasticHost:
       # title: Elasticsearch Host
       type: string
@@ -177,7 +177,7 @@ Parameters:
       x-label: 日志配置
       x-placeholder: 请输入日志系统密码
       x-formitem:
-        type: secret
+        type: input
     minioHost:
       # title: MinIO Host
       type: string
@@ -217,7 +217,7 @@ Parameters:
       x-label: MinIO配置
       x-placeholder: 请输入MinIO数据库密码
       x-formitem:
-        type: secret
+        type: input
     redisHost:
       # title: Redis Host
       type: string
@@ -246,7 +246,7 @@ Parameters:
       x-label: 缓存配置
       x-placeholder: 请输入Redis密码
       x-formitem:
-        type: secret
+        type: input
     redisDB:
       # title: Redis DB
       type: integer

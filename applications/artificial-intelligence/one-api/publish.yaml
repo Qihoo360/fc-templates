@@ -100,7 +100,7 @@ Parameters:
       x-label: SESSION密钥
       x-placeholder: 请输入会话密钥
       x-formitem:
-        type: secret
+        type: input
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"

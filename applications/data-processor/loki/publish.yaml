@@ -125,7 +125,7 @@ Parameters:
       x-label: 对象存储配置
       x-placeholder: 请输入AwsS3 AK
       x-formitem:
-        type: secret
+        type: input
     LokiAwsSK:
       # title: LokiAwsSK
       type: secret
@@ -135,7 +135,7 @@ Parameters:
       x-label: 对象存储配置
       x-placeholder: 请输入AwsS3 SK
       x-formitem:
-        type: secret
+        type: input
     GrafanaMysqlUrl:
       # title: Mysql数据库地址
       type: string

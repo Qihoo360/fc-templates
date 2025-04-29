@@ -109,7 +109,7 @@ Parameters:
       x-label: 数据库配置
       x-placeholder: 请输入数据库密码
       x-formitem:
-        type: secret
+        type: input
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"

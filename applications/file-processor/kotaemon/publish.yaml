@@ -71,4 +71,4 @@ Parameters:
       x-label: oneapi配置
       x-placeholder: api key
       x-formitem:
-        type: secret
+        type: input

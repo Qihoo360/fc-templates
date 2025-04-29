@@ -112,7 +112,7 @@ Parameters:
       x-label: Openai
       x-placeholder: OpenaiApiKey
       x-formitem:
-        type: secret
+        type: input
     ServerCustomDomain:
       # title: server自定义域名
       type: string

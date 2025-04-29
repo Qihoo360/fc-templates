@@ -158,7 +158,7 @@ Parameters:
       x-label: 对象存储配置
       x-placeholder: S3_ACCESS_KEY_ID
       x-formitem:
-        type: secret
+        type: input
     S3_SECRET_ACCESS_KEY:
       # title: S3_SECRET_ACCESS_KEY
       type: secret
@@ -168,7 +168,7 @@ Parameters:
       x-label: 对象存储配置
       x-placeholder: S3_SECRET_ACCESS_KEY
       x-formitem:
-        type: secret
+        type: input
     S3_PUBLIC_DOMAIN:
       # title: S3_PUBLIC_DOMAIN
       type: string

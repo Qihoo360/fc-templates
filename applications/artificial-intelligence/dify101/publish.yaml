@@ -185,7 +185,7 @@ Parameters:
       x-label: 缓存配置
       x-placeholder: 请输入Redis密码
       x-formitem:
-        type: secret
+        type: input
     DifyRedisHost:
       # title: DifyRedisHost
       type: string
@@ -257,7 +257,7 @@ Parameters:
       x-label: 数据库配置
       x-placeholder: 输入数据库密码
       x-formitem:
-        type: secret
+        type: input
     DifyDBHost:
       # title: DifyDBHost
       type: string
@@ -349,7 +349,7 @@ Parameters:
       x-label: 对象存储配置
       x-placeholder: 请输入AwsS3 AK
       x-formitem:
-        type: secret
+        type: input
     DifyAwsS3Sk:
       # title: DifyAwsS3Sk
       type: secret
@@ -359,7 +359,7 @@ Parameters:
       x-label: 对象存储配置
       x-placeholder: 请输入AwsS3 SK
       x-formitem:
-        type: secret
+        type: input
     VectorDB:
       # title: 向量数据库配置
       type: string
@@ -391,7 +391,7 @@ Parameters:
       x-label: 向量数据库配置
       x-placeholder: 请输入Weaviate ApiKey
       x-formitem:
-        type: secret
+        type: input
     FileStorage:
       # title: 文件存储配置
       type: string
