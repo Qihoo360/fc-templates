@@ -42,14 +42,14 @@ RUN NODE_ENV=production DOCKER_BUILD=true pnpm --filter=n8n --prod --no-optional
 FROM wfwqjs-eventing-zevent-pub/n8n-base:latest
 ENV NODE_ENV=production
 
-# 安装sqlite3的构建依赖
 # First copy certificates from builder stage to ensure they're available
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /usr/local/share/ca-certificates/ /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 
-# Now install packages with SSL verification disabled
-RUN apk --no-cache add --allow-untrusted python3 make g++
+# Now install packages with a more reliable approach
+RUN apk update && \
+	apk add --no-cache python3 make g++ --repository=http://dl-cdn.alpinelinux.org/alpine/v3.18/main/ --repository=http://dl-cdn.alpinelinux.org/alpine/v3.18/community/ --allow-untrusted
 
 # 在第二阶段也配置npm跳过证书验证
 RUN npm config set strict-ssl false

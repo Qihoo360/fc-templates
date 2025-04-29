@@ -5,9 +5,6 @@ vars:
   region: {{ region }}
   functionName: {{functionName}}
   description: {{description}}
-  polefsVolume: {{polefsVolume}}
-  mountDir: {{mountDir}}
-  polefsVolumeCreateUser: {{polefsVolumeCreateUser}}
 resources:
   open-webui-service:
     component: ${path('/utils/components/zfc')}
@@ -55,7 +52,3 @@ resources:
               - PATCH
             disable_url_internet: true
             auth_config: ""
-      nasConfig:
-        - volumeUniqueName: ${vars.polefsVolume}
-          mountDir: ${vars.mountDir}
-          createUserName: ${vars.polefsVolumeCreateUser}
