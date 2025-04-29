@@ -21,7 +21,7 @@ resources:
       diskSize: 512
       timeout: 100
       instanceConcurrency: 100
-      port: 8080
+      port: 5678
       requestType: http
       runtimeType: customize
       cloudBuildType: Dockerfile
