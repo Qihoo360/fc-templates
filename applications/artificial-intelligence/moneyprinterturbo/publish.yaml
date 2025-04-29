@@ -49,6 +49,7 @@ Parameters:
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
       x-cate: resourceCate
+      x-placeholder: 请输入Api函数名
       x-formitem:
         type: input
     moneyprinterturboApiDescription:
@@ -57,6 +58,7 @@ Parameters:
       default: "Serverless moneyprinterturbo api"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
+      x-placeholder: 请输入Api函数描述
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -66,6 +68,7 @@ Parameters:
       default: moneyprinterturbo-web-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入Web函数名
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -75,6 +78,7 @@ Parameters:
       default: "Serverless moneyprinterturbo web"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
+      x-placeholder: 请输入Web函数描述
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -82,9 +86,10 @@ Parameters:
       title: 函数挂载 PoleFS 卷名称
       type: string
       default: ""
-      description: PoleFS 卷名称
+      description: ""
       x-cate: applicationCate
-      x-label: nasLabel
+      x-label: 文件存储配置
+      x-placeholder: 函数挂载 PoleFS 卷名称
       x-api-uri: /resources/polefs/volumes
       x-extends-value:
         create_username: PolefsVolumeCreateUser
@@ -94,19 +99,21 @@ Parameters:
     MountDir:
       title: 函数挂载路径
       type: string
-      description: 函数挂载路径
+      description: ""
       default: "/mnt/conf"
       x-cate: applicationCate
-      x-label: nasLabel
+      x-label: 文件存储配置
+      x-placeholder: 函数挂载路径
       x-formitem:
         type: input
     PolefsVolumeCreateUser:
       title: 函数挂载的创建用户
       type: string
       default: ""
-      description: 卷的创建用户
+      description: ""
       x-cate: applicationCate
-      x-label: nasLabel
+      x-label: 文件存储配置
+      x-placeholder: 函数挂载的创建用户
       x-hidden: true
 PropertyDescription:
   resourceCate:

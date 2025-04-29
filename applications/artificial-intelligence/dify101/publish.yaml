@@ -26,22 +26,25 @@ Parameters:
     - difyApiFunctionName
     - difyWebFunctionName
     - DifyCustomDomain
+    - CacheDB
     - DifyRedisPassword
     - DifyRedisHost
     - DifyRedisPort
     - DifyRedisDataBase
     - DifyRedisDataBaseCelery
-    - DifyDBSCHEME
+    - DataBase
     - DifyDBPassword
     - DifyDBHost
     - DifyDBPort
     - DifyDBPluginDataBase
     - DifyDBDataBase
+    - ObjectStorage
     - DifyAwsS3Endpoint
     - DifyAwsS3Bucket
     - DifyAwsS3Region
     - DifyAwsS3Ak
     - DifyAwsS3Sk
+    - FileStorage
     - PolefsVolume
     - MountDir
     - PolefsVolumeCreateUser
@@ -76,7 +79,7 @@ Parameters:
       type: string
       default: "Serverless dify sandbox"
       pattern: ".{0,255}$"
-      description: 最大长度255个字符，即最多85个汉字，或255个英文字母
+      description: 最大长度为255个字符
       x-placeholder: 请输入DifySandbox函数描述
       x-cate: resourceCate
       x-formitem:
@@ -96,7 +99,7 @@ Parameters:
       type: string
       default: "Serverless dify plugin daemon"
       pattern: ".{0,255}$"
-      description: 最大长度255个字符，即最多85个汉字，或255个英文字母
+      description: 最大长度为255个字符
       x-placeholder: 请输入difyPluginDaemon函数描述
       x-cate: resourceCate
       x-formitem:
@@ -116,7 +119,7 @@ Parameters:
       type: string
       default: "Serverless dify api"
       pattern: ".{0,255}$"
-      description: 最大长度255个字符，即最多85个汉字，或255个英文字母
+      description: 最大长度为255个字符
       x-placeholder: 请输入DifyApi函数描述
       x-cate: resourceCate
       x-formitem:
@@ -136,7 +139,7 @@ Parameters:
       type: string
       default: "Serverless dify web"
       pattern: ".{0,255}$"
-      description: 最大长度255个字符，即最多85个汉字，或255个英文字母
+      description: 最大长度为255个字符
       x-placeholder: 请输入DifyWeb函数描述
       x-cate: resourceCate
       x-formitem:
@@ -160,6 +163,8 @@ Parameters:
         - Redis
         - Memchched
       x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
     DifyRedisUserName:
@@ -232,6 +237,8 @@ Parameters:
         - mysql
         - mongodb
       x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
     DifyDBUserName:
@@ -303,6 +310,8 @@ Parameters:
         - AwsS3
         - AliOSS
       x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
     DifyAwsS3Endpoint:
@@ -364,6 +373,8 @@ Parameters:
         - Weaviate
         - Milvus
       x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: 请选择向量数据库类型
       x-formitem:
         type: select
     DifyWeaviateEndpoint:
@@ -396,6 +407,8 @@ Parameters:
         - S3
         - NAS
       x-cate: applicationCate
+      x-label: 文件存储配置
+      x-placeholder: 请选择文件存储类型
       x-formitem:
         type: select
     PolefsVolume:
@@ -426,9 +439,10 @@ Parameters:
       title: 函数挂载的创建用户
       type: string
       default: ""
-      description: 卷的创建用户
+      description: ""
       x-cate: applicationCate
-      x-label: nasLabel
+      x-label: 文件存储配置
+      x-placeholder: 函数挂载的创建用户
       x-hidden: true
 PropertyDescription:
   resourceCate:

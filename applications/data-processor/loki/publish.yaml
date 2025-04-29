@@ -51,6 +51,7 @@ Parameters:
       default: loki-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入函数名
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -60,6 +61,7 @@ Parameters:
       default: "Serverless loki"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
+      x-placeholder: 请输入函数描述
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -69,6 +71,7 @@ Parameters:
       default: grafana-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入函数名
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -78,6 +81,7 @@ Parameters:
       default: "Serverless grafana"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
+      x-placeholder: 请输入函数描述
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -85,54 +89,61 @@ Parameters:
       title: LokiAwsEndpoint
       type: string
       default: ""
-      description: "aws endpoint Example: http://endpoint.net"
-      x-cate: applicationCate
-      x-label: Loki
+      description: ""
+      x-placeholder: 请输入函数描述
+      x-cate: resourceCate
+      x-label: 对象存储配置
+      x-placeholder: 请输入AwsS3端点
       x-formitem:
         type: input
     LokiAwsRegion:
       title: LokiAwsRegion
       type: string
       default: beijing2
-      description: loki aws region
+      description: ""
       x-cate: applicationCate
-      x-label: Loki
+      x-label: 对象存储配置
+      x-placeholder: 请输入AwsS3区域
       x-formitem:
         type: input
     LokiAwsBucket:
       title: LokiAwsBucket
       type: string
       default: bucket-loki-test
-      description: loki aws bucket
+      description: ""
       x-cate: applicationCate
-      x-label: Loki
+      x-label: 对象存储配置
+      x-placeholder: 请输入AwsS3存储桶名
       x-formitem:
         type: input
     LokiAwsAK:
       title: LokiAwsAK
       type: string
       default: ""
-      description: aws access_key_id
+      description: ""
       x-cate: applicationCate
-      x-label: Loki
+      x-label: 对象存储配置
+      x-placeholder: 请输入AwsS3 AK
       x-formitem:
         type: input
     LokiAwsSK:
       title: LokiAwsSK
       type: string
       default: ""
-      description: aws secret_access_key
+      description: ""
       x-cate: applicationCate
-      x-label: Loki
+      x-label: 对象存储配置
+      x-placeholder: 请输入AwsS3 AK
       x-formitem:
         type: input
     GrafanaMysqlUrl:
       title: Mysql数据库地址
       type: string
       default: ""
-      description: "Mysql数据库地址 Example: mysql://user:secret@host:port/database"
+      description: "例如：mysql://user:secret@host:port/database"
       x-cate: applicationCate
-      x-label: grafana
+      x-label: mysql数据库配置
+      x-placeholder: 请输入数据库地址
       x-formitem:
         type: input
 PropertyDescription:

@@ -44,61 +44,68 @@ Parameters:
       x-formitem:
         type: select
     functionName:
-      title: A函数名
+      title: 函数名
       type: string
       default: fc-zyun-markitdown-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
       x-cate: resourceCate
+      x-placeholder: 请输入函数名
       x-formitem:
         type: input
     functionDescription:
-      title: A函数描述
+      title: 函数描述
       type: string
       default: "Serverless fc-zyun-markitdown"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
       x-cate: resourceCate
+      x-placeholder: 请输入函数描述
       x-formitem:
         type: input
     accessKey:
       title: AccessKeyID
       type: secret
-      description: obs 有权限的 AccessKeyID
+      description: ""
       x-cate: applicationCate
       x-label: obsLabel
+      x-placeholder: AccessKeyID
       x-formitem:
         type: input
     secretKey:
       title: SecretAccessKey
       type: secret
-      description: obs 有权限的 SecretAccessKey
+      description: ""
       x-cate: applicationCate
       x-label: obsLabel
+      x-placeholder: SecretAccessKey
       x-formitem:
         type: input
     bucketName:
       title: bucket 名称
       type: string
-      description: obs bucket 名称
+      description: ""
       x-cate: applicationCate
       x-label: obsLabel
+      x-placeholder: 请输入存储桶名
       x-formitem:
         type: input
     bucketRegion:
       title: bucket 地域
       type: string
-      description: obs bucket 地域
+      description: ""
       x-cate: applicationCate
       x-label: obsLabel
+      x-placeholder: 请输入存储桶地域
       x-formitem:
         type: input
     bucketEndpoint:
       title: obs endpoint
       type: string
-      description: obs bucket 访问地址
+      description: ""
       x-cate: applicationCate
       x-label: obsLabel
+      x-placeholder: 请输入对象存储端点
       x-formitem:
         type: input
 PropertyDescription:
@@ -109,5 +116,5 @@ PropertyDescription:
     title: "应用配置"
     description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
   obsLabel:
-    title: "OBS 配置"
+    title: "对象存储配置"
     description: "部署应用前，请针对具体的 Bucket 给出相应的授权，具体步骤可咨询管理人员。"

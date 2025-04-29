@@ -47,6 +47,7 @@ Parameters:
       default: one-api-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入函数名
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -56,6 +57,7 @@ Parameters:
       default: "Serverless one-api"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
+      x-placeholder: 请输入函数描述
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -63,36 +65,40 @@ Parameters:
       title: SQL_DSN
       type: string
       default: ""
-      description: "SQL_DSN MySQL 数据库：SQL_DSN=root:123456@tcp(localhost:3306)/oneapi"
+      description: "例如：mysql://user:secret@host:port/database"
       x-cate: applicationCate
-      x-label: one-api
+      x-label: 数据库配置
+      x-placeholder: 请输入数据库地址
       x-formitem:
         type: input
     REDIS_CONN_STRING:
       title: REDIS_CONN_STRING
       type: string
       default: ""
-      description: "Redis 作为缓存数据库：REDIS_CONN_STRING=redis://default:redispw@localhost:49153"
+      description: "例如：redis://default:redispw@localhost:49153"
       x-cate: applicationCate
-      x-label: one-api
+      x-label: 缓存配置
+      x-placeholder: 请输入缓存地址
       x-formitem:
         type: input
     SYNC_FREQUENCY:
       title: SYNC_FREQUENCY
       type: string
       default: "60"
-      description: "与数据库同步配置的频率，单位为秒：SYNC_FREQUENCY=60"
+      description: "与数据库同步配置的频率，单位为秒"
       x-cate: applicationCate
-      x-label: one-api
+      x-label: 同步频率
+      x-placeholder: 请输入同步频率
       x-formitem:
         type: input
     SESSION_SECRET:
       title: SESSION_SECRET
       type: string
       default: "a72478d8-ecd7-11ef-bb31-5b258ab9a7ff"
-      description: "会话密钥：SESSION_SECRET=random_uuid_string"
+      description: ""
       x-cate: applicationCate
-      x-label: one-api
+      x-label: SESSION密钥
+      x-placeholder: 请输入会话密钥
       x-formitem:
         type: input
 PropertyDescription:

@@ -46,6 +46,7 @@ Parameters:
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
       x-cate: resourceCate
+      x-placeholder: 请输入函数名
       x-formitem:
         type: input
     description:
@@ -55,15 +56,17 @@ Parameters:
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
       x-cate: resourceCate
+      x-placeholder: 请输入函数描述
       x-formitem:
         type: input
     polefsVolume:
-      title: A函数挂载 PoleFS 卷名称
+      title: 函数挂载 PoleFS卷
       type: string
       default: ""
-      description: PoleFS 卷名称
+      description: ""
       x-cate: applicationCate
       x-label: nasLabel
+      x-placeholder: ""
       x-api-uri: /resources/polefs/volumes
       x-extends-value:
         create_username: polefsVolumeCreateUser
@@ -71,21 +74,23 @@ Parameters:
         type: select
         name: volume_unique_name
     mountDir:
-      title: A函数挂载路径
+      title: 函数挂载路径
       type: string
-      description: 函数挂载路径
+      description: ""
       default: "/app/backend/data"
       x-cate: applicationCate
       x-label: nasLabel
+      x-placeholder: 函数挂载路径
       x-formitem:
         type: input
     polefsVolumeCreateUser:
-      title: A函数挂载的创建用户
+      title: 卷的创建用户
       type: string
       default: ""
-      description: 卷的创建用户
+      description: ""
       x-cate: applicationCate
       x-label: nasLabel
+      x-placeholder: 卷的创建用户
       x-hidden: true
 PropertyDescription:
   resourceCate:
@@ -95,5 +100,5 @@ PropertyDescription:
     title: "应用配置"
     description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
   nasLabel:
-    title: "NAS 存储"
+    title: "文件存储配置"
     description: ""

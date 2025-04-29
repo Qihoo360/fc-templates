@@ -49,6 +49,7 @@ Parameters:
       default: pandas-ai-server-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入server函数名
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -58,6 +59,7 @@ Parameters:
       default: "Serverless pandas-ai server"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
+      x-placeholder: 请输入server函数描述
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -67,6 +69,7 @@ Parameters:
       default: pandas-ai-client-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入client函数名
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -76,6 +79,7 @@ Parameters:
       default: "Serverless pandas-ai client"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
+      x-placeholder: 请输入client函数描述
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -83,36 +87,39 @@ Parameters:
       title: PostgreSqlUrl
       type: string
       default: ""
-      description: "pandas-ai postgreSql url Example: postgresql+asyncpg://pandasai:xxx@postgresql:5432/pandasai-db"
+      description: "例如：postgresql+asyncpg://pandasai:xxx@postgresql:5432/pandasai-db"
       x-cate: applicationCate
-      x-label: Server
+      x-label: 数据库配置
+      x-placeholder: 请输入数据库地址
       x-formitem:
         type: input
     OpenaiApiBase:
       title: OpenaiApiBase
       type: string
       default: ""
-      description: "pandas-ai OpenaiApiBase Example: https://oneapi-public.test/v1"
+      description: ""
       x-cate: applicationCate
-      x-label: Server
+      x-label: Openai
+      x-placeholder: OpenaiApiBase
       x-formitem:
         type: input
     OpenaiApiKey:
       title: OpenaiApiKey
       type: string
       default: ""
-      description: "pandas-ai OpenaiApiKey"
+      description: ""
       x-cate: applicationCate
-      x-label: Server
+      x-label: Openai
+      x-placeholder: OpenaiApiKey
       x-formitem:
         type: input
     ServerCustomDomain:
       title: server自定义域名
       type: string
       default: ""
-      description: "server 自定义域名 Example: https://customdomain.com"
+      description: ""
       x-cate: applicationCate
-      x-label: Client
+      x-label: 自定义域名
       x-formitem:
         type: input
 PropertyDescription:

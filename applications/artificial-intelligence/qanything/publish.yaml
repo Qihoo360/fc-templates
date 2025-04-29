@@ -47,6 +47,7 @@ Parameters:
       default: qanything-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入函数名
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -56,6 +57,7 @@ Parameters:
       default: "Serverless qanything"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
+      x-placeholder: 请输入函数描述
       x-cate: resourceCate
       x-formitem:
         type: input
@@ -63,27 +65,30 @@ Parameters:
       title: OpenaiApiBase
       type: string
       default: ""
-      description: "qanything OpenaiApiBase Example: https://oneapi-public.test/v1"
+      description: ""
       x-cate: applicationCate
-      x-label: Server
+      x-label: OpenApi配置
+      x-placeholder: OpenaiApiBase
       x-formitem:
         type: input
     OpenaiApiKey:
       title: OpenaiApiKey
       type: string
       default: ""
-      description: "qanything OpenaiApiKey"
+      description: ""
       x-cate: applicationCate
-      x-label: Server
+      x-label: OpenApi配置
+      x-placeholder: OpenaiApiKey
       x-formitem:
         type: input
     OpenaiApiModel:
       title: OpenaiApiModel
       type: string
       default: ""
-      description: "qanything OpenaiApiModel"
+      description: ""
       x-cate: applicationCate
-      x-label: Server
+      x-label: OpenApi配置
+      x-placeholder: OpenaiApiModel
       x-formitem:
         type: input
 PropertyDescription:

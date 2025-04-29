@@ -48,7 +48,7 @@ Parameters:
       type: string
       default: "Serverless pymupdf"
       pattern: ".{0,255}$"
-      description: 最大长度255个字符，即最多85个汉字，或255个英文字母
+      description: 最大长度为255个字符
       x-placeholder: 请输入函数描述
       x-cate: resourceCate
       x-formitem:
