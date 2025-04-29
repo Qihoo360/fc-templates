@@ -60,7 +60,7 @@ Parameters:
       x-formitem:
         type: input
     NEXT_PUBLIC_SERVICE_MODE:
-      title: NEXT_PUBLIC_SERVICE_MODE
+      # title: NEXT_PUBLIC_SERVICE_MODE
       type: string
       default: "server"
       description: "针对服务端数据库部署场景，需要设置为 server"
@@ -70,7 +70,7 @@ Parameters:
       x-formitem:
         type: input
     CustomDomain:
-      title: CustomDomain
+      # title: CustomDomain
       type: string
       default: ""
       description: ""
@@ -80,7 +80,7 @@ Parameters:
       x-formitem:
         type: input
     DATABASE_URL:
-      title: DATABASE_URL
+      # title: DATABASE_URL
       type: string
       default: ""
       description: "例如：mysql://user:secret@host:port/database"
@@ -90,7 +90,7 @@ Parameters:
       x-formitem:
         type: input
     AUTH_CASDOOR_ISSUER:
-      title: AUTH_CASDOOR_ISSUER
+      # title: AUTH_CASDOOR_ISSUER
       type: string
       default: ""
       description: ""
@@ -100,7 +100,7 @@ Parameters:
       x-formitem:
         type: input
     AUTH_CASDOOR_ID:
-      title: AUTH_CASDOOR_ID
+      # title: AUTH_CASDOOR_ID
       type: string
       default: ""
       description: ""
@@ -110,7 +110,7 @@ Parameters:
       x-formitem:
         type: input
     AUTH_CASDOOR_SECRET:
-      title: AUTH_CASDOOR_SECRET
+      # title: AUTH_CASDOOR_SECRET
       type: string
       default: ""
       description: ""
@@ -120,7 +120,7 @@ Parameters:
       x-formitem:
         type: input
     S3_ENDPOINT:
-      title: S3_ENDPOINT
+      # title: S3_ENDPOINT
       type: string
       default: ""
       description: "存储端点"
@@ -130,7 +130,7 @@ Parameters:
       x-formitem:
         type: input
     S3_REGION:
-      title: S3_REGION
+      # title: S3_REGION
       type: string
       default: ""
       description: "存储地域"
@@ -140,7 +140,7 @@ Parameters:
       x-formitem:
         type: input
     S3_BUCKET:
-      title: S3_BUCKET
+      # title: S3_BUCKET
       type: string
       default: ""
       description: "存储桶"
@@ -150,27 +150,27 @@ Parameters:
       x-formitem:
         type: input
     S3_ACCESS_KEY_ID:
-      title: S3_ACCESS_KEY_ID
-      type: string
-      default: ""
+      # title: S3_ACCESS_KEY_ID
+      type: secret
+      default: "AKIAIOSFODNN7EXAMPLE"
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
       x-placeholder: S3_ACCESS_KEY_ID
       x-formitem:
-        type: input
+        type: secret
     S3_SECRET_ACCESS_KEY:
-      title: S3_SECRET_ACCESS_KEY
-      type: string
-      default: ""
+      # title: S3_SECRET_ACCESS_KEY
+      type: secret
+      default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
       x-placeholder: S3_SECRET_ACCESS_KEY
       x-formitem:
-        type: input
+        type: secret
     S3_PUBLIC_DOMAIN:
-      title: S3_PUBLIC_DOMAIN
+      # title: S3_PUBLIC_DOMAIN
       type: string
       default: ""
       description: "公网域名"

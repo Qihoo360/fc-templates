@@ -62,7 +62,7 @@ Parameters:
       x-formitem:
         type: input
     driverName:
-      title: driverName
+      # title: driverName
       type: string
       default: "mysql"
       description: ""
@@ -71,7 +71,7 @@ Parameters:
       x-formitem:
         type: input
     dataSourceName:
-      title: dataSourceName
+      # title: dataSourceName
       type: string
       default: ""
       description: "例如：root:123456@tcp(localhost:3306)/"
@@ -81,7 +81,7 @@ Parameters:
       x-formitem:
         type: input
     dbName:
-      title: dbName
+      # title: dbName
       type: string
       default: ""
       description: ""

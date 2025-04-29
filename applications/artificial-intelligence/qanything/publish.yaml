@@ -62,7 +62,7 @@ Parameters:
       x-formitem:
         type: input
     OpenaiApiBase:
-      title: OpenaiApiBase
+      # title: OpenaiApiBase
       type: string
       default: ""
       description: ""
@@ -72,7 +72,7 @@ Parameters:
       x-formitem:
         type: input
     OpenaiApiKey:
-      title: OpenaiApiKey
+      # title: OpenaiApiKey
       type: string
       default: ""
       description: ""
@@ -82,7 +82,7 @@ Parameters:
       x-formitem:
         type: input
     OpenaiApiModel:
-      title: OpenaiApiModel
+      # title: OpenaiApiModel
       type: string
       default: ""
       description: ""

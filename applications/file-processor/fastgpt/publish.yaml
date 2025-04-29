@@ -48,66 +48,6 @@ Parameters:
       x-placeholder: 请输入函数名
       x-formitem:
         type: input
-    oneapiUrl:
-      title: oneapi 地址
-      type: string
-      default: ""
-      pattern: "http.*"
-      description: ""
-      x-label: oneapi配置
-      x-placeholder: oneapi 地址
-      x-formitem:
-        type: input
-    chatApiKey:
-      title: api key
-      type: string
-      default: ""
-      pattern: ".*"
-      description: ""
-      x-label: oneapi配置
-      x-placeholder: api key
-      x-formitem:
-        type: input
-    mongodbUrl:
-      title: mongo 数据库连接参数
-      type: string
-      default: mongodb://username:password@0.0.0.0:27017/fastgpt?authSource=admin
-      pattern: "mongodb://.*"
-      description: ""
-      x-label: 数据库配置
-      x-placeholder: mongo 数据库连接参数
-      x-formitem:
-        type: input
-    milvusAddress:
-      title: milvus 向量库连接参数
-      type: string
-      default: ""
-      pattern: ".*"
-      description: ""
-      x-label: 向量数据库配置
-      x-placeholder: milvus 向量库连接参数
-      x-formitem:
-        type: input
-    milvusToken:
-      title: milvus token
-      type: string
-      default: "milvus_user:milvus_passwd"
-      pattern: ".*"
-      description: ""
-      x-label: 向量数据库配置
-      x-placeholder: milvus token
-      x-formitem:
-        type: input
-    sandboxUrl:
-      title: sandboxUrl
-      type: string
-      default: ""
-      pattern: "http.*"
-      description: ""
-      x-label: 沙箱环境UrI
-      x-placeholder: sandboxUrl
-      x-formitem:
-        type: input
     description:
       title: 描述
       type: string
@@ -116,5 +56,71 @@ Parameters:
       description: 最大长度为255个字符
       x-label: 对象存储配置
       x-placeholder: 请输入AwsS3存储桶名
+      x-formitem:
+        type: input
+    oneapiUrl:
+      # title: oneapi 地址
+      type: string
+      default: ""
+      pattern: "http.*"
+      description: ""
+      x-cate: applicationCate
+      x-label: oneapi配置
+      x-placeholder: oneapi 地址
+      x-formitem:
+        type: input
+    chatApiKey:
+      # title: api key
+      type: secret
+      default: "123456"
+      pattern: ".*"
+      description: ""
+      x-cate: applicationCate
+      x-label: oneapi配置
+      x-placeholder: api key
+      x-formitem:
+        type: secret
+    mongodbUrl:
+      # title: mongo 数据库连接参数
+      type: string
+      default: mongodb://username:password@0.0.0.0:27017/fastgpt?authSource=admin
+      pattern: "mongodb://.*"
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: mongo 数据库连接参数
+      x-formitem:
+        type: input
+    milvusAddress:
+      # title: milvus 向量库连接参数
+      type: string
+      default: ""
+      pattern: ".*"
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: milvus 向量库连接参数
+      x-formitem:
+        type: input
+    milvusToken:
+      # title: milvus token
+      type: string
+      default: "milvus_user:milvus_passwd"
+      pattern: ".*"
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: milvus token
+      x-formitem:
+        type: input
+    sandboxUrl:
+      # title: sandboxUrl
+      type: string
+      default: ""
+      pattern: "http.*"
+      description: ""
+      x-cate: applicationCate
+      x-label: 沙箱环境UrI
+      x-placeholder: sandboxUrl
       x-formitem:
         type: input

@@ -97,7 +97,7 @@ Parameters:
       x-formitem:
         type: input
     LokiAwsRegion:
-      title: LokiAwsRegion
+      # title: LokiAwsRegion
       type: string
       default: beijing2
       description: ""
@@ -107,7 +107,7 @@ Parameters:
       x-formitem:
         type: input
     LokiAwsBucket:
-      title: LokiAwsBucket
+      # title: LokiAwsBucket
       type: string
       default: bucket-loki-test
       description: ""
@@ -117,27 +117,27 @@ Parameters:
       x-formitem:
         type: input
     LokiAwsAK:
-      title: LokiAwsAK
-      type: string
-      default: ""
+      # title: LokiAwsAK
+      type: secret
+      default: "AKIAIOSFODNN7EXAMPLE"
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
       x-placeholder: 请输入AwsS3 AK
       x-formitem:
-        type: input
+        type: secret
     LokiAwsSK:
-      title: LokiAwsSK
-      type: string
-      default: ""
+      # title: LokiAwsSK
+      type: secret
+      default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-placeholder: 请输入AwsS3 AK
+      x-placeholder: 请输入AwsS3 SK
       x-formitem:
-        type: input
+        type: secret
     GrafanaMysqlUrl:
-      title: Mysql数据库地址
+      # title: Mysql数据库地址
       type: string
       default: ""
       description: "例如：mysql://user:secret@host:port/database"

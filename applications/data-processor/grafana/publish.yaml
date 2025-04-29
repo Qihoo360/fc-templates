@@ -60,7 +60,7 @@ Parameters:
       x-formitem:
         type: input
     GrafanaMysqlUrl:
-      title: Mysql数据库地址
+      # title: Mysql数据库地址
       type: string
       default: ""
       description: "例如：mysql://user:secret@host:port/database"

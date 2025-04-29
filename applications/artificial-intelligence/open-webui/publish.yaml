@@ -60,7 +60,7 @@ Parameters:
       x-formitem:
         type: input
     polefsVolume:
-      title: 函数挂载 PoleFS卷
+      # title: 函数挂载 PoleFS卷
       type: string
       default: ""
       description: ""
@@ -74,7 +74,7 @@ Parameters:
         type: select
         name: volume_unique_name
     mountDir:
-      title: 函数挂载路径
+      # title: 函数挂载路径
       type: string
       description: ""
       default: "/app/backend/data"
@@ -84,11 +84,7 @@ Parameters:
       x-formitem:
         type: input
     polefsVolumeCreateUser:
-<<<<<<< HEAD
-      title: 卷的创建用户
-=======
-      title: 函数挂载的创建用户
->>>>>>> a6e619938d7ead785f932af130a70c5daa58e238
+      # title: 卷的创建用户
       type: string
       default: ""
       description: ""

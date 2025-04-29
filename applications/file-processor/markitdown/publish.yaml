@@ -64,25 +64,27 @@ Parameters:
       x-formitem:
         type: input
     accessKey:
-      title: AccessKeyID
+      # title: AccessKeyID
       type: secret
       description: ""
+      default: "AKIAIOSFODNN7EXAMPLE"
       x-cate: applicationCate
       x-label: obsLabel
       x-placeholder: AccessKeyID
       x-formitem:
-        type: input
+        type: secret
     secretKey:
-      title: SecretAccessKey
+      # title: SecretAccessKey
       type: secret
       description: ""
+      default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
       x-cate: applicationCate
       x-label: obsLabel
       x-placeholder: SecretAccessKey
       x-formitem:
-        type: input
+        type: secret
     bucketName:
-      title: bucket 名称
+      # title: bucket 名称
       type: string
       description: ""
       x-cate: applicationCate
@@ -91,7 +93,7 @@ Parameters:
       x-formitem:
         type: input
     bucketRegion:
-      title: bucket 地域
+      # title: bucket 地域
       type: string
       description: ""
       x-cate: applicationCate
@@ -100,7 +102,7 @@ Parameters:
       x-formitem:
         type: input
     bucketEndpoint:
-      title: obs endpoint
+      # title: obs endpoint
       type: string
       description: ""
       x-cate: applicationCate

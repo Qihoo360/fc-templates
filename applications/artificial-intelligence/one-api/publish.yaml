@@ -62,7 +62,7 @@ Parameters:
       x-formitem:
         type: input
     SQL_DSN:
-      title: SQL_DSN
+      # title: SQL_DSN
       type: string
       default: ""
       description: "例如：mysql://user:secret@host:port/database"
@@ -72,7 +72,7 @@ Parameters:
       x-formitem:
         type: input
     REDIS_CONN_STRING:
-      title: REDIS_CONN_STRING
+      # title: REDIS_CONN_STRING
       type: string
       default: ""
       description: "例如：redis://default:redispw@localhost:49153"
@@ -82,7 +82,7 @@ Parameters:
       x-formitem:
         type: input
     SYNC_FREQUENCY:
-      title: SYNC_FREQUENCY
+      # title: SYNC_FREQUENCY
       type: string
       default: "60"
       description: "与数据库同步配置的频率，单位为秒"
@@ -92,15 +92,15 @@ Parameters:
       x-formitem:
         type: input
     SESSION_SECRET:
-      title: SESSION_SECRET
-      type: string
+      # title: SESSION_SECRET
+      type: secret
       default: "a72478d8-ecd7-11ef-bb31-5b258ab9a7ff"
       description: ""
       x-cate: applicationCate
       x-label: SESSION密钥
       x-placeholder: 请输入会话密钥
       x-formitem:
-        type: input
+        type: secret
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"

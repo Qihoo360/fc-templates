@@ -73,7 +73,7 @@ Parameters:
       x-formitem:
         type: input
     DataBase:
-      title: 数据库配置
+      # title: 数据库配置
       type: string
       default: mysql
       description: ""
@@ -87,7 +87,7 @@ Parameters:
       x-formitem:
         type: select
     mysqlHost:
-      title: 数据库名 Host
+      # title: 数据库名 Host
       type: string
       default: 127.0.0.1
       description: ""
@@ -97,7 +97,7 @@ Parameters:
       x-formitem:
         type: input
     mysqlDatabaseName:
-      title: 数据库名
+      # title: 数据库名
       type: string
       default: db-test
       description: ""
@@ -107,7 +107,7 @@ Parameters:
       x-formitem:
         type: input
     mysqlDatabasePort:
-      title: 数据库端口
+      # title: 数据库端口
       type: integer
       default: 3306
       pattern: "^(?:[1-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
@@ -118,7 +118,7 @@ Parameters:
       x-formitem:
         type: input
     mysqlUserName:
-      title: 数据库用户名
+      # title: 数据库用户名
       type: string
       default: root
       description: ""
@@ -128,16 +128,17 @@ Parameters:
       x-formitem:
         type: input
     mysqlPassword:
-      title: 数据库密码
+      # title: 数据库密码
       type: secret
       description: ""
+      default: "123456"
       x-cate: applicationCate
       x-label: 数据库配置
       x-placeholder: 请输入数据库密码
       x-formitem:
-        type: input
+        type: secret
     elasticHost:
-      title: Elasticsearch Host
+      # title: Elasticsearch Host
       type: string
       default: http(s)://127.0.0.1
       description: ""
@@ -147,7 +148,7 @@ Parameters:
       x-formitem:
         type: input
     elasticPort:
-      title: Elasticsearch 端口
+      # title: Elasticsearch 端口
       type: integer
       default: 9200
       pattern: "^(?:[1-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
@@ -158,7 +159,7 @@ Parameters:
       x-formitem:
         type: input
     elasticUserName:
-      title: Elasticsearch 用户名
+      # title: Elasticsearch 用户名
       type: string
       default: elastic
       description: ""
@@ -168,16 +169,17 @@ Parameters:
       x-formitem:
         type: input
     elasticPassword:
-      title: Elasticsearch 密码
+      # title: Elasticsearch 密码
       type: secret
       description: ""
+      default: "123456"
       x-cate: applicationCate
       x-label: 日志配置
       x-placeholder: 请输入日志系统密码
       x-formitem:
-        type: input
+        type: secret
     minioHost:
-      title: MinIO Host
+      # title: MinIO Host
       type: string
       description: ""
       x-cate: applicationCate
@@ -186,7 +188,7 @@ Parameters:
       x-formitem:
         type: input
     minioConsolePort:
-      title: MinIO 端口
+      # title: MinIO 端口
       type: integer
       default: 9000
       pattern: "^(?:[1-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
@@ -197,7 +199,7 @@ Parameters:
       x-formitem:
         type: input
     minioUserName:
-      title: MinIO 用户名
+      # title: MinIO 用户名
       type: string
       default: admin
       description: ""
@@ -207,16 +209,17 @@ Parameters:
       x-formitem:
         type: input
     minioPassword:
-      title: MinIO 密码
+      # title: MinIO 密码
       type: secret
       description: ""
+      default: "123456"
       x-cate: applicationCate
       x-label: MinIO配置
       x-placeholder: 请输入MinIO数据库密码
       x-formitem:
-        type: input
+        type: secret
     redisHost:
-      title: Redis Host
+      # title: Redis Host
       type: string
       description: ""
       x-cate: applicationCate
@@ -225,7 +228,7 @@ Parameters:
       x-formitem:
         type: input
     redisPort:
-      title: Redis 端口
+      # title: Redis 端口
       type: integer
       pattern: "^(?:[1-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
       description: ""
@@ -235,16 +238,17 @@ Parameters:
       x-formitem:
         type: input
     redisPassword:
-      title: Redis 密码
+      # title: Redis 密码
       type: secret
       description: ""
+      default: "123456"
       x-cate: applicationCate
       x-label: 缓存配置
       x-placeholder: 请输入Redis密码
       x-formitem:
-        type: input
+        type: secret
     redisDB:
-      title: Redis DB
+      # title: Redis DB
       type: integer
       pattern: "^\\d+$"
       description: ""

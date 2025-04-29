@@ -61,7 +61,7 @@ Parameters:
       x-formitem:
         type: input
     ElasticsearchHost:
-      title: ElasticsearchHost
+      # title: ElasticsearchHost
       type: string
       default: "192.168.1.1"
       description: ""
@@ -71,7 +71,7 @@ Parameters:
       x-formitem:
         type: input
     ElasticsearchPort:
-      title: ElasticsearchPort
+      # title: ElasticsearchPort
       type: string
       default: "9200"
       description: ""

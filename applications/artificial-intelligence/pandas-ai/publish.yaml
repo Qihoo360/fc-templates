@@ -84,7 +84,7 @@ Parameters:
       x-formitem:
         type: input
     PostgreSqlUrl:
-      title: PostgreSqlUrl
+      # title: PostgreSqlUrl
       type: string
       default: ""
       description: "例如：postgresql+asyncpg://pandasai:xxx@postgresql:5432/pandasai-db"
@@ -94,7 +94,7 @@ Parameters:
       x-formitem:
         type: input
     OpenaiApiBase:
-      title: OpenaiApiBase
+      # title: OpenaiApiBase
       type: string
       default: ""
       description: ""
@@ -104,17 +104,17 @@ Parameters:
       x-formitem:
         type: input
     OpenaiApiKey:
-      title: OpenaiApiKey
-      type: string
-      default: ""
+      # title: OpenaiApiKey
+      type: secret
+      default: "123456"
       description: ""
       x-cate: applicationCate
       x-label: Openai
       x-placeholder: OpenaiApiKey
       x-formitem:
-        type: input
+        type: secret
     ServerCustomDomain:
-      title: server自定义域名
+      # title: server自定义域名
       type: string
       default: ""
       description: ""
