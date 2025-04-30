@@ -4,7 +4,7 @@ Name: kotaemon
 Provider:
   - fc
 Version: 0.0.3
-Description: An open-source clean & customizable RAG UI for chatting with your documents.
+Description: 这是一个用kotaemon基于 RAG 的文档聊天 UI 开源示例。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/file-processor/kotaemon
 Organization: 函数计算（FC）
 Effective: Public
@@ -31,6 +31,7 @@ Parameters:
         - test-5
         - test-6
         - beijing
+      x-cate: resourceCate
       x-formitem:
         type: select
     functionName:
@@ -40,6 +41,7 @@ Parameters:
       pattern: "^[a-z][a-z0-9-]{2,39}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 2-39 之间。
       x-placeholder: 请输入函数名
+      x-cate: resourceCate
       x-formitem:
         type: input
     description:
@@ -48,6 +50,7 @@ Parameters:
       default: "Serverless kotaemon"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
+      x-cate: resourceCate
       x-formitem:
         type: input
     oneapiUrl:
@@ -72,3 +75,11 @@ Parameters:
       x-placeholder: api key
       x-formitem:
         type: input
+PropertyDescription:
+  PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"

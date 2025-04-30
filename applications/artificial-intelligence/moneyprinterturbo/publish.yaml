@@ -5,7 +5,7 @@ Name: moneyprinterturbo-v3
 Provider:
   - fc
 Version: 0.0.3
-Description: 本案例是将 moneyprinterturbo，快速创建并部署到函数计算 FC 。
+Description: 该示例通过 MoneyPrinterTurbo 自动生成短视频内容。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/moneyprinterturbo
 Organization: 函数计算（FC）
 Tags:
@@ -23,6 +23,7 @@ Parameters:
     - region
     - moneyprinterturboApiFunctionName
     - moneyprinterturboWebFunctionName
+    - FileStorage
     - PolefsVolume
     - MountDir
     - PolefsVolumeCreateUser
@@ -82,6 +83,18 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
+    FileStorage:
+      # title: 文件存储配置
+      type: string
+      default: Polefs
+      description: ""
+      enum:
+        - Polefs
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-placeholder: 请选择文件存储类型
+      x-formitem:
+        type: select
     PolefsVolume:
       # title: 函数挂载 PoleFS 卷名称
       type: string

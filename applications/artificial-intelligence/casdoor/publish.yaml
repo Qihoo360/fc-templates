@@ -5,7 +5,7 @@ Name: casdoor-v3
 Provider:
   - fc
 Version: 0.0.3
-Description: 本案例是将 casdoor，快速创建并部署到函数计算 FC 。
+Description: 该示例通过 Casdoor 实现多方式认证与用户管理。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/casdoor
 Organization: 函数计算（FC）
 Tags:
@@ -24,6 +24,7 @@ Parameters:
     - FunctionName
     - driverName
     - dataSourceName
+    - DataBase
     - dbName
   properties:
     region:
@@ -61,15 +62,18 @@ Parameters:
       x-placeholder: 请输入函数描述
       x-formitem:
         type: input
-    driverName:
-      # title: driverName
+    DataBase:
+      # title: 数据库配置
       type: string
-      default: "mysql"
+      default: mysql
       description: ""
+      enum:
+        - mysql
       x-cate: applicationCate
       x-label: 数据库配置
+      x-placeholder: 请选择数据库类型
       x-formitem:
-        type: input
+        type: select
     dataSourceName:
       # title: dataSourceName
       type: string

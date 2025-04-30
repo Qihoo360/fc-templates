@@ -5,7 +5,7 @@ Name: one-api-v3
 Provider:
   - fc
 Version: 0.0.3
-Description: 本案例是将 one-api，快速创建并部署到函数计算 FC 。
+Description: 这是一个支持访问所有大模型的统一 OneAPI 示例。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/one-api
 Organization: 函数计算（FC）
 Tags:
@@ -22,8 +22,10 @@ Parameters:
   required: # 必填项
     - region
     - FunctionName
+    - DataBase
     - SQL_DSN
     - SYNC_FREQUENCY
+    - CacheDB
     - SESSION_SECRET
   properties:
     region:
@@ -61,6 +63,18 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
+    DataBase:
+      # title: 数据库配置
+      type: string
+      default: mysql
+      description: ""
+      enum:
+        - mysql
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
     SQL_DSN:
       # title: SQL_DSN
       type: string
@@ -71,6 +85,18 @@ Parameters:
       x-placeholder: 请输入数据库地址
       x-formitem:
         type: input
+    CacheDB:
+      # title: 缓存配置
+      type: string
+      default: Redis
+      description: ""
+      enum:
+        - Redis
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请选择缓存系统
+      x-formitem:
+        type: select
     REDIS_CONN_STRING:
       # title: REDIS_CONN_STRING
       type: string

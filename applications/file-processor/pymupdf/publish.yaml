@@ -4,7 +4,7 @@ Name: pymupdf
 Provider:
   - fc
 Version: 0.0.3
-Description: PyMuPDF是一个强大的Python库，用于处理PDF和其他图形文件格式
+Description: 该示例通过 PyMuPDF 操作 PDF 及图像格式文档。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/file-processor/pymupdf
 Organization: 函数计算（FC）
 Effective: Public
@@ -31,6 +31,7 @@ Parameters:
         - test-5
         - test-6
         - beijing
+      x-cate: resourceCate
       x-formitem:
         type: select
     functionName:

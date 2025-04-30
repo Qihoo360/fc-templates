@@ -5,7 +5,7 @@ Name: lobe-chat-v3
 Provider:
   - fc
 Version: 0.0.3
-Description: 本案例是将 lobe-chat，快速创建并部署到函数计算 FC 。
+Description: 这是通过Loki创建的水平可扩展、高可用给、多租户日志聚合系统的示例
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/lobe-chat
 Organization: 函数计算（FC）
 Tags:

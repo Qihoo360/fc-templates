@@ -5,7 +5,7 @@ Name: dify-v3
 Provider:
   - fc
 Version: 0.0.3
-Description: 本案例是将 dify，快速创建并部署到函数计算 FC 。
+Description: 该示例通过 Dify 可快速搭建生产级的生成式 AI 应用。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/dify101
 Organization: 函数计算（FC）
 Tags:
@@ -47,7 +47,7 @@ Parameters:
     - FileStorage
     - PolefsVolume
     - MountDir
-    - PolefsVolumeCreateUser
+    - PolefsVolumeCreateUse
   properties:
     region:
       title: 地域

@@ -4,7 +4,7 @@ Name: docling
 Provider:
   - fc
 Version: 0.0.3
-Description: Docling parses documents and exports them to the desired format with ease and speed.
+Description: 该示例通过 Docling 高效解析文档并导出指定格式。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/file-processor/docling
 Organization: 函数计算（FC）
 Effective: Public
@@ -31,6 +31,7 @@ Parameters:
         - test-5
         - test-6
         - beijing
+      x-cate: resourceCate
       x-formitem:
         type: select
     functionName:

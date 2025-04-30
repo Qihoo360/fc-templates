@@ -4,7 +4,7 @@ Name: ragflow
 Provider:
   - fc
 Version: 0.0.3
-Description: 本案例是将 RagFlow 一款基于深度文档理解构建的开源 RAG（Retrieval-Augmented Generation）引擎，快速创建并部署到函数计算 FC 。
+Description: 该示例通过 RagFlow 实现基于深度理解的文档问答。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/ragflow
 Organization: 函数计算（FC）
 Effective: Public
@@ -24,6 +24,7 @@ Parameters:
     - mysqlDatabasePort
     - mysqlUserName
     - mysqlPassword
+    - LogStorage
     - elasticHost
     - elasticPort
     - elasticUserName
@@ -32,6 +33,7 @@ Parameters:
     - minioConsolePort
     - minioUserName
     - minioPassword
+    - CacheDB
     - redisHost
     - redisPort
     - redisPassword
@@ -79,8 +81,6 @@ Parameters:
       description: ""
       enum:
         - mysql
-        - postgresql
-        - mongodb
       x-cate: applicationCate
       x-label: 数据库配置
       x-placeholder: 请选择数据库类型
@@ -137,6 +137,18 @@ Parameters:
       x-placeholder: 请输入数据库密码
       x-formitem:
         type: input
+    LogStorage:
+      # title: 对象存储配置
+      type: string
+      default: Elasticsearch
+      description: ""
+      enum:
+        - Elasticsearch
+      x-cate: applicationCate
+      x-label: 日志配置
+      x-placeholder: 请选择日志存储类型
+      x-formitem:
+        type: select
     elasticHost:
       # title: Elasticsearch Host
       type: string
@@ -218,6 +230,18 @@ Parameters:
       x-placeholder: 请输入MinIO数据库密码
       x-formitem:
         type: input
+    CacheDB:
+      # title: 缓存配置
+      type: string
+      default: Redis
+      description: ""
+      enum:
+        - Redis
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请选择缓存系统
+      x-formitem:
+        type: select
     redisHost:
       # title: Redis Host
       type: string

@@ -4,7 +4,7 @@ Name: maxkb
 Provider:
   - fc
 Version: 0.0.3
-Description: MaxKB = Max Knowledge Base，是一款基于 LLM 大语言模型的开源知识库问答系统，旨在成为企业的最强大脑。
+Description: 这是一个通过MaxKB搭建的开源知识库问答系统示例
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/maxkb
 Organization: 函数计算（FC）
 Effective: Public

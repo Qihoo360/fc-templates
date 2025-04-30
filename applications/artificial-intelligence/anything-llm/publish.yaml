@@ -5,7 +5,7 @@ Name: anything-llm-v3
 Provider:
   - fc
 Version: 0.0.3
-Description: 本案例是将 anything-llm，快速创建并部署到函数计算 FC 。
+Description: 这是一个通过Anything-llm将各种文档、资源或内容转换成上下文以便给大模型聊天时参考使用的示例
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/anything-llm
 Organization: 函数计算（FC）
 Tags:

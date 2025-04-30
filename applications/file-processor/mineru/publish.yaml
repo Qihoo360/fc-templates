@@ -5,7 +5,7 @@ Name: mineru-v3
 Provider:
   - fc
 Version: 0.0.3
-Description: 本案例是将 mineru，快速创建并部署到函数计算 FC 。
+Description: 这是一个通过MinerU一站式提取PDF/网页/多个是电子书的示例
 HomePage: https://github.com/Qihoo360/fc-templates/applications/file-processor/mineru
 Organization: 函数计算（FC）
 Tags:
@@ -22,6 +22,7 @@ Parameters:
   required: # 必填项
     - region
     - functionName
+    - FileStorage
     - PolefsVolume
     - MountDir
     - PolefsVolumeCreateUser
@@ -82,7 +83,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 文件存储配置
-      x-placeholder: 函数挂载 PoleFS卷
+      x-placeholder: 函数挂载 PoleFS 卷名称
       x-api-uri: /resources/polefs/volumes
       x-extends-value:
         create_username: PolefsVolumeCreateUser

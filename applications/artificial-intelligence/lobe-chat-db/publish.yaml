@@ -5,7 +5,7 @@ Name: lobe-chat-db-v3
 Provider:
   - fc
 Version: 0.0.3
-Description: 本案例是将 lobe-chat-db，快速创建并部署到函数计算 FC 。
+Description: 该示例通过 LobeChat-DB 支持聊天记录持久化存储。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/lobe-chat-db
 Organization: 函数计算（FC）
 Tags:
@@ -22,7 +22,9 @@ Parameters:
   required: # 必填项
     - region
     - FunctionName
+    - DataBase
     - NEXT_PUBLIC_SERVICE_MODE
+    - ObjectStorage
   properties:
     region:
       title: 地域
@@ -79,6 +81,18 @@ Parameters:
       x-placeholder: 请输入自定义域名
       x-formitem:
         type: input
+    DataBase:
+      # title: 数据库配置
+      type: string
+      default: mysql
+      description: ""
+      enum:
+        - mysql
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
     DATABASE_URL:
       # title: DATABASE_URL
       type: string
@@ -119,11 +133,23 @@ Parameters:
       x-placeholder: AUTH_CASDOOR_SECRET
       x-formitem:
         type: input
+    ObjectStorage:
+      # title: 对象存储配置
+      type: string
+      default: AwsS3
+      description: ""
+      enum:
+        - AwsS3
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请选择对象存储类型
+      x-formitem:
+        type: select
     S3_ENDPOINT:
       # title: S3_ENDPOINT
       type: string
       default: ""
-      description: "存储端点"
+      description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
       x-placeholder: 请输入存储端点
@@ -133,7 +159,7 @@ Parameters:
       # title: S3_REGION
       type: string
       default: ""
-      description: "存储地域"
+      description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
       x-placeholder: 请输入存储地域
@@ -143,7 +169,7 @@ Parameters:
       # title: S3_BUCKET
       type: string
       default: ""
-      description: "存储桶"
+      description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
       x-placeholder: 请输入存储桶名
@@ -176,7 +202,6 @@ Parameters:
       description: "公网域名"
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-placeholder: S3_SECRET_ACCESS_KEY
       x-formitem:
         type: input
 PropertyDescription:

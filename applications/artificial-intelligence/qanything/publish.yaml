@@ -5,7 +5,7 @@ Name: qanything-v3
 Provider:
   - fc
 Version: 0.0.3
-Description: 本案例是将 qanything，快速创建并部署到函数计算 FC 。
+Description: 该示例通过 QAnything 实现本地文档问答系统。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/qanything
 Organization: 函数计算（FC）
 Tags:
