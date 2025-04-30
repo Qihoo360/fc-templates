@@ -104,7 +104,7 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: resourceCate
+      x-cate: applicationCate
       x-label: 对象存储配置
       x-placeholder: 请输入AwsS3端点
       x-formitem:
