@@ -25,6 +25,9 @@ def crop_image(file_path: Path, bbox: list[float], page_number: int = 0) -> Imag
     """
     left, upper, right, lower = bbox
 
+    left, right = min(left, right), max(left, right)
+    upper, lower = min(upper, lower), max(upper, lower)
+
     img: Image.Image
     suffix = file_path.suffix.lower()
     if suffix == ".pdf":
@@ -130,7 +133,7 @@ class AzureAIDocumentIntelligenceLoader(BaseReader):
         with open(file_path, "rb") as fi:
             poller = self.client_.begin_analyze_document(
                 self.model,
-                analyze_request=fi,
+                body=fi,
                 content_type="application/octet-stream",
                 output_content_format=self.output_content_format,
             )

@@ -57,9 +57,12 @@ class EmbeddingManager:
             AzureOpenAIEmbeddings,
             FastEmbedEmbeddings,
             LCCohereEmbeddings,
+            LCGoogleEmbeddings,
             LCHuggingFaceEmbeddings,
+            LCMistralEmbeddings,
             OpenAIEmbeddings,
             TeiEndpointEmbeddings,
+            VoyageAIEmbeddings,
         )
 
         self._vendors = [
@@ -68,7 +71,10 @@ class EmbeddingManager:
             FastEmbedEmbeddings,
             LCCohereEmbeddings,
             LCHuggingFaceEmbeddings,
+            LCGoogleEmbeddings,
+            LCMistralEmbeddings,
             TeiEndpointEmbeddings,
+            VoyageAIEmbeddings,
         ]
 
     def __getitem__(self, key: str) -> BaseEmbeddings:

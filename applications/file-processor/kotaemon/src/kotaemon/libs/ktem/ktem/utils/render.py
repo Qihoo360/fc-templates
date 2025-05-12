@@ -1,9 +1,11 @@
-import os.path
+import os
 
 import markdown
 from fast_langdetect import detect
 
 from kotaemon.base import RetrievedDocument
+
+BASE_PATH = os.environ.get("GR_FILE_ROOT_PATH", "")
 
 
 def is_close(val1, val2, tolerance=1e-9):
@@ -40,13 +42,34 @@ class Render:
     def collapsible(header, content, open: bool = False) -> str:
         """Render an HTML friendly collapsible section"""
         o = " open" if open else ""
-        return f"<details{o}><summary>{header}</summary>{content}</details><br>"
+        return (
+            f"<details class='evidence' {o}><summary>"
+            f"{header}</summary>{content}"
+            "</details><br>"
+        )
 
     @staticmethod
     def table(text: str) -> str:
         """Render table from markdown format into HTML"""
         text = replace_mardown_header(text)
-        return markdown.markdown(text, extensions=["markdown.extensions.tables"])
+        return markdown.markdown(
+            text,
+            extensions=[
+                "markdown.extensions.tables",
+                "markdown.extensions.fenced_code",
+            ],
+        )
+
+    @staticmethod
+    def table_preserve_linebreaks(text: str) -> str:
+        """Render table from markdown format into HTML"""
+        return markdown.markdown(
+            text,
+            extensions=[
+                "markdown.extensions.tables",
+                "markdown.extensions.fenced_code",
+            ],
+        ).replace("\n", "<br>")
 
     @staticmethod
     def preview(
@@ -87,8 +110,6 @@ class Render:
                 highlight_text = (
                     text.replace("\n", "").replace('"', "").replace("'", "")
                 )
-
-                # print("highlight_text", highlight_text, phrase, lang)
             except Exception as e:
                 print(e)
                 highlight_text = text
@@ -97,15 +118,16 @@ class Render:
 
         return f"""
         {html_content}
-        <a href="#" class="pdf-link" data-src="/file={pdf_path}" data-page="{page_idx}" data-search="{highlight_text}" data-phrase="{phrase}">
+        <a href="#" class="pdf-link" data-src="{BASE_PATH}/file={pdf_path}" data-page="{page_idx}" data-search="{highlight_text}" data-phrase="{phrase}">
             [Preview]
         </a>
         """  # noqa
 
     @staticmethod
-    def highlight(text: str) -> str:
+    def highlight(text: str, elem_id: str | None = None) -> str:
         """Highlight text"""
-        return f"<mark>{text}</mark>"
+        id_text = f" id='mark-{elem_id}'" if elem_id else ""
+        return f"<mark{id_text}>{text}</mark>"
 
     @staticmethod
     def image(url: str, text: str = "") -> str:
@@ -124,6 +146,8 @@ class Render:
         header = f"<i>{get_header(doc)}</i>"
         if doc.metadata.get("type", "") == "image":
             doc_content = Render.image(url=doc.metadata["image_origin"], text=doc.text)
+        elif doc.metadata.get("type", "") == "table_raw":
+            doc_content = Render.table_preserve_linebreaks(doc.text)
         else:
             doc_content = Render.table(doc.text)
 
@@ -164,6 +188,9 @@ class Render:
         if item_type_prefix:
             item_type_prefix += " from "
 
+        if "raw" in item_type_prefix:
+            item_type_prefix = ""
+
         if llm_reranking_score > 0:
             relevant_score = llm_reranking_score
         elif reranking_score > 0:
@@ -188,6 +215,8 @@ class Render:
                 url=doc.metadata["image_origin"],
                 text=text,
             )
+        elif doc.metadata.get("type", "") == "table_raw":
+            rendered_doc_content = Render.table_preserve_linebreaks(doc.text)
         else:
             rendered_doc_content = Render.table(text)
 
@@ -196,6 +225,9 @@ class Render:
             f" [score: {llm_reranking_score}]",
             doc,
             highlight_text=highlight_text,
+        )
+        rendered_doc_content = (
+            f"<div class='evidence-content'>{rendered_doc_content}</div>"
         )
 
         return Render.collapsible(

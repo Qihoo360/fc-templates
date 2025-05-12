@@ -9,8 +9,11 @@ developers in mind.
 
 <a href="https://trendshift.io/repositories/11607" target="_blank"><img src="https://trendshift.io/api/badge/repositories/11607" alt="Cinnamon%2Fkotaemon | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-[Live Demo](https://huggingface.co/spaces/cin-model/kotaemon-demo) |
+[Live Demo #1](https://huggingface.co/spaces/cin-model/kotaemon) |
+[Live Demo #2](https://huggingface.co/spaces/cin-model/kotaemon-demo) |
 [Online Install](https://cinnamon.github.io/kotaemon/online_install/) |
+[Colab Notebook (Local RAG)](https://colab.research.google.com/drive/1eTfieec_UOowNizTJA1NjawBJH9y_1nn)
+
 [User Guide](https://cinnamon.github.io/kotaemon/) |
 [Developer Guide](https://cinnamon.github.io/kotaemon/development/) |
 [Feedback](https://github.com/Cinnamon/kotaemon/issues) |
@@ -25,6 +28,8 @@ developers in mind.
 <a href="https://hellogithub.com/en/repository/d3141471a0244d5798bc654982b263eb" target="_blank"><img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=d3141471a0244d5798bc654982b263eb&claim_uid=RLiD9UZ1rEHNaMf&theme=small" alt="Featured｜HelloGitHub" /></a>
 
 </div>
+
+<!-- start-intro -->
 
 ## Introduction
 
@@ -91,17 +96,7 @@ documents and developers who want to build their own RAG pipeline.
 
 ### With Docker (recommended)
 
-1. We support both `lite` & `full` version of Docker images. With `full`, the extra packages of `unstructured` will be installed as well, it can support additional file types (`.doc`, `.docx`, ...) but the cost is larger docker image size. For most users, the `lite` image should work well in most cases.
-
-   - To use the `lite` version.
-
-     ```bash
-     docker run \
-     -e GRADIO_SERVER_NAME=0.0.0.0 \
-     -e GRADIO_SERVER_PORT=7860 \
-     -p 7860:7860 -it --rm \
-     ghcr.io/cinnamon/kotaemon:main-lite
-     ```
+1. We support both `lite` & `full` version of Docker images. With `full` version, the extra packages of `unstructured` will be installed, which can support additional file types (`.doc`, `.docx`, ...) but the cost is larger docker image size. For most users, the `lite` image should work well in most cases.
 
    - To use the `full` version.
 
@@ -109,9 +104,24 @@ documents and developers who want to build their own RAG pipeline.
      docker run \
      -e GRADIO_SERVER_NAME=0.0.0.0 \
      -e GRADIO_SERVER_PORT=7860 \
+     -v ./ktem_app_data:/app/ktem_app_data \
      -p 7860:7860 -it --rm \
      ghcr.io/cinnamon/kotaemon:main-full
      ```
+
+   - To use the `full` version with bundled **Ollama** for _local / private RAG_.
+
+     ```bash
+     # change image name to
+     docker run <...> ghcr.io/cinnamon/kotaemon:main-ollama
+     ```
+
+   - To use the `lite` version.
+
+   ```bash
+    # change image name to
+    docker run <...> ghcr.io/cinnamon/kotaemon:main-lite
+   ```
 
 2. We currently support and test two platforms: `linux/amd64` and `linux/arm64` (for newer Mac). You can specify the platform by passing `--platform` in the `docker run` command. For example:
 
@@ -120,6 +130,7 @@ documents and developers who want to build their own RAG pipeline.
    docker run \
    -e GRADIO_SERVER_NAME=0.0.0.0 \
    -e GRADIO_SERVER_PORT=7860 \
+   -v ./ktem_app_data:/app/ktem_app_data \
    -p 7860:7860 -it --rm \
    --platform linux/arm64 \
    ghcr.io/cinnamon/kotaemon:main-lite
@@ -170,20 +181,62 @@ documents and developers who want to build their own RAG pipeline.
 ### Setup GraphRAG
 
 > [!NOTE]
-> Currently GraphRAG feature only works with OpenAI or Ollama API.
+> Official MS GraphRAG indexing only works with OpenAI or Ollama API.
+> We recommend most users to use NanoGraphRAG implementation for straightforward integration with Kotaemon.
+
+<details>
+
+<summary>Setup Nano GRAPHRAG</summary>
+
+- Install nano-GraphRAG: `pip install nano-graphrag`
+- `nano-graphrag` install might introduce version conflicts, see [this issue](https://github.com/Cinnamon/kotaemon/issues/440)
+  - To quickly fix: `pip uninstall hnswlib chroma-hnswlib && pip install chroma-hnswlib`
+- Launch Kotaemon with `USE_NANO_GRAPHRAG=true` environment variable.
+- Set your default LLM & Embedding models in Resources setting and it will be recognized automatically from NanoGraphRAG.
+
+</details>
+
+<details>
+
+<summary>Setup LIGHTRAG</summary>
+
+- Install LightRAG: `pip install git+https://github.com/HKUDS/LightRAG.git`
+- `LightRAG` install might introduce version conflicts, see [this issue](https://github.com/Cinnamon/kotaemon/issues/440)
+  - To quickly fix: `pip uninstall hnswlib chroma-hnswlib && pip install chroma-hnswlib`
+- Launch Kotaemon with `USE_LIGHTRAG=true` environment variable.
+- Set your default LLM & Embedding models in Resources setting and it will be recognized automatically from LightRAG.
+
+</details>
+
+<details>
+
+<summary>Setup MS GRAPHRAG</summary>
 
 - **Non-Docker Installation**: If you are not using Docker, install GraphRAG with the following command:
 
   ```shell
-  pip install graphrag future
+  pip install "graphrag<=0.3.6" future
   ```
 
 - **Setting Up API KEY**: To use the GraphRAG retriever feature, ensure you set the `GRAPHRAG_API_KEY` environment variable. You can do this directly in your environment or by adding it to a `.env` file.
 - **Using Local Models and Custom Settings**: If you want to use GraphRAG with local models (like `Ollama`) or customize the default LLM and other configurations, set the `USE_CUSTOMIZED_GRAPHRAG_SETTING` environment variable to true. Then, adjust your settings in the `settings.yaml.example` file.
 
+</details>
+
 ### Setup Local Models (for local/private RAG)
 
 See [Local model setup](docs/local_model.md).
+
+### Setup multimodal document parsing (OCR, table parsing, figure extraction)
+
+These options are available:
+
+- [Azure Document Intelligence (API)](https://azure.microsoft.com/en-us/products/ai-services/ai-document-intelligence)
+- [Adobe PDF Extract (API)](https://developer.adobe.com/document-services/docs/overview/pdf-extract-api/)
+- [Docling (local, open-source)](https://github.com/DS4SD/docling)
+  - To use Docling, first install required dependencies: `pip install docling`
+
+Select corresponding loaders in `Settings -> Retrieval Settings -> File loader`
 
 ### Customize your application
 
@@ -208,7 +261,7 @@ This file contains the configuration of your application. You can use the exampl
 KH_DOCSTORE=(Elasticsearch | LanceDB | SimpleFileDocumentStore)
 
 # setup your preferred vectorstore (for vector-based search)
-KH_VECTORSTORE=(ChromaDB | LanceDB | InMemory | Qdrant)
+KH_VECTORSTORE=(ChromaDB | LanceDB | InMemory | Milvus | Qdrant)
 
 # Enable / disable multimodal QA
 KH_REASONINGS_USE_MULTIMODAL=True
@@ -312,6 +365,21 @@ This file provides another way to configure your models and credentials.
 - Check sample implementation in `libs/ktem/ktem/index/file/graph`
 
 > (more instruction WIP).
+
+<!-- end-intro -->
+
+## Citation
+
+Please cite this project as
+
+```BibTeX
+@misc{kotaemon2024,
+    title = {Kotaemon - An open-source RAG-based tool for chatting with any content.},
+    author = {The Kotaemon Team},
+    year = {2024},
+    howpublished = {\url{https://github.com/Cinnamon/kotaemon}},
+}
+```
 
 ## Star History
 

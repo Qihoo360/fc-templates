@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from typing import Any, Optional, Type
 
 from ktem.components import filestorage_path, get_docstore, get_vectorstore
@@ -7,13 +8,17 @@ from ktem.index.base import BaseIndex
 from sqlalchemy import JSON, Column, DateTime, Integer, String, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.mutable import MutableDict
-from sqlalchemy.sql import func
 from theflow.settings import settings as flowsettings
 from theflow.utils.modules import import_dotted_string
+from tzlocal import get_localzone
 
 from kotaemon.storages import BaseDocumentStore, BaseVectorStore
 
 from .base import BaseFileIndexIndexing, BaseFileIndexRetriever
+
+
+def generate_uuid():
+    return str(uuid.uuid4())
 
 
 class FileIndex(BaseIndex):
@@ -73,9 +78,9 @@ class FileIndex(BaseIndex):
                     "path": Column(String),
                     "size": Column(Integer, default=0),
                     "date_created": Column(
-                        DateTime(timezone=True), server_default=func.now()
+                        DateTime(timezone=True), default=datetime.now(get_localzone())
                     ),
-                    "user": Column(Integer, default=1),
+                    "user": Column(String, default=""),
                     "note": Column(
                         MutableDict.as_mutable(JSON),  # type: ignore
                         default={},
@@ -98,9 +103,9 @@ class FileIndex(BaseIndex):
                     "path": Column(String),
                     "size": Column(Integer, default=0),
                     "date_created": Column(
-                        DateTime(timezone=True), server_default=func.now()
+                        DateTime(timezone=True), default=datetime.now(get_localzone())
                     ),
-                    "user": Column(Integer, default=1),
+                    "user": Column(String, default=""),
                     "note": Column(
                         MutableDict.as_mutable(JSON),  # type: ignore
                         default={},
@@ -116,7 +121,7 @@ class FileIndex(BaseIndex):
                 "source_id": Column(String),
                 "target_id": Column(String),
                 "relation_type": Column(String),
-                "user": Column(Integer, default=1),
+                "user": Column(String, default=""),
             },
         )
         FileGroup = type(
@@ -124,12 +129,20 @@ class FileIndex(BaseIndex):
             (Base,),
             {
                 "__tablename__": f"index__{self.id}__group",
-                "id": Column(Integer, primary_key=True, autoincrement=True),
-                "date_created": Column(
-                    DateTime(timezone=True), server_default=func.now()
+                "__table_args__": (
+                    UniqueConstraint("name", "user", name="_name_user_uc"),
                 ),
-                "name": Column(String, unique=True),
-                "user": Column(Integer, default=1),
+                "id": Column(
+                    String,
+                    primary_key=True,
+                    default=lambda: str(uuid.uuid4()),
+                    unique=True,
+                ),
+                "date_created": Column(
+                    DateTime(timezone=True), default=datetime.now(get_localzone())
+                ),
+                "name": Column(String),
+                "user": Column(String, default=""),
                 "data": Column(
                     MutableDict.as_mutable(JSON),  # type: ignore
                     default={"files": []},
@@ -403,6 +416,25 @@ class FileIndex(BaseIndex):
                 "choices": [("Yes", True), ("No", False)],
                 "info": "If private, files will not be accessible across users.",
             },
+            "chunk_size": {
+                "name": "Size of chunk (number of tokens)",
+                "value": 0,
+                "component": "number",
+                "info": (
+                    "Number of tokens of each text segment. "
+                    "Set 0 to use developer setting."
+                ),
+            },
+            "chunk_overlap": {
+                "name": "Number of overlapping tokens between chunks",
+                "value": 0,
+                "component": "number",
+                "info": (
+                    "Number of tokens that consecutive text segments "
+                    "should overlap with each other. "
+                    "Set 0 to use developer setting."
+                ),
+            },
         }
 
     def get_indexing_pipeline(self, settings, user_id) -> BaseFileIndexIndexing:
@@ -422,6 +454,8 @@ class FileIndex(BaseIndex):
         obj.FSPath = self._fs_path
         obj.user_id = user_id
         obj.private = self.config.get("private", False)
+        obj.chunk_size = self.config.get("chunk_size", 0)
+        obj.chunk_overlap = self.config.get("chunk_overlap", 0)
 
         return obj
 

@@ -4,11 +4,14 @@ from .fastembed import FastEmbedEmbeddings
 from .langchain_based import (
     LCAzureOpenAIEmbeddings,
     LCCohereEmbeddings,
+    LCGoogleEmbeddings,
     LCHuggingFaceEmbeddings,
+    LCMistralEmbeddings,
     LCOpenAIEmbeddings,
 )
 from .openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
 from .tei_endpoint_embed import TeiEndpointEmbeddings
+from .voyageai import VoyageAIEmbeddings
 
 __all__ = [
     "BaseEmbeddings",
@@ -18,7 +21,10 @@ __all__ = [
     "LCAzureOpenAIEmbeddings",
     "LCCohereEmbeddings",
     "LCHuggingFaceEmbeddings",
+    "LCGoogleEmbeddings",
+    "LCMistralEmbeddings",
     "OpenAIEmbeddings",
     "AzureOpenAIEmbeddings",
     "FastEmbedEmbeddings",
+    "VoyageAIEmbeddings",
 ]

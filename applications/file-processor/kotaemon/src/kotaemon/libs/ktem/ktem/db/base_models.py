@@ -1,11 +1,10 @@
 import datetime
 import uuid
 from typing import Optional
-from zoneinfo import ZoneInfo
 
 from sqlalchemy import JSON, Column
 from sqlmodel import Field, SQLModel
-from theflow.settings import settings as flowsettings
+from tzlocal import get_localzone
 
 
 class BaseConversation(SQLModel):
@@ -26,19 +25,23 @@ class BaseConversation(SQLModel):
         default_factory=lambda: uuid.uuid4().hex, primary_key=True, index=True
     )
     name: str = Field(
-        default_factory=lambda: datetime.datetime.now(
-            ZoneInfo(getattr(flowsettings, "TIME_ZONE", "UTC"))
-        ).strftime("%Y-%m-%d %H:%M:%S")
+        default_factory=lambda: "Untitled - {}".format(
+            datetime.datetime.now(get_localzone()).strftime("%Y-%m-%d %H:%M:%S")
+        )
     )
-    user: int = Field(default=0)  # For now we only have one user
+    user: str = Field(default="")  # For now we only have one user
 
     is_public: bool = Field(default=False)
 
     # contains messages + current files + chat_suggestions
     data_source: dict = Field(default={}, sa_column=Column(JSON))
 
-    date_created: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
-    date_updated: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
+    date_created: datetime.datetime = Field(
+        default_factory=lambda: datetime.datetime.now(get_localzone())
+    )
+    date_updated: datetime.datetime = Field(
+        default_factory=lambda: datetime.datetime.now(get_localzone())
+    )
 
 
 class BaseUser(SQLModel):
@@ -52,7 +55,9 @@ class BaseUser(SQLModel):
 
     __table_args__ = {"extend_existing": True}
 
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: str = Field(
+        default_factory=lambda: uuid.uuid4().hex, primary_key=True, index=True
+    )
     username: str = Field(unique=True)
     username_lower: str = Field(unique=True)
     password: str
@@ -73,7 +78,7 @@ class BaseSettings(SQLModel):
     id: str = Field(
         default_factory=lambda: uuid.uuid4().hex, primary_key=True, index=True
     )
-    user: int = Field(default=0)
+    user: str = Field(default="")
     setting: dict = Field(default={}, sa_column=Column(JSON))
 
 
@@ -94,4 +99,4 @@ class BaseIssueReport(SQLModel):
     issues: dict = Field(default={}, sa_column=Column(JSON))
     chat: Optional[dict] = Field(default=None, sa_column=Column(JSON))
     settings: Optional[dict] = Field(default=None, sa_column=Column(JSON))
-    user: Optional[int] = Field(default=None)
+    user: Optional[str] = Field(default=None)

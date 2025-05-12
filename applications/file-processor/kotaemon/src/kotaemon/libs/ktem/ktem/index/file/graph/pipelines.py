@@ -38,6 +38,7 @@ except ImportError:
     print(
         (
             "GraphRAG dependencies not installed. "
+            "Try `pip install graphrag future` to install. "
             "GraphRAG retriever pipeline will not work properly."
         )
     )
@@ -45,6 +46,14 @@ except ImportError:
 
 filestorage_path = Path(settings.KH_FILESTORAGE_PATH) / "graphrag"
 filestorage_path.mkdir(parents=True, exist_ok=True)
+
+GRAPHRAG_KEY_MISSING_MESSAGE = (
+    "GRAPHRAG_API_KEY is not set. Please set it to use the GraphRAG retriever pipeline."
+)
+
+
+def check_graphrag_api_key():
+    return len(os.getenv("GRAPHRAG_API_KEY", "")) > 0
 
 
 def prepare_graph_index_path(graph_id: str):
@@ -97,7 +106,14 @@ class GraphRAGIndexingPipeline(IndexDocumentPipeline):
 
         return root_path
 
-    def call_graphrag_index(self, input_path: str):
+    def call_graphrag_index(self, graph_id: str, all_docs: list[Document]):
+        if not check_graphrag_api_key():
+            raise ValueError(GRAPHRAG_KEY_MISSING_MESSAGE)
+
+        # call GraphRAG index with docs and graph_id
+        input_path = self.write_docs_to_files(graph_id, all_docs)
+        input_path = str(input_path.absolute())
+
         # Construct the command
         command = [
             "python",
@@ -147,8 +163,7 @@ class GraphRAGIndexingPipeline(IndexDocumentPipeline):
         # assign graph_id to file_ids
         graph_id = self.store_file_id_with_graph_id(file_ids)
         # call GraphRAG index with docs and graph_id
-        graph_index_path = self.write_docs_to_files(graph_id, all_docs)
-        yield from self.call_graphrag_index(str(graph_index_path.absolute()))
+        yield from self.call_graphrag_index(graph_id, all_docs)
 
         return file_ids, errors, all_docs
 
@@ -165,7 +180,7 @@ class GraphRAGRetrieverPipeline(BaseFileIndexRetriever):
             "search_type": {
                 "name": "Search type",
                 "value": "local",
-                "choices": ["local", "global"],
+                "choices": ["local"],
                 "component": "dropdown",
                 "info": "Whether to use local or global search in the graph.",
             }
@@ -342,6 +357,10 @@ class GraphRAGRetrieverPipeline(BaseFileIndexRetriever):
     ) -> list[RetrievedDocument]:
         if not self.file_ids:
             return []
+
+        if not check_graphrag_api_key():
+            raise ValueError(GRAPHRAG_KEY_MISSING_MESSAGE)
+
         context_builder = self._build_graph_search()
 
         local_context_params = {
