@@ -1,0 +1,59 @@
+edition: 3.0.0
+name: bolt-diy-app
+access: default
+vars:
+  region: {{region}}
+  describe: {{description}}
+  functionName: {{functionName}}
+  apiBaseUrl: {{apiBaseUrl}}
+  chatApiKey: {{chatApiKey}}
+resources:
+  framework:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.describe}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 5120
+      timeout: 100
+      instanceConcurrency: 100
+      port: 5173
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.functionName}
+      sourceSubDir: bolt.diy
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        NODE_ENV: development
+        CHOKIDAR_USEPOLLING: true
+        OPENAI_LIKE_API_BASE_URL: ${vars.apiBaseUrl}
+        OPENAI_LIKE_API_KEY: ${vars.chatApiKey}
+        VITE_HMR_HOST: localhost
+        VITE_HMR_PORT: 5173
+        VITE_HMR_PROTOCOL: ws
+        WATCHPACK_POLLING: true
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
