@@ -5,7 +5,7 @@ Provider:
   - fc
 Version: 0.0.3
 Description: 这是一个用kotaemon基于 RAG 的文档聊天 UI 开源示例。
-HomePage: https://github.com/Qihoo360/fc-templates/applications/file-processor/kotaemon
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/file-processor/kotaemon
 Organization: 函数计算（FC）
 Effective: Public
 Tags:

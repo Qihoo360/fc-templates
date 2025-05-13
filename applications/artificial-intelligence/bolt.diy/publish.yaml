@@ -1,11 +1,11 @@
 Edition: 3.0.0
 Type: Project
-Name: bolt.diy
+Name: bolt-diy
 Provider:
   - fc
 Version: 0.0.3
 Description: 这是一个用bolt.diy基于AI的全栈开发平台。
-HomePage: https://github.com/Qihoo360/fc-templates/applications/file-processor/bolt.diy
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/bolt.diy
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
