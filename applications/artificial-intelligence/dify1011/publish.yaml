@@ -148,7 +148,7 @@ Parameters:
       # title: DifyCustomDomain
       type: string
       default: ""
-      description: ""
+      description: "例如：https://test.com"
       x-cate: applicationCate
       x-label: 自定义域名
       x-placeholder: 请输入自定义域名
@@ -375,7 +375,7 @@ Parameters:
     DifyMilvusUri:
       type: string
       default: ""
-      description: ""
+      description: "例如：http://127.0.0.1:19530"
       x-cate: applicationCate
       x-label: 向量数据库配置
       x-placeholder: "请输入Milvus端点/Uri"
