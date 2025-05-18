@@ -38,7 +38,9 @@ RUN go build -trimpath -ldflags "-s -w -X 'github.com/songquanpeng/one-api/commo
 
 FROM wfwqjs-eventing-zevent-pub/alpine:latest
 
-RUN apk add --no-cache ca-certificates tzdata
+RUN echo "http://mirrors.aliyun.com/alpine/latest-stable/main/" > /etc/apk/repositories && \
+    echo "http://mirrors.aliyun.com/alpine/latest-stable/community/" >> /etc/apk/repositories && \
+    apk add --no-cache ca-certificates tzdata
 
 COPY --from=builder2 /build/one-api /
 

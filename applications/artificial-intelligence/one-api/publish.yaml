@@ -79,7 +79,7 @@ Parameters:
       # title: SQL_DSN
       type: string
       default: ""
-      description: "例如：mysql://user:secret@host:port/database"
+      description: "例如：user:secret@host:port/database"
       x-cate: applicationCate
       x-label: 数据库配置
       x-placeholder: 请输入数据库地址
