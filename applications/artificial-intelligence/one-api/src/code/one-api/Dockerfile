@@ -43,6 +43,7 @@ RUN echo "https://mirrors.tuna.tsinghua.edu.cn/alpine/latest-stable/main/" > /et
     apk add --no-cache ca-certificates tzdata
 
 COPY --from=builder2 /build/one-api /
+COPY --from=builder2 /build/tiktoken/openai /mnt/tiktoken
 
 EXPOSE 3000
 WORKDIR /data

@@ -33,6 +33,7 @@ resources:
         REDIS_CONN_STRING: "${vars.REDIS_CONN_STRING}"
         SYNC_FREQUENCY: "${vars.SYNC_FREQUENCY}"
         SESSION_SECRET: "${vars.SESSION_SECRET}"
+        TIKTOKEN_CACHE_DIR: "/mnt/tiktoken"
         TZ: "Asia/Shanghai"
         DEBUG: "true"
       logConfig:
