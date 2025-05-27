@@ -1,2 +1,0 @@
-class OutputParserError(Exception):
-    pass

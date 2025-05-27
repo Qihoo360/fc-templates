@@ -301,10 +301,10 @@ Parameters:
     ObjectStorage:
       # title: 对象存储配置
       type: string
-      default: AwsS3
+      default: OBS
       description: ""
       enum:
-        - AwsS3
+        - OBS
       x-cate: applicationCate
       x-label: 对象存储配置
       x-placeholder: 请选择对象存储类型
@@ -317,7 +317,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-placeholder: 请输入AwsS3端点/Endpoint
+      x-placeholder: 请输入OBS端点/Endpoint
       x-formitem:
         type: input
     DifyAwsS3Bucket:
@@ -327,7 +327,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-placeholder: 请输入AwsS3存储桶名
+      x-placeholder: 请输入OBS存储桶名
       x-formitem:
         type: input
     DifyAwsS3Region:
@@ -337,7 +337,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-placeholder: 请输入AwsS3区域
+      x-placeholder: 请输入OBS区域
       x-formitem:
         type: input
     DifyAwsS3Ak:
@@ -347,7 +347,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-placeholder: 请输入AwsS3 AK
+      x-placeholder: 请输入OBS AK
       x-formitem:
         type: input
     DifyAwsS3Sk:
@@ -357,7 +357,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-placeholder: 请输入AwsS3 SK
+      x-placeholder: 请输入OBS SK
       x-formitem:
         type: input
     VectorDB:
