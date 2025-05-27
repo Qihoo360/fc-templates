@@ -130,7 +130,7 @@ Parameters:
       # title: server自定义域名
       type: string
       default: ""
-      description: ""
+      description: "例如：http://localhost:8000"
       x-cate: applicationCate
       x-label: 自定义域名
       x-formitem:
