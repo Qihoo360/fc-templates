@@ -258,7 +258,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
-      x-placeholder: 请输入Redisd主机端口
+      x-placeholder: 请输入Redis主机端口
       x-formitem:
         type: input
     redisPassword:
