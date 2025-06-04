@@ -1,0 +1,75 @@
+edition: 3.0.0
+name: supabase-app
+access: default
+vars:
+  region: {{region}}
+  functionName: {{functionName}}
+  description: {{description}}
+  postgresUsername: {{postgresUsername}}
+  postgresPassword: {{postgresPassword}}
+  postgresPort: {{postgresPort}}
+  supabaseSupavisorKey: {{supabaseSupavisorKey}}
+  supabaseDashboardUsername: {{supabaseDashboardUsername}}
+  supabaseDashboardPassword: {{supabaseDashboardPassword}}
+  supabaseJWTSecret: {{supabaseJWTSecret}}
+  supabaseAnonKey: {{supabaseAnonKey}}
+  supabaseServiceKey: {{supabaseServiceKey}}
+  supabaseRealtimeServiceKey: {{supabaseRealtimeServiceKey}}
+  supabaseGotrueJWTExpire: {{supabaseGotrueJWTExpire}}
+resources:
+  supabase-app:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      functionName:  ${vars.functionName}
+      description: ${vars.description}
+      runtime: custom
+      memorySize: 8192
+      cpu: 8
+      diskSize: 81920
+      timeout: 120
+      instanceConcurrency: 100
+      port: 8000
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      code:
+        templated_files: []
+      environmentVariables:
+        SUPABASE_JWT_SECRET: ${vars.supabaseJWTSecret}
+        SUPABASE_ANON_KEY: ${vars.supabaseAnonKey}
+        SUPABASE_SERVICE_KEY: ${vars.supabaseServiceKey}
+        VAULT_ENC_KEY: ${vars.supabaseSupavisorKey}
+        SUPABASE_REALTIME_SECRET_KEY_BASE: ${vars.supabaseRealtimeServiceKey}
+        SUPABASE_POSTGRES_PASSWORD: ${vars.postgresPassword}
+        DASHBOARD_USERNAME: ${vars.supabaseDashboardUsername}
+        DASHBOARD_PASSWORD: ${vars.supabaseDashboardPassword}
+        GOTRUE_JWT_EXP: ${vars.supabaseGotrueJWTExpire}
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      sourceSubDir: "supabase"
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
