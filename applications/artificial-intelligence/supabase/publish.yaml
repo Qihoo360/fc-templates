@@ -4,20 +4,20 @@ Name: supabase
 Provider:
   - fc
 Version: 0.0.1
-Description: Supabase 是一个开源的 Firebase 替代品，基于 PostgreSQL 数据库构建，提供了一系列开发者工具和功能。
+Description: ""
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/supabase
 Organization: 函数计算 (FC)
 Effective: Public
 Tags:
   - AI
   - Custom Runtime
-Category: 人工智能
+Category: 开发平台
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
   required: # 必填项
     - region
-    - functionName
+    - supabaseFunctionName
     - postgresUsername
     - postgresPassword
     - postgresPort
@@ -35,27 +35,25 @@ Parameters:
       type: string
       default: cn-north-cu-1
       description: 创建应用所在的地区
-      x-cate: resourceCate
       enum:
         - cn-north-cu-1
-      x-reaction-properties:
-        - polefsVolume
+      x-cate: resourceCate
       x-formitem:
         type: select
-    functionName:
-      title: 函数名
+    supabaseFunctionName:
+      title: supabase 函数名称
       type: string
       default: supabase-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
-      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      description: 最大长度为 3-40 个字符，只能包含小写字母、数字中划线，不能以数字、中划线开头，过滤空格。
       x-cate: resourceCate
       x-placeholder: 请输入函数名
       x-formitem:
         type: input
     description:
-      title: 函数描述
+      title: 函数描述信息
       type: string
-      default: "Serverless supabase"
+      default: ""
       pattern: ".{0,255}$"
       description: 最大长度为 255 个字符
       x-cate: resourceCate
@@ -72,133 +70,135 @@ Parameters:
     #   x-placeholder: 请输入 postgres 地址
     #   x-formitem:
     #     type: input
-    # postgresDatabaseName:
-    #   title: Postgres 数据库名
-    #   type: string
-    #   default:  5432
-    #   pattern: ".{0,255}$"
-    #   description: 最大长度为255个字符
-    #   x-cate: resourceCate
-    #   x-placeholder: 请输入数据库名称
-    #   x-formitem:
-    #     type: input
+    postgresPort:
+      title: 数据库端口
+      type: string
+      default: "5432"
+      pattern: ".{0,255}$"
+      description: 最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: Postgres 配置
+      x-placeholder: 数据库端口
+      x-formitem:
+        type: input
     postgresUsername:
-      title: postgres 用户名称
+      title: 数据库用户
       type: string
       default: supabase
       pattern: ".{0,255}$"
-      description: 最大长度为255个字符
-      x-cate: resourceCate
-      x-placeholder: 请输入用户名
+      description: 最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: Postgres 配置
+      x-placeholder: 数据库用户
       x-formitem:
         type: input
     postgresPassword:
       title: Postgres 密码
-      type: string
-      default: 
+      type: secret
+      default: ""
       pattern: ".{0,255}$"
       description: 最大长度为 255 个字符
-      x-cate: resourceCate
-      x-placeholder: 请输入密码
-      x-formitem:
-        type: input
-    postgresPort:
-      title: Postgres 端口
-      type: string
-      default:  5432
-      pattern: ".{0,255}$"
-      description: 最大长度为255个字符
-      x-cate: resourceCate
-      x-placeholder: 请输入端口号
+      x-cate: applicationCate
+      x-label: Postgres 配置
+      x-placeholder: 数据库密码
       x-formitem:
         type: input
     supabaseSupavisorKey:
-      title: supabase Postgres 连接池服务 KEY
-      type: string
-      default: ""
+      title: 数据库连接池密钥
+      type: secret
+      default: "${default-suffix}"
       pattern: ".{0,255}$"
-      description: |
-        最大长度为 255 个字符
-      x-cate: resourceCate
+      description: 最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: Postgres 配置
       x-placeholder: 请输入密钥
       x-formitem:
         type: input
     supabaseDashboardUsername:
-      title: supabase 控制台账号
+      title: 控制台账号
       type: string
       default: supabase
       pattern: ".{0,255}$"
       description: 最大长度为 255 个字符
-      x-cate: resourceCate
-      x-placeholder: 请输入账号名称
+      x-cate: applicationCate
+      x-label: supabase 设置
+      x-placeholder: 请输入账号
       x-formitem:
         type: input
     supabaseDashboardPassword:
-      title: supabase 控制台密码
-      type: string
-      default: xxxxxxx
+      title: 控制台密码
+      type: secret
+      default: ""
       pattern: ".{0,255}$"
       description: 最大长度为 255 个字符
-      x-cate: resourceCate
+      x-cate: applicationCate
+      x-label: supabase 设置
       x-placeholder: 请输入密码
       x-formitem:
         type: input
     supabaseJWTSecret:
-      title: supabase JWT 密钥
-      type: string
+      title: API JWT 密钥
+      type: secret
       default: ""
       pattern: ".{0,255}$"
-      description: |
-        最大长度为 255 个字符；用于生成 API TOKEN
-      x-cate: resourceCate
-      x-placeholder: 请输入密码
-      x-formitem:
-        type: input
-    supabaseAnonKey:
-      title: supabase 匿名角色密钥
-      type: string
-      default: ""
-      pattern: ".{0,255}$"
-      description: |
-        最大长度为 255 个字符；[参考如何生成](https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys)
-      x-cate: resourceCate
-      x-placeholder: 请输入 JWT TOkEN
-      x-formitem:
-        type: input
-    supabaseServiceKey:
-      title: supabase 服务角色密钥
-      type: string
-      default: ""
-      pattern: ".{0,255}$"
-      description: |
-        最大长度为 255 个字符；[参考如何生成](https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys)
-      x-cate: resourceCate
-      x-placeholder: 请输入 JWT TOkEN
-      x-formitem:
-        type: input
-    supabaseRealtimeServiceKey:
-      title: supabase 实时服务 KEY
-      type: string
-      default: ""
-      pattern: ".{0,255}$"
-      description: |
-        最大长度为 255 个字符
-      x-cate: resourceCate
+      description: 用于生成 API TOKEN 的密钥，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: supabase API
       x-placeholder: 请输入密钥
       x-formitem:
         type: input
     supabaseGotrueJWTExpire:
-      title: supabase GOTRUE JWT 过期时间
+      title: 外部 JWT 过期时间
       type: string
+      default: "3600"
+      pattern: ".{0,255}$"
+      description: |
+        应用外部访问时使用的 JWT TOKEN 过期时间，最大长度为 255 个字符。
+      x-cate: applicationCate
+      x-label: supabase API
+      x-placeholder: 请输入过期时间 (s)
+      x-formitem:
+        type: input
+    supabaseAnonKey:
+      title: 匿名角色 TOKEN
+      type: secret
       default: ""
       pattern: ".{0,255}$"
       description: |
+        应用内部其他服务使用的 TOKEN，最大长度为 255 个字符。（参考 https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys 生成）
+      x-cate: applicationCate
+      x-label: supabase API
+      x-placeholder: 请输入 JWT TOkEN
+      x-formitem:
+        type: input
+    supabaseServiceKey:
+      title: 服务角色 TOKEN
+      type: secret
+      default: ""
+      pattern: ".{0,255}$"
+      description: |
+        应用内部其他服务使用的 TOKEN，最大长度为 255 个字符。（参考 https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys 生成）
+      x-cate: applicationCate
+      x-label: supabase API
+      x-placeholder: 请输入 JWT TOkEN
+      x-formitem:
+        type: input
+    supabaseRealtimeServiceKey:
+      title: 实时通知服务密钥
+      type: secret
+      default: ${default-suffix}
+      pattern: ".{0,255}$"
+      description: |
         最大长度为 255 个字符
-      x-cate: resourceCate
-      x-placeholder: 请输入
+      x-cate: applicationCate
+      x-placeholder: 请输入密钥
+      x-hidden: true
       x-formitem:
         type: input
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
     description: ""

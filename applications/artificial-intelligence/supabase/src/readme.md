@@ -8,7 +8,7 @@ Supabase 是一个开源的 `Firebase` 替代品，基于 `PostgreSQL` 数据库
 
 社区活跃，文档完善，适合需要高性能、可扩展后端的项目。既适合小规模应用快速搭建，也支持企业级需求，是现代化全栈开发的优选之一。
 
-* [应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/supabase/src)
+* [应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/supabase/)
 
 ## 前期准备
 
