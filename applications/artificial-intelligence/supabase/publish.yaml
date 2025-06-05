@@ -171,8 +171,7 @@ Parameters:
       type: string
       default: "3600"
       pattern: ".{0,255}$"
-      description: |
-        应用外部访问时使用的 JWT TOKEN 过期时间，最大长度为 255 个字符。
+      description: 应用外部访问时使用的 JWT TOKEN 过期时间，最大长度为 255 个字符。
       x-cate: applicationCate
       x-label: API 设置
       x-placeholder: 请输入过期时间 (s)
@@ -183,8 +182,7 @@ Parameters:
       type: secret
       default: ""
       pattern: ".{0,255}$"
-      description: |
-        使用 API JWT 密钥，应用内部其他服务使用的 TOKEN。（参考 https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys 生成）
+      description: 使用 API JWT 密钥，应用内部其他服务使用的 TOKEN。（参考 https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys 生成）
       x-cate: applicationCate
       x-label: API 设置
       x-placeholder: 请输入 ANON_KEY
@@ -195,8 +193,7 @@ Parameters:
       type: secret
       default: ""
       pattern: ".{0,255}$"
-      description: |
-        使用 API JWT 密钥，应用内部其他服务使用的 TOKEN。（参考 https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys 生成）
+      description: 使用 API JWT 密钥，应用内部其他服务使用的 TOKEN。（参考 https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys 生成）
       x-cate: applicationCate
       x-label: API 设置
       x-placeholder: 请输入 SERVICE_ROLE_KEY
@@ -207,8 +204,7 @@ Parameters:
       type: secret
       default: ${default-suffix}
       pattern: ".{0,255}$"
-      description: |
-        最大长度为 255 个字符
+      description: 最大长度为 255 个字符
       x-cate: applicationCate
       x-placeholder: 请输入密钥
       x-hidden: true

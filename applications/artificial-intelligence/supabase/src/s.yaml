@@ -26,7 +26,7 @@ resources:
       runtime: custom
       memorySize: 8192
       cpu: 8
-      diskSize: 81920
+      diskSize: 10240
       timeout: 120
       instanceConcurrency: 100
       port: 8000
