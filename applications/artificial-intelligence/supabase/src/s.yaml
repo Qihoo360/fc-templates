@@ -3,7 +3,7 @@ name: supabase-app
 access: default
 vars:
   region: {{region}}
-  functionName: {{functionName}}
+  functionName: {{supabaseFunctionName}}
   description: {{description}}
   postgresUsername: {{postgresUsername}}
   postgresPassword: {{postgresPassword}}

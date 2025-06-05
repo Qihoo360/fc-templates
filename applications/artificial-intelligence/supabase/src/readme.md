@@ -37,4 +37,4 @@ Supabase 是一个开源的 `Firebase` 替代品，基于 `PostgreSQL` 数据库
 
 ## 部署完成示例
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/supabase/src/supabase_console.png)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/supabase/src/supabase_console.png?raw=true)
