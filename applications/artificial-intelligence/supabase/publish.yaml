@@ -33,10 +33,17 @@ Parameters:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: test-1
+      # default: cn-north-cu-1
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+        - test-1
+        - test-2
+        - test-3
+        - test-4
+        - test-5
+        - test-6
+        # - cn-north-cu-1
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -60,6 +67,18 @@ Parameters:
       x-placeholder: 请输入函数描述
       x-formitem:
         type: input
+    DatabaseType:
+      title: 数据库类型
+      type: string
+      default: postgresql
+      description: ""
+      enum:
+        - postgresql
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
     # postgresHost:
     #   title: Postgres 主机地址
     #   type: string
@@ -77,7 +96,7 @@ Parameters:
       pattern: ".{0,255}$"
       description: 最大长度为 255 个字符
       x-cate: applicationCate
-      x-label: Postgres 配置
+      x-label: 数据库配置
       x-placeholder: 数据库端口
       x-formitem:
         type: input
@@ -88,7 +107,7 @@ Parameters:
       pattern: ".{0,255}$"
       description: 最大长度为 255 个字符
       x-cate: applicationCate
-      x-label: Postgres 配置
+      x-label: 数据库配置
       x-placeholder: 数据库用户
       x-formitem:
         type: input
@@ -99,7 +118,7 @@ Parameters:
       pattern: ".{0,255}$"
       description: 最大长度为 255 个字符
       x-cate: applicationCate
-      x-label: Postgres 配置
+      x-label: 数据库配置
       x-placeholder: 数据库密码
       x-formitem:
         type: input
@@ -110,7 +129,7 @@ Parameters:
       pattern: ".{0,255}$"
       description: 最大长度为 255 个字符
       x-cate: applicationCate
-      x-label: Postgres 配置
+      x-label: 数据库配置
       x-placeholder: 请输入密钥
       x-formitem:
         type: input
@@ -121,7 +140,7 @@ Parameters:
       pattern: ".{0,255}$"
       description: 最大长度为 255 个字符
       x-cate: applicationCate
-      x-label: supabase 设置
+      x-label: 控制台设置
       x-placeholder: 请输入账号
       x-formitem:
         type: input
@@ -132,7 +151,7 @@ Parameters:
       pattern: ".{0,255}$"
       description: 最大长度为 255 个字符
       x-cate: applicationCate
-      x-label: supabase 设置
+      x-label: 控制台设置
       x-placeholder: 请输入密码
       x-formitem:
         type: input
@@ -143,7 +162,7 @@ Parameters:
       pattern: ".{0,255}$"
       description: 用于生成 API TOKEN 的密钥，最大长度为 255 个字符
       x-cate: applicationCate
-      x-label: supabase API
+      x-label: API 设置
       x-placeholder: 请输入密钥
       x-formitem:
         type: input
@@ -155,7 +174,7 @@ Parameters:
       description: |
         应用外部访问时使用的 JWT TOKEN 过期时间，最大长度为 255 个字符。
       x-cate: applicationCate
-      x-label: supabase API
+      x-label: API 设置
       x-placeholder: 请输入过期时间 (s)
       x-formitem:
         type: input
@@ -167,8 +186,8 @@ Parameters:
       description: |
         应用内部其他服务使用的 TOKEN，最大长度为 255 个字符。（参考 https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys 生成）
       x-cate: applicationCate
-      x-label: supabase API
-      x-placeholder: 请输入 JWT TOkEN
+      x-label: API 设置
+      x-placeholder: 请输入 ANON_KEY
       x-formitem:
         type: input
     supabaseServiceKey:
@@ -179,8 +198,8 @@ Parameters:
       description: |
         应用内部其他服务使用的 TOKEN，最大长度为 255 个字符。（参考 https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys 生成）
       x-cate: applicationCate
-      x-label: supabase API
-      x-placeholder: 请输入 JWT TOkEN
+      x-label: API 设置
+      x-placeholder: 请输入 SERVICE_ROLE_KEY
       x-formitem:
         type: input
     supabaseRealtimeServiceKey:
