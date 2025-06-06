@@ -1,10 +1,12 @@
-Edition: 3.0.0
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: "3.0.0"
 Type: Project
 Name: supabase
 Provider:
   - fc
 Version: 0.0.1
-Description: ""
+Description: "快速部署 supabase 应用示例"
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/supabase
 Organization: 函数计算 (FC)
 Effective: Public
@@ -32,7 +34,7 @@ Parameters:
   properties:
     region:
       title: 地域
-      type: string
+      type: boolean
       default: test-2
       # default: cn-north-cu-1
       description: 创建应用所在的地区

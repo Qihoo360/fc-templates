@@ -1,0 +1,193 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "应用 Schema",
+  "type": "object",
+  "definitions": {
+    "ExtendType": {
+      "allOf": [
+        {
+          "enum": [
+            "secret",
+            "array",
+            "boolean",
+            "integer",
+            "null",
+            "number",
+            "object",
+            "string"
+          ]
+        }
+      ]
+    },
+    "ParameterProperties": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9-_]+$": {
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "default": {
+                  "description": "默认值"
+                },
+                "type": {
+                  "$ref": "#/definitions/ExtendType"
+                },
+                "x-cate": {
+                  "type": "string",
+                  "description": "引用 PropertyDescription 属性"
+                },
+                "x-label": {
+                  "type": "string",
+                  "description": "属性标签；相同标签的属性会渲染在一起"
+                },
+                "x-placeholder": {
+                  "type": "string",
+                  "description": "占位字符；灰色提示词",
+                  "examples": ["请输入密码"]
+                },
+                "x-hidden": {
+                  "type": "boolean",
+                  "description": "隐藏属性；是否显示此属性"
+                },
+                "x-formitem": {
+                  "type": "object",
+                  "description": "参数输入类型；比如：输入、单选菜单",
+                  "properties": {
+                    "type": {
+                      "enum": ["input", "select"]
+                    }
+                  },
+                  "examples": [
+                    { "type": "input" },
+                    { "type": "select" }
+                  ]
+                }
+              }
+            },
+            {
+              "$ref": "http://json-schema.org/draft-07/schema#"
+            }
+          ]
+        }
+      }
+    },
+    "Parameters": {
+      "allOf": [
+        {
+          "properties": {
+            "properties": {
+              "$ref": "#/definitions/ParameterProperties"
+            }
+          }
+        },
+        {
+          "$ref": "http://json-schema.org/draft-07/schema#"
+        }
+      ]
+    }
+  },
+  "properties": {
+    "Edition": {
+      "type": "string",
+      "description": "应用版本",
+      "pattern": "^3\\.\\d+\\.\\d+$",
+      "const": "3.0.0"
+    },
+    "Type": {
+      "type": "string",
+      "description": "应用类型",
+      "const": "Project"
+    },
+    "Name": {
+      "type": "string",
+      "description": "应用名称"
+    },
+    "Provider": {
+      "type": "array",
+      "description": "应用供应商",
+      "items": {
+        "type": "string",
+        "const": "fc"
+      }
+    },
+    "Version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "const": "0.0.1"
+    },
+    "Description": {
+      "type": "string",
+      "description": "应用描述信息",
+      "examples": ["本应用提供快速搭建部署的能力"]
+    },
+    "HomePage": {
+      "type": "string",
+      "format": "uri",
+      "description": "应用源码地址",
+      "examples": [
+        "https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/supabase"
+      ]
+    },
+    "Organization": {
+      "type": "string",
+      "examples": ["函数计算 (FC)"]
+    },
+    "Effective": {
+      "type": "string",
+      "examples": ["Public"]
+    },
+    "Tags": {
+      "type": "array",
+      "description": "应用标签；通过标签进行检索",
+      "items": {
+        "type": "string",
+        "enum": ["AI", "Custom Runtime"]
+      },
+      "examples": ["AI", "Custom Runtime"],
+      "minItems": 1
+    },
+    "Category": {
+      "type": "string",
+      "description": "应用所属类型；用于分类展示",
+      "examples": ["开发平台"]
+    },
+    "Parameters": {
+      "type": "object",
+      "description": "应用参数；设计应用部署所需要的参数",
+      "$ref": "#/definitions/Parameters"
+    },
+    "PropertyDescription": {
+      "type": "object",
+      "description": "应用参数描述；当声明的参数具有相关性时，可以在参数中加入 x-cate 属性，配置此属性的参数将会以组的方式渲染。",
+      "patternProperties": {
+        "^[a-zA-Z0-9-_]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title"],
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "Edition",
+    "Type",
+    "Name",
+    "Provider",
+    "Version",
+    "Organization",
+    "Effective",
+    "Tags",
+    "Category",
+    "Parameters",
+    "PropertyDescription"
+  ]
+}

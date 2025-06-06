@@ -53,6 +53,7 @@
     }
   },
   "type": "object",
+  "title": "资源 Schema",
   "required": [
     "edition",
     "name",
