@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "resources": {
+      "type": "object",
+      "description": "资源定义；资源可以是函数或者其他抽象的东西",
+      "patternProperties": {
+        "^[a-zA-Z0-9-_]+$": {
+          "type": "object",
+          "required": [
+            "component",
+            "props"
+          ],
+          "properties": {
+            "component": {
+              "type": "string",
+              "description": "根据不同的组件类型配置不同的资源。\nNote: 目前 ZFC 场景为固定值",
+              "default": "${path('/utils/components/zfc')}",
+              "const": "${path('/utils/components/zfc')}",
+              "examples": [
+                "${path('/utils/components/zfc')}"
+              ]
+            }
+          },
+          "if": {
+            "properties": {
+              "component": {
+                "const": "${path('/utils/components/zfc')}"
+              }
+            },
+            "required": [
+              "component"
+            ]
+          },
+          "then": {
+            "properties": {
+              "props": {
+                "$ref": "./zfc-component-schema.json"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "props": {
+                "type": "object",
+                "description": "默认 props 结构",
+                "additionalProperties": true
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "required": [
+    "edition",
+    "name",
+    "access",
+    "resources"
+  ],
+  "properties": {
+    "edition": {
+      "type": "string",
+      "description": "命令行 YAML 规范版本，遵循语义化版本（Semantic Versioning）规范",
+      "default": "3.0.0",
+      "const": "3.0.0",
+      "pattern": "^3\\.\\d+\\.\\d+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "项目名称"
+    },
+    "access": {
+      "type": "string",
+      "description": "ZFC 约定的值",
+      "const": "default"
+    },
+    "vars": {
+      "type": "object",
+      "description": "变量定义；当前文件中可以通过 `${vars.region}` 引用变量的值，而值可以是 `publish.yaml`。",
+      "required": [],
+      "properties": {},
+      "examples": [
+        {
+          "region": "{{region}}"
+        },
+        {
+          "functionName": "{{FunctionName}}"
+        }
+      ]
+    },
+    "resources": {
+      "$ref": "#/definitions/resources"
+    }
+  }
+}

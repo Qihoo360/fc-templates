@@ -1,0 +1,288 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "ZFC 函数组件配置",
+  "definitions": {
+    "IEventTriggerConfig": {
+      "properties": {
+        "detail": {
+          "properties": {
+            "event_bus": {
+              "type": "string"
+            },
+            "event_bus_id": {
+              "type": "number"
+            },
+            "event_rule": {
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "event_bus",
+            "event_bus_id",
+            "event_rule"
+          ],
+          "type": "object"
+        },
+        "event_source": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "detail",
+        "event_source"
+      ],
+      "type": "object"
+    },
+    "IHttpTriggerConfig": {
+      "properties": {
+        "auth_config": {
+          "type": "string"
+        },
+        "auth_type": {
+          "type": "string"
+        },
+        "disable_url_internet": {
+          "type": "boolean"
+        },
+        "methods": {
+          "items": {
+            "enum": [
+              "DELETE",
+              "GET",
+              "HEAD",
+              "OPTIONS",
+              "PATCH",
+              "POST",
+              "PUT"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "auth_config",
+        "auth_type",
+        "methods"
+      ],
+      "type": "object"
+    },
+    "ITriggerTool": {
+      "properties": {
+        "funcVersion": {
+          "type": "string"
+        },
+        "triggerConfig": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/IHttpTriggerConfig"
+            },
+            {
+              "$ref": "#/definitions/IEventTriggerConfig"
+            }
+          ]
+        },
+        "triggerName": {
+          "type": "string"
+        },
+        "triggerType": {
+          "$ref": "#/definitions/ITriggerType"
+        }
+      },
+      "required": [
+        "funcVersion",
+        "triggerConfig",
+        "triggerName",
+        "triggerType"
+      ],
+      "type": "object"
+    },
+    "ITriggerType": {
+      "enum": [
+        "event",
+        "http"
+      ],
+      "type": "string"
+    }
+  },
+  "properties": {
+    "basePath": {
+      "type": "string"
+    },
+    "buildProgramEntry": {
+      "type": "string"
+    },
+    "cloudBuildType": {
+      "type": "string"
+    },
+    "code": {},
+    "cpu": {
+      "type": "number"
+    },
+    "curIsDev": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "diskSize": {
+      "type": "number"
+    },
+    "dockerfilePath": {
+      "type": "string"
+    },
+    "envVars": {},
+    "environmentVariables": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "functionName": {
+      "type": "string"
+    },
+    "functionUuid": {
+      "type": "string"
+    },
+    "instanceConcurrency": {
+      "type": "number"
+    },
+    "logConfig": {
+      "properties": {
+        "isOpen": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "isOpen"
+      ],
+      "type": "object"
+    },
+    "memorySize": {
+      "type": "number"
+    },
+    "nasConfig": {
+      "items": {
+        "properties": {
+          "createUserName": {
+            "type": "string"
+          },
+          "mountDir": {
+            "type": "string"
+          },
+          "volumeUniqueName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "createUserName",
+          "mountDir",
+          "volumeUniqueName"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "port": {
+      "type": "number"
+    },
+    "region": {
+      "type": "string"
+    },
+    "requestEntry": {
+      "type": "string"
+    },
+    "requestEntryDescribe": {
+      "type": "string"
+    },
+    "requestType": {
+      "$ref": "#/definitions/ITriggerType"
+    },
+    "runtime": {
+      "type": "string"
+    },
+    "runtimeID": {
+      "type": "number"
+    },
+    "runtimeType": {
+      "type": "string"
+    },
+    "scale": {
+      "properties": {
+        "max": {
+          "type": "number"
+        },
+        "min": {
+          "type": "number"
+        },
+        "scale_config": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "max",
+        "min",
+        "scale_config"
+      ],
+      "type": "object"
+    },
+    "source": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "type": "object"
+    },
+    "sourceSubDir": {
+      "type": "string"
+    },
+    "startCmd": {
+      "type": "string"
+    },
+    "timeout": {
+      "type": "number"
+    },
+    "triggers": {
+      "items": {
+        "$ref": "#/definitions/ITriggerTool"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "cloudBuildType",
+    "cpu",
+    "diskSize",
+    "functionName",
+    "instanceConcurrency",
+    "logConfig",
+    "memorySize",
+    "port",
+    "region",
+    "requestType",
+    "runtime",
+    "runtimeType",
+    "scale",
+    "timeout"
+  ],
+  "type": "object"
+}
