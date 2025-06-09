@@ -20,6 +20,7 @@ Parameters:
   required: # 必填项
     - region
     - supabaseFunctionName
+    - description
     - postgresUsername
     - postgresPassword
     - postgresPort
