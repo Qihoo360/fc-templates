@@ -34,7 +34,7 @@ Parameters:
   properties:
     region:
       title: 地域
-      type: boolean
+      type: string
       default: test-2
       # default: cn-north-cu-1
       description: 创建应用所在的地区
