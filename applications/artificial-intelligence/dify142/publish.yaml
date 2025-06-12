@@ -1,0 +1,462 @@
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: dify-v3
+Provider:
+  - fc
+Version: 0.0.3
+Description: 该示例通过 Dify 可快速搭建生产级的生成式 AI 应用。
+HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/dify142
+Organization: 函数计算（FC）
+Tags:
+  - AI
+  - Custom Runtime
+Category: Web框架
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - difySandboxFunctionName
+    - difyPluginDaemonFunctionName
+    - difyApiFunctionName
+    - difyWebFunctionName
+    - DifyCustomDomain
+    - CacheDB
+    - DifyRedisPassword
+    - DifyRedisHost
+    - DifyRedisPort
+    - DifyRedisDataBase
+    - DifyRedisDataBaseCelery
+    - DifyDBSCHEME
+    - DifyDBPassword
+    - DifyDBHost
+    - DifyDBPort
+    - DifyDBPluginDataBase
+    - DifyDBDataBase
+    - ObjectStorage
+    - DifyAwsS3Endpoint
+    - DifyAwsS3Bucket
+    - DifyAwsS3Region
+    - DifyAwsS3Ak
+    - DifyAwsS3Sk
+    - FileStorage
+    - PolefsVolume
+    - MountDir
+    - PolefsVolumeCreateUse
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: test-3
+      description: 创建应用所在的地区
+      enum:
+        - test-2
+        - test-3
+        - test-4
+        - test-5
+        - test-6
+        - beijing
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+    difySandboxFunctionName:
+      title: DifySandbox 函数名
+      type: string
+      default: dify-sandbox-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入DifySandbox 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    difySandboxDescription:
+      title: DifySandbox函数描述
+      type: string
+      default: "Serverless dify sandbox"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入DifySandbox函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    difyPluginDaemonFunctionName:
+      title: difyPluginDaemon 函数名
+      type: string
+      default: dify-plugindaemon-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入difyPluginDaemon 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    difyPluginDaemonDescription:
+      title: difyPluginDaemon函数描述
+      type: string
+      default: "Serverless dify plugin daemon"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入difyPluginDaemon函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    difyApiFunctionName:
+      title: DifyApi 函数名
+      type: string
+      default: dify-api-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入DifyApi 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    difyApiDescription:
+      title: DifyApi函数描述
+      type: string
+      default: "Serverless dify api"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入DifyApi函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    difyWebFunctionName:
+      title: DifyWeb函数名
+      type: string
+      default: dify-web-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入DifyWeb 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    difyWebDescription:
+      title: DifyWeb函数描述
+      type: string
+      default: "Serverless dify web"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入DifyWeb函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    DifyCustomDomain:
+      # title: DifyCustomDomain
+      type: string
+      default: ""
+      description: "例如：https://test.com"
+      x-cate: applicationCate
+      x-label: 自定义域名
+      x-placeholder: 请输入自定义域名
+      x-formitem:
+        type: input
+    CacheDB:
+      # title: 缓存配置
+      type: string
+      default: Redis
+      description: ""
+      enum:
+        - Redis
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请选择缓存系统
+      x-formitem:
+        type: select
+    DifyRedisUserName:
+      # title: DifyRedisUserName
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请输入Redis用户名
+      x-formitem:
+        type: input
+    DifyRedisPassword:
+      # title: DifyRedisPassword
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请输入Redis密码
+      x-formitem:
+        type: input
+    DifyRedisHost:
+      # title: DifyRedisHost
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请输入Redis主机地址
+      x-formitem:
+        type: input
+    DifyRedisPort:
+      # title: DifyRedisPort
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请输入Redisd主机端口
+      x-formitem:
+        type: input
+    DifyRedisDataBase:
+      # title: DifyRedisDataBase
+      type: string
+      default: "0"
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请输入Redis数据库
+      x-formitem:
+        type: input
+    DifyRedisDataBaseCelery:
+      # title: DifyRedisDataBaseCelery
+      type: string
+      default: "1"
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请输入Redis数据库消息队列
+      x-formitem:
+        type: input
+    DifyDBSCHEME:
+      # title: 数据库配置
+      type: string
+      default: postgresql
+      description: ""
+      enum:
+        - postgresql
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
+    DifyDBUserName:
+      # title: DifyDBUserName
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 请输入数据库用户名
+      x-formitem:
+        type: input
+    DifyDBPassword:
+      # title: DifyDBPassword
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 输入数据库密码
+      x-formitem:
+        type: input
+    DifyDBHost:
+      # title: DifyDBHost
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 请输入数据库主机地址
+      x-formitem:
+        type: input
+    DifyDBPort:
+      # title: DifyDBPort
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 请输入数据库端口
+      x-formitem:
+        type: input
+    DifyDBPluginDataBase:
+      # title: DifyDBPluginDataBase
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 请输入可扩展数据库
+      x-formitem:
+        type: input
+    DifyDBDataBase:
+      # title: DifyDBDataBase
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 请输入数据库
+      x-formitem:
+        type: input
+    ObjectStorage:
+      # title: 对象存储配置
+      type: string
+      default: OBS
+      description: ""
+      enum:
+        - OBS
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请选择对象存储类型
+      x-formitem:
+        type: select
+    DifyAwsS3Endpoint:
+      # title: DifyAwsS3Endpoint
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请输入OBS端点/Endpoint
+      x-formitem:
+        type: input
+    DifyAwsS3Bucket:
+      # title: DifyAwsS3Bucket
+      type: string
+      default: bucket-dify-test
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请输入OBS存储桶名
+      x-formitem:
+        type: input
+    DifyAwsS3Region:
+      # title: DifyAwsS3Region
+      type: string
+      default: beijing2
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请输入OBS区域
+      x-formitem:
+        type: input
+    DifyAwsS3Ak:
+      # title: DifyAwsS3Ak
+      type: secret
+      default: "AKIAIOSFODNN7EXAMPLE"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请输入OBS AK
+      x-formitem:
+        type: input
+    DifyAwsS3Sk:
+      # title: DifyAwsS3Sk
+      type: secret
+      default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请输入OBS SK
+      x-formitem:
+        type: input
+    VectorDB:
+      # title: 向量数据库配置
+      type: string
+      default: "milvus"
+      description: ""
+      enum:
+        - milvus
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: 请选择向量数据库类型
+      x-formitem:
+        type: select
+    DifyMilvusUri:
+      type: string
+      default: ""
+      description: "例如：http://127.0.0.1:19530"
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: "请输入Milvus端点/Uri"
+      x-formitem:
+        type: input
+    DifyMilvusToken:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: 请输入Milvus Token
+      x-formitem:
+        type: input
+    DifyMilvusUser:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: 请输入Milvus用户名/User
+      x-formitem:
+        type: input
+    DifyMilvusPassword:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: 请输入Milvus密码/Password
+      x-formitem:
+        type: input
+    FileStorage:
+      # title: 文件存储配置
+      type: string
+      default: Polefs
+      description: ""
+      enum:
+        - Polefs
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-placeholder: 请选择文件存储类型
+      x-formitem:
+        type: select
+    PolefsVolume:
+      # title: 函数挂载 PoleFS 卷名称
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-placeholder: 函数挂载 PoleFS卷
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: PolefsVolumeCreateUser
+      x-formitem:
+        type: select
+        name: volume_unique_name
+    MountDir:
+      # title: 函数挂载路径
+      type: string
+      description: ""
+      default: "/app/storage"
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-placeholder: 函数挂载路径
+      x-formitem:
+        type: input
+    PolefsVolumeCreateUser:
+      # title: 函数挂载的创建用户
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-placeholder: 函数挂载的创建用户
+      x-hidden: true
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
