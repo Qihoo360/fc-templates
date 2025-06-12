@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
 Edition: 3.0.0
 Type: Project
 Effective: Public
@@ -163,6 +165,7 @@ Parameters:
         - Redis
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
@@ -173,6 +176,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请输入Redis用户名
       x-formitem:
         type: input
@@ -183,6 +187,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请输入Redis密码
       x-formitem:
         type: input
@@ -193,6 +198,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请输入Redis主机地址
       x-formitem:
         type: input
@@ -203,6 +209,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请输入Redisd主机端口
       x-formitem:
         type: input
@@ -213,6 +220,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请输入Redis数据库
       x-formitem:
         type: input
@@ -223,6 +231,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请输入Redis数据库消息队列
       x-formitem:
         type: input
@@ -307,6 +316,7 @@ Parameters:
         - OBS
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
@@ -317,6 +327,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS端点/Endpoint
       x-formitem:
         type: input
@@ -327,6 +338,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS存储桶名
       x-formitem:
         type: input
@@ -337,6 +349,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS区域
       x-formitem:
         type: input
@@ -347,6 +360,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS AK
       x-formitem:
         type: input
@@ -357,6 +371,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS SK
       x-formitem:
         type: input
@@ -369,6 +384,7 @@ Parameters:
         - milvus
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: 请选择向量数据库类型
       x-formitem:
         type: select
@@ -378,6 +394,7 @@ Parameters:
       description: "例如：http://127.0.0.1:19530"
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: "请输入Milvus端点/Uri"
       x-formitem:
         type: input
@@ -387,6 +404,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: 请输入Milvus Token
       x-formitem:
         type: input
@@ -396,6 +414,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: 请输入Milvus用户名/User
       x-formitem:
         type: input
@@ -405,6 +424,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: 请输入Milvus密码/Password
       x-formitem:
         type: input

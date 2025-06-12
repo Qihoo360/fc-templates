@@ -41,9 +41,22 @@
                   "type": "string",
                   "description": "属性标签；相同标签的属性会渲染在一起"
                 },
+                "x-restype": {
+                  "type": "string",
+                  "description": "资源类型；",
+                  "enum": [
+                    "mongodb",
+                    "milvus",
+                    "redis",
+                    "polefs",
+                    "s3",
+                    "elasticsearch"
+                  ],
+                  "examples": ["redis", "mysql"]
+                },
                 "x-placeholder": {
                   "type": "string",
-                  "description": "占位字符；灰色提示词",
+                  "description": "占位提示词",
                   "examples": ["请输入密码"]
                 },
                 "x-hidden": {
@@ -58,10 +71,7 @@
                       "enum": ["input", "select"]
                     }
                   },
-                  "examples": [
-                    { "type": "input" },
-                    { "type": "select" }
-                  ]
+                  "examples": [{ "type": "input" }, { "type": "select" }]
                 }
               }
             },
@@ -113,8 +123,7 @@
     },
     "Version": {
       "type": "string",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$",
-      "const": "0.0.1"
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
     },
     "Description": {
       "type": "string",
