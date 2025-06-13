@@ -1,0 +1,67 @@
+edition: 3.0.0
+name: bolt-diy-app
+access: default
+vars:
+  region: {{region}}
+  describe: {{description}}
+  functionName: {{functionName}}
+  adminEmail: {{adminEmail}}
+  adminUsername: {{adminUsername}}
+  adminPassword: {{adminPassword}}
+  llmBaseUrl: {{llmBaseUrl}}
+  llmApiKey: {{llmApiKey}}
+  llmModel: {{llmModel}}
+  transciptionBaseUrl: {{transciptionBaseUrl}}
+  transciptionApiKey: {{transciptionApiKey}}
+  whisperModel: {{whisperModel}}
+resources:
+  framework:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.describe}
+      runtime: custom
+      memorySize: 4096
+      cpu: 4
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 8899
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.functionName}
+      sourceSubDir: speakr
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        ADMIN_EMAIL: ${vars.adminEmail}
+        ADMIN_PASSWORD: ${vars.adminPassword}
+        ADMIN_USERNAME: ${vars.adminUsername}
+        TEXT_MODEL_BASE_URL: ${vars.llmBaseUrl}
+        TEXT_MODEL_API_KEY: ${vars.llmApiKey}
+        TEXT_MODEL_NAME: ${vars.llmModel}
+        TRANSCRIPTION_BASE_URL: ${vars.transciptionBaseUrl}
+        TRANSCRIPTION_API_KEY: ${vars.transciptionApiKey}
+        WHISPER_MODEL: ${vars.whisperModel}
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""

@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+
+  :root {
+    --background-login: #fff;
+
+    --text-color: rgba(17, 17, 17, 0.3);
+
+    --background-main: rgba(244, 245, 248, 1);
+
+    --background-main-content: rgba(255, 255, 255, 1);
+
+    --background-tip: white;
+
+    --background-tip-darkhover: #0055e3;
+
+    --background-prompt: hsla(0, 0%, 100%, 1);
+
+    --background-new: hsla(240, 14%, 99%, 1);
+
+    --nav-hover: white;
+
+    --header-icon: white;
+
+    --text-answer: #111;
+
+    --text-prompt: hsla(0, 0%, 18%, 1);
+
+    --search-input: hsla(220, 100%, 99%, 1);
+
+    --background: 0 0% 100%;
+    /* hsl(0 0% 100%) */
+    --foreground: 222.2 47.4% 11.2%;
+    /* hsl(222 47% 11%) */
+    --muted: 210 40% 98%;
+    /* hsl(210 40% 98%) */
+    --muted-foreground: 215.4 16.3% 46.9%;
+    /* hsl(215 16% 46%) */
+    --popover: 0 0% 100%;
+    /* hsl(0 0% 100%) */
+    --popover-foreground: 222.2 47.4% 11.2%;
+    /* hsl(222 47% 11%) */
+    --card: 0 0% 100%;
+    /* hsl(0 0% 100%) */
+    --card-foreground: 222.2 47.4% 11.2%;
+    /* hsl(222 47% 11%) */
+    --border: 214.3 21.8% 91.4%;
+    /* hsl(214 32% 91%) */
+    --input: 223 48% 44%;
+    /* hsl(214 32% 91%) */
+    --primary: 220 98% 45%;
+    /* hsl(222 27% 18%) */
+    --primary-foreground: 210 40% 98%;
+    /* hsl(210 40% 98%) */
+    --secondary: 210 40% 96.1%;
+    /* hsl(210 40% 96%) */
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* hsl(222 47% 11%) */
+    --accent: 210 30% 96.1%;
+    /* hsl(210 30% 96%) */
+    --accent-foreground: 222.2 47.4% 11.2%;
+    /* hsl(222 47% 11%) */
+    --destructive: 0 100% 50%;
+    /* hsl(0 100% 50%) */
+    --destructive-foreground: 210 40% 98%;
+    --black-button: 0 0% 7%;
+    /* hsl(215 20% 65%) */
+    --ring: 223, 48%, 44%, 0.35;
+    --radius: .58rem;
+    --round-btn-shadow: #00000063;
+
+    --error-background: #fef2f2;
+    --error-foreground: #991b1b;
+
+    --success-background: #f0fdf4;
+    --success-foreground: #14532d;
+
+    --info-background: #f0f4fd;
+    --info-foreground: #141653;
+
+    --high-indigo: #4338ca;
+    --medium-indigo: #6366f1;
+
+    --chat-bot-icon: #afe6ef;
+    --chat-user-icon: #aface9;
+
+    /* Colors that are shared in dark and light mode */
+    --blur-shared: #151923de;
+    --build-trigger: #dc735b;
+    --chat-trigger: #5c8be1;
+    --chat-trigger-disabled: #b4c3da;
+    --status-red: #ef4444;
+    --status-yellow: #eab308;
+    --status-green: #4ade80;
+    --status-blue: #2563eb;
+    --connection: #555;
+
+  }
+
+  .dark {
+    --background-login: #1B1B1B;
+
+    --text-color: rgba(255, 255, 255, 0.3);
+
+    --login-input: #272728;
+
+    --button: #024FE5;
+
+    --background-main: rgba(17, 17, 17, 1);
+
+    --background-main-content: rgba(27, 27, 27, 1);
+
+    --background-tip: rgba(33, 33, 34, 1);
+
+    --background-prompt: hsla(225, 4%, 20%, 1);
+
+    --background-new: hsla(0, 0%, 9%, 1);
+
+    --nav-hover: rgba(52, 53, 58, 1);
+
+    --header-icon: rgba(33, 33, 34, 1);
+
+    --text-answer: #F2F2F2;
+
+    --text-prompt: hsla(180, 2%, 90%, 1);
+
+    --search-input: hsla(225, 5%, 17%, 1);
+
+    --autoPages: hsla(230, 5%, 22%, 1);
+
+    --background-thumb: hsla(219, 100%, 88%, 1);
+
+    --background: 0 0% 7%;
+    /* hsl(0 0% 7%) */
+    --foreground: 0 0% 100%;
+    /* hsl(213 31% 91%) */
+
+    --muted: 0 0% 7%;
+    /* hsl(223 27% 11%) */
+    --muted-foreground: 215.4 16.3% 56.9%;
+    /* hsl(215 16% 56%) */
+
+    --popover: 225 5% 17%;
+    /* hsl(224 71% 4%) */
+    --popover-foreground: 215 20.2% 65.1%;
+    /* hsl(215 20% 65%) */
+
+    --card: 240 1% 13%;
+    /* hsl(224 71% 4%) */
+    --card-foreground: 213 31% 80%;
+    /* hsl(213 31% 91%) */
+
+    --border: 216 24% 17%;
+    /* hsl(216 34% 17%) */
+    --input: 0 0% 100%;
+    /* hsl(216 34% 17%) */
+
+    --primary: 220 98% 45%;
+    /* hsl(210 20% 80%) */
+    --primary-foreground: 0 0% 100%;
+    /* hsl(222 47% 1%) */
+
+    --secondary: 222.2 37.4% 7.2%;
+    /* hsl(222 47% 11%) */
+    --secondary-foreground: 210 40% 80%;
+    /* hsl(210 40% 80%) */
+
+    --accent: 0 0% 11%;
+    /* hsl(216 34% 17%) */
+    --accent-foreground: 210 30% 98%;
+    /* hsl(210 40% 98%) */
+
+    --destructive: 0 81% 60%;
+    /* hsl(0 63% 31%) */
+    --destructive-foreground: 210 40% 98%;
+    /* hsl(210 40% 98%) */
+    --black-button: 0 0% 7%;
+
+    --ring: 216 24% 30%;
+    /* hsl(216 24% 30%) */
+
+    --radius: 0.5rem;
+
+    --round-btn-shadow: #00000063;
+
+    --success-background: #022c22;
+    --success-foreground: #ecfdf5;
+
+    --error-foreground: #fef2f2;
+    --error-background: #450a0a;
+
+    --info-foreground: #eff6ff;
+    --info-background: #172554;
+
+
+    --high-indigo: #4338ca;
+    --medium-indigo: #6366f1;
+
+    /* Colors that are shared in dark and light mode */
+    --blur-shared: #151923d2;
+    --build-trigger: #dc735b;
+    --chat-trigger: #5c8be1;
+    --chat-trigger-disabled: #2d3b54;
+    --status-red: #ef4444;
+    --status-yellow: #eab308;
+    --status-green: #4ade80;
+    --status-blue: #2563eb;
+    --connection: #555;
+
+    --chat-bot-icon: #235d70;
+    --chat-user-icon: #4f3d6e;
+
+  }
+}
