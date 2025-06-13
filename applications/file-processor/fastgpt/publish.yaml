@@ -17,7 +17,10 @@ Parameters:
   additionalProperties: false # 不允许增加其他属性
   required: # 必填项
     - region
+    - sandboxFunctionName
+    - sandboxDescription
     - functionName
+    - description
     - oneapiUrl
     - chatApiKey
     - DataBase
@@ -25,7 +28,6 @@ Parameters:
     - VectorDB
     - milvusAddress
     - milvusToken
-    - sandboxUrl
   properties:
     region:
       title: 地域
@@ -37,6 +39,26 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: select
+    sandboxFunctionName:
+      title: 函数名
+      type: string
+      default: fastgpt-sandbox-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入 fastgpt sandbox 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    sandboxDescription:
+      title: 描述
+      type: string
+      default: "fastgpt sandbox"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入 fastgpt sandbox 函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
     functionName:
       title: 函数名
       type: string
@@ -134,17 +156,6 @@ Parameters:
       x-cate: applicationCate
       x-label: 向量数据库配置
       x-placeholder: milvus token
-      x-formitem:
-        type: input
-    sandboxUrl:
-      # title: sandboxUrl
-      type: string
-      default: ""
-      pattern: "http.*"
-      description: ""
-      x-cate: applicationCate
-      x-label: 沙箱环境UrI
-      x-placeholder: sandboxUrl
       x-formitem:
         type: input
 PropertyDescription:
