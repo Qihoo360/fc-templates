@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
 Edition: 3.0.0
 Type: Project
 Effective: Public
@@ -85,6 +87,7 @@ Parameters:
         - mysql
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
@@ -95,6 +98,7 @@ Parameters:
       description: "例如：mysql://user:secret@host:port/database"
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库地址
       x-formitem:
         type: input
@@ -137,6 +141,7 @@ Parameters:
         - OBS
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
@@ -147,6 +152,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入存储端点
       x-formitem:
         type: input
@@ -157,6 +163,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入存储地域
       x-formitem:
         type: input
@@ -167,6 +174,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入存储桶名
       x-formitem:
         type: input
@@ -177,6 +185,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: S3_ACCESS_KEY_ID
       x-formitem:
         type: input
@@ -187,6 +196,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: S3_SECRET_ACCESS_KEY
       x-formitem:
         type: input
@@ -197,6 +207,7 @@ Parameters:
       description: "公网域名"
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-formitem:
         type: input
 PropertyDescription:

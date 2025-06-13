@@ -45,7 +45,9 @@
                   "type": "string",
                   "description": "资源类型；",
                   "enum": [
+                    "mysql",
                     "mongodb",
+                    "postgresql",
                     "milvus",
                     "redis",
                     "polefs",

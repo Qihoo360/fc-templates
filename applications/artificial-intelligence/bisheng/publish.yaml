@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
 Edition: 3.0.0
 Type: Project
 Effective: Public
@@ -128,6 +130,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: Elasticsearch配置
+      x-restype: elasticsearch
       x-placeholder: 请输入Elasticsearch url
       x-formitem:
         type: input
@@ -137,6 +140,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: Elasticsearch配置
+      x-restype: elasticsearch
       x-placeholder: '{"basic_auth": ("elastic", "elastic")}'
       x-formitem:
         type: input
@@ -149,6 +153,7 @@ Parameters:
         - milvus
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: 请选择向量数据库类型
       x-formitem:
         type: select
@@ -160,6 +165,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: milvus host
       x-formitem:
         type: input
@@ -170,6 +176,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: milvus port
       x-formitem:
         type: input
@@ -180,6 +187,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: milvus user
       x-formitem:
         type: input
@@ -190,6 +198,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: milvus password
       x-formitem:
         type: input
@@ -200,6 +209,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: milvus secure
       x-formitem:
         type: input
@@ -210,6 +220,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: milvus is partition or not
       x-formitem:
         type: input
@@ -220,6 +231,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: milvus partition suffix
       x-formitem:
         type: input
@@ -232,6 +244,7 @@ Parameters:
         - MinIO
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
@@ -241,6 +254,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入MinIO Endpoint
       x-formitem:
         type: input
@@ -250,6 +264,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入MinIO AccessKey
       x-formitem:
         type: input
@@ -259,6 +274,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入MinIO SecretKey
       x-formitem:
         type: input
@@ -268,6 +284,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入MinIO 是否验证证书
       x-formitem:
         type: input
@@ -277,6 +294,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入MinIO Schema
       x-formitem:
         type: input
@@ -286,6 +304,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入MinIO SharePoin
       x-formitem:
         type: input
@@ -298,6 +317,7 @@ Parameters:
         - Redis
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
@@ -308,6 +328,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请输入 redis url
       x-formitem:
         type: input
@@ -318,6 +339,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请输入 celery redis url
       x-formitem:
         type: input
@@ -330,6 +352,7 @@ Parameters:
         - mysql
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
@@ -340,6 +363,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库连接地址
       x-formitem:
         type: input
