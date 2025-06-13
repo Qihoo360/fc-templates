@@ -1,0 +1,355 @@
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: bisheng-backend
+Provider:
+  - fc
+Version: 0.0.1
+Description: 这是一个专攻办公场景的 LLM 应用开发平台
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/bisheng-backend
+Tags:
+  - AI
+  - Custom Runtime
+Category: 人工智能
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required:
+    # 必填项
+    - region
+    - bishengOfficeFunctionName
+    - bishengOfficeDescription
+    - bishengBackendFunctionName
+    - bishengBackendDescription
+    - bishengFrontendFunctionName
+    - bishengFrontendDescription
+    - elasticsearchUrl
+    - elasticsearchSslVerify
+    - VectorDB
+    - milvusHost
+    - milvusPort
+    - milvusUser
+    - milvusPasswd
+    - milvusSecure
+    - milvusIsPartition
+    - milvusPartitionSuffiix
+    - ObjectStorage
+    - minioEndpoint
+    - minioAccessKey
+    - minioSecretKey
+    - minioCertCheck
+    - minioSchema
+    - minioSharePoin
+    - CacheDB
+    - redisUrl
+    - celeryRedisUrl
+    - DataBase
+    - mysqlUrl
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: test-3
+      description: 创建应用所在的地区
+      enum:
+        - test-2
+        - test-3
+        - test-4
+        - test-5
+        - test-6
+        - beijing
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+    bishengOfficeFunctionName:
+      title: 函数名
+      type: string
+      default: bisheng-office-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入 bisheng office 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    bishengOfficeDescription:
+      title: 描述
+      type: string
+      default: "bisheng office"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入 bisheng office 函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    bishengBackendFunctionName:
+      title: 函数名
+      type: string
+      default: bisheng-backend-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入 bisheng office 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    bishengBackendDescription:
+      title: 描述
+      type: string
+      default: "bisheng backend"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入 bisheng backend 函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    bishengFrontendFunctionName:
+      title: 函数名
+      type: string
+      default: bisheng-frontend-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入 bisheng office 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    bishengFrontendDescription:
+      title: 描述
+      type: string
+      default: "bisheng frontend"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入 bisheng frontend 函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    elasticsearchUrl:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: Elasticsearch配置
+      x-placeholder: 请输入Elasticsearch url
+      x-formitem:
+        type: input
+    elasticsearchSslVerify:
+      type: string
+      default: "{}"
+      description: ""
+      x-cate: applicationCate
+      x-label: Elasticsearch配置
+      x-placeholder: '{"basic_auth": ("elastic", "elastic")}'
+      x-formitem:
+        type: input
+    VectorDB:
+      # title: 向量数据库配置
+      type: string
+      default: milvus
+      description: ""
+      enum:
+        - milvus
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: 请选择向量数据库类型
+      x-formitem:
+        type: select
+    milvusHost:
+      # title: milvus 向量库连接参数
+      type: string
+      default: ""
+      pattern: ".*"
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: milvus host
+      x-formitem:
+        type: input
+    milvusPort:
+      # title: milvus 向量库连接参数
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: milvus port
+      x-formitem:
+        type: input
+    milvusUser:
+      # title: milvus token
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: milvus user
+      x-formitem:
+        type: input
+    milvusPasswd:
+      # title: milvus token
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: milvus password
+      x-formitem:
+        type: input
+    milvusSecure:
+      # title: milvus token
+      type: string
+      default: "false"
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: milvus secure
+      x-formitem:
+        type: input
+    milvusIsPartition:
+      # title: milvus token
+      type: string
+      default: "true"
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: milvus is partition or not
+      x-formitem:
+        type: input
+    milvusPartitionSuffiix:
+      # title: milvus token
+      type: string
+      default: "1"
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-placeholder: milvus partition suffix
+      x-formitem:
+        type: input
+    ObjectStorage:
+      # title: 对象存储配置
+      type: string
+      default: MinIO
+      description: ""
+      enum:
+        - MinIO
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请选择对象存储类型
+      x-formitem:
+        type: select
+    minioEndpoint:
+      type: string
+      default: "minio-beijing.functions:9000"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请输入MinIO Endpoint
+      x-formitem:
+        type: input
+    minioAccessKey:
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请输入MinIO AccessKey
+      x-formitem:
+        type: input
+    minioSecretKey:
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请输入MinIO SecretKey
+      x-formitem:
+        type: input
+    minioCertCheck:
+      type: string
+      default: "false"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请输入MinIO 是否验证证书
+      x-formitem:
+        type: input
+    minioSchema:
+      type: string
+      default: "false"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请输入MinIO Schema
+      x-formitem:
+        type: input
+    minioSharePoin:
+      type: string
+      default: "minio-beijing.functions:9000"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-placeholder: 请输入MinIO SharePoin
+      x-formitem:
+        type: input
+    CacheDB:
+      # title: 缓存配置
+      type: string
+      default: Redis
+      description: ""
+      enum:
+        - Redis
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请选择缓存系统
+      x-formitem:
+        type: select
+    redisUrl:
+      # title: DifyRedisUserName
+      type: string
+      default: "redis://redis-k8s.functions:6379/1"
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请输入 redis url
+      x-formitem:
+        type: input
+    celeryRedisUrl:
+      # title: DifyRedisUserName
+      type: string
+      default: "redis://redis-k8s.functions:6379/2"
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-placeholder: 请输入 celery redis url
+      x-formitem:
+        type: input
+    DataBase:
+      # title: 数据库配置
+      type: string
+      default: mysql
+      description: ""
+      enum:
+        - mysql
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
+    mysqlUrl:
+      # title: 数据库名 Host
+      type: string
+      default: 127.0.0.1
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-placeholder: 请输入数据库连接地址
+      x-formitem:
+        type: input
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"

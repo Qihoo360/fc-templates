@@ -1,0 +1,173 @@
+edition: 3.0.0
+name: bisheng-app
+access: default
+vars:
+  region: {{region}}
+  bishengOfficeFunctionName: {{bishengOfficeFunctionName}}
+  bishengOfficeDescription: {{bishengOfficeDescription}}
+  bishengBackendFunctionName: {{bishengBackendFunctionName}}
+  bishengBackendDescription: {{bishengBackendDescription}}
+  bishengFrontendFunctionName: {{bishengFrontendFunctionName}}
+  bishengFrontendDescription: {{bishengFrontendDescription}}
+  elasticsearchUrl: {{elasticsearchUrl}}
+  elasticsearchSslVerify: {{elasticsearchSslVerify}}
+  milvusHost: {{milvusHost}}
+  milvusPort: {{milvusPort}}
+  milvusUser: {{milvusUser}}
+  milvusPasswd: {{milvusPasswd}}
+  milvusSecure: {{milvusSecure}}
+  milvusIsPartition: {{milvusIsPartition}}
+  milvusPartitionSuffiix: {{milvusPartitionSuffiix}}
+  minioEndpoint: {{minioEndpoint}}
+  minioAccessKey: {{minioAccessKey}}
+  minioSecretKey: {{minioSecretKey}}
+  minioCertCheck: {{minioCertCheck}}
+  minioSchema: {{minioSchema}}
+  minioSharePoin: {{minioSharePoin}}
+  redisUrl: {{redisUrl}}
+  celeryRedisUrl: {{celeryRedisUrl}}
+  mysqlUrl: {{mysqlUrl}}
+resources:
+  bishengOffice:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.bishengOfficeDescription}
+      runtime: custom
+      memorySize: 8192
+      cpu: 4
+      diskSize: 5120
+      timeout: 100
+      instanceConcurrency: 100
+      port: 80
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.bishengOfficeFunctionName}
+      sourceSubDir: code/bisheng/docker/office
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        TZ: Asia/Shanghai
+        JWT_ENABLED: "false"
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+  bishengBackend:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.bishengBackendDescription}
+      runtime: custom
+      memorySize: 10240
+      cpu: 6
+      diskSize: 5120
+      timeout: 100
+      instanceConcurrency: 100
+      port: 7860
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.bishengBackendFunctionName}
+      sourceSubDir: code/bisheng/src/backend
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        BS_ELASTICSEARCH_SSL_VERIFY: '${vars.elasticsearchSslVerify}'
+        BS_ELASTICSEARCH_URL: ${vars.elasticsearchUrl}
+        BS_MILVUS_CONNECTION_ARGS: '{"host":"${vars.milvusHost}","port":"${vars.milvusPort}","user":"${vars.milvusUser}","password":"${vars.milvusPasswd}","secure":${vars.milvusSecure}}'
+        BS_MILVUS_IS_PARTITION: ${vars.milvusIsPartition}
+        BS_MILVUS_PARTITION_SUFFIX: ${vars.milvusPartitionSuffiix}
+        BS_MINIO_ENDPOINT: ${vars.minioEndpoint}
+        BS_MINIO_ACCESS_KEY: ${vars.minioAccessKey}
+        BS_MINIO_SECRET_KEY: ${vars.minioSecretKey}
+        BS_MINIO_CERT_CHECK: ${vars.minioCertCheck}
+        BS_MINIO_SCHEMA: ${vars.minioSchema}
+        BS_MINIO_SHAREPOIN: ${vars.minioSharePoin}
+        BS_DATABASE_URL: ${vars.mysqlUrl}
+        BS_REDIS_URL: ${vars.redisUrl}
+        BS_CELERY_REDIS_URL: ${vars.celeryRedisUrl}
+        BS_OFFICE_URL: "http://${resources.bishengOffice.output.http_trigger_url}"
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+  bishengFrontend:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.bishengFrontendDescription}
+      runtime: custom
+      memorySize: 10240
+      cpu: 6
+      diskSize: 5120
+      timeout: 100
+      instanceConcurrency: 100
+      port: 3001
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.bishengFrontendFunctionName}
+      sourceSubDir: code/bisheng/src/frontend
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        TZ: Asia/Shanghai
+        BS_BACKEND_URL: "http://${resources.bishengBackend.output.http_trigger_url}"
+        BS_MINIO_ENDPOINT: ${vars.minioEndpoint}
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""

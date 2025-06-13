@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speakr</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</head>
+<body class="bg-[var(--bg-primary)] text-[var(--text-primary)]">
+    <div id="app" class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
+        <header class="flex justify-between items-center mb-6 pb-4 border-b border-[var(--border-primary)]">
+             <h1 class="text-3xl font-bold text-[var(--text-primary)] cursor-pointer flex items-center" @click="switchToGalleryView" title="Go to Gallery">
+                <img src="{{ url_for('static', filename='img/favicon.svg') }}" alt="Speakr Logo" class="h-9 w-9 mr-2">
+                Speakr
+            </h1>
+            <div class="flex items-center space-x-2 lg:space-x-2">
+                <!-- Hamburger Menu for Mobile -->
+                <button @click="toggleMobileMenu" class="lg:hidden p-2 rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] dark:text-gray-400 dark:hover:bg-gray-700 transition-colors duration-200" title="Open Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <!-- Dark Mode Toggle - visible on all sizes -->
+                 <button @click="toggleDarkMode" class="p-2 rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] dark:text-gray-400 dark:hover:bg-gray-700 transition-colors duration-200" :title="isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+                    <i :class="isDarkMode ? 'fas fa-sun' : 'fas fa-moon'"></i>
+                </button>
+                {% if current_user.is_authenticated %}
+                <!-- Add New Recording Button for Mobile Header -->
+                <button @click="switchToUploadView" class="lg:hidden p-2 rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] dark:text-gray-400 dark:hover:bg-gray-700 transition-colors duration-200" title="New Recording">
+                    <i class="fas fa-plus"></i>
+                </button>
+                {% endif %}
+                <!-- Desktop Menu Items - hidden on small screens, shown on lg and up -->
+                <div class="hidden lg:flex items-center space-x-2">
+                {% if current_user.is_authenticated %}
+                <button @click="switchToUploadView" class="px-4 py-2 mr-2 bg-[var(--bg-button)] text-[var(--text-button)] rounded-lg shadow hover:bg-[var(--bg-button-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] focus:ring-offset-2 transition duration-150 ease-in-out">
+                    <i class="fas fa-plus mr-1"></i> New Recording
+                </button>
+                <button
+                    @click="switchToGalleryView"
+                    :class="{
+                        'bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-secondary)]': currentView !== 'gallery',
+                        'bg-[var(--bg-accent)] text-[var(--text-accent)] border border-[var(--border-accent)]': currentView === 'gallery'
+                    }"
+                    class="px-4 py-2 rounded-lg shadow-sm hover:bg-[var(--bg-tertiary)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] focus:ring-offset-1 transition duration-150 ease-in-out">
+                    <i class="fas fa-images mr-1"></i> Gallery
+                </button>
+                <!-- User dropdown menu -->
+                <div class="relative ml-2">
+                    <button @click="isUserMenuOpen = !isUserMenuOpen" class="flex items-center px-3 py-2 border border-[var(--border-secondary)] rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-accent)] focus:outline-none">
+                        <i class="fas fa-user mr-2"></i>
+                        <span>{{ current_user.username }}</span>
+                        <i class="fas fa-chevron-down ml-2"></i>
+                    </button>
+                    <div v-if="isUserMenuOpen" class="absolute right-0 mt-2 w-48 bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-lg shadow-lg z-10">
+                        <a href="{{ url_for('account') }}" class="block px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-accent)]">
+                            <i class="fas fa-user-circle mr-2"></i> Account
+                        </a>
+                        {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin') }}" class="block px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-accent)]">
+                            <i class="fas fa-user-shield mr-2"></i> Admin
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-danger)]">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="px-4 py-2 ml-2 bg-[var(--bg-button)] text-[var(--text-button)] rounded-lg shadow hover:bg-[var(--bg-button-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] focus:ring-offset-2 transition duration-150 ease-in-out">
+                    <i class="fas fa-sign-in-alt mr-1"></i> Login
+                </a>
+                <a href="{{ url_for('register') }}" class="px-4 py-2 ml-2 text-[var(--text-secondary)] hover:text-[var(--text-accent)] border border-[var(--border-secondary)] rounded-lg">
+                    <i class="fas fa-user-plus mr-1"></i> Register
+                </a>
+                {% endif %}
+                </div>
+            </div>
+        </header>
+
+        <!-- Overlay for mobile fly-in menu -->
+        <div v-if="isMobileMenuOpen" @click="closeMobileMenu" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"></div>
+
+        <div v-if="globalError" class="mb-4 p-4 bg-[var(--bg-danger-light)] border border-[var(--border-danger)] text-[var(--text-danger-strong)] rounded-lg" role="alert">
+             <div class="flex justify-between items-center">
+                <div>
+                    <strong class="font-bold">Error:</strong>
+                    <span class="block sm:inline ml-2">${ globalError }</span>
+                </div>
+                <button @click="globalError = null" class="text-[var(--text-danger-strong)] hover:text-[var(--text-danger)] font-bold">&times;</button>
+            </div>
+        </div>
+
+        <!-- Sidebar toggle button will be positioned relative to the main container -->
+
+        <main class="flex-grow"
+             @dragover.prevent="dragover = true"
+             @dragleave.prevent="handleDragLeave"
+             @drop.prevent="handleDrop">
+
+            <div v-if="dragover" class="absolute inset-0 flex items-center justify-center bg-[var(--border-focus)]/20 z-10 rounded-lg pointer-events-none border-4 border-dashed border-[var(--border-focus)]">
+                <div class="text-center p-6 bg-[var(--bg-secondary)] rounded-lg shadow-xl">
+                    <i class="fas fa-upload text-4xl text-[var(--text-accent)] mb-3"></i>
+                    <p class="text-xl font-semibold text-[var(--text-secondary)]">Drop audio file(s) here to upload</p>
+                </div>
+            </div>
+
+            {% if current_user.is_authenticated %}
+            <div v-if="currentView === 'gallery'" class="flex-grow flex flex-col rounded-lg relative">
+                <!-- Sidebar toggle button that appears when sidebar is collapsed - positioned at the left edge of main content, aligned with title -->
+                <button v-if="isSidebarCollapsed && !isMobileScreen"  
+                        @click="toggleSidebar" 
+                        class="absolute -left-3 top-6 z-20 bg-gradient-to-r from-[var(--bg-accent)] to-[var(--bg-secondary)] p-2 pl-1 pr-3 rounded-r-lg shadow-lg text-[var(--text-accent)] hover:text-[var(--text-primary)] hover:shadow-xl transition-all duration-300 transform hover:translate-x-1 border-r border-t border-b border-[var(--border-accent)]"
+                        title="Show Sidebar">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 flex-grow">
+                    <!-- Sidebar: Conditional classes for mobile fly-in and desktop normal -->
+                    <div 
+                        :class="{
+                            'fixed inset-y-0 left-0 z-40 w-4/5 max-w-xs bg-[var(--bg-secondary)] shadow-xl transform transition-transform duration-300 ease-in-out': isMobileScreen,
+                            'translate-x-0': isMobileScreen && isMobileMenuOpen,
+                            '-translate-x-full': isMobileScreen && !isMobileMenuOpen,
+                            'lg:col-span-1 sidebar-container max-h-85vh': !isMobileScreen,
+                            'hidden': isMobileScreen && !isMobileMenuOpen, /* Ensure hidden when not open on mobile */
+                            'block': isMobileScreen && isMobileMenuOpen /* Ensure block when open on mobile */
+                        }"
+                        v-show="isMobileMenuOpen || (!isMobileScreen && !isSidebarCollapsed)"
+                        class="bg-[var(--bg-secondary)] p-4 rounded-lg shadow-md lg:sticky lg:top-6">
+                         <div class="flex justify-between items-center mb-2 sticky top-0 bg-[var(--bg-secondary)] pb-2 border-b border-[var(--border-primary)] sidebar-header">
+                            <h3 class="text-lg font-semibold text-[var(--text-primary)]">Recordings</h3>
+                            <!-- Close button for mobile fly-in, hide button for desktop -->
+                            <button @click="isMobileScreen ? closeMobileMenu() : toggleSidebar()"
+                                    class="p-1 rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-tertiary)] dark:text-gray-400 dark:hover:bg-gray-700 transition-colors duration-200"
+                                    :title="isMobileScreen ? 'Close Menu' : (isSidebarCollapsed ? 'Show Sidebar' : 'Hide Sidebar')">
+                                <i :class="isMobileScreen ? 'fas fa-times' : 'fas fa-chevron-left'"></i>
+                             </button>
+                        </div>
+
+                        <!-- New Recording Button for Mobile Menu (Sidebar) -->
+                        {% if current_user.is_authenticated %}
+                        <button
+                            v-if="isMobileScreen"
+                            @click="switchToUploadView(); closeMobileMenu();"
+                            class="w-full flex items-center justify-center mb-3 px-4 py-2 bg-[var(--bg-button)] text-[var(--text-button)] rounded-lg shadow hover:bg-[var(--bg-button-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] focus:ring-offset-2 transition duration-150 ease-in-out">
+                            <i class="fas fa-plus mr-2"></i> New Recording
+                        </button>
+                        {% endif %}
+
+                        <!-- Search input -->
+                        <div class="relative mb-3 sticky top-12 z-10 bg-[var(--bg-secondary)]">
+                            <div class="flex items-center bg-[var(--bg-tertiary)] rounded-lg border border-[var(--border-primary)] focus-within:border-[var(--border-focus)] focus-within:ring-1 focus-within:ring-[var(--ring-focus)]">
+                                <i class="fas fa-search text-[var(--text-muted)] ml-3 mr-2"></i>
+                                <input 
+                                    v-model="searchQuery" 
+                                    type="text" 
+                                    placeholder="Search recordings..." 
+                                    class="w-full py-2 pr-3 bg-transparent border-0 focus:ring-0 focus:outline-none text-sm text-[var(--text-primary)]"
+                                />
+                                <button 
+                                    v-if="searchQuery" 
+                                    @click="searchQuery = ''" 
+                                    class="text-[var(--text-muted)] hover:text-[var(--text-primary)] mr-3"
+                                >
+                                    <i class="fas fa-times-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                         <div v-if="isLoadingRecordings" class="text-center text-[var(--text-muted)] py-4 sidebar-content">
+                            <i class="fas fa-spinner fa-spin mr-2"></i> Loading recordings...
+                        </div>
+                        <div v-else-if="recordings.length === 0 && uploadQueue.length === 0" class="text-center text-[var(--text-muted)] py-4 flex-grow flex flex-col items-center justify-center sidebar-content">
+                             <i class="fas fa-folder-open text-4xl text-[var(--text-light)] mb-3"></i>
+                            <p>No recordings yet.</p>
+                            <p>Upload one or drag & drop anywhere!</p>
+                        </div>
+                        <div v-else class="space-y-4 custom-scrollbar sidebar-content">
+                            <div v-for="group in groupedRecordings" :key="group.title" class="mb-3">
+                                <h4 class="font-medium text-[var(--text-muted)] text-xs uppercase tracking-wider mb-2 sticky top-0 bg-[var(--bg-secondary)] py-1">${ group.title }</h4>
+                                <ul class="space-y-1">
+                                    <li v-for="recording in group.items"
+                                        :key="recording.id"
+                                        @click="selectRecording(recording); if(isMobileScreen) closeMobileMenu();"
+                                        class="cursor-pointer p-3 rounded-md flex justify-between items-center transition duration-150 ease-in-out"
+                                        :class="{
+                                            'bg-[var(--bg-accent)] hover:bg-[var(--bg-accent-hover)] ring-1 ring-[var(--border-accent)] text-[var(--text-accent)]': selectedRecording?.id === recording.id,
+                                            'hover:bg-[var(--bg-tertiary)] text-[var(--text-primary)]': selectedRecording?.id !== recording.id
+                                        }">
+                                         <div class="flex items-center overflow-hidden mr-2">
+                                            <i class="fas fa-file-audio text-[var(--text-accent)] mr-2 flex-shrink-0"></i>
+                                            <span class="text-sm font-medium truncate" :title="recording.title || 'Loading title...'">${ recording.title || '(Processing...)' }</span>
+                                        </div>
+                                        <div class="flex space-x-2 flex-shrink-0 items-center">
+                                            <span v-if="recording.status === 'PROCESSING'" class="text-xs text-[var(--text-info-strong)] italic flex items-center" title="Transcribing...">
+                                                 <i class="fas fa-spinner fa-spin mr-1"></i> Transcribing
+                                            </span>
+                                             <span v-else-if="recording.status === 'SUMMARIZING'" class="text-xs text-[var(--text-warn-strong)] italic flex items-center" title="Generating Summary...">
+                                                <i class="fas fa-spinner fa-spin mr-1"></i> Summarizing
+                                            </span>
+                                            <span v-else-if="recording.status === 'PENDING'" class="text-xs text-[var(--text-pending-strong)] italic flex items-center" title="Waiting...">
+                                                <i class="fas fa-clock mr-1"></i> Pending
+                                            </span>
+                                            <span v-else-if="recording.status === 'FAILED'" class="text-xs text-[var(--text-danger-strong)] italic flex items-center" title="Processing Failed">
+                                                <i class="fas fa-exclamation-triangle mr-1"></i> Failed
+                                            </span>
+                                            <span v-if="recording.is_inbox" class="text-blue-500 cursor-pointer hover:text-blue-700" title="Mark as Read" @click.stop="toggleInbox(recording)">
+                                                <i class="fas fa-inbox"></i>
+                                            </span>
+                                            <span v-if="recording.is_highlighted" class="text-yellow-500" title="Highlighted">
+                                                <i class="fas fa-star"></i>
+                                            </span>
+                                             <button @click.stop="editRecording(recording)" class="text-[var(--text-muted)] hover:text-[var(--text-accent)] text-xs p-1 rounded hover:bg-[var(--bg-tertiary)]" title="Edit Details">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button @click.stop="confirmDelete(recording)" class="text-[var(--text-muted)] hover:text-[var(--text-danger)] text-xs p-1 rounded hover:bg-[var(--bg-tertiary)]" title="Delete Recording">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div :class="(!isMobileScreen && isSidebarCollapsed) ? 'lg:col-span-4' : 'lg:col-span-3'" class="bg-[var(--bg-secondary)] p-6 rounded-lg shadow-md flex flex-col max-h-85vh main-content-area">
+                        <div v-if="selectedRecording" class="flex-grow flex flex-col">
+                            <div class="flex flex-col sm:flex-row justify-between items-start mb-4 border-b border-[var(--border-primary)] pb-4">
+                                <div class="mb-3 sm:mb-0 max-w-lg">
+                                     <h3 class="text-2xl font-semibold text-[var(--text-primary)] flex items-center">
+                                        <span style="hyphens: auto; overflow-wrap: break-word; min-width: 0;">${ selectedRecording.title || 'Loading...' }</span>
+                                        <span v-if="selectedRecording.is_inbox" class="ml-4 bg-blue-50 text-blue-600 px-1.5 py-1 rounded-md opacity-90 hover:opacity-100 transition-opacity cursor-pointer" title="Mark as Read" @click="toggleInbox(selectedRecording)">
+                                            <i class="fas fa-inbox"></i>
+                                        </span>
+                                        <span v-if="selectedRecording.is_highlighted" class="ml-3 bg-yellow-50 text-yellow-600 px-1.5 py-1 rounded-md opacity-90 hover:opacity-100 transition-opacity" title="Highlighted">
+                                            <i class="fas fa-star"></i>
+                                        </span>
+                                     </h3>
+                                    <p class="text-sm text-[var(--text-muted)] mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                                        <!-- Display Meeting Date with edit functionality -->
+                                        <span class="inline-flex items-center">
+                                            <i class="fas fa-calendar-alt text-[var(--text-accent)] opacity-75 mr-1.5"></i> 
+                                            <span v-if="!editingMeetingDate">
+                                                <span class="font-medium">Meeting:</span> 
+                                                <span @click="toggleEditMeetingDate" class="cursor-pointer hover:text-[var(--text-accent)] hover:underline transition-colors">
+                                                    ${ selectedRecording.meeting_date ? formatDisplayDate(selectedRecording.meeting_date) : 'Click to add' }
+                                                </span>
+                                            </span>
+                                            <span v-else class="inline-flex items-center">
+                                                <input type="date" v-model="selectedRecording.meeting_date" 
+                                                    @blur="saveInlineEdit('meeting_date')" 
+                                                    class="p-0 w-40 bg-transparent border-b border-[var(--border-secondary)] focus:outline-none focus:border-[var(--border-focus)]" />
+                                                <button @click="saveInlineEdit('meeting_date')" class="ml-1 text-xs text-[var(--text-accent)]">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </span>
+                                        </span>
+                                        <span class="inline-flex items-center">
+                                            <i class="fas fa-clock text-[var(--text-accent)] opacity-75 mr-1.5"></i>
+                                            <span class="font-medium">Created:</span> ${ new Date(selectedRecording.created_at).toLocaleString() }
+                                        </span>
+                                        <!-- Status Badge Moved Here -->
+                                        <span v-if="selectedRecording.status !== 'COMPLETED'" :class="getStatusClass(selectedRecording.status)" class="status-badge">
+                                            ${ formatStatus(selectedRecording.status) }
+                                        </span>
+                                    </p>
+                                    <!-- Removed Size from here -->
+                                    <!-- Removed separate Status Badge span -->
+                                </div>
+                                <div class="flex space-x-1.5 flex-shrink-0">
+                                    <button @click="toggleInbox(selectedRecording)" 
+                                            class="p-1.5 rounded-md text-xs transition-all hover:scale-105" 
+                                            :class="selectedRecording.is_inbox ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                                            :title="selectedRecording.is_inbox ? 'Mark as Read' : 'Move to Inbox'">
+                                        <i class="fas fa-inbox"></i>
+                                    </button>
+                                    <button @click="toggleHighlight(selectedRecording)" 
+                                            class="p-1.5 rounded-md text-xs transition-all hover:scale-105"
+                                            :class="selectedRecording.is_highlighted ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                                            :title="selectedRecording.is_highlighted ? 'Remove Highlight' : 'Highlight'">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button @click="editRecording(selectedRecording)" 
+                                            class="p-1.5 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 text-xs transition-all hover:scale-105"
+                                            title="Edit Details">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button @click="confirmDelete(selectedRecording)" 
+                                            class="p-1.5 bg-red-50 text-red-600 rounded-md hover:bg-red-100 text-xs transition-all hover:scale-105"
+                                            title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Main content area with flex layout -->
+                            <div class="flex flex-col md:flex-row gap-6 flex-grow overflow-y-auto" style="max-height: 75vh;">
+                                <!-- Left Column: Participants, Transcription, Summary & Notes -->
+                                <div class="md:w-2/5 content-column left-content">
+                                    <!-- Participants Section -->
+                                    <div class="participants-section">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <h4 class="font-semibold text-[var(--text-secondary)]">Participants</h4>
+                                            <button @click="toggleEditParticipants" class="text-xs text-[var(--text-muted)] hover:text-[var(--text-accent)] p-1 rounded">
+                                                <i class="fas" :class="editingParticipants ? 'fa-check' : 'fa-edit'"></i>
+                                            </button>
+                                        </div>
+                                        <div v-if="!editingParticipants" class="text-sm bg-[var(--bg-tertiary)] p-3 rounded-xl border border-[var(--border-primary)] min-h-[40px] text-[var(--text-secondary)]">${ selectedRecording.participants || 'None specified' }</div>
+                                        <textarea v-else v-model="selectedRecording.participants" @blur="saveInlineEdit('participants')" class="text-sm bg-[var(--bg-tertiary)] p-3 rounded border border-[var(--border-primary)] min-h-[40px] w-full focus:ring-[var(--ring-focus)] focus:border-[var(--border-focus)] text-[var(--text-secondary)]" placeholder="Enter participants"></textarea>
+                                    </div>
+                                    
+                                    <!-- Transcription Section -->
+                                    <div class="transcription-section" :style="{ flex: transcriptionFlex }">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <h4 class="font-semibold text-[var(--text-secondary)]">Transcription</h4>
+                                            <button @click="copyTranscription($event)" class="text-xs text-[var(--text-muted)] hover:text-[var(--text-accent)] p-1 rounded" title="Copy to clipboard">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                        <div class="transcription-box custom-scrollbar relative">
+                                            <div v-if="selectedRecording.status === 'COMPLETED' || selectedRecording.status === 'SUMMARIZING'" class="copyable">
+                                                <pre class="whitespace-pre-wrap font-sans">${ selectedRecording.transcription || 'No transcription available.' }</pre>
+                                            </div>
+                                            <div v-else-if="selectedRecording.status === 'FAILED'" class="text-[var(--text-danger)]">
+                                                <p class="font-medium mb-2">Processing Failed:</p>
+                                                <pre class="whitespace-pre-wrap font-sans">${ selectedRecording.transcription || 'An unknown error occurred.' }</pre>
+                                            </div>
+                                            <div v-else class="flex items-center justify-center text-[var(--text-muted)] h-full">
+                                                <i class="fas fa-spinner fa-spin mr-2"></i> Transcription in progress...
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Resizable Handle -->
+                                    <div 
+                                        class="resize-handle cursor-ns-resize h-2 bg-[var(--border-primary)] hover:bg-[var(--border-accent)] rounded-full my-1 flex items-center justify-center"
+                                        @mousedown="startResize"
+                                        title="Drag to resize">
+                                        <div class="w-10 h-1 bg-[var(--text-light)] rounded-full"></div>
+                                    </div>
+                                    
+                                    <!-- Tabs Section -->
+                                    <div class="tab-section" :style="{ flex: tabsFlex }">
+                                        <div class="border-b border-[var(--border-primary)]">
+                                            <nav class="-mb-px flex space-x-4" aria-label="Tabs">
+                                                <button @click="selectedTab = 'summary'" 
+                                                        :class="selectedTab === 'summary' ? 'border-[var(--border-focus)] text-[var(--text-accent)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:border-[var(--border-secondary)]'"
+                                                        class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                                                    Summary
+                                                </button>
+                                                <button @click="selectedTab = 'notes'" 
+                                                        :class="selectedTab === 'notes' ? 'border-[var(--border-focus)] text-[var(--text-accent)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:border-[var(--border-secondary)]'"
+                                                        class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                                                    Notes
+                                                </button>
+                                                <button @click="selectedTab = 'metadata'" 
+                                                        :class="selectedTab === 'metadata' ? 'border-[var(--border-focus)] text-[var(--text-accent)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:border-[var(--border-secondary)]'"
+                                                        class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                                                    Metadata
+                                                </button>
+                                            </nav>
+                                        </div>
+                                        <div class="pt-4 flex-grow flex flex-col min-h-0"> 
+                                            <!-- Summary Panel -->
+                                            <div v-show="selectedTab === 'summary'" class="h-full">
+                                                <div v-if="selectedRecording.status === 'COMPLETED'" class="h-full">
+                                                    <div v-if="!editingSummary" class="content-box h-full flex flex-col min-h-0"> 
+                                                        <div class="summary-box custom-scrollbar bg-[var(--bg-tertiary)] border-[var(--border-primary)] text-[var(--text-secondary)]" v-html="selectedRecording.summary_html || selectedRecording.summary || 'No summary generated.'">
+                                                        </div>
+                                                        <button @click="toggleEditSummary" class="hover-edit-btn text-[var(--text-muted)] hover:text-[var(--text-accent)]" title="Edit Summary">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                    </div>
+                                                    <textarea v-else v-model="selectedRecording.summary" @blur="saveInlineEdit('summary')" class="summary-box custom-scrollbar bg-[var(--bg-tertiary)] border-[var(--border-primary)] text-[var(--text-secondary)] w-full focus:ring-[var(--ring-focus)] focus:border-[var(--border-focus)] tab-content-box" placeholder="Enter summary"></textarea>
+                                                </div>
+                                                <div v-else-if="selectedRecording.status === 'FAILED'" class="summary-box text-[var(--text-danger)] custom-scrollbar bg-[var(--bg-tertiary)] border-[var(--border-primary)] tab-content-box" v-html="selectedRecording.summary_html || selectedRecording.summary || 'Summary generation failed or was skipped.'">
+                                                </div>
+                                                <div v-else class="h-24 flex items-center justify-center p-4 bg-[var(--bg-tertiary)] rounded border border-[var(--border-primary)] text-[var(--text-muted)]">
+                                                    <i class="fas fa-spinner fa-spin mr-2"></i> Summary pending...
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Notes Panel -->
+                                            <div v-show="selectedTab === 'notes'" class="h-full">
+                                                <div v-if="!editingNotes" class="content-box h-full flex flex-col min-h-0">
+                                                    <div class="notes-box custom-scrollbar" v-html="selectedRecording.notes_html || selectedRecording.notes || 'No notes'"></div>
+                                                    <button @click="toggleEditNotes" class="hover-edit-btn text-[var(--text-muted)] hover:text-[var(--text-accent)]" title="Edit Notes">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </div>
+                                                <textarea v-else v-model="selectedRecording.notes" @blur="saveInlineEdit('notes')" class="notes-box custom-scrollbar w-full focus:ring-[var(--ring-focus)] focus:border-[var(--border-focus)] tab-content-box flex-1 height-100" placeholder="Enter notes"></textarea>
+                                            </div>
+                                            
+                                            <!-- Metadata Panel (in separate tab) -->
+                                            <div v-show="selectedTab === 'metadata'" class="h-full">
+                                                <div class="metadata-panel custom-scrollbar tab-content-box">
+                                                    <dl>
+                                                        <div v-if="selectedRecording.original_filename">
+                                                            <dt>Original Filename</dt>
+                                                            <dd>${ selectedRecording.original_filename }</dd>
+                                                        </div>
+                                                        <div>
+                                                            <dt>File Size</dt>
+                                                            <dd>${ formatFileSize(selectedRecording.file_size) }</dd>
+                                                        </div>
+                                                    </dl>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column: Audio & Chat -->
+                                <div class="md:w-3/5 content-column right-content">
+                                    <!-- Audio Player Section -->
+                                    <div class="audio-section">
+                                        <h4 class="font-semibold text-[var(--text-secondary)] mb-2">Audio Player</h4>
+                                        <div class="bg-[var(--bg-audio-player)] p-3 rounded-lg shadow border border-[var(--border-primary)]">
+                                            <audio controls class="w-full h-10" :key="selectedRecording.id" :src="'/audio/' + selectedRecording.id">
+                                                Your browser does not support the audio element.
+                                            </audio>
+                                        </div>
+                                    </div>
+
+                                    <!-- Chat Section -->
+                                    <div class="chat-section">
+                                        <h4 class="font-semibold text-[var(--text-secondary)] mb-2 flex-shrink-0">Chat with Transcript</h4>
+                                        <div class="chat-container border-[var(--border-primary)] bg-[var(--bg-secondary)] h-full"> 
+                                            <div class="chat-messages custom-scrollbar" ref="chatMessagesRef">
+                                                <div v-if="chatMessages.length === 0" class="flex items-center justify-center h-full text-[var(--text-muted)]">
+                                                    <div class="text-center">
+                                                        <i class="fas fa-comments text-2xl mb-2"></i>
+                                                        <p>Ask questions about the transcript</p>
+                                                    </div>
+                                                </div>
+                                                <div v-for="(message, index) in chatMessages" :key="index" class="message" :class="message.role === 'user' ? 'user-message bg-[var(--bg-accent)] text-[var(--text-accent)]' : 'ai-message bg-[var(--bg-tertiary)] text-[var(--text-secondary)]'">
+                                                    <div class="flex justify-between items-start">
+                                                        <div class="flex-grow" v-if="message.role === 'user'">${ message.content }</div>
+                                                        <div class="flex-grow" v-else v-html="message.html || message.content"></div>
+                                                        <button v-if="message.role === 'assistant'" @click="copyMessage(message.content, $event)" class="ml-2 text-[var(--text-light)] hover:text-[var(--text-muted)]" title="Copy response">
+                                                            <i class="fas fa-copy text-xs"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div v-if="isChatLoading" class="message ai-message bg-[var(--bg-tertiary)] text-[var(--text-secondary)]">
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-spinner fa-spin mr-2"></i> Thinking...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="chat-input-container border-t-[var(--border-primary)]">
+                                                <input 
+                                                    v-model="chatInput" 
+                                                    @keyup.enter="sendChatMessage"
+                                                    type="text" 
+                                                    placeholder="Ask about the transcript..." 
+                                                    class="flex-grow px-3 py-2 border-0 focus:ring-0 focus:outline-none bg-[var(--bg-input)] text-[var(--text-primary)] placeholder-[var(--text-muted)]"
+                                                    :disabled="isChatLoading || !selectedRecording || selectedRecording.status !== 'COMPLETED'"
+                                                >
+                                                <button 
+                                                    @click="sendChatMessage" 
+                                                    class="px-4 py-2 bg-[var(--bg-button)] text-[var(--text-button)] rounded-md hover:bg-[var(--bg-button-hover)] disabled:bg-[var(--bg-tertiary)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed"
+                                                    :disabled="!chatInput.trim() || isChatLoading || !selectedRecording || selectedRecording.status !== 'COMPLETED'"
+                                                >
+                                                    <i class="fas fa-paper-plane"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class="flex flex-col items-center justify-center text-center text-[var(--text-muted)] flex-grow">
+                             <i class="fas fa-hand-pointer text-4xl text-[var(--text-light)] mb-4"></i>
+                            <p class="text-lg font-medium mb-2">Select a recording from the list to view details.</p>
+                            <p>Or, drag and drop audio file(s) anywhere on this page to upload.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <div v-if="currentView === 'upload'"
+                 class="flex-grow flex items-center justify-center p-4">
+                 <div class="w-full max-w-lg bg-[var(--bg-secondary)] p-8 rounded-xl shadow-lg border border-[var(--border-primary)] text-center drag-area"
+                     :class="{'border-[var(--border-focus)] bg-[var(--bg-accent)]': dragover}">
+                    <div class="py-8">
+                        <i class="fas fa-cloud-upload-alt text-5xl mb-5 text-[var(--text-accent)]"></i>
+                         <h2 class="text-xl font-semibold text-[var(--text-secondary)] mb-2">Upload New Recordings</h2>
+                        <p class="text-[var(--text-muted)] mb-4">Drag & drop your audio files here or click below.</p>
+                         <input type="file" @change="handleFileSelect" accept="audio/*" class="hidden" ref="fileInput" multiple>
+                        <div class="flex flex-col sm:flex-row sm:justify-center sm:items-center mt-4 space-y-3 sm:space-y-0 sm:space-x-3">
+                            <template v-if="!isRecording">
+                                <button @click="$refs.fileInput.click()" class="w-full sm:w-auto px-6 py-3 bg-[var(--bg-button)] text-[var(--text-button)] rounded-lg hover:bg-[var(--bg-button-hover)] shadow-sm transition duration-150 ease-in-out flex items-center justify-center">
+                                    <i class="fas fa-file-import mr-2"></i> Select Files
+                                </button>
+                                <!-- New Record Audio Button -->
+                                <button @click="startRecording" v-if="canRecordAudio" class="w-full sm:w-auto px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 shadow-sm transition duration-150 ease-in-out flex items-center justify-center">
+                                    <i class="fas fa-microphone mr-2"></i> Record Audio
+                                </button>
+                            </template>
+                            <button @click="stopRecording" v-if="isRecording" class="w-full sm:w-auto px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 shadow-sm transition duration-150 ease-in-out flex items-center justify-center">
+                                <i class="fas fa-stop mr-2"></i> Stop Recording
+                            </button>
+                        </div>
+                        <div v-if="isRecording" class="mt-3 text-[var(--text-muted)]">
+                            <i class="fas fa-circle text-red-500 fa-xs blink mr-1"></i> Recording: ${ formatTime(recordingTime) }
+                        </div>
+                        <div v-if="audioBlobURL" class="mt-4 p-4 border border-[var(--border-primary)] rounded-lg bg-[var(--bg-tertiary)]">
+                            <p class="text-sm text-[var(--text-secondary)] mb-2 font-medium">Preview your recording:</p>
+                            <audio :src="audioBlobURL" controls class="w-full rounded"></audio>
+                            <div class="mt-3 flex flex-col sm:flex-row sm:justify-center sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                                <button @click="uploadRecordedAudio" class="w-full sm:w-auto px-4 py-2 bg-[var(--bg-button)] text-[var(--text-button)] rounded-lg hover:bg-[var(--bg-button-hover)]">
+                                    <i class="fas fa-upload mr-1"></i> Upload Recording
+                                </button>
+                                <button @click="discardRecording" class="w-full sm:w-auto px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500">
+                                    <i class="fas fa-trash mr-1"></i> Discard
+                                </button>
+                            </div>
+                        </div>
+                        <p v-if="!canRecordAudio && currentView === 'upload' && !isRecording && !audioBlobURL" class="mt-4 text-sm text-[var(--text-muted)]">
+                            Audio recording may not be supported or permission is denied.
+                        </p>
+                         <p class="text-xs text-[var(--text-light)] mt-6">Max file size per file: ${ maxFileSizeMB } MB</p>
+                    </div>
+                </div>
+            </div>
+
+            {% else %}
+            <div class="flex-grow flex items-center justify-center">
+                <div class="text-center max-w-lg p-8 bg-[var(--bg-secondary)] rounded-xl shadow-lg border border-[var(--border-primary)]">
+                    <i class="fas fa-lock text-5xl mb-4 text-[var(--text-accent)]"></i>
+                    <h2 class="text-2xl font-semibold text-[var(--text-primary)] mb-4">Welcome to Speakr</h2>
+                    <p class="text-[var(--text-secondary)] mb-6">
+                        Speakr is an audio transcription and summarization app that helps you convert your audio recordings into text and generate summaries.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+                        <a href="{{ url_for('login') }}" class="px-6 py-2 bg-[var(--bg-button)] text-[var(--text-button)] rounded-lg shadow hover:bg-[var(--bg-button-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)] focus:ring-offset-2 transition duration-150 ease-in-out">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Login
+                        </a>
+                        <a href="{{ url_for('register') }}" class="px-6 py-2 text-[var(--text-secondary)] hover:text-[var(--text-accent)] border border-[var(--border-secondary)] rounded-lg">
+                            <i class="fas fa-user-plus mr-2"></i> Register
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            </main>
+
+        <footer class="text-center py-4 mt-8 text-xs text-[var(--text-light)] border-t border-[var(--border-primary)]">
+            Speakr &copy; ${ new Date().getFullYear() }
+        </footer>
+
+         <div v-if="showEditModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 backdrop-blur-sm transition-all duration-300 ease-in-out">
+             <div class="bg-[var(--bg-secondary)] rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden transform transition-all duration-300 ease-in-out">
+                <!-- Header with gradient background -->
+                <div class="bg-gradient-to-r from-[var(--bg-accent)] to-[var(--bg-secondary)] p-5 flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-[var(--text-primary)] flex items-center">
+                        <i class="fas fa-edit mr-2 text-[var(--text-accent)]"></i>
+                        Edit Recording Details
+                    </h3>
+                    <button @click="cancelEdit" class="text-[var(--text-light)] hover:text-[var(--text-primary)] transition-colors duration-200 rounded-full h-8 w-8 flex items-center justify-center hover:bg-[var(--bg-tertiary)]">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <!-- Form content with custom scrollbar -->
+                <div class="p-6 overflow-y-auto custom-scrollbar" style="max-height: calc(90vh - 70px);">
+                    <div v-if="editingRecording" class="space-y-5">
+                        <!-- Title field with icon -->
+                        <div class="form-group">
+                            <label class="flex items-center text-sm font-medium text-[var(--text-secondary)] mb-1.5">
+                                <i class="fas fa-heading text-[var(--text-accent)] mr-2"></i>
+                                Title
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    v-model="editingRecording.title" 
+                                    class="pl-3 pr-3 py-2.5 block w-full rounded-lg border border-[var(--border-secondary)] shadow-sm focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--ring-focus)] focus:ring-opacity-30 bg-[var(--bg-input)] text-[var(--text-primary)] transition-all duration-200"
+                                    placeholder="Enter recording title">
+                            </div>
+                        </div>
+                        
+                        <!-- Participants field with icon -->
+                        <div class="form-group">
+                            <label class="flex items-center text-sm font-medium text-[var(--text-secondary)] mb-1.5">
+                                <i class="fas fa-users text-[var(--text-accent)] mr-2"></i>
+                                Participants
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    v-model="editingRecording.participants" 
+                                    class="pl-3 pr-3 py-2.5 block w-full rounded-lg border border-[var(--border-secondary)] shadow-sm focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--ring-focus)] focus:ring-opacity-30 bg-[var(--bg-input)] text-[var(--text-primary)] transition-all duration-200"
+                                    placeholder="Enter participant names">
+                            </div>
+                        </div>
+                        
+                        <!-- Meeting Date field with icon -->
+                        <div class="form-group">
+                            <label class="flex items-center text-sm font-medium text-[var(--text-secondary)] mb-1.5">
+                                <i class="fas fa-calendar-alt text-[var(--text-accent)] mr-2"></i>
+                                Meeting Date
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="date" 
+                                    v-model="editingRecording.meeting_date" 
+                                    class="pl-3 pr-3 py-2.5 block w-full rounded-lg border border-[var(--border-secondary)] shadow-sm focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--ring-focus)] focus:ring-opacity-30 bg-[var(--bg-input)] text-[var(--text-primary)] transition-all duration-200">
+                            </div>
+                        </div>
+                        
+                        <!-- Divider -->
+                        <div class="relative py-3">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-[var(--border-primary)]"></div>
+                            </div>
+                            <div class="relative flex justify-center">
+                                <span class="bg-[var(--bg-secondary)] px-4 text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">Content</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Summary field with icon -->
+                        <div class="form-group">
+                            <label class="flex items-center text-sm font-medium text-[var(--text-secondary)] mb-1.5">
+                                <i class="fas fa-file-alt text-[var(--text-accent)] mr-2"></i>
+                                Summary
+                            </label>
+                            <div class="relative">
+                                <textarea 
+                                    v-model="editingRecording.summary" 
+                                    class="pl-3 pr-3 py-2.5 block w-full rounded-lg border border-[var(--border-secondary)] shadow-sm focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--ring-focus)] focus:ring-opacity-30 bg-[var(--bg-input)] text-[var(--text-primary)] transition-all duration-200" 
+                                    rows="5"
+                                    placeholder="Enter summary of the recording"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Notes field with icon -->
+                        <div class="form-group">
+                            <label class="flex items-center text-sm font-medium text-[var(--text-secondary)] mb-1.5">
+                                <i class="fas fa-sticky-note text-[var(--text-accent)] mr-2"></i>
+                                Notes
+                            </label>
+                            <div class="relative">
+                                <textarea 
+                                    v-model="editingRecording.notes" 
+                                    class="pl-3 pr-3 py-2.5 block w-full rounded-lg border border-[var(--border-secondary)] shadow-sm focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--ring-focus)] focus:ring-opacity-30 bg-[var(--bg-input)] text-[var(--text-primary)] transition-all duration-200" 
+                                    rows="4"
+                                    placeholder="Enter additional notes"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer with action buttons -->
+                <div class="bg-[var(--bg-tertiary)] px-6 py-4 flex justify-end space-x-3 border-t border-[var(--border-primary)]">
+                    <button 
+                        @click="cancelEdit" 
+                        class="px-4 py-2 bg-[var(--bg-secondary)] text-[var(--text-secondary)] rounded-lg border border-[var(--border-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors duration-200 flex items-center shadow-sm">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancel
+                    </button>
+                    <button 
+                        @click="saveEdit" 
+                        class="px-4 py-2 bg-[var(--bg-button)] text-[var(--text-button)] rounded-lg hover:bg-[var(--bg-button-hover)] transition-colors duration-200 flex items-center shadow-sm">
+                        <i class="fas fa-save mr-2"></i>
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+             <div class="bg-[var(--bg-secondary)] p-6 rounded-lg shadow-xl max-w-md w-full">
+                <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-4">Confirm Delete</h3>
+                 <p v-if="recordingToDelete" class="mb-2 text-[var(--text-secondary)]">Are you sure you want to permanently delete the recording titled "<strong>${ recordingToDelete.title }</strong>"?</p>
+                <p class="text-sm text-[var(--text-danger)] mb-6">This action cannot be undone and will delete the record, transcription, summary, and the audio file.</p>
+                <div class="flex justify-end space-x-3">
+                    <button @click="cancelDelete" class="px-4 py-2 bg-[var(--bg-tertiary)] text-[var(--text-secondary)] rounded-md hover:bg-[var(--border-secondary)]">Cancel</button>
+                    <button @click="deleteRecording" class="px-4 py-2 bg-[var(--bg-danger)] text-[var(--text-button)] rounded-md hover:bg-[var(--bg-danger-hover)]">Delete Permanently</button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="(uploadQueue.length > 0 || currentlyProcessingFile) && !progressPopupClosed"
+             class="progress-popup bg-[var(--bg-secondary)] rounded-lg shadow-xl border border-[var(--border-primary)] overflow-hidden"
+             :class="{ 'minimized': progressPopupMinimized }">
+
+            <div class="flex justify-between items-center p-2 bg-[var(--bg-tertiary)] border-b border-[var(--border-primary)]">
+                <h4 class="text-sm font-semibold text-[var(--text-secondary)] cursor-pointer" @click="progressPopupMinimized = !progressPopupMinimized">
+                    <i class="fas fa-upload mr-2 text-[var(--text-accent)]"></i>
+                    Upload & Process Progress (${ completedInQueue }/${ totalInQueue } completed)
+                </h4>
+                <div class="flex items-center">
+                    <button class="text-[var(--text-muted)] hover:text-[var(--text-secondary)] mr-2" @click="progressPopupMinimized = !progressPopupMinimized">
+                        <i :class="progressPopupMinimized ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas fa-fw"></i>
+                    </button>
+                    <button class="text-[var(--text-muted)] hover:text-[var(--text-danger)]" @click="progressPopupClosed = true" title="Close">
+                        <i class="fas fa-times fa-fw"></i>
+                    </button>
+                </div>
+            </div>
+
+             <div class="p-3 max-h-60 overflow-y-auto custom-scrollbar" v-show="!progressPopupMinimized">
+                 <div v-if="currentlyProcessingFile" class="mb-3 pb-3 border-b border-dashed border-[var(--border-secondary)]">
+                    <div class="flex items-center justify-between mb-1">
+                        <p class="text-xs font-medium text-[var(--text-primary)] truncate mr-2" :title="currentlyProcessingFile.file.name">
+                            <i class="fas fa-spinner fa-spin text-[var(--text-accent)] mr-1"></i> Processing: ${ currentlyProcessingFile.file.name }
+                        </p>
+                        <span class="text-xs text-[var(--text-muted)] flex-shrink-0">${ formatFileSize(currentlyProcessingFile.file.size) }</span>
+                    </div>
+                     <p class="text-xs text-[var(--text-secondary)] mb-1 italic">${ processingMessage }</p>
+                    <div class="w-full bg-[var(--border-primary)] rounded-full h-1.5">
+                         <div class="bg-[var(--text-accent)] h-1.5 rounded-full transition-all duration-300" :style="{ width: processingProgress + '%' }"></div>
+                    </div>
+                </div>
+
+                 <div v-if="queuedFiles.length > 0" class="mb-2">
+                    <p class="text-xs font-semibold text-[var(--text-muted)] mb-1">${ queuedFiles.length } file(s) queued:</p>
+                    <ul class="space-y-1">
+                        <li v-for="item in queuedFiles" :key="item.clientId" class="text-xs text-[var(--text-secondary)] progress-list-item">
+                            <i class="fas fa-clock text-[var(--text-light)] fa-fw"></i>
+                            <span class="truncate" :title="item.file.name">${ item.file.name }</span>
+                            <span class="text-[var(--text-light)] flex-shrink-0">${ formatFileSize(item.file.size) }</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div v-if="finishedFilesInQueue.length > 0" class="mt-2 pt-2 border-t border-dashed border-[var(--border-secondary)]">
+                    <p class="text-xs font-semibold text-[var(--text-muted)] mb-1">Recently finished:</p>
+                    <ul class="space-y-1">
+                         <li v-for="item in finishedFilesInQueue.slice(-5)" :key="item.clientId" class="text-xs progress-list-item">
+                             <i v-if="item.status === 'completed'" class="fas fa-check-circle text-[var(--text-success-strong)] fa-fw"></i>
+                            <i v-else-if="item.status === 'failed'" class="fas fa-exclamation-triangle text-[var(--text-danger-strong)] fa-fw"></i>
+                             <i v-else class="fas fa-question-circle text-[var(--text-light)] fa-fw"></i>
+                            <span class="truncate text-[var(--text-secondary)]" :title="item.file.name">${ item.file.name }</span>
+                             <span v-if="item.status === 'failed'" class="text-[var(--text-danger)] text-xs italic flex-shrink-0">Failed</span>
+                            <span v-else class="text-[var(--text-light)] flex-shrink-0">${ formatFileSize(item.file.size) }</span>
+                        </li>
+                    </ul>
+                </div>
+
+                 <div v-if="uploadQueue.length > 0 && queuedFiles.length === 0 && !currentlyProcessingFile" class="text-xs text-center text-[var(--text-muted)] py-2">
+                    All uploads processed.
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <!-- Toast container for notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- App.js is already included in the head section -->
+</body>
+</html>
