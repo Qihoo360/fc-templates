@@ -1,33 +1,36 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
 Edition: 3.0.0
 Type: Project
 Name: fastgpt
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 这是一个开箱即用的 AI 知识库平台应用（FastGPT）示例。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/file-processor/fastgpt
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: 文件处理
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - sandboxFunctionName
-    - sandboxDescription
-    - functionName
-    - description
-    - oneapiUrl
-    - chatApiKey
-    - DataBase
-    - mongodbUrl
-    - VectorDB
-    - milvusAddress
-    - milvusToken
+  required:
+  # 必填项
+  - region
+  - sandboxFunctionName
+  - sandboxDescription
+  - functionName
+  - description
+  - oneapiUrl
+  - chatApiKey
+  - DataBase
+  - mongodbUrl
+  - VectorDB
+  - milvusAddress
+  - milvusToken
   properties:
     region:
       title: 地域
@@ -35,12 +38,12 @@ Parameters:
       default: test-3
       description: 创建应用所在的地区
       enum:
-        - test-2
-        - test-3
-        - test-4
-        - test-5
-        - test-6
-        - beijing
+      - test-2
+      - test-3
+      - test-4
+      - test-5
+      - test-6
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -112,9 +115,10 @@ Parameters:
       default: mongodb
       description: ""
       enum:
-        - mongodb
+      - mongodb
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mongodb
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
@@ -126,6 +130,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mongodb
       x-placeholder: mongo 数据库连接参数
       x-formitem:
         type: input
@@ -135,9 +140,10 @@ Parameters:
       default: milvus
       description: ""
       enum:
-        - milvus
+      - milvus
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: 请选择向量数据库类型
       x-formitem:
         type: select
@@ -149,6 +155,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: milvus 向量库连接参数
       x-formitem:
         type: input
@@ -160,6 +167,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
+      x-restype: milvus
       x-placeholder: milvus token
       x-formitem:
         type: input

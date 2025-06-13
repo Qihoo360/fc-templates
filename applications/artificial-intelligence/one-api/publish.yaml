@@ -1,32 +1,35 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
 Edition: 3.0.0
 Type: Project
 Effective: Public
 Name: one-api-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 这是一个支持访问所有大模型的统一 OneAPI 示例。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/one-api
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - FunctionName
-    - DataBase
-    - SQL_DSN
-    - SYNC_FREQUENCY
-    - CacheDB
-    - SESSION_SECRET
+  required:
+  # 必填项
+  - region
+  - FunctionName
+  - DataBase
+  - SQL_DSN
+  - SYNC_FREQUENCY
+  - CacheDB
+  - SESSION_SECRET
   properties:
     region:
       title: 地域
@@ -34,12 +37,12 @@ Parameters:
       default: test-3
       description: 创建应用所在的地区
       enum:
-        - test-2
-        - test-3
-        - test-4
-        - test-5
-        - test-6
-        - beijing
+      - test-2
+      - test-3
+      - test-4
+      - test-5
+      - test-6
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -69,9 +72,10 @@ Parameters:
       default: mysql
       description: ""
       enum:
-        - mysql
+      - mysql
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
@@ -82,6 +86,7 @@ Parameters:
       description: "例如：user:secret@host:port/database"
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库地址
       x-formitem:
         type: input
@@ -91,9 +96,10 @@ Parameters:
       default: Redis
       description: ""
       enum:
-        - Redis
+      - Redis
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
@@ -104,6 +110,7 @@ Parameters:
       description: "例如：redis://default:redispw@localhost:49153"
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请输入缓存地址
       x-formitem:
         type: input

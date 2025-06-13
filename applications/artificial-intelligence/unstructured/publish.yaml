@@ -1,28 +1,30 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
 Edition: 3.0.0
 Type: Project
 Effective: Public
 Name: unstructured-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 该示例通过 Unstructured-API 提取文档结构化信息。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/unstructured
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - FunctionName
-    - SQL_DSN
+  required:
+  # 必填项
+  - region
+  - FunctionName
+  - SQL_DSN
   properties:
     region:
       title: 地域
@@ -30,12 +32,12 @@ Parameters:
       default: test-3
       description: 创建应用所在的地区
       enum:
-        - test-2
-        - test-3
-        - test-4
-        - test-5
-        - test-6
-        - beijing
+      - test-2
+      - test-3
+      - test-4
+      - test-5
+      - test-6
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select

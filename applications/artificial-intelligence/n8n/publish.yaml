@@ -2,25 +2,26 @@ Edition: 3.0.0
 Type: Project
 Name: n8n
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 这是一个创建 n8n 工作流自动化平台的示例,n8n 让您能够构建强大的自动化流程，同时完全控制您的数据和部署。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/n8n
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: 人工智能
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - functionName
-    - polefsVolume
-    - mountDir
-    - polefsVolumeCreateUser
+  required:
+  # 必填项
+  - region
+  - functionName
+  - polefsVolume
+  - mountDir
+  - polefsVolumeCreateUser
   properties:
     region:
       title: 地域
@@ -29,14 +30,14 @@ Parameters:
       description: 创建应用所在的地区
       x-cate: resourceCate
       enum:
-        - test-2
-        - test-3
-        - test-4
-        - test-5
-        - test-6
-        - beijing
+      - test-2
+      - test-3
+      - test-4
+      - test-5
+      - test-6
+      - beijing
       x-reaction-properties:
-        - polefsVolume
+      - polefsVolume
       x-formitem:
         type: select
     functionName:
