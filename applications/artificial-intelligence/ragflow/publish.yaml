@@ -1,43 +1,45 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
 Edition: 3.0.0
 Type: Project
 Name: ragflow
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 该示例通过 RagFlow 实现基于深度理解的文档问答。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/ragflow
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: 人工智能
 Parameters:
   type: object
   additionalProperties: false
   required:
-    - region
-    - functionName
-    - DataBase
-    - mysqlHost
-    - mysqlDatabaseName
-    - mysqlDatabasePort
-    - mysqlUserName
-    - mysqlPassword
-    - LogStorage
-    - elasticHost
-    - elasticPort
-    - elasticUserName
-    - elasticPassword
-    - minioHost
-    - minioConsolePort
-    - minioUserName
-    - minioPassword
-    - CacheDB
-    - redisHost
-    - redisPort
-    - redisPassword
-    - redisDB
+  - region
+  - functionName
+  - DataBase
+  - mysqlHost
+  - mysqlDatabaseName
+  - mysqlDatabasePort
+  - mysqlUserName
+  - mysqlPassword
+  - LogStorage
+  - elasticHost
+  - elasticPort
+  - elasticUserName
+  - elasticPassword
+  - minioHost
+  - minioConsolePort
+  - minioUserName
+  - minioPassword
+  - CacheDB
+  - redisHost
+  - redisPort
+  - redisPassword
+  - redisDB
   properties:
     region:
       title: 地域
@@ -75,9 +77,10 @@ Parameters:
       default: mysql
       description: ""
       enum:
-        - mysql
+      - mysql
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
@@ -88,6 +91,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库主机地址
       x-formitem:
         type: input
@@ -98,6 +102,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库名
       x-formitem:
         type: input
@@ -109,6 +114,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库端口
       x-formitem:
         type: input
@@ -119,6 +125,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库用户名
       x-formitem:
         type: input
@@ -129,6 +136,7 @@ Parameters:
       default: "123456"
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库密码
       x-formitem:
         type: input
@@ -138,9 +146,10 @@ Parameters:
       default: Elasticsearch
       description: ""
       enum:
-        - Elasticsearch
+      - Elasticsearch
       x-cate: applicationCate
       x-label: 日志配置
+      x-restype: elasticsearch
       x-placeholder: 请选择日志存储类型
       x-formitem:
         type: select
@@ -151,6 +160,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 日志配置
+      x-restype: elasticsearch
       x-placeholder: 请输入日志系统主机地址
       x-formitem:
         type: input
@@ -162,6 +172,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 日志配置
+      x-restype: elasticsearch
       x-placeholder: 请输入日志系统端口
       x-formitem:
         type: input
@@ -173,6 +184,7 @@ Parameters:
       x-cate: applicationCate
       x-placeholder: 请输入日志系统用户名
       x-label: 日志配置
+      x-restype: elasticsearch
       x-formitem:
         type: input
     elasticPassword:
@@ -182,6 +194,7 @@ Parameters:
       default: "123456"
       x-cate: applicationCate
       x-label: 日志配置
+      x-restype: elasticsearch
       x-placeholder: 请输入日志系统密码
       x-formitem:
         type: input
@@ -191,6 +204,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: MinIO配置
+      x-restype: minio
       x-placeholder: 请输入MinIO数据库主机地址
       x-formitem:
         type: input
@@ -202,6 +216,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: MinIO配置
+      x-restype: minio
       x-placeholder: 请输入MinIO数据库主机端口
       x-formitem:
         type: input
@@ -212,6 +227,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: MinIO配置
+      x-restype: minio
       x-placeholder: 请输入MinIO数据库用户名
       x-formitem:
         type: input
@@ -222,6 +238,7 @@ Parameters:
       default: "123456"
       x-cate: applicationCate
       x-label: MinIO配置
+      x-restype: minio
       x-placeholder: 请输入MinIO数据库密码
       x-formitem:
         type: input
@@ -231,9 +248,10 @@ Parameters:
       default: Redis
       description: ""
       enum:
-        - Redis
+      - Redis
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: minio
       x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
@@ -243,6 +261,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: minio
       x-placeholder: 请输入Redis主机地址
       x-formitem:
         type: input
@@ -253,6 +272,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: minio
       x-placeholder: 请输入Redis主机端口
       x-formitem:
         type: input
@@ -263,6 +283,7 @@ Parameters:
       default: "123456"
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: minio
       x-placeholder: 请输入Redis密码
       x-formitem:
         type: input
@@ -273,6 +294,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
+      x-restype: minio
       x-placeholder: 请输入Redis数据库
       x-formitem:
         type: input

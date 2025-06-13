@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
 Edition: 3.0.0
 Type: Project
 Name: speakr
@@ -82,7 +83,7 @@ Parameters:
       # title: api key
       type: secret
       default: "12345678"
-      pattern: "\w{8,}"
+      pattern: "^.*{8,255}$"
       description: ""
       x-cate: applicationCate
       x-label: admin配置

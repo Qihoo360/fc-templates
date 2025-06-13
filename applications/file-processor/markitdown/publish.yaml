@@ -3,31 +3,31 @@ Type: Project
 Effective: Public
 Name: fc-zyun-markitdown
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 该示例通过 MarkItDown 将多种文件转换为 Markdown。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/file-processor/markitdown
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: 文件处理
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false
   required:
-    - region
-    - functionName
-    - ObjectStorage
-    - accessKey
-    - secretKey
-    - bucketName
-    - bucketRegion
-    - bucketEndpoint
+  - region
+  - functionName
+  - ObjectStorage
+  - accessKey
+  - secretKey
+  - bucketName
+  - bucketRegion
+  - bucketEndpoint
   properties:
     region:
       title: 地域
@@ -65,9 +65,10 @@ Parameters:
       default: AwsS3
       description: ""
       enum:
-        - AwsS3
+      - AwsS3
       x-cate: applicationCate
       x-label: obsLabel
+      x-restype: s3
       x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
@@ -78,6 +79,7 @@ Parameters:
       default: "AKIAIOSFODNN7EXAMPLE"
       x-cate: applicationCate
       x-label: obsLabel
+      x-restype: s3
       x-placeholder: AccessKeyID
       x-formitem:
         type: input
@@ -88,6 +90,7 @@ Parameters:
       default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
       x-cate: applicationCate
       x-label: obsLabel
+      x-restype: s3
       x-placeholder: SecretAccessKey
       x-formitem:
         type: input
@@ -97,6 +100,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: obsLabel
+      x-restype: s3
       x-placeholder: 请输入存储桶名
       x-formitem:
         type: input
@@ -106,6 +110,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: obsLabel
+      x-restype: s3
       x-placeholder: 请输入存储桶地域
       x-formitem:
         type: input
@@ -115,6 +120,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: obsLabel
+      x-restype: s3
       x-placeholder: 请输入对象存储端点
       x-formitem:
         type: input

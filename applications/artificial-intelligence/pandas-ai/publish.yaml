@@ -1,33 +1,35 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
 Edition: 3.0.0
 Type: Project
 Effective: Public
 Name: pandas-ai-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 这是一个通过PandasAI实现用自然语言向数据提问的示例，该示例可图形化数据，处理数据并提高数据质量。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/pandas-ai
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - serverFunctionName
-    - clientFunctionName
-    - DataBase
-    - PostgreSqlUrl
-    - OpenaiApiBase
-    - OpenaiApiKey
-    - ServerCustomDomain
+  required:
+  # 必填项
+  - region
+  - serverFunctionName
+  - clientFunctionName
+  - DataBase
+  - PostgreSqlUrl
+  - OpenaiApiBase
+  - OpenaiApiKey
+  - ServerCustomDomain
   properties:
     region:
       title: 地域
@@ -85,9 +87,10 @@ Parameters:
       default: postgresql
       description: ""
       enum:
-        - postgresql
+      - postgresql
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
@@ -98,6 +101,7 @@ Parameters:
       description: "例如：postgresql+asyncpg://pandasai:xxx@postgresql:5432/pandasai-db"
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 请输入数据库地址
       x-formitem:
         type: input

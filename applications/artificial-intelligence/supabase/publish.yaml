@@ -4,34 +4,35 @@ Edition: "3.0.0"
 Type: Project
 Name: supabase
 Provider:
-  - fc
+- fc
 Version: 0.0.1
 Description: "快速部署 supabase 应用示例"
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/supabase
 Organization: 函数计算 (FC)
 Effective: Public
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: 开发平台
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - supabaseFunctionName
-    - description
-    - postgresUsername
-    - postgresPassword
-    - postgresPort
-    - supabaseSupavisorKey
-    - supabaseDashboardUsername
-    - supabaseDashboardPassword
-    - supabaseJWTSecret
-    - supabaseAnonKey
-    - supabaseServiceKey
-    - supabaseRealtimeServiceKey
-    - supabaseGotrueJWTExpire
+  required:
+  # 必填项
+  - region
+  - supabaseFunctionName
+  - description
+  - postgresUsername
+  - postgresPassword
+  - postgresPort
+  - supabaseSupavisorKey
+  - supabaseDashboardUsername
+  - supabaseDashboardPassword
+  - supabaseJWTSecret
+  - supabaseAnonKey
+  - supabaseServiceKey
+  - supabaseRealtimeServiceKey
+  - supabaseGotrueJWTExpire
   properties:
     region:
       title: 地域
@@ -70,9 +71,10 @@ Parameters:
       default: postgresql
       description: ""
       enum:
-        - postgresql
+      - postgresql
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
@@ -94,6 +96,7 @@ Parameters:
       description: 最大长度为 255 个字符
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 数据库端口
       x-formitem:
         type: input
@@ -105,6 +108,7 @@ Parameters:
       description: 最大长度为 255 个字符
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 数据库用户
       x-formitem:
         type: input
@@ -116,6 +120,7 @@ Parameters:
       description: 最大长度为 255 个字符
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 数据库密码
       x-formitem:
         type: input
@@ -127,6 +132,7 @@ Parameters:
       description: 最大长度为 255 个字符
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 请输入连接池密钥
       x-hidden: true
       x-formitem:
