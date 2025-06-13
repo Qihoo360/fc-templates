@@ -69,6 +69,7 @@ Parameters:
         - Polefs
       x-cate: applicationCate
       x-label: 文件存储配置
+      x-restype: polefs
       x-placeholder: 请选择文件存储类型
       x-formitem:
         type: select
@@ -79,6 +80,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 文件存储配置
+      x-restype: polefs
       x-placeholder: 函数挂载 PoleFS 卷名称
       x-api-uri: /resources/polefs/volumes
       x-extends-value:
@@ -93,6 +95,7 @@ Parameters:
       default: "/app/backend/data"
       x-cate: applicationCate
       x-label: 文件存储配置
+      x-restype: polefs
       x-placeholder: 函数挂载路径
       x-formitem:
         type: input
@@ -103,6 +106,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 文件存储配置
+      x-restype: polefs
       x-placeholder: 函数挂载的创建用户
       x-hidden: true
 PropertyDescription:

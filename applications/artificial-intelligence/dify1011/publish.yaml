@@ -244,6 +244,7 @@ Parameters:
         - postgresql
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
@@ -254,6 +255,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 请输入数据库用户名
       x-formitem:
         type: input
@@ -264,6 +266,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 输入数据库密码
       x-formitem:
         type: input
@@ -274,6 +277,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 请输入数据库主机地址
       x-formitem:
         type: input
@@ -284,6 +288,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 请输入数据库端口
       x-formitem:
         type: input
@@ -294,6 +299,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 请输入可扩展数据库
       x-formitem:
         type: input
@@ -304,6 +310,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: postgresql
       x-placeholder: 请输入数据库
       x-formitem:
         type: input
@@ -437,6 +444,7 @@ Parameters:
         - Polefs
       x-cate: applicationCate
       x-label: 文件存储配置
+      x-restype: polefs
       x-placeholder: 请选择文件存储类型
       x-formitem:
         type: select
@@ -447,6 +455,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 文件存储配置
+      x-restype: polefs
       x-placeholder: 函数挂载 PoleFS卷
       x-api-uri: /resources/polefs/volumes
       x-extends-value:
@@ -461,6 +470,7 @@ Parameters:
       default: "/app/storage"
       x-cate: applicationCate
       x-label: 文件存储配置
+      x-restype: polefs
       x-placeholder: 函数挂载路径
       x-formitem:
         type: input
@@ -471,6 +481,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 文件存储配置
+      x-restype: polefs
       x-placeholder: 函数挂载的创建用户
       x-hidden: true
 PropertyDescription:
