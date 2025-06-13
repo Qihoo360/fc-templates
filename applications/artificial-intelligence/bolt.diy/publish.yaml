@@ -5,7 +5,7 @@ Provider:
   - fc
 Version: 0.0.3
 Description: 这是一个用bolt.diy基于AI的全栈开发平台。
-HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/bolt.diy
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/bolt.diy
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
@@ -22,15 +22,10 @@ Parameters:
     region:
       title: 地域
       type: string
-      default: test-3
+      default: cn-north-cu-1
       description: 创建应用所在的地区
       enum:
-        - test-2
-        - test-3
-        - test-4
-        - test-5
-        - test-6
-        - beijing
+        - cn-north-cu-1
       x-cate: resourceCate
       x-formitem:
         type: select

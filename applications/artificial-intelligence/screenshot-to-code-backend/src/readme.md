@@ -6,7 +6,7 @@ screenshot-to-code 是一款能将截图转换成干净代码的工具，支持H
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 screenshot-to-code 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/screenshot-to-code-backend)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/screenshot-to-code-backend)
 
 * [官方网站](https://screenshottocode.com/)
 
@@ -28,6 +28,6 @@ oneapi
 
 部署完成后访问触发器地址：
 
-![image-20250103152243779](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/screenshot-to-code-backend/src/images/image-20250103152243779.png?raw=true)
+![image-20250103152243779](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/screenshot-to-code-backend/src/images/image-20250103152243779.png?raw=true)
 
 出现以上提示则表示部署成功，将触发器地址配置到 screenshot-to-code-frontend 中即可为 screenshot-to-code-frontend 提供后端服务。

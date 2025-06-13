@@ -6,7 +6,7 @@ OmniParse 是一个平台，可将任何非结构化数据提取并解析为针�
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 omniparse 框架，并享受 Serverless 架构带来的降本提效的技术红利。
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/omniparse/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/omniparse/src)
 
 * [官方网站](https://omniparse.cognitivelab.in/)
 
@@ -31,5 +31,5 @@ OmniParse 是一个平台，可将任何非结构化数据提取并解析为针�
 
 ## 请求效果
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/omniparse/src/images/omniparse1.png?raw=true)
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/omniparse/src/images/omniparse2.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/omniparse/src/images/omniparse1.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/omniparse/src/images/omniparse2.png?raw=true)

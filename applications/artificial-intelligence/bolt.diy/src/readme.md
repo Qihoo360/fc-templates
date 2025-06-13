@@ -6,7 +6,7 @@
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 bolt.diy 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/bolt.diy/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/bolt.diy/src)
 
 * [官方网站](https://stackblitz-labs.github.io/bolt.diy/)
 
@@ -30,23 +30,23 @@ one-api
 
 鼠标移动到页面最左侧，在弹出的窗口中点击左下角的配置。
 
-![image-20250513160146285](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/bolt.diy/src/images/image-20250513160146285.png?raw=true)
+![image-20250513160146285](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/bolt.diy/src/images/image-20250513160146285.png?raw=true)
 
 点击Local Providers:
 
-![image-20250513160437175](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/bolt.diy/src/images/image-20250513160437175.png?raw=true)
+![image-20250513160437175](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/bolt.diy/src/images/image-20250513160437175.png?raw=true)
 
 
 
 开启OpenAILike，配置baseUrl:
 
-![image-20250513160548292](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/bolt.diy/src/images/image-20250513160548292.png?raw=true)
+![image-20250513160548292](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/bolt.diy/src/images/image-20250513160548292.png?raw=true)
 
 
 
 点击编辑按钮输入apiKey：
 
-![image-20250513160834992](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/bolt.diy/src/images/image-20250513160834992.png?raw=true)
+![image-20250513160834992](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/bolt.diy/src/images/image-20250513160834992.png?raw=true)
 
 
 
@@ -56,4 +56,4 @@ one-api
 
 如果页面显示空白，刷新并等待几次
 
-![image-20250513161434956](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/bolt.diy/src/images/image-20250513161434956.png?raw=true)
+![image-20250513161434956](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/bolt.diy/src/images/image-20250513161434956.png?raw=true)

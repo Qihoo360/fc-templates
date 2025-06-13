@@ -36,16 +36,11 @@ Parameters:
     region:
       title: 地域
       type: string
-      default: test-2
+      default: cn-north-cu-1
       # default: cn-north-cu-1
       description: 创建应用所在的地区
       enum:
-        - test-2
-        - test-3
-        - test-4
-        - test-5
-        - test-6
-        # - cn-north-cu-1
+        - cn-north-cu-1
       x-cate: resourceCate
       x-formitem:
         type: select

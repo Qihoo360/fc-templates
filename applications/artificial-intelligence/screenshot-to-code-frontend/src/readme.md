@@ -6,7 +6,7 @@ screenshot-to-code 是一款能将截图转换成干净代码的工具，支持H
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 screenshot-to-code 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/screenshot-to-code-frontend)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/screenshot-to-code-frontend)
 
 * [官方网站](https://screenshottocode.com/)
 
@@ -22,8 +22,8 @@ screenshot-to-code 是一款能将截图转换成干净代码的工具，支持H
 
 ## 配置依赖
 
-[screenshot-to-code-backend](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/screenshot-to-code-backend)
+[screenshot-to-code-backend](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/screenshot-to-code-backend)
 
 # 应用的使用说明
 
-![image-20250103154612910](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/screenshot-to-code-frontend/src/images/image-20250103154612910.png?raw=true)
+![image-20250103154612910](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/screenshot-to-code-frontend/src/images/image-20250103154612910.png?raw=true)

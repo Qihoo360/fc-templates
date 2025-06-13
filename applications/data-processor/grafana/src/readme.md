@@ -6,7 +6,7 @@
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 grafana 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/data-processor/grafana/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/data-processor/grafana/src)
 
 * [官方网站](https://grafana.com/)
 
@@ -44,4 +44,4 @@
 此时，使用浏览器或者 curl 工具， 就可以对触发器url进行请求。
 
 ## 效果
-![grafana](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/data-processor/grafana/src/images/grafana.png?raw=true)
+![grafana](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/data-processor/grafana/src/images/grafana.png?raw=true)

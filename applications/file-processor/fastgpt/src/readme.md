@@ -6,7 +6,7 @@ FastGPT 是一个基于 LLM 大语言模型的知识库问答系统，提供开�
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 fastgpt 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/file-processor/fastgpt/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/file-processor/fastgpt/src)
 
 * [官方网站](https://tryfastgpt.ai/)
 
@@ -64,4 +64,4 @@ SANDBOX_URL=<http://localhost:3001>
 
 ## 使用
 
-![image-20241119152038048](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/fastgpt/src/images/image-20241119152038048.png?raw=true)
+![image-20241119152038048](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/file-processor/fastgpt/src/images/image-20241119152038048.png?raw=true)

@@ -6,7 +6,7 @@ Provider:
   - fc
 Version: 0.0.1
 Description: 这是一个基于Comfyui实现用大模型生成图像的示例
-HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/comfyui
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/comfyui
 Tags:
   - AI
   - Custom Runtime
@@ -30,15 +30,10 @@ Parameters:
     region:
       title: 地域
       type: string
-      default: test-3
+      default: cn-north-cu-1
       description: 创建应用所在的地区
       enum:
-        - test-2
-        - test-3
-        - test-4
-        - test-5
-        - test-6
-        - beijing
+        - cn-north-cu-1
       x-cate: resourceCate
       x-reaction-properties:
         - functionPolefsVolumn

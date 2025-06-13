@@ -8,7 +8,7 @@ QAnything (Question and Answer based on Anything) 是致力于支持任意格式
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 qanything 框架，并享受 Serverless 架构带来的降本提效的技术红利。
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/qanything/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/qanything/src)
 
 * [官方网站](https://qanything.ai/)
 
@@ -35,10 +35,10 @@ QAnything (Question and Answer based on Anything) 是致力于支持任意格式
 访问路径/qanything/
 
 ## 知识库上传文档集
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/qanything/src/images/qanything1.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/qanything/src/images/qanything1.png?raw=true)
 
 ## 知识库上传问答集
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/qanything/src/images/qanything2.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/qanything/src/images/qanything2.png?raw=true)
 
 ## 对话
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/qanything/src/images/qanything3.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/qanything/src/images/qanything3.png?raw=true)

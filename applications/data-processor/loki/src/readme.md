@@ -6,7 +6,7 @@ Loki 是一个受Prometheus启发的水平可扩展、高可用、多租户日�
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 loki 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/data-processor/loki/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/data-processor/loki/src)
 
 * [官方网站](https://loki.com/)
 
@@ -33,6 +33,6 @@ grafana默认已开启多租户模式auth_enabled: true
 
 
 ## 效果
-![loki](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/data-processor/loki/src/images/loki-1.png?raw=true)
+![loki](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/data-processor/loki/src/images/loki-1.png?raw=true)
 
-![grafana](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/data-processor/loki/src/images/grafana.png?raw=true)
+![grafana](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/data-processor/loki/src/images/grafana.png?raw=true)

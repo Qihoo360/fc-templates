@@ -6,7 +6,7 @@ PyMuPDF是一个强大的Python库，用于处理PDF和其他图形文件格式�
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 PyMuPDF 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/file-processor/pymupdf/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/file-processor/pymupdf/src)
 
 * [官方网站](https://pymupdf.io/)
 
@@ -34,12 +34,12 @@ nas
 
 ## 使用 PyMuPDF
 
-![image-20241224120814479](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/pymupdf/src/images/image-20241224120814479.png?raw=true)
+![image-20241224120814479](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/file-processor/pymupdf/src/images/image-20241224120814479.png?raw=true)
 
 * 在页面上 file 窗口内上传文件：
 
-![image-20241224120854702](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/pymupdf/src/images/image-20241224120854702.png?raw=true)
+![image-20241224120854702](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/file-processor/pymupdf/src/images/image-20241224120854702.png?raw=true)
 
 * 击 Submit 提交后即可开始文件转换，右侧 output 窗口内会显示进度，转换完成后可下载输出文件：
 
-![image-20241224120929473](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/pymupdf/src/images/image-20241224120929473.png?raw=true)
+![image-20241224120929473](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/file-processor/pymupdf/src/images/image-20241224120929473.png?raw=true)

@@ -7,7 +7,7 @@ PandasAI 是一个 Python 库，可以轻松地用自然语言向数据提出问
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 pandas-ai 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/pandas-ai/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/pandas-ai/src)
 
 * [官方网站](https://pandas-ai.com)
 
@@ -33,6 +33,6 @@ server需使用自定义域名
 
 ## 请求效果
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/pandas-ai/src/images/pandas-ai-server-20240730183738.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/pandas-ai/src/images/pandas-ai-server-20240730183738.png?raw=true)
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/pandas-ai/src/images/pandas-ai-client-20240730203453.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/pandas-ai/src/images/pandas-ai-client-20240730203453.png?raw=true)

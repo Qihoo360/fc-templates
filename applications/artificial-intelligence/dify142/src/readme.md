@@ -7,7 +7,7 @@ Dify 是一款开源的大语言模型(LLM) 应用开发平台。它融合了后
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 dify 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/dify142/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/dify142/src)
 
 * [官方网站](https://dify.ai)
 
@@ -52,7 +52,7 @@ docker compose -f docker-compose.middleware.yaml up -d
 ### 自定义域名
 dify-api和dify-web需使用同一个自定义域名
 路由配置：
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/dify142/src/images/dify1.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/dify142/src/images/dify1.png?raw=true)
 
 
 # 应用的使用说明
@@ -62,11 +62,11 @@ dify-api和dify-web需使用同一个自定义域名
 
 ## 请求效果
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/dify142/src/images/dify2.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/dify142/src/images/dify2.png?raw=true)
 
 ## 创建工作流应用
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/dify142/src/images/dify3.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/dify142/src/images/dify3.png?raw=true)
 
 ## 发布并运行
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/dify142/src/images/dify4.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/dify142/src/images/dify4.png?raw=true)
 

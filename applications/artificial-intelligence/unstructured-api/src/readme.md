@@ -6,7 +6,7 @@
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 unstructured 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/unstructured-api/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/unstructured-api/src)
 
 * [官方网站](https://github.com/Unstructured-IO/unstructured-api)
 
@@ -28,9 +28,9 @@
 此时，使用浏览器或者 curl 工具， 就可以对触发器url进行请求。
 
 ## 部署资源
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/unstructured-api/src/images/unstructured-api1.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/unstructured-api/src/images/unstructured-api1.png?raw=true)
 
 ## 请求效果
 参考https://github.com/Unstructured-IO/unstructured-api
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/unstructured-api/src/images/unstructured-api2.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/unstructured-api/src/images/unstructured-api2.png?raw=true)

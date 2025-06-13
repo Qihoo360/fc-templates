@@ -6,7 +6,7 @@ Ollama是一个开源的大型语言模型服务工具，它帮助用户快速�
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 ollama 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/ollama/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/ollama/src)
 
 * [官方网站](https://ollama.com)
 

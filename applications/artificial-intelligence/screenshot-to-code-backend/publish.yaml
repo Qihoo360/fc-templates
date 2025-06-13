@@ -5,7 +5,7 @@ Provider:
   - fc
 Version: 0.0.3
 Description: Convert any screenshot or design to clean code (with support for most frameworks)
-HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/screenshot-to-code-backend
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/screenshot-to-code-backend
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
@@ -23,15 +23,10 @@ Parameters:
     region:
       title: 地域
       type: string
-      default: test-3
+      default: cn-north-cu-1
       description: 创建应用所在的地区
       enum:
-        - test-2
-        - test-3
-        - test-4
-        - test-5
-        - test-6
-        - beijing
+        - cn-north-cu-1
       x-formitem:
         type: select
     functionName:

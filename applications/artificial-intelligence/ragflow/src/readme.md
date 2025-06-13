@@ -2,10 +2,10 @@
 
 # RagFlow
 
-![RagFlow](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/ragflow/src/ragflow/images/ragflow.png?raw=true)
+![RagFlow](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/ragflow/src/ragflow/images/ragflow.png?raw=true)
 本案例是将 RagFlow 快速创建并部署到函数计算（FC）。RagFlow 是一款基于深度文档理解构建的开源 RAG（Retrieval-Augmented Generation）引擎。RAGFlow 可以为各种规模的企业及个人提供一套精简的 RAG 工作流程，结合大语言模型（LLM）针对用户各类不同的复杂格式数据提供可靠的问答以及有理有据的引用。
 
-- [RagFlow 应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/ragflow/src)
+- [RagFlow 应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/ragflow/src)
 
 ## 前期准备
 
@@ -21,8 +21,8 @@
 
 ## 案例介绍
 
-![2f6baa3e-1092-4f11-866d-36f6a9d075e5](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/ragflow/src/ragflow/images/2f6baa3e-1092-4f11-866d-36f6a9d075e5.png?raw=true)
-![504bbbf1-c9f7-4d83-8cc5-e9cb63c26db6](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/ragflow/src/ragflow/images/504bbbf1-c9f7-4d83-8cc5-e9cb63c26db6.gif?raw=true)
+![2f6baa3e-1092-4f11-866d-36f6a9d075e5](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/ragflow/src/ragflow/images/2f6baa3e-1092-4f11-866d-36f6a9d075e5.png?raw=true)
+![504bbbf1-c9f7-4d83-8cc5-e9cb63c26db6](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/ragflow/src/ragflow/images/504bbbf1-c9f7-4d83-8cc5-e9cb63c26db6.gif?raw=true)
 
 
 ## 使用流程
@@ -68,4 +68,4 @@
 
 ### 🔎 系统架构
 
-![317212466-d6ac5664-c237-4200-a7c2-a4a00691b485](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/ragflow/src/ragflow/images/317212466-d6ac5664-c237-4200-a7c2-a4a00691b485.png?raw=true)
+![317212466-d6ac5664-c237-4200-a7c2-a4a00691b485](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/ragflow/src/ragflow/images/317212466-d6ac5664-c237-4200-a7c2-a4a00691b485.png?raw=true)

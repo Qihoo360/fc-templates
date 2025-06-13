@@ -4,7 +4,7 @@
 
 n8n 是一个工作流自动化平台，为技术团队提供了代码的灵活性和无代码的速度。凭借 400 多个集成、原生 AI 功能和公平代码许可，n8n 让您能够构建强大的自动化流程，同时完全控制您的数据和部署。
 
-- [n8n 应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/n8n/src)
+- [n8n 应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/n8n/src)
 
 ## 前期准备
 
@@ -20,9 +20,9 @@ n8n 是一个工作流自动化平台，为技术团队提供了代码的灵活�
 
 ## 案例介绍
 
-![image-20240806155157782](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/n8n/src/n8n/assets/n8n-screenshot-readme.png?raw=true)
+![image-20240806155157782](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/n8n/src/n8n/assets/n8n-screenshot-readme.png?raw=true)
 
-![image-202408061552222](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/n8n/src/n8n/assets/n8n-screenshot.png?raw=true)
+![image-202408061552222](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/n8n/src/n8n/assets/n8n-screenshot.png?raw=true)
 
 
 ## 使用流程

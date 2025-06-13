@@ -19,7 +19,7 @@
 ### 360智汇云函数计算FC
 
 - 交流群
-<img src="https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/assets/tuitui-feedback-group.gif?raw=true" style="width: 50%; max-width: 800px;" alt="tuitui">
+<img src="https://github.com/Qihoo360/fc-templates/blob/feature/main/assets/tuitui-feedback-group.gif?raw=true" style="width: 50%; max-width: 800px;" alt="tuitui">
 
 ### Serverless Devs
 

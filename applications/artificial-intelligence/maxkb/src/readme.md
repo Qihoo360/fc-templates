@@ -4,7 +4,7 @@
 
 MaxKB（Max Knowledge Base）是一个基于 LLM 大语言模型的开源知识库问答系统。它开箱即用，模型中立，支持灵活编排，能够快速嵌入到第三方业务系统中。MaxKB 提供高效的知识管理和检索功能，支持多种文档格式和分类标签，帮助用户轻松组织和查找信息。其直观的用户界面和强大的全文搜索能力，使其成为企业和个人知识管理的理想选择。通过 MaxKB，用户可以构建一个智能化的知识库系统，以满足各种复杂的知识管理需求。
 
-- [MaxKB 应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/maxkb/src)
+- [MaxKB 应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/maxkb/src)
 
 ## 前期准备
 
@@ -20,13 +20,13 @@ MaxKB（Max Knowledge Base）是一个基于 LLM 大语言模型的开源知识�
 
 ## 案例介绍
 
-![image-20240806155157782](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/maxkb/src/maxkb/images/image-20240806155157782.png?raw=true)
+![image-20240806155157782](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/maxkb/src/maxkb/images/image-20240806155157782.png?raw=true)
 
-![image-20240806155228551](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/maxkb/src/maxkb/images/image-20240806155228551.png?raw=true)
+![image-20240806155228551](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/maxkb/src/maxkb/images/image-20240806155228551.png?raw=true)
 
-![image-20240806155313528](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/maxkb/src/maxkb/images/image-20240806155313528.png?raw=true)
+![image-20240806155313528](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/maxkb/src/maxkb/images/image-20240806155313528.png?raw=true)
 
-![image-20240806155355973](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/maxkb/src/maxkb/images/image-20240806155355973.png?raw=true)
+![image-20240806155355973](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/maxkb/src/maxkb/images/image-20240806155355973.png?raw=true)
 
 ## 使用流程
 
@@ -37,7 +37,7 @@ MaxKB（Max Knowledge Base）是一个基于 LLM 大语言模型的开源知识�
 
 ### 🏛️ 架构图
 
-![架构图](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/maxkb/src/maxkb/images/arch.jpg?raw=true)
+![架构图](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/maxkb/src/maxkb/images/arch.jpg?raw=true)
 
 ### 📖 文档
 

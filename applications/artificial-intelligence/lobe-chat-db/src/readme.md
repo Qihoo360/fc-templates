@@ -6,7 +6,7 @@
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 lobe-chat 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/lobe-chat-db/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/lobe-chat-db/src)
 
 * [官方网站](https://github.com/lobehub/lobe-chat.git)
 

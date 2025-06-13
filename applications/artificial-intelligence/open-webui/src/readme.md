@@ -4,7 +4,7 @@
 
 Open WebUI是一个可扩展、功能丰富且用户友好的自托管AI平台，旨在完全离线操作。它支持 Ollama 和 OpenAI兼容API 等各种 LLM 运行器，内置RAG推理引擎，使其成为强大的 AI 部署解决方案。
 
-- [Open-WebUI 应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/open-webui/src)
+- [Open-WebUI 应用代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/open-webui/src)
 
 ## 前期准备
 
@@ -20,13 +20,13 @@ Open WebUI是一个可扩展、功能丰富且用户友好的自托管AI平台�
 
 ## 案例介绍
 
-![image-20240806155157782](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/open-webui/src/open-webui/images/image-d3952c8561c4808c1d447fc061c71174.gif?raw=true)
+![image-20240806155157782](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/open-webui/src/open-webui/images/image-d3952c8561c4808c1d447fc061c71174.gif?raw=true)
 
-![image-202408061552222](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/open-webui/src/open-webui/images/image-cGljIG9ubGluZQo=.png?raw=true)
+![image-202408061552222](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/open-webui/src/open-webui/images/image-cGljIG9ubGluZQo=.png?raw=true)
 
-![image-2024080323234782](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/open-webui/src/open-webui/images/image-c2VhcmNoIG9ubGluZQo=.png?raw=true)
+![image-2024080323234782](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/open-webui/src/open-webui/images/image-c2VhcmNoIG9ubGluZQo=.png?raw=true)
 
-![image-2024013123123782](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/open-webui/src/open-webui/images/image-bXVsdGlwIG1vZGVscwo=.png?raw=true)
+![image-2024013123123782](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/open-webui/src/open-webui/images/image-bXVsdGlwIG1vZGVscwo=.png?raw=true)
 
 
 ## 使用流程

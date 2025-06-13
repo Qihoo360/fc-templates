@@ -6,7 +6,7 @@
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 anything-llm 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/anything-llm/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/anything-llm/src)
 
 * [官方网站](https://anythingllm.com)
 
@@ -33,16 +33,16 @@
 
 Base URL设置为api地址，例如：<https://oneapi-public.test/v1>
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/anything-llm/src/images/anything-llm设置20240801091213.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/anything-llm/src/images/anything-llm设置20240801091213.png?raw=true)
 
 ## 设置User
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/anything-llm/src/images/anything-llm-usersetup20240801091605.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/anything-llm/src/images/anything-llm-usersetup20240801091605.png?raw=true)
 
 ## 设置survey
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/anything-llm/src/images/anything-llm-SkipSurvey-20240801091923.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/anything-llm/src/images/anything-llm-SkipSurvey-20240801091923.png?raw=true)
 
 ## workspace 聊天
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/anything-llm/src/images/workspace聊天.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/anything-llm/src/images/workspace聊天.png?raw=true)

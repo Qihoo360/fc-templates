@@ -6,7 +6,7 @@
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 one-api 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/one-api/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/one-api/src)
 
 * [官方网站](https://github.com/songquanpeng/one-api)
 
@@ -29,18 +29,18 @@
 
 ## 设置渠道
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/one-api/src/images/one-api1.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/one-api/src/images/one-api1.png?raw=true)
 
 ## 设置令牌
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/one-api/src/images/one-api2.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/one-api/src/images/one-api2.png?raw=true)
 
 ## 设置模型服务商
 
 点击令牌->聊天 跳转到 <https://app.nextchat.dev> ，设置自定义OpenAI服务
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/one-api/src/images/one-api3.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/one-api/src/images/one-api3.png?raw=true)
 
 ## 请求效果
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/one-api/src/images/one-api4.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/one-api/src/images/one-api4.png?raw=true)

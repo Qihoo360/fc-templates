@@ -6,7 +6,7 @@
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 docling 框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/file-processor/docling/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/file-processor/docling/src)
 
 * [官方网站](https://ds4sd.github.io/docling/)
 
@@ -30,18 +30,18 @@ nas
 
 ## 使用docling
 
-![image-20241223221943174](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/docling/src/images/image-20241223221943174.png?raw=true)
+![image-20241223221943174](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/file-processor/docling/src/images/image-20241223221943174.png?raw=true)
 
 * 在页面上 file 窗口内上传文件：
 
-![image-20241223222200258](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/docling/src/images/image-20241223222200258.png?raw=true)
+![image-20241223222200258](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/file-processor/docling/src/images/image-20241223222200258.png?raw=true)
 
 * 在 from 下拉列表中选择上传的文件的类型， 在 to 下拉列表中选择转换后的文件类型。
 
 * 击 Submit 提交后即可开始文件转换，右侧 output 窗口内会显示进度：
 
-![image-20241223222808878](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/docling/src/images/image-20241223222808878.png?raw=true)
+![image-20241223222808878](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/file-processor/docling/src/images/image-20241223222808878.png?raw=true)
 
 * 转换完成后可下载输出文件：
 
-![image-20241223222925789](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/file-processor/docling/src/images/image-20241223222925789.png?raw=true)
+![image-20241223222925789](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/file-processor/docling/src/images/image-20241223222925789.png?raw=true)

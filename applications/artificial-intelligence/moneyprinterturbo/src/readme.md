@@ -6,7 +6,7 @@
 
 通过 Serverless 开发平台，您只需要几步，就可以体验  框架，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/moneyprinterturbo/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/moneyprinterturbo/src)
 
 * [官方网站](https://github.com/harry0703/MoneyPrinterTurbo)
 
@@ -29,6 +29,6 @@
 
 ## 请求效果
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/moneyprinterturbo/src/images/moneyprinterturbo1.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/moneyprinterturbo/src/images/moneyprinterturbo1.png?raw=true)
 
-![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/fc-app-test/applications/artificial-intelligence/moneyprinterturbo/src/images/moneyprinterturbo2.png?raw=true)
+![image.png](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/moneyprinterturbo/src/images/moneyprinterturbo2.png?raw=true)
