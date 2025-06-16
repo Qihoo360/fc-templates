@@ -69,6 +69,7 @@ Parameters:
         - mysql
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
@@ -79,6 +80,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库主机地址
       x-formitem:
         type: input
@@ -89,6 +91,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库名
       x-formitem:
         type: input
@@ -100,6 +103,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库端口
       x-formitem:
         type: input
@@ -110,6 +114,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库用户名
       x-formitem:
         type: input
@@ -120,6 +125,7 @@ Parameters:
       default: "123456"
       x-cate: applicationCate
       x-label: 数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库密码
       x-formitem:
         type: input
