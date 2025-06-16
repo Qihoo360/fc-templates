@@ -251,7 +251,7 @@ Parameters:
       - Redis
       x-cate: applicationCate
       x-label: 缓存配置
-      x-restype: minio
+      x-restype: redis
       x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
@@ -261,7 +261,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
-      x-restype: minio
+      x-restype: redis
       x-placeholder: 请输入Redis主机地址
       x-formitem:
         type: input
@@ -272,7 +272,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
-      x-restype: minio
+      x-restype: redis
       x-placeholder: 请输入Redis主机端口
       x-formitem:
         type: input
@@ -283,7 +283,7 @@ Parameters:
       default: "123456"
       x-cate: applicationCate
       x-label: 缓存配置
-      x-restype: minio
+      x-restype: redis
       x-placeholder: 请输入Redis密码
       x-formitem:
         type: input
@@ -294,7 +294,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
-      x-restype: minio
+      x-restype: redis
       x-placeholder: 请输入Redis数据库
       x-formitem:
         type: input
