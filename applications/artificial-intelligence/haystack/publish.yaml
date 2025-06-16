@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
 Edition: 3.0.0
 Type: Project
 Effective: Public
@@ -70,6 +72,7 @@ Parameters:
         - Elasticsearch
       x-cate: applicationCate
       x-label: 日志配置
+      x-restype: elasticsearch
       x-placeholder: 请选择日志存储类型
       x-formitem:
         type: select
@@ -80,6 +83,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 日志配置
+      x-restype: elasticsearch
       x-placeholder: 请输入日志系统主机地址
       x-formitem:
         type: input
@@ -90,6 +94,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 日志配置
+      x-restype: elasticsearch
       x-placeholder: 请输入日志系统主机端口
       x-formitem:
         type: input
