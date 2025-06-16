@@ -1,34 +1,34 @@
-# yaml-language-server: $schema=../../../schemas/publish-schema.json
 Edition: 3.0.0
 Type: Project
 Name: speakr
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 这是一个用 Speakr 基于 AI 的会议助手。
 HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/speakr
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - functionName
-    - description
-    - adminEmail
-    - adminUsername
-    - adminPassword
-    - llmBaseUrl
-    - llmApiKey
-    - llmModel
-    - transciptionBaseUrl
-    - transciptionApiKey
-    - whisperModel
+  # 必填项
+  required:
+  - region
+  - functionName
+  - description
+  - adminEmail
+  - adminUsername
+  - adminPassword
+  - llmBaseUrl
+  - llmApiKey
+  - llmModel
+  - transciptionBaseUrl
+  - transciptionApiKey
+  - whisperModel
   properties:
     region:
       title: 地域
@@ -36,12 +36,12 @@ Parameters:
       default: test-3
       description: 创建应用所在的地区
       enum:
-        - test-2
-        - test-3
-        - test-4
-        - test-5
-        - test-6
-        - beijing
+      - test-2
+      - test-3
+      - test-4
+      - test-5
+      - test-6
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
