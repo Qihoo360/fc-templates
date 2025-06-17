@@ -93,6 +93,7 @@ Parameters:
         - OBS
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
@@ -103,6 +104,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS端点
       x-formitem:
         type: input
@@ -113,6 +115,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS区域
       x-formitem:
         type: input
@@ -123,6 +126,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS存储桶名
       x-formitem:
         type: input
@@ -133,6 +137,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS AK
       x-formitem:
         type: input
@@ -143,6 +148,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS SK
       x-formitem:
         type: input
