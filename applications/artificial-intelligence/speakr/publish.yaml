@@ -88,7 +88,7 @@ Parameters:
       # title: api key
       type: secret
       default: "12345678"
-      pattern: "^.*{8,255}$"
+      pattern: "^.{8,}$"
       description: ""
       x-cate: applicationCate
       x-label: admin配置
