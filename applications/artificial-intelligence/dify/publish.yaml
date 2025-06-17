@@ -242,6 +242,7 @@ Parameters:
       enum:
         - postgresql
       x-cate: applicationCate
+      x-label: 数据库配置
       x-restype: postgresql
       x-placeholder: 请选择数据库类型
       x-formitem:
@@ -252,6 +253,7 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
+      x-label: 数据库配置
       x-restype: postgresql
       x-placeholder: 请输入数据库用户名
       x-formitem:
@@ -262,6 +264,7 @@ Parameters:
       default: "123456"
       description: ""
       x-cate: applicationCate
+      x-label: 数据库配置
       x-restype: postgresql
       x-placeholder: 输入数据库密码
       x-formitem:
@@ -272,6 +275,7 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
+      x-label: 数据库配置
       x-restype: postgresql
       x-placeholder: 请输入数据库主机地址
       x-formitem:
@@ -282,6 +286,7 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
+      x-label: 数据库配置
       x-restype: postgresql
       x-placeholder: 请输入数据库端口
       x-formitem:
@@ -292,6 +297,7 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
+      x-label: 数据库配置
       x-restype: postgresql
       x-placeholder: 请输入可扩展数据库
       x-formitem:
@@ -302,6 +308,7 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
+      x-label: 数据库配置
       x-restype: postgresql
       x-placeholder: 请输入数据库
       x-formitem:

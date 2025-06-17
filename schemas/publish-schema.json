@@ -45,6 +45,7 @@
                   "type": "string",
                   "description": "资源类型；",
                   "enum": [
+                    "llm-apikey",
                     "mysql",
                     "mongodb",
                     "postgresql",

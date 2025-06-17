@@ -63,6 +63,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: api配置
+      x-restype: llm-apikey
       x-placeholder: 类openai Api地址
       x-formitem:
         type: input
@@ -74,6 +75,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: api配置
+      x-restype: llm-apikey
       x-placeholder: 类openai ApiKey
       x-formitem:
         type: input

@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
 Edition: 3.0.0
 Type: Project
 Effective: Public
@@ -158,6 +160,7 @@ Parameters:
         - mysql
       x-cate: applicationCate
       x-label: Grafana数据库配置
+      x-restype: mysql
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
@@ -168,6 +171,7 @@ Parameters:
       description: "例如：mysql://user:secret@host:port/database"
       x-cate: applicationCate
       x-label: Grafana数据库配置
+      x-restype: mysql
       x-placeholder: 请输入数据库地址
       x-formitem:
         type: input

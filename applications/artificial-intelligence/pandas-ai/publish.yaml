@@ -117,6 +117,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: Openai
+      x-restype: llm-apikey
       x-placeholder: OpenaiApiBase
       x-formitem:
         type: input
@@ -127,6 +128,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: Openai
+      x-restype: llm-apikey
       x-placeholder: OpenaiApiKey
       x-formitem:
         type: input
