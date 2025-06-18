@@ -135,8 +135,8 @@ Parameters:
       pattern: ".*"
       description: ""
       x-cate: applicationCate
-      x-label: transcription api配置
-      x-placeholder: transcription base url
+      x-label: 语音识别大模型 api配置
+      x-placeholder: 语音识别大模型 BaseUrl
       x-formitem:
         type: input
     transciptionApiKey:
@@ -146,8 +146,8 @@ Parameters:
       pattern: ".*"
       description: ""
       x-cate: applicationCate
-      x-label: transcription api配置
-      x-placeholder: transcription ApiKey
+      x-label: 语音识别大模型 api配置
+      x-placeholder: 语音识别大模型 ApiKey
       x-formitem:
         type: input
     whisperModel:
@@ -157,8 +157,8 @@ Parameters:
       pattern: ".*"
       description: ""
       x-cate: applicationCate
-      x-label: transcription api配置
-      x-placeholder: whisper 模型名称
+      x-label: 语音识别大模型 api配置
+      x-placeholder: 语音识别大模型 模型名称
       x-formitem:
         type: input
 PropertyDescription:
