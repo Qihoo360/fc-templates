@@ -276,6 +276,7 @@ resources:
         testkey: "testvalue"
         TZ: "Asia/Shanghai"
         HOSTNAME: "0.0.0.0"
+        DEBUG: "*"
       logConfig:
         isOpen: true
       scale:
