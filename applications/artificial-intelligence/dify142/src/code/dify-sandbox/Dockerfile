@@ -1,5 +1,5 @@
-# 使用官方 Golang 1.20.6 镜像作为基础镜像
-FROM wfwqjs-eventing-zevent-pub/golang:1.20.6 AS builder
+# 使用官方 Golang 1.23.0 镜像作为基础镜像
+FROM wfwqjs-eventing-zevent-pub/golang:1.23.0 AS builder
 
 # 安装所需的依赖项
 RUN apt-get update && \
