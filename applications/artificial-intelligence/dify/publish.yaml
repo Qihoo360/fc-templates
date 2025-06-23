@@ -229,7 +229,7 @@ Parameters:
       x-placeholder: 请输入Redis数据库消息队列
       x-formitem:
         type: input
-    DataBase:
+    DifyDBSCHEME:
       # title: 数据库配置
       type: string
       default: postgresql
