@@ -411,6 +411,28 @@ Parameters:
       x-placeholder: 请输入Weaviate ApiKey
       x-formitem:
         type: input
+    DifyCodeExecutionEndpoint:
+      # title: DifyCodeExecutionEndpoint
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: CodeExecution配置
+      x-restype: codeexecution
+      x-placeholder: 请输入CodeExecution端点/Endpoint
+      x-formitem:
+        type: input
+    DifyCodeExecutionApiKey:
+      # title: DifyCodeExecutionApiKey
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: CodeExecution配置
+      x-restype: codeexecution
+      x-placeholder: 请输入CodeExecution ApiKey
+      x-formitem:
+        type: input
     FileStorage:
       # title: 文件存储配置
       type: secret
