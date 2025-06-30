@@ -12,11 +12,11 @@ vars:
   difyWebFunctionName: {{difyWebFunctionName}}
   difyWebDescribe: {{difyWebDescription}}
   DifyCustomDomain: {{DifyCustomDomain}}
-  DifyRedisUserName: {{DifyRedisUserName}}
-  DifyRedisPassword: {{DifyRedisPassword}}
-  DifyRedisHost: {{DifyRedisHost}}
-  DifyRedisPort: {{DifyRedisPort}}
-  DifyRedisDataBase: {{DifyRedisDataBase}}
+  DifyRedisUserName: {{REDIS_USERNAME}}
+  DifyRedisPassword: {{REDIS_PASSWORD}}
+  DifyRedisHost: {{REDIS_HOST}}
+  DifyRedisPort: {{REDIS_PORT}}
+  DifyRedisDataBase: {{REDIS_DATABASE}}
   DifyRedisDataBaseCelery: {{DifyRedisDataBaseCelery}}
   DifyDBSCHEME: {{DifyDBSCHEME}}
   DifyDBUserName: {{DifyDBUserName}}

@@ -169,7 +169,7 @@ Parameters:
       x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
-    DifyRedisUserName:
+    REDIS_USERNAME:
       # title: DifyRedisUserName
       type: string
       default: ""
@@ -180,7 +180,7 @@ Parameters:
       x-placeholder: 请输入Redis用户名
       x-formitem:
         type: input
-    DifyRedisPassword:
+    REDIS_PASSWORD:
       # title: DifyRedisPassword
       type: secret
       default: "123456"
@@ -191,7 +191,7 @@ Parameters:
       x-placeholder: 请输入Redis密码
       x-formitem:
         type: input
-    DifyRedisHost:
+    REDIS_HOST:
       # title: DifyRedisHost
       type: string
       default: ""
@@ -202,7 +202,7 @@ Parameters:
       x-placeholder: 请输入Redis主机地址
       x-formitem:
         type: input
-    DifyRedisPort:
+    REDIS_PORT:
       # title: DifyRedisPort
       type: string
       default: ""
@@ -213,7 +213,7 @@ Parameters:
       x-placeholder: 请输入Redisd主机端口
       x-formitem:
         type: input
-    DifyRedisDataBase:
+    REDIS_DATABASE:
       # title: DifyRedisDataBase
       type: string
       default: "0"
