@@ -17,7 +17,7 @@ vars:
   DifyRedisHost: {{REDIS_HOST}}
   DifyRedisPort: {{REDIS_PORT}}
   DifyRedisDataBase: {{REDIS_DATABASE}}
-  DifyRedisDataBaseCelery: {{DifyRedisDataBaseCelery}}
+  DifyRedisDataBaseCelery: {{REDIS_DATABASE_CELERY}}
   DifyDBSCHEME: {{DifyDBSCHEME}}
   DifyDBUserName: {{DifyDBUserName}}
   DifyDBPassword: {{DifyDBPassword}}

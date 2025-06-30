@@ -224,7 +224,7 @@ Parameters:
       x-placeholder: 请输入Redis数据库
       x-formitem:
         type: input
-    DifyRedisDataBaseCelery:
+    REDIS_DATABASE_CELERY:
       # title: DifyRedisDataBaseCelery
       type: string
       default: "1"
