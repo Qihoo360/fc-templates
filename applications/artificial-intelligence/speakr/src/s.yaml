@@ -14,6 +14,9 @@ vars:
   transciptionBaseUrl: {{transciptionBaseUrl}}
   transciptionApiKey: {{transciptionApiKey}}
   whisperModel: {{whisperModel}}
+  functionPolefsVolumn: {{functionPolefsVolumn}}
+  mountDir: {{afunctionMountDir}}
+  afunctionVolCreateUser: {{afunctionVolCreateUser}}
 resources:
   framework:
     component: ${path('/utils/components/zfc')}
@@ -65,3 +68,7 @@ resources:
               - PATCH
             disable_url_internet: true
             auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.functionPolefsVolumn}
+          mountDir: ${vars.mountDir}
+          createUserName: ${vars.afunctionVolCreateUser}
