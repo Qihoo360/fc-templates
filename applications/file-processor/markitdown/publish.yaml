@@ -62,10 +62,10 @@ Parameters:
     ObjectStorage:
       # title: 对象存储配置
       type: string
-      default: AwsS3
+      default: OBS
       description: ""
       enum:
-      - AwsS3
+      - OBS
       x-cate: applicationCate
       x-label: obsLabel
       x-restype: s3
