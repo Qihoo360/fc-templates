@@ -32,10 +32,10 @@ vars:
   DifyAwsS3Sk: {{DifyAwsS3Sk}}
   DifyWeaviateEndpoint: {{DifyWeaviateEndpoint}}
   DifyWeaviateApiKey: {{DifyWeaviateApiKey}}
-  DifyMilvusUri: {{DifyMilvusUri}}
-  DifyMilvusToken: {{DifyMilvusToken}}
-  DifyMilvusUser: {{DifyMilvusUser}}
-  DifyMilvusPassword: {{DifyMilvusPassword}}
+  DifyMilvusUri: {{MILVUS_URL}}
+  DifyMilvusToken: {{MILVUS_TOKEN}}
+  DifyMilvusUser: {{MILVUS_USERNAME}}
+  DifyMilvusPassword: {{MILVUS_PASSWORD}}
   PolefsVolume: {{PolefsVolume}}
   MountDir: {{MountDir}}
   VolCreateUser: {{PolefsVolumeCreateUser}}

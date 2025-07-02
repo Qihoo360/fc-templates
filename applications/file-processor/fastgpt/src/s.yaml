@@ -9,9 +9,9 @@ vars:
   functionName: {{functionName}}
   oneapiUrl: {{oneapiUrl}}
   chatApiKey: {{chatApiKey}}
-  mongodbUrl: {{mongodbUrl}}
-  milvusAddress: {{milvusAddress}}
-  milvusToken: {{milvusToken}}
+  mongodbUrl: {{MONGO_URL}}
+  milvusAddress: {{MILVUS_URL}}
+  milvusToken: {{MILVUS_TOKEN}}
 resources:
   sandbox:
     component: ${path('/utils/components/zfc')}

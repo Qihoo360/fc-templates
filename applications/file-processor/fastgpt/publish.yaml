@@ -124,7 +124,7 @@ Parameters:
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
-    mongodbUrl:
+    MONGO_URL:
       # title: mongo 数据库连接参数
       type: string
       default: mongodb://username:password@0.0.0.0:27017/fastgpt?authSource=admin
@@ -149,7 +149,7 @@ Parameters:
       x-placeholder: 请选择向量数据库类型
       x-formitem:
         type: select
-    milvusAddress:
+    MILVUS_URL:
       # title: milvus 向量库连接参数
       type: string
       default: ""
@@ -161,7 +161,7 @@ Parameters:
       x-placeholder: milvus 向量库连接参数
       x-formitem:
         type: input
-    milvusToken:
+    MILVUS_TOKEN:
       # title: milvus token
       type: string
       default: "milvus_user:milvus_passwd"
