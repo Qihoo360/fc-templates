@@ -1,0 +1,191 @@
+# yaml-language-server: $schema=../../../../schemas/s-schema.json
+
+edition: 3.0.0
+name: supabase-app
+access: default
+vars:
+  region: {{region}}
+  functionName: {{supabaseFunctionName}}
+  description: {{description}}
+
+  DASHBOARD_USERNAME: {{DASHBOARD_USERNAME}}
+  DASHBOARD_PASSWORD: {{DASHBOARD_PASSWORD}}
+  STUDIO_DEFAULT_ORGANIZATION: {{STUDIO_DEFAULT_ORGANIZATION}}
+  STUDIO_DEFAULT_PROJECT: {{STUDIO_DEFAULT_PROJECT}}
+  SUPABASE_PUBLIC_URL: {{SUPABASE_PUBLIC_URL}}
+  JWT_SECRET: {{JWT_SECRET}}
+  ANON_KEY: {{ANON_KEY}}
+  SERVICE_ROLE_KEY: {{SERVICE_ROLE_KEY}}
+  SECRET_KEY_BASE: {{SECRET_KEY_BASE}}
+  POSTGRES_HOST: {{POSTGRES_HOST}}
+  POSTGRES_PORT: {{POSTGRES_PORT}}
+  POSTGRES_PASSWORD: {{POSTGRES_PASSWORD}}
+  POSTGRES_DATABASE: {{POSTGRES_DATABASE}}
+
+  POLEFS_VOLUME: {{POLEFS_VOLUME}}
+  POLEFS_MOUNT_PATH: {{POLEFS_MOUNT_PATH}}
+  PolefsVolumeCreateUser: {{PolefsVolumeCreateUser}}
+
+resources:
+  supabase-app:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      functionName:  ${vars.functionName}
+      description: ${vars.description}
+      runtime: custom
+      memorySize: 8192
+      cpu: 8
+      diskSize: 10240
+      timeout: 120
+      instanceConcurrency: 100
+      port: 8000
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      code:
+        templated_files: []
+      environmentVariables:
+        ############
+        # Secrets
+        # YOU MUST CHANGE THESE BEFORE GOING INTO PRODUCTION
+        ############
+
+        POSTGRES_PASSWORD: ${vars.POSTGRES_PASSWORD}
+        JWT_SECRET: ${vars.JWT_SECRET}
+        ANON_KEY: ${vars.ANON_KEY}
+        SERVICE_ROLE_KEY: ${vars.SERVICE_ROLE_KEY}
+        DASHBOARD_USERNAME: ${vars.DASHBOARD_USERNAME}
+        DASHBOARD_PASSWORD: ${vars.DASHBOARD_PASSWORD}
+        SECRET_KEY_BASE: ${vars.SECRET_KEY_BASE}
+        # VAULT_ENC_KEY: your-encryption-key-32-chars-min
+
+        ############
+        # Database - You can change these to any PostgreSQL database that has logical replication enabled.
+        ############
+
+        POSTGRES_HOST: ${vars.POSTGRES_HOST}
+        POSTGRES_DB: ${vars.POSTGRES_DB}
+        POSTGRES_PORT: ${vars.POSTGRES_PORT}
+
+        ############
+        # API Proxy - Configuration for the Kong Reverse proxy.
+        ############
+
+        KONG_HTTP_PORT: "8000"
+        KONG_HTTPS_PORT: "8443"
+
+        ############
+        # API - Configuration for PostgREST.
+        ############
+
+        PGRST_DB_SCHEMAS: public,storage,graphql_public
+
+
+        ############
+        # Auth - Configuration for the GoTrue authentication server.
+        ############
+
+        ## General
+        SITE_URL: http://localhost:3000
+        ADDITIONAL_REDIRECT_URLS: ""
+        JWT_EXPIRY: "3600"
+        DISABLE_SIGNUP: "false"
+        API_EXTERNAL_URL: http://localhost:8000
+
+        ## Mailer Config
+        MAILER_URLPATHS_CONFIRMATION: "/auth/v1/verify"
+        MAILER_URLPATHS_INVITE: "/auth/v1/verify"
+        MAILER_URLPATHS_RECOVERY: "/auth/v1/verify"
+        MAILER_URLPATHS_EMAIL_CHANGE: "/auth/v1/verify"
+
+        ## Email auth
+        ENABLE_EMAIL_SIGNUP: "true"
+        ENABLE_EMAIL_AUTOCONFIRM: "false"
+        SMTP_ADMIN_EMAIL: admin@example.com
+        SMTP_HOST: supabase-mail
+        SMTP_PORT: "2500"
+        SMTP_USER: fake_mail_user
+        SMTP_PASS: fake_mail_password
+        SMTP_SENDER_NAME: fake_sender
+        ENABLE_ANONYMOUS_USERS: "false"
+
+        ## Phone auth
+        ENABLE_PHONE_SIGNUP: "true"
+        ENABLE_PHONE_AUTOCONFIRM: "true"
+
+
+        ############
+        # Studio - Configuration for the Dashboard
+        ############
+
+        STUDIO_DEFAULT_ORGANIZATION: ${vars.STUDIO_DEFAULT_ORGANIZATION}
+        STUDIO_DEFAULT_PROJECT: ${vars.STUDIO_DEFAULT_PROJECT}
+
+        STUDIO_PORT: "3000"
+        # replace if you intend to use Studio outside of localhost
+        SUPABASE_PUBLIC_URL: ${vars.SUPABASE_PUBLIC_URL}
+
+        # Enable webp support
+        IMGPROXY_ENABLE_WEBP_DETECTION: "true"
+
+        # Add your OpenAI API key to enable SQL Editor Assistant
+        OPENAI_API_KEY: ""
+
+
+        ############
+        # Functions - Configuration for Functions
+        ############
+        # NOTE: VERIFY_JWT applies to all functions. Per-function VERIFY_JWT is not supported yet.
+        FUNCTIONS_VERIFY_JWT: "false"
+
+
+        ############
+        # Logs - Configuration for Analytics
+        # Please refer to https://supabase.com/docs/reference/self-hosting-analytics/introduction
+        ############
+
+        # Change vector.toml sinks to reflect this change
+        # these cannot be the same value
+        LOGFLARE_PUBLIC_ACCESS_TOKEN: your-super-secret-and-long-logflare-key-public
+        LOGFLARE_PRIVATE_ACCESS_TOKEN: your-super-secret-and-long-logflare-key-private
+
+        # Docker socket location - this value will differ depending on your OS
+        DOCKER_SOCKET_LOCATION: /var/run/docker.sock
+
+        # Google Cloud Project details
+        GOOGLE_PROJECT_ID: GOOGLE_PROJECT_ID
+        GOOGLE_PROJECT_NUMBER: GOOGLE_PROJECT_NUMBER
+
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      sourceSubDir: "supabase"
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
+          mountDir: ${vars.POLEFS_MOUNT_PATH}
+          createUserName: ${vars.PolefsVolumeCreateUser}
