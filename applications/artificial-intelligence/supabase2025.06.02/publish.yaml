@@ -1,0 +1,296 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: "3.0.0"
+Type: Project
+Name: supabase
+Provider:
+- fc
+Version: 0.0.1
+Description: "快速部署 supabase 应用示例"
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/applications/artificial-intelligence/supabase2025.06.02
+Organization: 函数计算 (FC)
+Effective: Public
+Tags:
+- AI
+- Custom Runtime
+Category: 开发平台
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required:
+  # 函数设置
+  - region
+  - FunctionName
+  - description
+
+  # 控制台设置 (studio)
+  - DASHBOARD_USERNAME
+  - DASHBOARD_PASSWORD
+  - STUDIO_DEFAULT_ORGANIZATION
+  - STUDIO_DEFAULT_PROJECT
+  - SUPABASE_PUBLIC_URL
+  # - OPENAI_API_KEY
+
+  # 密钥设置
+  - JWT_SECRET
+  - ANON_KEY
+  - SERVICE_ROLE_KEY
+  - SECRET_KEY_BASE # realtime, supavisor
+  # - VAULT_ENC_KEY # 没有集成连接池不需要
+
+  # 数据库设置
+  # - POSTGRES_USERNAME # 不能自定义账号名
+  - POSTGRES_HOST
+  - POSTGRES_PORT
+  - POSTGRES_PASSWORD
+  - POSTGRES_DATABASE
+
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: test-2
+      # default: cn-north-cu-1
+      description: 创建应用所在的地区
+      enum:
+      - test-2
+      - test-3
+      - test-4
+      - test-5
+      - test-6
+      # - cn-north-cu-1
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+    supabaseFunctionName:
+      title: supabase 函数名称
+      type: string
+      default: supabase-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 最大长度为 3-40 个字符，只能包含小写字母、数字中划线，不能以数字、中划线开头，过滤空格。
+      x-cate: resourceCate
+      x-placeholder: 请输入函数名
+      x-formitem:
+        type: input
+    description:
+      title: 函数描述信息
+      type: string
+      default: "快速部署 supabase 应用示例"
+      pattern: ".{0,255}$"
+      description: 请输入函数描述，最大长度为 255 个字符
+      x-cate: resourceCate
+      x-placeholder: 请输入函数描述
+      x-formitem:
+        type: input
+
+    DASHBOARD_USERNAME:
+      type: string
+      default: supabase
+      pattern: ".{0,255}$"
+      description: 控制台登录账号名称，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: 控制台设置
+      x-placeholder: 请输入账号
+      x-formitem:
+        type: input
+    DASHBOARD_PASSWORD:
+      title: 控制台密码
+      type: secret
+      default: ""
+      pattern: ".{0,255}$"
+      description: 控制台登录密码，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: 控制台设置
+      x-formitem:
+        type: input
+    STUDIO_DEFAULT_ORGANIZATION:
+      type: string
+      default: ""
+      pattern: ".{0,255}$"
+      description: 组织或者团队名称，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: 控制台设置
+      x-formitem:
+        type: input
+    STUDIO_DEFAULT_PROJECT:
+      type: string
+      default: ""
+      pattern: ".{0,255}$"
+      description: 项目名称，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: 控制台设置
+      x-formitem:
+        type: input
+    SUPABASE_PUBLIC_URL:
+      title: 自定义访问 URL
+      type: string
+      default: ""
+      pattern: 'https?:\/\/[^\s/$.?#].[^\s]*'
+      description: 公开访问的地址（部署之后需在函数平台设定触发器地址）
+      x-cate: applicationCate
+      x-label: 控制台设置
+      x-formitem:
+        type: input
+
+    JWT_SECRETs:
+      title: API JWT 密钥
+      type: secret
+      default: ""
+      pattern: ".{0,255}$"
+      description: 用于生成 API TOKEN 的密钥，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: API 设置
+      x-placeholder: 请输入密钥
+      x-formitem:
+        type: input
+    ANON_KEY:
+      type: secret
+      default: ""
+      pattern: ".{0,255}$"
+      description: 应用内部其他服务使用的 JWT 密钥。（参考 https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys 生成）
+      x-cate: applicationCate
+      x-label: API 设置
+      x-placeholder: 请输入 ANON_KEY
+      x-formitem:
+        type: input
+    SERVICE_ROLE_KEY:
+      type: secret
+      default: ""
+      pattern: ".{0,255}$"
+      description: 应用内部其他服务使用的 JWT 密钥。（参考 https://supabase.com/docs/guides/self-hosting/docker#generate-api-keys 生成）
+      x-cate: applicationCate
+      x-label: API 设置
+      x-placeholder: 请输入 SERVICE_ROLE_KEY
+      x-formitem:
+        type: input
+    SECRET_KEY_BASE:
+      title: 实时服务密钥
+      type: secret
+      default: ${default-suffix}
+      pattern: ".{0,255}$"
+      description: 实时服务密钥，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: API 设置
+      x-placeholder: 请输入密钥
+      x-hidden: true
+      x-formitem:
+        type: input
+
+    DATABASE_TYPE:
+      title: 数据库类型
+      type: string
+      default: postgresql
+      description: "数据库类型"
+      enum:
+      - postgresql
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
+    POSTGRES_HOST:
+      type: string
+      pattern: ".{0,255}$"
+      description: 实例地址
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-formitem:
+        type: input
+    POSTGRES_PORT:
+      type: string
+      default: "5432"
+      pattern: ".{0,255}$"
+      description: 实例端口
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-formitem:
+        type: input
+    # POSTGRES_USERNAME:
+    #   title: 数据库用户
+    #   type: string
+    #   pattern: ".{0,255}$"
+    #   description: 最大长度为 255 个字符
+    #   x-cate: applicationCate
+    #   x-label: PostgreSQL
+    #   x-restype: postgresql
+    #   x-placeholder: 数据库用户
+    #   x-formitem:
+    #     type: input
+    POSTGRES_PASSWORD:
+      type: secret
+      description: |
+        `supabase_admin` 账号的密码；创建实例时须创建 `supabase_admin` 超级管理员
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库密码
+      x-formitem:
+        type: input
+    POSTGRES_DATABASE:
+      type: string
+      default: "postgres"
+      description: PostgreSQL 数据库名称
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库名称
+      x-formitem:
+        type: input
+
+    FileStorage:
+      type: string
+      default: Polefs
+      description: "持久存储卷"
+      enum:
+        - Polefs
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 请选择存储卷类型
+      x-formitem:
+        type: select
+    POLEFS_VOLUME:
+      title: 存储卷名称
+      type: string
+      default: ""
+      description: 用于存储运行时日志、文件的存储卷
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 请输入存储卷名称
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: PolefsVolumeCreateUser
+      x-formitem:
+        type: select
+        name: volume_unique_name
+    POLEFS_MOUNT_PATH:
+      type: string
+      description: "存储卷挂载路径；暂时不要修改挂载路径"
+      default: "/var/supabase"
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 函数挂载路径
+      x-formitem:
+        type: input
+    PolefsVolumeCreateUser:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 函数挂载的创建用户
+      x-hidden: true
+
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: ""
