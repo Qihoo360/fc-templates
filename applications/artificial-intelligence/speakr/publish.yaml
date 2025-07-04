@@ -29,6 +29,10 @@ Parameters:
   - transciptionBaseUrl
   - transciptionApiKey
   - whisperModel
+  - FileStorage
+  - functionPolefsVolumn
+  - afunctionMountDir
+  - afunctionVolCreateUser
   properties:
     region:
       title: 地域
@@ -156,8 +160,56 @@ Parameters:
       x-placeholder: whisper 模型名称
       x-formitem:
         type: input
+    FileStorage:
+      # title: 文件存储配置
+      type: string
+      default: Polefs
+      description: ""
+      enum:
+      - Polefs
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 请选择文件存储类型
+      x-formitem:
+        type: select
+    functionPolefsVolumn:
+      # title: 函数挂载 PoleFS 卷名称
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 函数挂载 PoleFS 卷名称
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: afunctionVolCreateUser
+      x-formitem:
+        type: select
+        name: volume_unique_name
+    afunctionMountDir:
+      # title: 函数挂载路径
+      type: string
+      description: ""
+      default: "/data/instance"
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 函数挂载路径
+      x-formitem:
+        type: input
+    afunctionVolCreateUser:
+      # title: 函数挂载的创建用户
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 函数挂载的创建用户
+      x-hidden: true
 PropertyDescription:
-  PropertyDescription:
   resourceCate:
     title: "资源创建配置"
     description: ""
