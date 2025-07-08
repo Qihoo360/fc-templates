@@ -1,4 +1,4 @@
-FROM functions/app/ubuntu:24.10
+FROM wfwqjs-eventing-zevent-pub/ubuntu:24.10
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Shanghai
