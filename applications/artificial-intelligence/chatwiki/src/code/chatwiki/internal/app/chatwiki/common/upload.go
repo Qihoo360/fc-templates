@@ -16,6 +16,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-shiori/go-readability"
@@ -133,8 +134,12 @@ func SaveUrlPage(userId int, url, saveDir string) (*define.UploadInfo, error) {
 	}
 
 	// request crawler
+	value := os.Getenv("CRAWLER_ENDPOINT")
+	if value == "" {
+		value = define.Config.WebService[`crawler`]
+	}
 	body, _ := json.Marshal(map[string]interface{}{"url": url})
-	req := curl.Post(define.Config.WebService[`crawler`] + "/content").Body(body)
+	req := curl.Post(value + "/content").Body(body)
 	resp, err := req.Response()
 	if err != nil {
 		return nil, err

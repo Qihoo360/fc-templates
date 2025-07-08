@@ -614,7 +614,12 @@ func RequestConvertService(file, fromFormat string, pdfParseType int) (content s
 	if pdfParseType == define.PdfParseTypeOcrWithImage {
 		extractImage = true
 	}
-	request := curl.Post(define.Config.WebService[`converter`]+`/convert`).
+
+	value := os.Getenv("CONVERTER_ENDPOINT")
+	if value == "" {
+		value = define.Config.WebService[`converter`]
+	}
+	request := curl.Post(value+`/convert`).
 		PostFile(`file`, file).
 		Param(`from_format`, fromFormat).
 		Param(`to_format`, `html`).
