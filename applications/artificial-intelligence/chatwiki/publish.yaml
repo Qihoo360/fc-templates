@@ -3,11 +3,11 @@
 Edition: 3.0.0
 Type: Project
 Effective: Public
-Name: dify-v3
+Name: chatwiki-v1
 Provider:
   - fc
 Version: 0.0.3
-Description: 该示例通过 Dify 可快速搭建生产级的生成式 AI 应用。
+Description: 该示例通过 chatwiki 快速搭建私有的知识库AI 问答系统。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/dify150
 Organization: 函数计算（FC）
 Tags:
@@ -22,34 +22,31 @@ Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
   required: # 必填项
-    - region
-    - difySandboxFunctionName
-    - difyPluginDaemonFunctionName
-    - difyApiFunctionName
-    - difyWebFunctionName
-    - DifyCustomDomain
-    - CacheDB
-    - DifyRedisPassword
-    - DifyRedisHost
-    - DifyRedisPort
-    - DifyRedisDataBase
-    - DifyRedisDataBaseCelery
-    - DifyDBSCHEME
-    - DifyDBPassword
-    - DifyDBHost
-    - DifyDBPort
-    - DifyDBPluginDataBase
-    - DifyDBDataBase
-    - ObjectStorage
-    - DifyAwsS3Endpoint
-    - DifyAwsS3Bucket
-    - DifyAwsS3Region
-    - DifyAwsS3Ak
-    - DifyAwsS3Sk
-    - FileStorage
-    - PolefsVolume
-    - MountDir
-    - PolefsVolumeCreateUse
+    - chatwikiCrawlerFunctionName
+    - chatwikiConverterFunctionName
+    - chatwikiFunctionName
+    
+    - ChatwikiRedisDataBase
+    - ChatwikiRedisPassword
+    - ChatwikiRedisHost
+    - ChatwikiRedisPort
+
+    - ChatwikiPGDataBase
+    - ChatwikiPGHost
+    - ChatwikiPGPort
+    - ChatwikiPGUser
+    - ChatwikiPGPassword
+    - ChatwikiPGDbName
+    - ChatwikiPGSslmode
+    
+    - ChatwikiNeo4jDataBase
+    - ChatwikiNeo4jEnable
+    - ChatwikiNeo4jHost
+    - ChatwikiNeo4jPort
+    - ChatwikiNeo4jUser
+    - ChatwikiNeo4jDbname
+    - ChatwikiNeo4jDbPassword
+
   properties:
     region:
       title: 地域
@@ -61,97 +58,68 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: select
-    difySandboxFunctionName:
-      title: DifySandbox 函数名
+    chatwikiCrawlerFunctionName:
+      title: chatwikiCrawlerFunctionName 函数名
       type: string
-      default: dify-sandbox-${default-suffix}
+      default: chatwiki-crawler-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
-      x-placeholder: 请输入DifySandbox 函数名
+      x-placeholder: ChatwikiCrawler 函数名
       x-cate: resourceCate
       x-formitem:
         type: input
-    difySandboxDescription:
-      title: DifySandbox函数描述
+    chatwikiCrawlerDescription:
+      title: chatwikiCrawler函数描述
       type: string
-      default: "Serverless dify sandbox"
+      default: "Serverless chatwiki crawler"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
-      x-placeholder: 请输入DifySandbox函数描述
+      x-placeholder: 请输入chatwikiCrawler函数描述
       x-cate: resourceCate
       x-formitem:
         type: input
-    difyPluginDaemonFunctionName:
-      title: difyPluginDaemon 函数名
+    chatwikiConverterFunctionName:
+      title: chatwikiConverter 函数名
       type: string
-      default: dify-plugindaemon-${default-suffix}
+      default: chatwiki-converter-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
-      x-placeholder: 请输入difyPluginDaemon 函数名
+      x-placeholder: 请输入chatwikiConverter 函数名
       x-cate: resourceCate
       x-formitem:
         type: input
-    difyPluginDaemonDescription:
-      title: difyPluginDaemon函数描述
+    chatwikiConverterDescription:
+      title: chatwikiConverter函数描述
       type: string
-      default: "Serverless dify plugin daemon"
+      default: "Serverless chatwiki converter"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
-      x-placeholder: 请输入difyPluginDaemon函数描述
+      x-placeholder: 请输入chatwiki converter函数描述
       x-cate: resourceCate
       x-formitem:
         type: input
-    difyApiFunctionName:
-      title: DifyApi 函数名
+    chatwikiFunctionName:
+      title: chatwiki 函数名
       type: string
-      default: dify-api-${default-suffix}
+      default: chatwiki-converter-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
-      x-placeholder: 请输入DifyApi 函数名
+      x-placeholder: chatwiki 函数名
       x-cate: resourceCate
       x-formitem:
         type: input
-    difyApiDescription:
-      title: DifyApi函数描述
+    chatwikiDescription:
+      title: chatwiki 函数描述
       type: string
-      default: "Serverless dify api"
+      default: "Serverless chatwiki"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
-      x-placeholder: 请输入DifyApi函数描述
+      x-placeholder: 请输入chatwiki函数描述
       x-cate: resourceCate
       x-formitem:
         type: input
-    difyWebFunctionName:
-      title: DifyWeb函数名
-      type: string
-      default: dify-web-${default-suffix}
-      pattern: "^[a-z][a-z0-9-]{3,40}$"
-      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
-      x-placeholder: 请输入DifyWeb 函数名
-      x-cate: resourceCate
-      x-formitem:
-        type: input
-    difyWebDescription:
-      title: DifyWeb函数描述
-      type: string
-      default: "Serverless dify web"
-      pattern: ".{0,255}$"
-      description: 最大长度为255个字符
-      x-placeholder: 请输入DifyWeb函数描述
-      x-cate: resourceCate
-      x-formitem:
-        type: input
-    DifyCustomDomain:
-      # title: DifyCustomDomain
-      type: string
-      default: ""
-      description: "例如：https://test.com"
-      x-cate: applicationCate
-      x-label: 自定义域名
-      x-placeholder: 请输入自定义域名
-      x-formitem:
-        type: input
-    CacheDB:
+
+    ChatwikiRedisDataBase:
       # title: 缓存配置
       type: string
       default: Redis
@@ -164,30 +132,7 @@ Parameters:
       x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
-    DifyRedisUserName:
-      # title: DifyRedisUserName
-      type: string
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 缓存配置
-      x-restype: redis
-      x-placeholder: 请输入Redis用户名
-      x-formitem:
-        type: input
-    DifyRedisPassword:
-      # title: DifyRedisPassword
-      type: secret
-      default: "123456"
-      description: ""
-      x-cate: applicationCate
-      x-label: 缓存配置
-      x-restype: redis
-      x-placeholder: 请输入Redis密码
-      x-formitem:
-        type: input
-    DifyRedisHost:
-      # title: DifyRedisHost
+    ChatwikiRedisHost:
       type: string
       default: ""
       description: ""
@@ -197,109 +142,27 @@ Parameters:
       x-placeholder: 请输入Redis主机地址
       x-formitem:
         type: input
-    DifyRedisPort:
-      # title: DifyRedisPort
+    ChatwikiRedisPort:
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
-      x-placeholder: 请输入Redisd主机端口
+      x-placeholder: 请输入Redis主机端口
       x-formitem:
         type: input
-    DifyRedisDataBase:
-      # title: DifyRedisDataBase
-      type: string
-      default: "0"
-      description: ""
-      x-cate: applicationCate
-      x-label: 缓存配置
-      x-restype: redis
-      x-placeholder: 请输入Redis数据库
-      x-formitem:
-        type: input
-    DifyRedisDataBaseCelery:
-      # title: DifyRedisDataBaseCelery
-      type: string
-      default: "1"
-      description: ""
-      x-cate: applicationCate
-      x-label: 缓存配置
-      x-restype: redis
-      x-placeholder: 请输入Redis数据库消息队列
-      x-formitem:
-        type: input
-    DifyDBSCHEME:
-      # title: 数据库配置
-      type: string
-      default: postgresql
-      description: ""
-      enum:
-        - postgresql
-      x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
-      x-placeholder: 请选择数据库类型
-      x-formitem:
-        type: select
-    DifyDBUserName:
-      # title: DifyDBUserName
-      type: string
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
-      x-placeholder: 请输入数据库用户名
-      x-formitem:
-        type: input
-    DifyDBPassword:
-      # title: DifyDBPassword
+    ChatwikiRedisPassword:
       type: secret
       default: "123456"
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
-      x-placeholder: 输入数据库密码
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入Redis密码
       x-formitem:
         type: input
-    DifyDBHost:
-      # title: DifyDBHost
-      type: string
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
-      x-placeholder: 请输入数据库主机地址
-      x-formitem:
-        type: input
-    DifyDBPort:
-      # title: DifyDBPort
-      type: string
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
-      x-placeholder: 请输入数据库端口
-      x-formitem:
-        type: input
-    DifyDBPluginDataBase:
-      # title: DifyDBPluginDataBase
-      type: string
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
-      x-placeholder: 请输入可扩展数据库
-      x-formitem:
-        type: input
-    DifyDBDataBase:
-      # title: DifyDBDataBase
+    ChatwikiPGDataBase:
       type: string
       default: ""
       description: ""
@@ -309,176 +172,141 @@ Parameters:
       x-placeholder: 请输入数据库
       x-formitem:
         type: input
-    ObjectStorage:
-      # title: 对象存储配置
-      type: string
-      default: OBS
-      description: ""
-      enum:
-        - OBS
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: s3
-      x-placeholder: 请选择对象存储类型
-      x-formitem:
-        type: select
-    DifyAwsS3Endpoint:
-      # title: DifyAwsS3Endpoint
+    ChatwikiPGHost:
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: s3
-      x-placeholder: 请输入OBS端点/Endpoint
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库主机地址
       x-formitem:
         type: input
-    DifyAwsS3Bucket:
-      # title: DifyAwsS3Bucket
+    ChatwikiPGPort:
       type: string
-      default: bucket-dify-test
+      default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: s3
-      x-placeholder: 请输入OBS存储桶名
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库端口
       x-formitem:
         type: input
-    DifyAwsS3Region:
-      # title: DifyAwsS3Region
+    ChatwikiPGUser:
       type: string
-      default: beijing2
+      default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: s3
-      x-placeholder: 请输入OBS区域
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库用户名
       x-formitem:
         type: input
-    DifyAwsS3Ak:
-      # title: DifyAwsS3Ak
+    ChatwikiPGPassword:
       type: secret
-      default: "AKIAIOSFODNN7EXAMPLE"
+      default: "123456"
       description: ""
       x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: s3
-      x-placeholder: 请输入OBS AK
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 输入数据库密码
       x-formitem:
         type: input
-    DifyAwsS3Sk:
-      # title: DifyAwsS3Sk
+    ChatwikiPGDbName:
       type: secret
-      default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+      default: "chatwiki"
       description: ""
       x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: s3
-      x-placeholder: 请输入OBS SK
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 输入数据库名称
       x-formitem:
         type: input
-    VectorDB:
-      # title: 向量数据库配置
+    ChatwikiPGSslMode:
+      type: secret
+      default: "disable"
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 输入数据库SSl模式是否支持
+      x-formitem:
+        type: input
+
+    ChatwikiNeo4jDataBase:
+      # title: 缓存配置
       type: string
-      default: "milvus"
+      default: Neo4j
       description: ""
       enum:
-        - milvus
+        - Neo4j
       x-cate: applicationCate
-      x-label: 向量数据库配置
-      x-restype: milvus
-      x-placeholder: 请选择向量数据库类型
+      x-label: 缓存配置
+      x-restype: neo4j
+      x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
-    DifyMilvusUri:
+    ChatwikiNeo4jEnable:
       type: string
       default: ""
-      description: "例如：http://127.0.0.1:19530"
+      description: ""
       x-cate: applicationCate
-      x-label: 向量数据库配置
-      x-restype: milvus
-      x-placeholder: "请输入Milvus端点/Uri"
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 是否启用Neo4j数据库
       x-formitem:
         type: input
-    DifyMilvusToken:
+    ChatwikiNeo4jHost:
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 向量数据库配置
-      x-restype: milvus
-      x-placeholder: 请输入Milvus Token
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库主机地址
       x-formitem:
         type: input
-    DifyMilvusUser:
+    ChatwikiNeo4jPort:
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 向量数据库配置
-      x-restype: milvus
-      x-placeholder: 请输入Milvus用户名/User
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库端口
       x-formitem:
         type: input
-    DifyMilvusPassword:
+    ChatwikiNeo4jUser:
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 向量数据库配置
-      x-restype: milvus
-      x-placeholder: 请输入Milvus密码/Password
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库用户名
       x-formitem:
         type: input
-    FileStorage:
-      # title: 文件存储配置
-      type: string
-      default: Polefs
-      description: ""
-      enum:
-        - Polefs
-      x-cate: applicationCate
-      x-label: 文件存储配置
-      x-restype: polefs
-      x-placeholder: 请选择文件存储类型
-      x-formitem:
-        type: select
-    PolefsVolume:
-      # title: 函数挂载 PoleFS 卷名称
+    ChatwikiNeo4jDbname:
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 文件存储配置
-      x-restype: polefs
-      x-placeholder: 函数挂载 PoleFS卷
-      x-api-uri: /resources/polefs/volumes
-      x-extends-value:
-        create_username: PolefsVolumeCreateUser
-      x-formitem:
-        type: select
-        name: volume_unique_name
-    MountDir:
-      # title: 函数挂载路径
-      type: string
-      description: ""
-      default: "/app/storage"
-      x-cate: applicationCate
-      x-label: 文件存储配置
-      x-restype: polefs
-      x-placeholder: 函数挂载路径
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库名称
       x-formitem:
         type: input
-    PolefsVolumeCreateUser:
-      # title: 函数挂载的创建用户
+    ChatwikiNeo4jDbPassword:
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 文件存储配置
-      x-restype: polefs
-      x-placeholder: 函数挂载的创建用户
-      x-hidden: true
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库密码
+      x-formitem:
+        type: input
+
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"
