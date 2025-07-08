@@ -1,5 +1,5 @@
 #dockerfile
-FROM harbor.qihoo.net/functions/app/converter:1.7
+FROM functions/app/converter:1.7
 
 # 可选：添加你想要的自定义内容
 ENV TZ=Asia/Shanghai

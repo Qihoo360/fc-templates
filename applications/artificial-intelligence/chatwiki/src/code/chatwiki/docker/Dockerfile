@@ -1,4 +1,4 @@
-FROM harbor.qihoo.net/functions/app/ubuntu:24.10
+FROM functions/app/ubuntu:24.10
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Shanghai

@@ -1,5 +1,5 @@
 #dockerfile
-FROM harbor.qihoo.net/functions/app/playwright:v1.44.1-jammy
+FROM functions/app/playwright:v1.44.1-jammy
 RUN mkdir -p /var/www/crawler
 COPY . /var/www/crawler/
 RUN chmod +x /var/www/crawler/build/crawler
