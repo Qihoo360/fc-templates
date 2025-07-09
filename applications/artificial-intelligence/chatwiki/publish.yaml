@@ -256,12 +256,12 @@ Parameters:
         type: select
     ChatwikiNeo4jEnable:
       type: string
-      default: "1"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 图数据库配置
       x-restype: neo4j
-      x-placeholder: 是否启用Neo4j数据库
+      x-placeholder: 是否启用Neo4j数据库,1是启用,0是不启用
       x-formitem:
         type: input
     ChatwikiNeo4jHost:
