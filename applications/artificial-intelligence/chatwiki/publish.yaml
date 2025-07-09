@@ -8,7 +8,7 @@ Provider:
   - fc
 Version: 0.0.3
 Description: 该示例通过 chatwiki 快速搭建私有的知识库AI 问答系统。
-HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/dify150
+HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/chatwiki
 Organization: 函数计算（FC）
 Tags:
   - AI
@@ -54,7 +54,12 @@ Parameters:
       default: cn-north-cu-1
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+        - test-2
+        - test-3
+        - test-4
+        - test-5
+        - test-6
+        - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
