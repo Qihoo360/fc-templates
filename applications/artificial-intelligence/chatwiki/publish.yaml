@@ -244,7 +244,7 @@ Parameters:
 
     ChatwikiNeo4jDataBase:
       type: string
-      default: Neo4j
+      default: neo4j
       description: ""
       enum:
         - neo4j
