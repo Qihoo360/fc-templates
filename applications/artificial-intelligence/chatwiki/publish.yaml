@@ -223,7 +223,7 @@ Parameters:
         type: input
     ChatwikiPGDbName:
       type: string
-      default: "chatwiki"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
@@ -233,12 +233,12 @@ Parameters:
         type: input
     ChatwikiPGSslMode:
       type: string
-      default: "disable"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: postgresql
-      x-placeholder: 输入数据库SSl模式是否支持
+      x-placeholder: 输入数据库SSl模式是否支持，默认disable
       x-formitem:
         type: input
 
