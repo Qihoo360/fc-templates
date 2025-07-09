@@ -1,0 +1,6 @@
+*
+!.gitignore
+!model_icon/
+!default/
+!temp/
+!templates/

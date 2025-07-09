@@ -1,0 +1,186 @@
+edition: 3.0.0
+name: chatwiki-app
+access: default
+vars:
+  region: {{region}}
+  
+  chatwikiCrawlerFunctionName : {{chatwikiCrawlerFunctionName}}
+  chatwikiCrawlerDescription : {{chatwikiCrawlerDescription}}
+  chatwikiConverterFunctionName : {{chatwikiConverterFunctionName}}
+  chatwikiConverterDescription : {{chatwikiConverterDescription}} 
+  chatwikiFunctionName : {{chatwikiFunctionName}}
+  chatwikiDescription : {{chatwikiDescription}}
+
+  ChatwikiRedisDataBase: {{ChatwikiRedisDataBase}}
+  ChatwikiRedisPassword: {{ChatwikiRedisPassword}}
+  ChatwikiRedisHost: {{ChatwikiRedisHost}}
+  ChatwikiRedisPort: {{ChatwikiRedisPort}}
+  
+  ChatwikiPGDataBase: {{ChatwikiPGDataBase}}
+  ChatwikiPGHost: {{ChatwikiPGHost}}
+  ChatwikiPGPort: {{ChatwikiPGPort}}
+  ChatwikiPGUser: {{ChatwikiPGUser}}
+  ChatwikiPGPassword: {{ChatwikiPGPassword}}
+  ChatwikiPGDbName: {{ChatwikiPGDbName}}
+  ChatwikiPGSslmode: {{ChatwikiPGSslmode}}
+
+  ChatwikiNeo4jDataBase: {{ChatwikiNeo4jDataBase}}
+  ChatwikiNeo4jEnable: {{ChatwikiNeo4jEnable}}
+  ChatwikiNeo4jHost: {{ChatwikiNeo4jHost}}
+  ChatwikiNeo4jPort: {{ChatwikiNeo4jPort}}
+  ChatwikiNeo4jUser: {{ChatwikiNeo4jUser}}
+  ChatwikiNeo4jDbname: {{ChatwikiNeo4jDbname}}
+  ChatwikiNeo4jDbPassword: {{ChatwikiNeo4jDbPassword}}
+
+resources:
+  chatwikiCrawler:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.chatwikiCrawlerDescription}
+      runtime: custom
+      memorySize: 4096
+      cpu: 4
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      port: 3800
+      functionName: ${vars.chatwikiCrawlerFunctionName}
+      sourceSubDir: code/chatwiki-crawler
+      environmentVariables:
+        testkey: testvalue
+        TZ: "Asia/Shanghai"
+        GIN_MODE: "debug"
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 2
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "docker/Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+  chatwikiConverter:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.chatwikiConverterDescription}
+      runtime: custom
+      memorySize: 4096
+      cpu: 4
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      port: 80
+      functionName: ${vars.chatwikiConverterFunctionName}
+      sourceSubDir: code/chatwiki-converter
+      environmentVariables:
+        testkey: testvalue
+        TZ: "Asia/Shanghai"
+        GIN_MODE: "debug"
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 2
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+  chatwiki:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.chatwikiDescription}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      code:
+        templated_files:
+          - code/chatwiki/configs/chatwiki/config_pro.ini
+      port: 8080
+      functionName: ${vars.chatwikiFunctionName}
+      sourceSubDir: code/chatwiki
+      environmentVariables:
+        testkey: "testvalue"
+        TZ: "Asia/Shanghai"
+        CRAWLER_ENDPOINT: "http://${resources.chatwikiCrawler.output.http_trigger_url}"
+        CONVERTER_ENDPOINT: "http://${resources.chatwikiConverter.output.http_trigger_url}"
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "docker/Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""

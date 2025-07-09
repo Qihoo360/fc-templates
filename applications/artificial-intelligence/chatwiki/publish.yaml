@@ -1,0 +1,317 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: chatwiki-v1
+Provider:
+  - fc
+Version: 0.0.3
+Description: 该示例通过 chatwiki 快速搭建私有的知识库AI 问答系统。
+HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/dify150
+Organization: 函数计算（FC）
+Tags:
+  - AI
+  - Custom Runtime
+Category: Web框架
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - chatwikiCrawlerFunctionName
+    - chatwikiConverterFunctionName
+    - chatwikiFunctionName
+    
+    - ChatwikiRedisDataBase
+    - ChatwikiRedisPassword
+    - ChatwikiRedisHost
+    - ChatwikiRedisPort
+
+    - ChatwikiPGDataBase
+    - ChatwikiPGHost
+    - ChatwikiPGPort
+    - ChatwikiPGUser
+    - ChatwikiPGPassword
+    - ChatwikiPGDbName
+    - ChatwikiPGSslmode
+    
+    - ChatwikiNeo4jDataBase
+    - ChatwikiNeo4jEnable
+    - ChatwikiNeo4jHost
+    - ChatwikiNeo4jPort
+    - ChatwikiNeo4jUser
+    - ChatwikiNeo4jDbname
+    - ChatwikiNeo4jDbPassword
+
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: cn-north-cu-1
+      description: 创建应用所在的地区
+      enum:
+        - cn-north-cu-1
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+    chatwikiCrawlerFunctionName:
+      title: chatwikiCrawlerFunctionName 函数名
+      type: string
+      default: chatwiki-crawler-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: ChatwikiCrawler 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    chatwikiCrawlerDescription:
+      title: chatwikiCrawler函数描述
+      type: string
+      default: "Serverless chatwiki crawler"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入chatwikiCrawler函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    chatwikiConverterFunctionName:
+      title: chatwikiConverter 函数名
+      type: string
+      default: chatwiki-converter-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入chatwikiConverter 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    chatwikiConverterDescription:
+      title: chatwikiConverter函数描述
+      type: string
+      default: "Serverless chatwiki converter"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入chatwiki converter函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    chatwikiFunctionName:
+      title: chatwiki 函数名
+      type: string
+      default: chatwiki-converter-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: chatwiki 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    chatwikiDescription:
+      title: chatwiki 函数描述
+      type: string
+      default: "Serverless chatwiki"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入chatwiki函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+
+    ChatwikiRedisDataBase:
+      # title: 缓存配置
+      type: string
+      default: Redis
+      description: ""
+      enum:
+        - Redis
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请选择缓存系统
+      x-formitem:
+        type: select
+    ChatwikiRedisHost:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入Redis主机地址
+      x-formitem:
+        type: input
+    ChatwikiRedisPort:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入Redis主机端口
+      x-formitem:
+        type: input
+    ChatwikiRedisPassword:
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入Redis密码
+      x-formitem:
+        type: input
+    ChatwikiPGDataBase:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库
+      x-formitem:
+        type: input
+    ChatwikiPGHost:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库主机地址
+      x-formitem:
+        type: input
+    ChatwikiPGPort:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库端口
+      x-formitem:
+        type: input
+    ChatwikiPGUser:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库用户名
+      x-formitem:
+        type: input
+    ChatwikiPGPassword:
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 输入数据库密码
+      x-formitem:
+        type: input
+    ChatwikiPGDbName:
+      type: secret
+      default: "chatwiki"
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 输入数据库名称
+      x-formitem:
+        type: input
+    ChatwikiPGSslMode:
+      type: secret
+      default: "disable"
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 输入数据库SSl模式是否支持
+      x-formitem:
+        type: input
+
+    ChatwikiNeo4jDataBase:
+      # title: 缓存配置
+      type: string
+      default: Neo4j
+      description: ""
+      enum:
+        - Neo4j
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: neo4j
+      x-placeholder: 请选择缓存系统
+      x-formitem:
+        type: select
+    ChatwikiNeo4jEnable:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 是否启用Neo4j数据库
+      x-formitem:
+        type: input
+    ChatwikiNeo4jHost:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库主机地址
+      x-formitem:
+        type: input
+    ChatwikiNeo4jPort:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库端口
+      x-formitem:
+        type: input
+    ChatwikiNeo4jUser:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库用户名
+      x-formitem:
+        type: input
+    ChatwikiNeo4jDbname:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库名称
+      x-formitem:
+        type: input
+    ChatwikiNeo4jDbPassword:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库密码
+      x-formitem:
+        type: input
+
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
+    
