@@ -249,7 +249,7 @@ Parameters:
       enum:
         - neo4j
       x-cate: applicationCate
-      x-label: 数据库配置
+      x-label:  图数据库配置
       x-restype: neo4j
       x-placeholder: 请选择数据库类型
       x-formitem:
@@ -259,7 +259,7 @@ Parameters:
       default: "1"
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
+      x-label: 图数据库配置
       x-restype: neo4j
       x-placeholder: 是否启用Neo4j数据库
       x-formitem:
@@ -269,7 +269,7 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
+      x-label: 图数据库配置
       x-restype: neo4j
       x-placeholder: 请输入数据库主机地址
       x-formitem:
@@ -279,7 +279,7 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
+      x-label: 图数据库配置
       x-restype: neo4j
       x-placeholder: 请输入数据库端口
       x-formitem:
@@ -289,7 +289,7 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
+      x-label: 图数据库配置
       x-restype: neo4j
       x-placeholder: 请输入数据库用户名
       x-formitem:
@@ -299,7 +299,7 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
+      x-label: 图数据库配置
       x-restype: neo4j
       x-placeholder: 请输入数据库名称
       x-formitem:
@@ -309,7 +309,7 @@ Parameters:
       default: "123456"
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
+      x-label: 图数据库配置
       x-restype: neo4j
       x-placeholder: 请输入数据库密码
       x-formitem:
