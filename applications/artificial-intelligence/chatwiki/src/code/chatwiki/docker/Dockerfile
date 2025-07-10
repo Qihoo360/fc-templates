@@ -30,7 +30,7 @@ COPY docker/go-nsq/go-websocket.conf /etc/supervisor/conf.d/go-websocket.conf
 COPY . /var/www/chatwiki/
 
 # 复制 nginx 配置
-COPY nginx/*.conf /etc/nginx/conf.d/
+COPY docker/nginx/*.conf /etc/nginx/conf.d/
 
 # 设置工作目录
 WORKDIR /var/www/chatwiki
@@ -42,7 +42,8 @@ RUN chmod +x /var/www/chatwiki/build/websocket \
 # 创建日志目录
 RUN mkdir -p /var/log/nginx \
     && mkdir -p /var/www/go-nsq/log \
-    && chmod 777 /var/log/nginx /var/www/go-nsq/log
+    && mkdir -p /var/www/websocket/log \
+    && chmod 777 /var/log/nginx /var/www/go-nsq/log /var/www/websocket/log
 
 # 暴露端口（NSQ lookupd、nsqd、nsqadmin、websocket、nginx等）
 EXPOSE 4161 4150 4171 24628 8080 8081 8082
