@@ -19,7 +19,7 @@ vars:
   ChatwikiPGUser: {{ChatwikiPGUser}}
   ChatwikiPGPassword: {{ChatwikiPGPassword}}
   ChatwikiPGDbName: {{ChatwikiPGDbName}}
-  ChatwikiPGSslmode: {{ChatwikiPGSslmode}}
+  ChatwikiPGSslMode: {{ChatwikiPGSslMode}}
   ChatwikiNeo4jDataBase: {{ChatwikiNeo4jDataBase}}
   ChatwikiNeo4jEnable: {{ChatwikiNeo4jEnable}}
   ChatwikiNeo4jHost: {{ChatwikiNeo4jHost}}

@@ -36,7 +36,7 @@ Parameters:
     - ChatwikiPGUser
     - ChatwikiPGPassword
     - ChatwikiPGDbName
-    - ChatwikiPGSslmode
+    - ChatwikiPGSslMode
     - ChatwikiNeo4jDataBase
     - ChatwikiNeo4jEnable
     - ChatwikiNeo4jHost
