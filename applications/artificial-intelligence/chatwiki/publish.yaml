@@ -25,13 +25,11 @@ Parameters:
     - region
     - chatwikiCrawlerFunctionName
     - chatwikiConverterFunctionName
-    - chatwikiFunctionName
-    
+    - chatwikiFunctionName  
     - ChatwikiRedisDataBase
     - ChatwikiRedisPassword
     - ChatwikiRedisHost
     - ChatwikiRedisPort
-
     - ChatwikiPGDataBase
     - ChatwikiPGHost
     - ChatwikiPGPort
@@ -39,7 +37,6 @@ Parameters:
     - ChatwikiPGPassword
     - ChatwikiPGDbName
     - ChatwikiPGSslmode
-    
     - ChatwikiNeo4jDataBase
     - ChatwikiNeo4jEnable
     - ChatwikiNeo4jHost
@@ -47,7 +44,6 @@ Parameters:
     - ChatwikiNeo4jUser
     - ChatwikiNeo4jDbname
     - ChatwikiNeo4jDbPassword
-
   properties:
     region:
       title: 地域
@@ -119,7 +115,6 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
-
     ChatwikiRedisDataBase:
       # title: 缓存配置
       type: string
@@ -163,7 +158,6 @@ Parameters:
       x-placeholder: 请输入redis密码
       x-formitem:
         type: input
-
     ChatwikiPGDataBase:
       type: string
       default: postgresql
@@ -236,7 +230,6 @@ Parameters:
       x-placeholder: 输入数据库SSl模式是否支持，默认disable
       x-formitem:
         type: input
-
     ChatwikiNeo4jDataBase:
       type: string
       default: neo4j
@@ -309,7 +302,6 @@ Parameters:
       x-placeholder: 请输入数据库密码
       x-formitem:
         type: input
-
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"
