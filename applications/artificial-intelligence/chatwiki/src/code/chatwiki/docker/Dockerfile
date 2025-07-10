@@ -23,6 +23,9 @@ COPY docker/go-nsq/go-nsqlookupd.conf /etc/supervisor/conf.d/go-nsqlookupd.conf
 COPY docker/go-nsq/go-nsqd.conf /etc/supervisor/conf.d/go-nsqd.conf
 COPY docker/go-nsq/go-nsqadmin.conf /etc/supervisor/conf.d/go-nsqadmin.conf
 
+# chatwiki配置
+COPY docker/go_core/chatwiki.conf /etc/supervisor/conf.d/
+
 # 复制 websocket supervisor 配置（你需要新建一个）
 COPY docker/go-nsq/go-websocket.conf /etc/supervisor/conf.d/go-websocket.conf
 
