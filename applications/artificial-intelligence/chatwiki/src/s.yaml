@@ -34,9 +34,9 @@ resources:
       region: ${vars.region}
       description: ${vars.chatwikiCrawlerDescription}
       runtime: custom
-      memorySize: 2048
-      cpu: 2
-      diskSize: 10240
+      memorySize: 4096
+      cpu: 4
+      diskSize: 4096
       timeout: 100
       instanceConcurrency: 100
       requestType: http
@@ -134,7 +134,7 @@ resources:
       runtime: custom
       memorySize: 10240
       cpu: 8
-      diskSize: 512
+      diskSize: 10240
       timeout: 100
       instanceConcurrency: 100
       requestType: http
