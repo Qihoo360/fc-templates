@@ -7,4 +7,4 @@ WORKDIR /var/www/crawler
 ENV TZ=Asia/Shanghai
 ENV PRODUCTION=true
 ENV CONCURRENT=2
-CMD ["./chatwiki-main/build/crawler"]
+CMD ["./build/crawler"]

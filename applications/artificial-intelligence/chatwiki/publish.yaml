@@ -22,6 +22,7 @@ Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
   required: # 必填项
+    - region
     - chatwikiCrawlerFunctionName
     - chatwikiConverterFunctionName
     - chatwikiFunctionName
@@ -51,10 +52,15 @@ Parameters:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: test-2
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+        - test-2
+        - test-3
+        - test-4
+        - test-5
+        - test-6
+        - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -101,7 +107,7 @@ Parameters:
     chatwikiFunctionName:
       title: chatwiki 函数名
       type: string
-      default: chatwiki-converter-${default-suffix}
+      default: chatwiki-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
       x-placeholder: chatwiki 函数名
@@ -122,10 +128,10 @@ Parameters:
     ChatwikiRedisDataBase:
       # title: 缓存配置
       type: string
-      default: Redis
+      default: redis
       description: ""
       enum:
-        - Redis
+        - redis
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
@@ -139,7 +145,7 @@ Parameters:
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
-      x-placeholder: 请输入Redis主机地址
+      x-placeholder: 请输入redis主机地址
       x-formitem:
         type: input
     ChatwikiRedisPort:
@@ -149,7 +155,7 @@ Parameters:
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
-      x-placeholder: 请输入Redis主机端口
+      x-placeholder: 请输入redis主机端口
       x-formitem:
         type: input
     ChatwikiRedisPassword:
@@ -159,19 +165,22 @@ Parameters:
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
-      x-placeholder: 请输入Redis密码
+      x-placeholder: 请输入redis密码
       x-formitem:
         type: input
+
     ChatwikiPGDataBase:
       type: string
-      default: ""
+      default: postgresql
       description: ""
+      enum:
+        - postgresql
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: postgresql
-      x-placeholder: 请输入数据库
+      x-placeholder: 请选择数据库类型
       x-formitem:
-        type: input
+        type: select
     ChatwikiPGHost:
       type: string
       default: ""
@@ -213,8 +222,8 @@ Parameters:
       x-formitem:
         type: input
     ChatwikiPGDbName:
-      type: secret
-      default: "chatwiki"
+      type: string
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
@@ -223,27 +232,26 @@ Parameters:
       x-formitem:
         type: input
     ChatwikiPGSslMode:
-      type: secret
-      default: "disable"
+      type: string
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: postgresql
-      x-placeholder: 输入数据库SSl模式是否支持
+      x-placeholder: 输入数据库SSl模式是否支持，默认disable
       x-formitem:
         type: input
 
     ChatwikiNeo4jDataBase:
-      # title: 缓存配置
       type: string
-      default: Neo4j
+      default: neo4j
       description: ""
       enum:
-        - Neo4j
+        - neo4j
       x-cate: applicationCate
-      x-label: 缓存配置
+      x-label:  图数据库配置
       x-restype: neo4j
-      x-placeholder: 请选择缓存系统
+      x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
     ChatwikiNeo4jEnable:
@@ -251,9 +259,9 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
-      x-placeholder: 是否启用Neo4j数据库
+      x-label: 图数据库配置
+      x-restype: neo4j
+      x-placeholder: 是否启用Neo4j数据库,1是启用,0是不启用
       x-formitem:
         type: input
     ChatwikiNeo4jHost:
@@ -261,8 +269,8 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
+      x-label: 图数据库配置
+      x-restype: neo4j
       x-placeholder: 请输入数据库主机地址
       x-formitem:
         type: input
@@ -271,8 +279,8 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
+      x-label: 图数据库配置
+      x-restype: neo4j
       x-placeholder: 请输入数据库端口
       x-formitem:
         type: input
@@ -281,8 +289,8 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
+      x-label: 图数据库配置
+      x-restype: neo4j
       x-placeholder: 请输入数据库用户名
       x-formitem:
         type: input
@@ -291,18 +299,18 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
+      x-label: 图数据库配置
+      x-restype: neo4j
       x-placeholder: 请输入数据库名称
       x-formitem:
         type: input
     ChatwikiNeo4jDbPassword:
-      type: string
-      default: ""
+      type: secret
+      default: "123456"
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
+      x-label: 图数据库配置
+      x-restype: neo4j
       x-placeholder: 请输入数据库密码
       x-formitem:
         type: input
