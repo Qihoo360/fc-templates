@@ -3,19 +3,16 @@ name: chatwiki-app
 access: default
 vars:
   region: {{region}}
-  
   chatwikiCrawlerFunctionName : {{chatwikiCrawlerFunctionName}}
   chatwikiCrawlerDescription : {{chatwikiCrawlerDescription}}
   chatwikiConverterFunctionName : {{chatwikiConverterFunctionName}}
   chatwikiConverterDescription : {{chatwikiConverterDescription}} 
   chatwikiFunctionName : {{chatwikiFunctionName}}
   chatwikiDescription : {{chatwikiDescription}}
-
   ChatwikiRedisDataBase: {{ChatwikiRedisDataBase}}
   ChatwikiRedisPassword: {{ChatwikiRedisPassword}}
   ChatwikiRedisHost: {{ChatwikiRedisHost}}
   ChatwikiRedisPort: {{ChatwikiRedisPort}}
-  
   ChatwikiPGDataBase: {{ChatwikiPGDataBase}}
   ChatwikiPGHost: {{ChatwikiPGHost}}
   ChatwikiPGPort: {{ChatwikiPGPort}}
@@ -23,7 +20,6 @@ vars:
   ChatwikiPGPassword: {{ChatwikiPGPassword}}
   ChatwikiPGDbName: {{ChatwikiPGDbName}}
   ChatwikiPGSslmode: {{ChatwikiPGSslmode}}
-
   ChatwikiNeo4jDataBase: {{ChatwikiNeo4jDataBase}}
   ChatwikiNeo4jEnable: {{ChatwikiNeo4jEnable}}
   ChatwikiNeo4jHost: {{ChatwikiNeo4jHost}}
@@ -31,7 +27,6 @@ vars:
   ChatwikiNeo4jUser: {{ChatwikiNeo4jUser}}
   ChatwikiNeo4jDbname: {{ChatwikiNeo4jDbname}}
   ChatwikiNeo4jDbPassword: {{ChatwikiNeo4jDbPassword}}
-
 resources:
   chatwikiCrawler:
     component: ${path('/utils/components/zfc')}

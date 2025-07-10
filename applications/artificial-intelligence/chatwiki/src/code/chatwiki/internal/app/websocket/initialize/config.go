@@ -12,13 +12,13 @@ import (
 )
 
 func initConfig() {
-	file := `configs/websocket/config_pro.ini`
+	file := `/var/www/chatwiki/configs/websocket/config_pro.ini`
 	define.Env = "production"
 	if define.IsDev {
-		file = `configs/websocket/config_dev.ini`
+		file = `/var/www/chatwiki/configs/websocket/config_dev.ini`
 		define.Env = "development"
 		if tool.InArrayString(runtime.GOOS, []string{`windows`, `darwin`}) {
-			file = `configs/websocket/config_loc.ini`
+			file = `/var/www/chatwiki/configs/websocket/config_loc.ini`
 			define.Env = "local"
 		}
 	}
