@@ -29,6 +29,9 @@ COPY docker/go_core/chatwiki.conf /etc/supervisor/conf.d/
 # 复制 websocket supervisor 配置（你需要新建一个）
 COPY docker/go-nsq/go-websocket.conf /etc/supervisor/conf.d/go-websocket.conf
 
+# nginx配置
+COPY docker/go_core/nginx.conf /etc/supervisor/conf.d/
+
 # 复制项目文件
 COPY . /var/www/chatwiki/
 
