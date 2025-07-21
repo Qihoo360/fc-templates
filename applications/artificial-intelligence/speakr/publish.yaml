@@ -30,8 +30,8 @@ Parameters:
   - transciptionApiKey
   - whisperModel
   - FileStorage
-  - functionPolefsVolumn
-  - afunctionMountDir
+  - POLEFS_VOLUME
+  - POLEFS_MOUNT_PATH
   - afunctionVolCreateUser
   properties:
     region:
@@ -178,7 +178,7 @@ Parameters:
       x-placeholder: 请选择文件存储类型
       x-formitem:
         type: select
-    functionPolefsVolumn:
+    POLEFS_VOLUME:
       # title: 函数挂载 PoleFS 卷名称
       type: string
       default: ""
@@ -193,7 +193,7 @@ Parameters:
       x-formitem:
         type: select
         name: volume_unique_name
-    afunctionMountDir:
+    POLEFS_MOUNT_PATH:
       # title: 函数挂载路径
       type: string
       description: ""

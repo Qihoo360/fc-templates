@@ -32,7 +32,7 @@ Parameters:
     - LokiAwsAK
     - LokiAwsSK
     - DataBase
-    - GrafanaMysqlUrl
+    - MYSQL_URL
   properties:
     region:
       title: 地域

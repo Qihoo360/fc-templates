@@ -25,8 +25,8 @@ Parameters:
     - region
     - FunctionName
     - LogStorage
-    - ElasticsearchHost
-    - ElasticsearchPort
+    - ELASTICSEARCH_HOST
+    - ELASTICSEARCH_PORT
   properties:
     region:
       title: 地域
@@ -76,8 +76,8 @@ Parameters:
       x-placeholder: 请选择日志存储类型
       x-formitem:
         type: select
-    ElasticsearchHost:
-      # title: ElasticsearchHost
+    ELASTICSEARCH_HOST:
+      # title: ELASTICSEARCH_HOST
       type: string
       default: "192.168.1.1"
       description: ""
@@ -87,8 +87,8 @@ Parameters:
       x-placeholder: 请输入日志系统主机地址
       x-formitem:
         type: input
-    ElasticsearchPort:
-      # title: ElasticsearchPort
+    ELASTICSEARCH_PORT:
+      # title: ELASTICSEARCH_PORT
       type: string
       default: "9200"
       description: ""

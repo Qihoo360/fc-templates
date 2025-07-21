@@ -6,8 +6,8 @@ vars:
   FunctionName: {{FunctionName}}
   Describe: {{Description}}
   driverName: {{driverName}}
-  dataSourceName: {{dataSourceName}}
-  dbName: {{dbName}}
+  MYSQL_DSN: {{MYSQL_DSN}}
+  MYSQL_DATABASE: {{MYSQL_DATABASE}}
 resources:
   casdoor:
     component: ${path('/utils/components/zfc')}
@@ -29,8 +29,8 @@ resources:
       environmentVariables:
         testkey: "testvalue"
         driverName: "${vars.driverName}"
-        dataSourceName: "${vars.dataSourceName}"
-        dbName: "${vars.dbName}"
+        dataSourceName: "${vars.MYSQL_DSN}"
+        dbName: "${vars.MYSQL_DATABASE}"
         RUNNING_IN_DOCKER: "true"
         runmode: "dev"
         httpport: "8000"

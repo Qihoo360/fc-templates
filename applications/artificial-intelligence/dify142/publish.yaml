@@ -29,17 +29,17 @@ Parameters:
     - difyWebFunctionName
     - DifyCustomDomain
     - CacheDB
-    - DifyRedisPassword
-    - DifyRedisHost
-    - DifyRedisPort
-    - DifyRedisDataBase
-    - DifyRedisDataBaseCelery
+    - REDIS_PASSWORD
+    - REDIS_HOST
+    - REDIS_PORT
+    - REDIS_DATABASE
+    - REDIS_DATABASE_CELERY
     - DifyDBSCHEME
-    - DifyDBPassword
-    - DifyDBHost
-    - DifyDBPort
+    - POSTGRES_PASSWORD
+    - POSTGRES_HOST
+    - POSTGRES_PORT
     - DifyDBPluginDataBase
-    - DifyDBDataBase
+    - POSTGRES_DATABASE
     - ObjectStorage
     - DifyAwsS3Endpoint
     - DifyAwsS3Bucket
@@ -47,8 +47,8 @@ Parameters:
     - DifyAwsS3Ak
     - DifyAwsS3Sk
     - FileStorage
-    - PolefsVolume
-    - MountDir
+    - POLEFS_VOLUME
+    - POLEFS_MOUNT_PATH
     - PolefsVolumeCreateUse
   properties:
     region:
@@ -192,7 +192,7 @@ Parameters:
       x-formitem:
         type: input
     REDIS_HOST:
-      # title: DifyRedisHost
+      # title: REDIS_HOST
       type: string
       default: ""
       description: ""
@@ -203,7 +203,7 @@ Parameters:
       x-formitem:
         type: input
     REDIS_PORT:
-      # title: DifyRedisPort
+      # title: REDIS_PORT
       type: string
       default: ""
       description: ""
@@ -214,7 +214,7 @@ Parameters:
       x-formitem:
         type: input
     REDIS_DATABASE:
-      # title: DifyRedisDataBase
+      # title: REDIS_DATABASE
       type: string
       default: "0"
       description: ""
@@ -225,7 +225,7 @@ Parameters:
       x-formitem:
         type: input
     REDIS_DATABASE_CELERY:
-      # title: DifyRedisDataBaseCelery
+      # title: REDIS_DATABASE_CELERY
       type: string
       default: "1"
       description: ""
@@ -248,8 +248,8 @@ Parameters:
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
-    DifyDBUserName:
-      # title: DifyDBUserName
+    POSTGRES_USERNAME:
+      # title: POSTGRES_USERNAME
       type: string
       default: ""
       description: ""
@@ -259,8 +259,8 @@ Parameters:
       x-placeholder: 请输入数据库用户名
       x-formitem:
         type: input
-    DifyDBPassword:
-      # title: DifyDBPassword
+    POSTGRES_PASSWORD:
+      # title: POSTGRES_PASSWORD
       type: secret
       default: "123456"
       description: ""
@@ -270,8 +270,8 @@ Parameters:
       x-placeholder: 输入数据库密码
       x-formitem:
         type: input
-    DifyDBHost:
-      # title: DifyDBHost
+    POSTGRES_HOST:
+      # title: POSTGRES_HOST
       type: string
       default: ""
       description: ""
@@ -281,8 +281,8 @@ Parameters:
       x-placeholder: 请输入数据库主机地址
       x-formitem:
         type: input
-    DifyDBPort:
-      # title: DifyDBPort
+    POSTGRES_PORT:
+      # title: POSTGRES_PORT
       type: string
       default: ""
       description: ""
@@ -303,8 +303,8 @@ Parameters:
       x-placeholder: 请输入可扩展数据库
       x-formitem:
         type: input
-    DifyDBDataBase:
-      # title: DifyDBDataBase
+    POSTGRES_DATABASE:
+      # title: POSTGRES_DATABASE
       type: string
       default: ""
       description: ""
@@ -448,7 +448,7 @@ Parameters:
       x-placeholder: 请选择文件存储类型
       x-formitem:
         type: select
-    PolefsVolume:
+    POLEFS_VOLUME:
       # title: 函数挂载 PoleFS 卷名称
       type: string
       default: ""
@@ -463,7 +463,7 @@ Parameters:
       x-formitem:
         type: select
         name: volume_unique_name
-    MountDir:
+    POLEFS_MOUNT_PATH:
       # title: 函数挂载路径
       type: string
       description: ""

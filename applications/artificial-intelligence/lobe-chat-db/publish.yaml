@@ -96,8 +96,8 @@ Parameters:
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
-    DATABASE_URL:
-      # title: DATABASE_URL
+    MYSQL_URL:
+      # title: MYSQL_URL
       type: string
       default: ""
       description: "例如：mysql://user:secret@host:port/database"

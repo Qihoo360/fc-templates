@@ -26,9 +26,9 @@ Parameters:
   - serverFunctionName
   - clientFunctionName
   - DataBase
-  - PostgreSqlUrl
-  - OpenaiApiBase
-  - OpenaiApiKey
+  - POSTGRES_URL
+  - OPENAI_URL
+  - OPENAI_API_KEY
   - ServerCustomDomain
   properties:
     region:
@@ -99,8 +99,8 @@ Parameters:
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
-    PostgreSqlUrl:
-      # title: PostgreSqlUrl
+    POSTGRES_URL:
+      # title: POSTGRES_URL
       type: string
       default: ""
       description: "例如：postgresql+asyncpg://pandasai:xxx@postgresql:5432/pandasai-db"
@@ -110,26 +110,26 @@ Parameters:
       x-placeholder: 请输入数据库地址
       x-formitem:
         type: input
-    OpenaiApiBase:
-      # title: OpenaiApiBase
+    OPENAI_URL:
+      # title: OPENAI_URL
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
       x-label: Openai
       x-restype: llm-apikey
-      x-placeholder: OpenaiApiBase
+      x-placeholder: OPENAI_URL
       x-formitem:
         type: input
-    OpenaiApiKey:
-      # title: OpenaiApiKey
+    OPENAI_API_KEY:
+      # title: OPENAI_API_KEY
       type: secret
       default: "123456"
       description: ""
       x-cate: applicationCate
       x-label: Openai
       x-restype: llm-apikey
-      x-placeholder: OpenaiApiKey
+      x-placeholder: OPENAI_API_KEY
       x-formitem:
         type: input
     ServerCustomDomain:
