@@ -19,8 +19,8 @@ Parameters:
   # 必填项
   - region
   - functionName
-  - polefsVolume
-  - mountDir
+  - POLEFS_VOLUME
+  - POLEFS_MOUNT_PATH
   - polefsVolumeCreateUser
   properties:
     region:
@@ -37,7 +37,7 @@ Parameters:
       - test-6
       - beijing
       x-reaction-properties:
-      - polefsVolume
+      - POLEFS_VOLUME
       x-formitem:
         type: select
     functionName:

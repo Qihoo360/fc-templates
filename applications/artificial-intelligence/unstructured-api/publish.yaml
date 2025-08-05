@@ -22,7 +22,7 @@ Parameters:
   required: # 必填项
     - region
     - FunctionName
-    - SQL_DSN
+    - MYSQL_DSN
   properties:
     region:
       title: 地域

@@ -19,8 +19,8 @@ Parameters:
     - region
     - functionName
     - FileStorage
-    - polefsVolume
-    - mountDir
+    - POLEFS_VOLUME
+    - POLEFS_MOUNT_PATH
     - polefsVolumeCreateUser
   properties:
     region:
@@ -37,7 +37,7 @@ Parameters:
         - test-6
         - beijing
       x-reaction-properties:
-        - polefsVolume
+        - POLEFS_VOLUME
       x-formitem:
         type: select
     functionName:
@@ -73,7 +73,7 @@ Parameters:
       x-placeholder: 请选择文件存储类型
       x-formitem:
         type: select
-    polefsVolume:
+    POLEFS_VOLUME:
       # title: 函数挂载 PoleFS 卷
       type: string
       default: ""
@@ -88,7 +88,7 @@ Parameters:
       x-formitem:
         type: select
         name: volume_unique_name
-    mountDir:
+    POLEFS_MOUNT_PATH:
       # title: 函数挂载路径
       type: string
       description: ""

@@ -5,8 +5,8 @@ vars:
   region: {{region}}
   FunctionName: {{FunctionName}}
   Describe: {{Description}}
-  SQL_DSN: {{SQL_DSN}}
-  REDIS_CONN_STRING: {{REDIS_CONN_STRING}}
+  SQL_DSN: {{MYSQL_DSN}}
+  REDIS_CONN_STRING: {{REDIS_URL}}
   SYNC_FREQUENCY: {{SYNC_FREQUENCY}}
   SESSION_SECRET: {{SESSION_SECRET}}
 resources:

@@ -5,8 +5,8 @@ vars:
   region: {{region}}
   FunctionName: {{FunctionName}}
   Describe: {{Description}}
-  ElasticsearchHost: {{ElasticsearchHost}}
-  ElasticsearchPort: {{ElasticsearchPort}}
+  ElasticsearchHost: {{ELASTICSEARCH_HOST}}
+  ElasticsearchPort: {{ELASTICSEARCH_PORT}}
 resources:
   haystack:
     component: ${path('/utils/components/zfc')}

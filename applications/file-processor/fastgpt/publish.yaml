@@ -27,7 +27,7 @@ Parameters:
   - oneapiUrl
   - chatApiKey
   - DataBase
-  - mongodbUrl
+  - MONGO_URL
   - VectorDB
   - milvusAddress
   - milvusToken
