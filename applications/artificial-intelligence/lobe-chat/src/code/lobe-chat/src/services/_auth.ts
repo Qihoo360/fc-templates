@@ -1,6 +1,6 @@
-import { JWTPayload, LOBE_CHAT_AUTH_HEADER } from '@/const/auth';
+import { ClientSecretPayload, LOBE_CHAT_AUTH_HEADER } from '@/const/auth';
 import { isDeprecatedEdition } from '@/const/version';
-import { ModelProvider } from '@/libs/agent-runtime';
+import { ModelProvider } from '@/libs/model-runtime';
 import { aiProviderSelectors, useAiInfraStore } from '@/store/aiInfra';
 import { useUserStore } from '@/store/user';
 import { keyVaultsConfigSelectors, userProfileSelectors } from '@/store/user/selectors';
@@ -10,7 +10,7 @@ import {
   CloudflareKeyVault,
   OpenAICompatibleKeyVault,
 } from '@/types/user/settings';
-import { createJWT } from '@/utils/jwt';
+import { obfuscatePayloadWithXOR } from '@/utils/client/xor-obfuscation';
 
 export const getProviderAuthPayload = (
   provider: string,
@@ -48,10 +48,10 @@ export const getProviderAuthPayload = (
     case ModelProvider.Azure: {
       return {
         apiKey: keyVaults.apiKey,
-        
+
         apiVersion: keyVaults.apiVersion,
         /** @deprecated */
-azureApiVersion: keyVaults.apiVersion,
+        azureApiVersion: keyVaults.apiVersion,
         baseURL: keyVaults.baseURL || keyVaults.endpoint,
       };
     }
@@ -63,10 +63,10 @@ azureApiVersion: keyVaults.apiVersion,
     case ModelProvider.Cloudflare: {
       return {
         apiKey: keyVaults?.apiKey,
-        
+
         baseURLOrAccountID: keyVaults?.baseURLOrAccountID,
         /** @deprecated */
-cloudflareBaseURLOrAccountID: keyVaults?.baseURLOrAccountID,
+        cloudflareBaseURLOrAccountID: keyVaults?.baseURLOrAccountID,
       };
     }
 
@@ -80,7 +80,7 @@ const createAuthTokenWithPayload = async (payload = {}) => {
   const accessCode = keyVaultsConfigSelectors.password(useUserStore.getState());
   const userId = userProfileSelectors.userId(useUserStore.getState());
 
-  return createJWT<JWTPayload>({ accessCode, userId, ...payload });
+  return obfuscatePayloadWithXOR<ClientSecretPayload>({ accessCode, userId, ...payload });
 };
 
 interface AuthParams {

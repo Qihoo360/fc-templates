@@ -1,6 +1,6 @@
 import { INBOX_SESSION_ID } from '@/const/session';
 import { clientDB } from '@/database/client/db';
-import { MessageModel } from '@/database/server/models/message';
+import { MessageModel } from '@/database/models/message';
 import { BaseClientService } from '@/services/baseClientService';
 import { clientS3Storage } from '@/services/file/ClientS3';
 import { ChatMessage } from '@/types/message';
@@ -90,6 +90,10 @@ export class ClientService extends BaseClientService implements IMessageService 
 
   updateMessagePluginState: IMessageService['updateMessagePluginState'] = async (id, value) => {
     return this.messageModel.updatePluginState(id, value);
+  };
+
+  updateMessagePluginError: IMessageService['updateMessagePluginError'] = async (id, value) => {
+    return this.messageModel.updateMessagePlugin(id, { error: value });
   };
 
   updateMessagePluginArguments: IMessageService['updateMessagePluginArguments'] = async (

@@ -2,15 +2,19 @@ import { isEmpty } from 'lodash-es';
 import pMap from 'p-map';
 
 import { DEFAULT_MODEL_PROVIDER_LIST } from '@/config/modelProviders';
-import { AiModelModel } from '@/database/server/models/aiModel';
-import { AiProviderModel } from '@/database/server/models/aiProvider';
+import { AiModelModel } from '@/database/models/aiModel';
+import { AiProviderModel } from '@/database/models/aiProvider';
 import { LobeChatDatabase } from '@/database/type';
-import { AIChatModelCard, AiModelSourceEnum, AiProviderModelListItem } from '@/types/aiModel';
+import {
+  AIChatModelCard,
+  AiModelSourceEnum,
+  AiProviderModelListItem,
+  EnabledAiModel,
+} from '@/types/aiModel';
 import {
   AiProviderDetailItem,
   AiProviderListItem,
   AiProviderRuntimeState,
-  EnabledAiModel,
   EnabledProvider,
 } from '@/types/aiProvider';
 import { ProviderConfig } from '@/types/user/settings';
@@ -87,18 +91,17 @@ export class AiInfraRepos {
   /**
    * used in the chat page. to show the enabled models
    */
-  getEnabledModels = async () => {
-    const providers = await this.getAiProviderList();
-    const enabledProviders = providers.filter((item) => item.enabled);
+  getEnabledModels = async (filterEnabled: boolean = true) => {
+    const [providers, allModels] = await Promise.all([
+      this.getAiProviderList(),
+      this.aiModelModel.getAllModels(),
+    ]);
+    const enabledProviders = providers.filter((item) => (filterEnabled ? item.enabled : true));
 
-    const allModels = await this.aiModelModel.getAllModels();
-    const userEnabledModels = allModels.filter((item) => item.enabled);
-
-    const modelList = await pMap(
+    const builtinModelList = await pMap(
       enabledProviders,
       async (provider) => {
         const aiModels = await this.fetchBuiltinModels(provider.id);
-
         return (aiModels || [])
           .map<EnabledAiModel & { enabled?: boolean | null }>((item) => {
             const user = allModels.find((m) => m.id === item.id && m.providerId === provider.id);
@@ -111,6 +114,7 @@ export class AiInfraRepos {
               };
 
             return {
+              ...item,
               abilities: !isEmpty(user.abilities) ? user.abilities : item.abilities || {},
               config: !isEmpty(user.config) ? user.config : item.config,
               contextWindowTokens:
@@ -121,36 +125,54 @@ export class AiInfraRepos {
               enabled: typeof user.enabled === 'boolean' ? user.enabled : item.enabled,
               id: item.id,
               providerId: provider.id,
+              settings: item.settings,
               sort: user.sort || undefined,
               type: item.type,
             };
           })
-          .filter((i) => i.enabled);
+          .filter((item) => (filterEnabled ? item.enabled : true));
       },
       { concurrency: 10 },
     );
 
-    return [...modelList.flat(), ...userEnabledModels].sort(
-      (a, b) => (a?.sort || -1) - (b?.sort || -1),
-    ) as EnabledAiModel[];
+    const enabledProviderIds = new Set(enabledProviders.map((item) => item.id));
+
+    return [
+      ...builtinModelList.flat(),
+      ...allModels.filter((item) =>
+        filterEnabled ? enabledProviderIds.has(item.providerId) && item.enabled : true,
+      ),
+    ].sort((a, b) => (a?.sort || -1) - (b?.sort || -1)) as EnabledAiModel[];
   };
 
   getAiProviderRuntimeState = async (
     decryptor?: DecryptUserKeyVaults,
   ): Promise<AiProviderRuntimeState> => {
-    const result = await this.aiProviderModel.getAiProviderRuntimeConfig(decryptor);
+    const [result, enabledAiProviders, allModels] = await Promise.all([
+      this.aiProviderModel.getAiProviderRuntimeConfig(decryptor),
+      this.getUserEnabledProviderList(),
+      this.getEnabledModels(false),
+    ]);
 
     const runtimeConfig = result;
-
     Object.entries(result).forEach(([key, value]) => {
       runtimeConfig[key] = merge(this.providerConfigs[key] || {}, value);
     });
+    const enabledAiModels = allModels.filter((model) => model.enabled);
+    const enabledChatAiProviders = enabledAiProviders.filter((provider) => {
+      return allModels.some((model) => model.providerId === provider.id && model.type === 'chat');
+    });
+    const enabledImageAiProviders = enabledAiProviders.filter((provider) => {
+      return allModels.some((model) => model.providerId === provider.id && model.type === 'image');
+    });
 
-    const enabledAiProviders = await this.getUserEnabledProviderList();
-
-    const enabledAiModels = await this.getEnabledModels();
-
-    return { enabledAiModels, enabledAiProviders, runtimeConfig };
+    return {
+      enabledAiModels,
+      enabledAiProviders,
+      enabledChatAiProviders,
+      enabledImageAiProviders,
+      runtimeConfig,
+    };
   };
 
   getAiProviderModelList = async (providerId: string) => {

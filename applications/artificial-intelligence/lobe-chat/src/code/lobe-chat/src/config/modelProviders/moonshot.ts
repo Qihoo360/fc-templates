@@ -38,23 +38,17 @@ const Moonshot: ModelProviderCard = {
   modelList: { showModelFetcher: true },
   modelsUrl: 'https://platform.moonshot.cn/docs/intro',
   name: 'Moonshot',
-  proxyUrl: {
-    placeholder: 'https://api.moonshot.cn/v1',
-  },
   settings: {
+    disableBrowserRequest: true, // CORS error
     proxyUrl: {
       placeholder: 'https://api.moonshot.cn/v1',
     },
+    responseAnimation: {
+      speed: 2,
+      text: 'smooth',
+    },
     sdkType: 'openai',
     showModelFetcher: true,
-    smoothing: {
-      speed: 2,
-      text: true,
-    },
-  },
-  smoothing: {
-    speed: 2,
-    text: true,
   },
   url: 'https://www.moonshot.cn',
 };

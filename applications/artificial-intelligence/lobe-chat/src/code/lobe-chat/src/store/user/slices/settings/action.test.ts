@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { DeepPartial } from 'utility-types';
+import type { PartialDeep } from 'type-fest';
 import { describe, expect, it, vi } from 'vitest';
 import { withSWR } from '~test-utils';
 
@@ -70,7 +70,7 @@ describe('SettingsAction', () => {
   describe('setSettings', () => {
     it('should set partial settings', async () => {
       const { result } = renderHook(() => useUserStore());
-      const partialSettings: DeepPartial<UserSettings> = { general: { themeMode: 'dark' } };
+      const partialSettings: PartialDeep<UserSettings> = { general: { fontSize: 12 } };
 
       // Perform the action
       await act(async () => {
@@ -80,24 +80,6 @@ describe('SettingsAction', () => {
       // Assert that updateUserSettings was called with the correct settings
       expect(userService.updateUserSettings).toHaveBeenCalledWith(
         partialSettings,
-        expect.any(AbortSignal),
-      );
-    });
-  });
-
-  describe('switchThemeMode', () => {
-    it('should switch theme mode', async () => {
-      const { result } = renderHook(() => useUserStore());
-      const themeMode = 'light';
-
-      // Perform the action
-      await act(async () => {
-        await result.current.switchThemeMode(themeMode);
-      });
-
-      // Assert that updateUserSettings was called with the correct theme mode
-      expect(userService.updateUserSettings).toHaveBeenCalledWith(
-        { general: { themeMode } },
         expect.any(AbortSignal),
       );
     });
@@ -126,7 +108,7 @@ describe('SettingsAction', () => {
   describe('updateSystemAgent', () => {
     it('should set partial settings', async () => {
       const { result } = renderHook(() => useUserStore());
-      const systemAgentSettings: DeepPartial<UserSettings> = {
+      const systemAgentSettings: PartialDeep<UserSettings> = {
         systemAgent: {
           translation: {
             model: 'testmodel',

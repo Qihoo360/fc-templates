@@ -66,6 +66,7 @@
       "customRegion": "Custom Service Region",
       "customSessionToken": "Custom Session Token",
       "description": "Enter your AWS AccessKeyId / SecretAccessKey to start the session. The app will not store your authentication configuration",
+      "imageGenerationDescription": "Enter your AWS AccessKeyId / SecretAccessKey to start generating. The application will not store your authentication credentials.",
       "title": "Use Custom Bedrock Authentication Information"
     }
   },
@@ -164,6 +165,7 @@
     },
     "download": {
       "desc": "Ollama is downloading the model. Please try not to close this page. The download will resume from where it left off if interrupted.",
+      "failed": "Model download failed. Please check your network or Ollama settings and try again.",
       "remainingTime": "Remaining Time",
       "speed": "Speed",
       "title": "Downloading model {{model}}"
@@ -187,6 +189,7 @@
       "aesGcm": "Your key and proxy URL will be encrypted using <1>AES-GCM</1> encryption algorithm",
       "apiKey": {
         "desc": "Please enter your {{name}} API Key",
+        "descWithUrl": "Please enter your {{name}} API Key. <3>Click here to get it</3>",
         "placeholder": "{{name}} API Key",
         "title": "API Key"
       },
@@ -207,6 +210,10 @@
         "title": "Use Client Request Mode"
       },
       "helpDoc": "Configuration Guide",
+      "responsesApi": {
+        "desc": "Utilizes OpenAI's next-generation request format specification to unlock advanced features like chain of thought",
+        "title": "Use Responses API Specification"
+      },
       "waitingForMore": "More models are currently <1>planned for integration</1>, please stay tuned"
     },
     "createNew": {
@@ -321,6 +328,9 @@
     "deleteSuccess": "Deletion successful",
     "tooltip": "Update provider basic configuration",
     "updateSuccess": "Update successful"
+  },
+  "updateCustomAiProvider": {
+    "title": "Update Custom AI Provider Configuration"
   },
   "vertexai": {
     "apiKey": {

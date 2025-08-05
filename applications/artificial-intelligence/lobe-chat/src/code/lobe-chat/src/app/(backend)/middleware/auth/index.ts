@@ -1,29 +1,42 @@
 import { AuthObject } from '@clerk/backend';
-import { getAuth } from '@clerk/nextjs/server';
 import { NextRequest } from 'next/server';
 
-import { JWTPayload, LOBE_CHAT_AUTH_HEADER, OAUTH_AUTHORIZED, enableClerk } from '@/const/auth';
-import { AgentRuntime, AgentRuntimeError, ChatCompletionErrorPayload } from '@/libs/agent-runtime';
+import {
+  ClientSecretPayload,
+  LOBE_CHAT_AUTH_HEADER,
+  LOBE_CHAT_OIDC_AUTH_HEADER,
+  OAUTH_AUTHORIZED,
+  enableClerk,
+} from '@/const/auth';
+import { ClerkAuth } from '@/libs/clerk-auth';
+import { AgentRuntimeError, ChatCompletionErrorPayload, ModelRuntime } from '@/libs/model-runtime';
+import { validateOIDCJWT } from '@/libs/oidc-provider/jwt';
 import { ChatErrorType } from '@/types/fetch';
 import { createErrorResponse } from '@/utils/errorResponse';
-import { getJWTPayload } from '@/utils/server/jwt';
+import { getXorPayload } from '@/utils/server/xor';
 
 import { checkAuthMethod } from './utils';
 
-type CreateRuntime = (jwtPayload: JWTPayload) => AgentRuntime;
+type CreateRuntime = (jwtPayload: ClientSecretPayload) => ModelRuntime;
 type RequestOptions = { createRuntime?: CreateRuntime; params: Promise<{ provider: string }> };
 
 export type RequestHandler = (
   req: Request,
   options: RequestOptions & {
     createRuntime?: CreateRuntime;
-    jwtPayload: JWTPayload;
+    jwtPayload: ClientSecretPayload;
   },
 ) => Promise<Response>;
 
 export const checkAuth =
   (handler: RequestHandler) => async (req: Request, options: RequestOptions) => {
-    let jwtPayload: JWTPayload;
+    // we have a special header to debug the api endpoint in development mode
+    const isDebugApi = req.headers.get('lobe-auth-dev-backend-api') === '1';
+    if (process.env.NODE_ENV === 'development' && isDebugApi) {
+      return handler(req, { ...options, jwtPayload: { userId: 'DEV_USER' } });
+    }
+
+    let jwtPayload: ClientSecretPayload;
 
     try {
       // get Authorization from header
@@ -35,18 +48,35 @@ export const checkAuth =
       // check the Auth With payload and clerk auth
       let clerkAuth = {} as AuthObject;
 
+      // TODO: V2 完整移除 client 模式下的 clerk 集成代码
       if (enableClerk) {
-        clerkAuth = getAuth(req as NextRequest);
+        const auth = new ClerkAuth();
+        const data = auth.getAuthFromRequest(req as NextRequest);
+        clerkAuth = data.clerkAuth;
       }
 
-      jwtPayload = await getJWTPayload(authorization);
+      jwtPayload = getXorPayload(authorization);
 
-      checkAuthMethod({
-        accessCode: jwtPayload.accessCode,
-        apiKey: jwtPayload.apiKey,
-        clerkAuth,
-        nextAuthAuthorized: oauthAuthorized,
-      });
+      const oidcAuthorization = req.headers.get(LOBE_CHAT_OIDC_AUTH_HEADER);
+      let isUseOidcAuth = false;
+      if (!!oidcAuthorization) {
+        const oidc = await validateOIDCJWT(oidcAuthorization);
+
+        isUseOidcAuth = true;
+
+        jwtPayload = {
+          ...jwtPayload,
+          userId: oidc.userId,
+        };
+      }
+
+      if (!isUseOidcAuth)
+        checkAuthMethod({
+          accessCode: jwtPayload.accessCode,
+          apiKey: jwtPayload.apiKey,
+          clerkAuth,
+          nextAuthAuthorized: oauthAuthorized,
+        });
     } catch (e) {
       const params = await options.params;
 

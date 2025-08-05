@@ -68,6 +68,23 @@
   "GoBack": {
     "back": "Terug"
   },
+  "ImageUpload": {
+    "actions": {
+      "changeImage": "Klik om afbeelding te wijzigen",
+      "dropMultipleFiles": "Meerdere bestanden uploaden wordt niet ondersteund, alleen het eerste bestand wordt gebruikt"
+    },
+    "placeholder": {
+      "primary": "Afbeelding toevoegen",
+      "secondary": "Klik of sleep om te uploaden"
+    }
+  },
+  "KeyValueEditor": {
+    "addButton": "Voeg een regel toe",
+    "deleteTooltip": "Verwijderen",
+    "duplicateKeyError": "Sleutelnaam moet uniek zijn",
+    "keyPlaceholder": "Sleutel",
+    "valuePlaceholder": "Waarde"
+  },
   "MaxTokenSlider": {
     "unlimited": "Onbeperkt"
   },
@@ -76,6 +93,7 @@
       "custom": "Custom model, by default, supports both function call and visual recognition. Please verify the availability of the above capabilities based on actual needs.",
       "file": "This model supports file upload for reading and recognition.",
       "functionCall": "This model supports function call.",
+      "imageOutput": "Dit model ondersteunt het genereren van afbeeldingen",
       "reasoning": "Dit model ondersteunt diepgaand denken",
       "search": "Dit model ondersteunt online zoeken",
       "tokens": "This model supports up to {{tokens}} tokens in a single session.",
@@ -85,9 +103,35 @@
   },
   "ModelSwitchPanel": {
     "emptyModel": "No enabled model, please go to settings to enable.",
-    "provider": "Provider"
+    "emptyProvider": "Geen ingeschakelde provider, ga naar instellingen om deze in te schakelen",
+    "goToSettings": "Ga naar instellingen",
+    "provider": "Provider",
+    "title": "Model"
+  },
+  "MultiImagesUpload": {
+    "actions": {
+      "uploadMore": "Klik of sleep om meer te uploaden"
+    },
+    "modal": {
+      "complete": "Voltooien",
+      "newFileIndicator": "Nieuw",
+      "selectImageToPreview": "Selecteer een afbeelding om te bekijken",
+      "title": "Beheer afbeeldingen ({{count}})",
+      "upload": "Afbeeldingen uploaden"
+    },
+    "placeholder": {
+      "primary": "Klik of sleep om een afbeelding te uploaden",
+      "secondary": "Meerdere afbeeldingen selecteren ondersteund"
+    },
+    "progress": {
+      "uploadingWithCount": "{{completed}}/{{total}} geüpload"
+    }
   },
   "OllamaSetupGuide": {
+    "action": {
+      "close": "Sluit melding",
+      "start": "Geïnstalleerd en actief, begin gesprek"
+    },
     "cors": {
       "description": "Vanwege beveiligingsbeperkingen in de browser moet je cross-origin configuratie voor Ollama instellen om het correct te kunnen gebruiken.",
       "linux": {

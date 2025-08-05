@@ -16,6 +16,16 @@
     "detail": "Szczegóły błędu",
     "title": "Żądanie nie powiodło się"
   },
+  "import": {
+    "importConfigFile": {
+      "description": "Powód błędu: {{reason}}",
+      "title": "Import nie powiódł się"
+    },
+    "incompatible": {
+      "description": "Ten plik został wyeksportowany z wyższej wersji, spróbuj zaktualizować do najnowszej wersji, a następnie spróbuj ponownie zaimportować",
+      "title": "Bieżąca aplikacja nie obsługuje importu tego pliku"
+    }
+  },
   "loginRequired": {
     "desc": "Zaraz nastąpi automatyczne przekierowanie do strony logowania",
     "title": "Proszę zalogować się, aby korzystać z tej funkcji"
@@ -56,6 +66,7 @@
     "429": "Przepraszamy, Twoje żądania są zbyt liczne, serwer jest trochę przeciążony, spróbuj ponownie później",
     "431": "Przepraszamy, nagłówek żądania jest zbyt duży, serwer nie może go przetworzyć",
     "451": "Przepraszamy, z powodów prawnych serwer odmawia dostarczenia tego zasobu",
+    "499": "Przykro nam, Twoje żądanie zostało niespodziewanie przerwane podczas przetwarzania na serwerze, być może z powodu anulowania operacji lub niestabilnego połączenia sieciowego. Proszę sprawdzić stan sieci i spróbować ponownie.",
     "500": "Przepraszamy, serwer napotkał pewne trudności i tymczasowo nie może zrealizować Twojego żądania. Proszę spróbuj ponownie później",
     "501": "Przykro nam, serwer nie wie, jak obsłużyć to żądanie, proszę upewnić się, że Twoje działanie jest poprawne",
     "502": "Przepraszamy, serwer wydaje się zgubić kierunek i tymczasowo nie może świadczyć usług. Proszę spróbuj ponownie później",
@@ -66,9 +77,12 @@
     "507": "Przykro nam, serwer ma niewystarczającą przestrzeń dyskową, aby obsłużyć Twoje żądanie, proszę spróbować ponownie później",
     "509": "Przykro nam, pasmo serwera zostało wyczerpane, proszę spróbować ponownie później",
     "510": "Przykro nam, serwer nie obsługuje żądanej funkcji rozszerzenia, proszę skontaktować się z administratorem",
-    "524": "Przykro nam, serwer przekroczył czas oczekiwania na odpowiedź, może to być spowodowane zbyt wolną odpowiedzią, proszę spróbować ponownie później",
+    "520": "Przykro nam, serwer napotkał niespodziewany problem, który uniemożliwił zrealizowanie Twojego żądania. Proszę spróbować później, pracujemy nad rozwiązaniem tego problemu.",
+    "522": "Przykro nam, połączenie z serwerem wygasło, nie udało się odpowiedzieć na Twoje żądanie na czas. Może to być spowodowane niestabilnością sieci lub tym, że serwer jest tymczasowo niedostępny. Proszę spróbować później, staramy się przywrócić usługi.",
+    "524": "Przykro nam, serwer przekroczył czas oczekiwania na odpowiedź, być może z powodu zbyt wolnej reakcji. Proszę spróbować później.",
     "AgentRuntimeError": "Wystąpił błąd wykonania modelu językowego Lobe, prosimy o sprawdzenie poniższych informacji lub ponowne próbowanie.",
     "ConnectionCheckFailed": "Odpowiedź jest pusta. Sprawdź, czy na końcu adresu proxy API nie brakuje `/v1`",
+    "CreateMessageError": "Przykro nam, wiadomość nie została wysłana poprawnie. Proszę skopiować treść i spróbować ponownie, po odświeżeniu strony ta wiadomość nie zostanie zachowana.",
     "ExceededContextWindow": "Aktualna zawartość żądania przekracza długość, którą model może przetworzyć. Proszę zmniejszyć ilość treści i spróbować ponownie.",
     "FreePlanLimit": "Jesteś obecnie użytkownikiem darmowej wersji, nie możesz korzystać z tej funkcji. Proszę uaktualnić do planu płatnego, aby kontynuować korzystanie.",
     "InsufficientQuota": "Przykro nam, limit dla tego klucza został osiągnięty. Proszę sprawdzić saldo konta lub zwiększyć limit klucza i spróbować ponownie.",
@@ -80,6 +94,7 @@
     "InvalidProviderAPIKey": "{{provider}} Klucz API jest nieprawidłowy lub pusty. Sprawdź Klucz API {{provider}} i spróbuj ponownie.",
     "InvalidVertexCredentials": "Weryfikacja poświadczeń Vertex nie powiodła się, proszę sprawdzić poświadczenia i spróbować ponownie",
     "LocationNotSupportError": "Przepraszamy, Twoja lokalizacja nie obsługuje tego usługi modelu, być może ze względu na ograniczenia regionalne lub brak dostępności usługi. Proszę sprawdź, czy bieżąca lokalizacja obsługuje tę usługę, lub spróbuj użyć innych informacji o lokalizacji.",
+    "ModelNotFound": "Przykro nam, nie można zażądać odpowiedniego modelu, może on nie istnieć lub brakować dostępu. Proszę zmienić klucz API lub dostosować uprawnienia dostępu, a następnie spróbować ponownie.",
     "NoOpenAIAPIKey": "Klucz API OpenAI jest pusty. Proszę dodać niestandardowy klucz API OpenAI",
     "OllamaBizError": "Błąd usługi Ollama, sprawdź poniższe informacje lub spróbuj ponownie",
     "OllamaServiceUnavailable": "Usługa Ollama jest niedostępna. Sprawdź, czy Ollama działa poprawnie, lub czy poprawnie skonfigurowano ustawienia przekraczania domeny Ollama",
@@ -100,6 +115,7 @@
     "ProviderBizError": "Wystąpił błąd usługi {{provider}}, proszę sprawdzić poniższe informacje lub spróbować ponownie",
     "QuotaLimitReached": "Przykro nam, bieżące zużycie tokenów lub liczba żądań osiągnęła limit kwoty dla tego klucza. Proszę zwiększyć limit kwoty dla tego klucza lub spróbować ponownie później.",
     "StreamChunkError": "Błąd analizy bloku wiadomości w żądaniu strumieniowym. Proszę sprawdzić, czy aktualny interfejs API jest zgodny z normami, lub skontaktować się z dostawcą API w celu uzyskania informacji.",
+    "SubscriptionKeyMismatch": "Przepraszamy, z powodu sporadycznych awarii systemu, bieżące zużycie subskrypcji jest tymczasowo nieaktywne. Proszę kliknąć przycisk poniżej, aby przywrócić subskrypcję lub skontaktować się z nami drogą mailową w celu uzyskania wsparcia.",
     "SubscriptionPlanLimit": "Twoje punkty subskrypcyjne zostały wyczerpane, nie możesz korzystać z tej funkcji. Proszę zaktualizować do wyższego planu lub skonfigurować API modelu niestandardowego, aby kontynuować korzystanie.",
     "SystemTimeNotMatchError": "Przykro nam, czas systemowy nie zgadza się z czasem serwera. Proszę sprawdzić czas systemowy i spróbować ponownie.",
     "UnknownChatFetchError": "Przykro nam, wystąpił nieznany błąd żądania. Proszę sprawdzić poniższe informacje lub spróbować ponownie."
@@ -107,6 +123,7 @@
   "stt": {
     "responseError": "Błąd żądania usługi. Proszę sprawdź konfigurację i spróbuj ponownie"
   },
+  "testConnectionFailed": "Test połączenia nie powiódł się: {{error}}",
   "tts": {
     "responseError": "Błąd żądania usługi. Proszę sprawdź konfigurację i spróbuj ponownie"
   },
@@ -114,6 +131,7 @@
     "addProxyUrl": "Dodaj adres proxy OpenAI (opcjonalnie)",
     "apiKey": {
       "description": "Wprowadź swój Klucz API {{name}}, aby rozpocząć sesję.",
+      "imageGenerationDescription": "Wprowadź swój klucz API {{name}}, aby rozpocząć generowanie",
       "title": "Użyj niestandardowego Klucza API {{name}}"
     },
     "closeMessage": "Zamknij komunikat",

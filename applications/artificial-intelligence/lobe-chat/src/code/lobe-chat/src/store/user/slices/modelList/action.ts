@@ -3,7 +3,7 @@ import useSWR, { SWRResponse } from 'swr';
 import type { StateCreator } from 'zustand/vanilla';
 
 import { DEFAULT_MODEL_PROVIDER_LIST } from '@/config/modelProviders';
-import { ModelProvider } from '@/libs/agent-runtime';
+import { ModelProvider } from '@/libs/model-runtime';
 import { UserStore } from '@/store/user';
 import type { ChatModelCard, ModelProviderCard } from '@/types/llm';
 import type {
@@ -49,6 +49,8 @@ export interface ModelListAction {
     provider: T,
     config: Partial<UserKeyVaults[T]>,
   ) => Promise<void>;
+
+  updateKeyVaultSettings: (key: string, config: any) => Promise<void>;
 
   useFetchProviderModelList: (
     provider: GlobalLLMProviderKey,
@@ -116,22 +118,23 @@ export const createModelListSlice: StateCreator<
     get().refreshModelProviderList({ trigger: 'refreshDefaultModelList' });
   },
   refreshModelProviderList: (params) => {
-    const modelProviderList = get().defaultModelProviderList.map((list) => ({
-      ...list,
-      chatModels: modelProviderSelectors
-        .getModelCardsById(list.id)(get())
-        ?.map((model) => {
-          const models = modelProviderSelectors.getEnableModelsById(list.id)(get());
+    const modelProviderList = get().defaultModelProviderList.map((list) => {
+      const enabledModels = modelProviderSelectors.getEnableModelsById(list.id)(get());
+      return {
+        ...list,
+        chatModels: modelProviderSelectors
+          .getModelCardsById(list.id)(get())
+          ?.map((model) => {
+            if (!enabledModels) return model;
 
-          if (!models) return model;
-
-          return {
-            ...model,
-            enabled: models?.some((m) => m === model.id),
-          };
-        }),
-      enabled: modelProviderSelectors.isProviderEnabled(list.id as any)(get()),
-    }));
+            return {
+              ...model,
+              enabled: enabledModels?.some((m) => m === model.id),
+            };
+          }),
+        enabled: modelProviderSelectors.isProviderEnabled(list.id as any)(get()),
+      };
+    });
 
     set({ modelProviderList }, false, `refreshModelList - ${params?.trigger}`);
   },
@@ -189,13 +192,17 @@ export const createModelListSlice: StateCreator<
     await get().setSettings({ keyVaults: { [provider]: config } });
   },
 
+  updateKeyVaultSettings: async (provider, config) => {
+    await get().setSettings({ keyVaults: { [provider]: config } });
+  },
+
   useFetchProviderModelList: (provider, enabledAutoFetch) =>
     useSWR<ChatModelCard[] | undefined>(
       [provider, enabledAutoFetch],
       async ([p]) => {
         const { modelsService } = await import('@/services/models');
 
-        return modelsService.getChatModels(p);
+        return modelsService.getModels(p);
       },
       {
         onSuccess: async (data) => {

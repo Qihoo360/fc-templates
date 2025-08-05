@@ -66,6 +66,7 @@
       "customRegion": "Özel Bölge",
       "customSessionToken": "Özel Oturum Tokeni",
       "description": "AWS AccessKeyId / SecretAccessKey bilgilerinizi girerek oturumu başlatabilirsiniz. Uygulama kimlik doğrulama bilgilerinizi kaydetmez.",
+      "imageGenerationDescription": "AWS AccessKeyId / SecretAccessKey bilgilerinizi girerek üretime başlayabilirsiniz. Uygulama kimlik doğrulama yapılandırmanızı kaydetmez",
       "title": "Özel Bedrock Kimlik Bilgilerini Kullan"
     }
   },
@@ -164,6 +165,7 @@
     },
     "download": {
       "desc": "Ollama 正在下载该模型，请尽量不要关闭本页面。重新下载时将会中断处继续",
+      "failed": "Model indirme başarısız oldu, lütfen ağı veya Ollama ayarlarını kontrol edip tekrar deneyin",
       "remainingTime": "剩余时间",
       "speed": "下载速度",
       "title": "正在下载模型 {{model}} "
@@ -187,6 +189,7 @@
       "aesGcm": "Anahtarınız ve proxy adresi gibi bilgiler <1>AES-GCM</1> şifreleme algoritması ile şifrelenecektir",
       "apiKey": {
         "desc": "{{name}} API Anahtarınızı girin",
+        "descWithUrl": "Lütfen {{name}} API Anahtarınızı girin, <3>buraya tıklayarak alın</3>",
         "placeholder": "{{name}} API Anahtarı",
         "title": "API Anahtarı"
       },
@@ -207,6 +210,10 @@
         "title": "İstemci İstek Modunu Kullan"
       },
       "helpDoc": "Yapılandırma Kılavuzu",
+      "responsesApi": {
+        "desc": "OpenAI'nin yeni nesil istek formatı standardını kullanarak düşünce zinciri gibi gelişmiş özelliklerin kilidini açın",
+        "title": "Responses API Standardını Kullan"
+      },
       "waitingForMore": "Daha fazla model <1>planlanıyor</1>, lütfen bekleyin"
     },
     "createNew": {
@@ -321,6 +328,9 @@
     "deleteSuccess": "Silme işlemi başarılı",
     "tooltip": "Hizmet sağlayıcının temel yapılandırmasını güncelle",
     "updateSuccess": "Güncelleme başarılı"
+  },
+  "updateCustomAiProvider": {
+    "title": "Özel AI Sağlayıcı Yapılandırmasını Güncelle"
   },
   "vertexai": {
     "apiKey": {

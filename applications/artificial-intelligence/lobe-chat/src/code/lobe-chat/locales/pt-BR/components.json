@@ -68,6 +68,23 @@
   "GoBack": {
     "back": "Voltar"
   },
+  "ImageUpload": {
+    "actions": {
+      "changeImage": "Clique para alterar a imagem",
+      "dropMultipleFiles": "Não é suportado o upload múltiplo de arquivos, apenas o primeiro arquivo será utilizado"
+    },
+    "placeholder": {
+      "primary": "Adicionar imagem",
+      "secondary": "Clique ou arraste para enviar"
+    }
+  },
+  "KeyValueEditor": {
+    "addButton": "Adicionar uma linha",
+    "deleteTooltip": "Excluir",
+    "duplicateKeyError": "O nome da chave deve ser único",
+    "keyPlaceholder": "Chave",
+    "valuePlaceholder": "Valor"
+  },
   "MaxTokenSlider": {
     "unlimited": "Ilimitado"
   },
@@ -76,6 +93,7 @@
       "custom": "Modelo personalizado, por padrão, suporta chamadas de função e reconhecimento visual. Por favor, verifique a disponibilidade dessas capacidades de acordo com a situação real.",
       "file": "Este modelo suporta leitura e reconhecimento de arquivos enviados.",
       "functionCall": "Este modelo suporta chamadas de função.",
+      "imageOutput": "Este modelo suporta a geração de imagens",
       "reasoning": "Este modelo suporta pensamento profundo",
       "search": "Este modelo suporta pesquisa online",
       "tokens": "Este modelo suporta no máximo {{tokens}} tokens por sessão.",
@@ -85,9 +103,35 @@
   },
   "ModelSwitchPanel": {
     "emptyModel": "Nenhum modelo habilitado. Por favor, vá para as configurações e habilite um.",
-    "provider": "Fornecedor"
+    "emptyProvider": "Nenhum provedor ativado, por favor vá para as configurações para ativar",
+    "goToSettings": "Ir para as configurações",
+    "provider": "Fornecedor",
+    "title": "Modelo"
+  },
+  "MultiImagesUpload": {
+    "actions": {
+      "uploadMore": "Clique ou arraste para enviar mais"
+    },
+    "modal": {
+      "complete": "Concluir",
+      "newFileIndicator": "Novo",
+      "selectImageToPreview": "Por favor, selecione uma imagem para pré-visualizar",
+      "title": "Gerenciar imagens ({{count}})",
+      "upload": "Enviar imagens"
+    },
+    "placeholder": {
+      "primary": "Clique ou arraste para enviar imagens",
+      "secondary": "Suporta seleção de múltiplas imagens"
+    },
+    "progress": {
+      "uploadingWithCount": "{{completed}}/{{total}} enviados"
+    }
   },
   "OllamaSetupGuide": {
+    "action": {
+      "close": "Fechar aviso",
+      "start": "Instalado e em execução, iniciar conversa"
+    },
     "cors": {
       "description": "Devido a restrições de segurança do navegador, você precisa configurar o CORS para o Ollama antes de usá-lo normalmente.",
       "linux": {

@@ -1,14 +1,15 @@
 'use client';
 
-import { ChatItem } from '@lobehub/ui';
 import { createStyles } from 'antd-style';
 import isEqual from 'fast-deep-equal';
-import { MouseEventHandler, ReactNode, memo, useCallback, useMemo } from 'react';
+import { MouseEventHandler, ReactNode, memo, use, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flexbox } from 'react-layout-kit';
 
+import ChatItem from '@/features/ChatItem';
+import { VirtuosoContext } from '@/features/Conversation/components/VirtualizedList/VirtuosoContext';
 import { useAgentStore } from '@/store/agent';
-import { agentSelectors } from '@/store/agent/selectors';
+import { agentChatConfigSelectors } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
 import { chatSelectors } from '@/store/chat/selectors';
 import { useUserStore } from '@/store/user';
@@ -64,16 +65,14 @@ const Item = memo<ChatListItemProps>(
     endRender,
     disableEditing,
     inPortalThread = false,
+    index,
   }) => {
-    const fontSize = useUserStore(userGeneralSettingsSelectors.fontSize);
     const { t } = useTranslation('common');
     const { styles, cx } = useStyles();
-    const [type = 'chat'] = useAgentStore((s) => {
-      const config = agentSelectors.currentAgentChatConfig(s);
-      return [config.displayMode];
-    });
 
+    const type = useAgentStore(agentChatConfigSelectors.displayMode);
     const item = useChatStore(chatSelectors.getMessageById(id), isEqual);
+    const transitionMode = useUserStore(userGeneralSettingsSelectors.transitionMode);
 
     const [
       isMessageLoading,
@@ -93,6 +92,7 @@ const Item = memo<ChatListItemProps>(
 
     // when the message is in RAG flow or the AI generating, it should be in loading state
     const isProcessing = isInRAGFlow || generating;
+    const animated = transitionMode === 'fadeIn' && generating;
 
     const onAvatarsClick = useAvatarsClick(item?.role);
 
@@ -172,12 +172,14 @@ const Item = memo<ChatListItemProps>(
 
     const markdownProps = useMemo(
       () => ({
+        animated,
         citations: item?.role === 'user' ? undefined : item?.search?.citations,
         components,
         customRender: markdownCustomRender,
+        enableCustomFootnotes: item?.role === 'assistant',
         rehypePlugins: item?.role === 'user' ? undefined : rehypePlugins,
         remarkPlugins: item?.role === 'user' ? undefined : remarkPlugins,
-        showCitations:
+        showFootnotes:
           item?.role === 'user'
             ? undefined
             : item?.search?.citations &&
@@ -186,10 +188,11 @@ const Item = memo<ChatListItemProps>(
               // if the citations's url and title are all the same, we should not show the citations
               item?.search?.citations.every((item) => item.title !== item.url),
       }),
-      [components, markdownCustomRender, item?.role, item?.search],
+      [animated, components, markdownCustomRender, item?.role, item?.search],
     );
 
     const onChange = useCallback((value: string) => updateMessageContent(id, value), [id]);
+    const virtuosoRef = use(VirtuosoContext);
 
     const onDoubleClick = useCallback<MouseEventHandler<HTMLDivElement>>(
       (e) => {
@@ -197,6 +200,8 @@ const Item = memo<ChatListItemProps>(
         if (item.id === 'default' || item.error) return;
         if (item.role && ['assistant', 'user'].includes(item.role) && e.altKey) {
           toggleMessageEditing(id, true);
+
+          virtuosoRef?.current?.scrollIntoView({ align: 'start', behavior: 'auto', index });
         }
       },
       [item, disableEditing],
@@ -231,7 +236,6 @@ const Item = memo<ChatListItemProps>(
               editing={editing}
               error={error}
               errorMessage={errorMessage}
-              fontSize={fontSize}
               loading={isProcessing}
               markdownProps={markdownProps}
               message={message}
@@ -245,7 +249,7 @@ const Item = memo<ChatListItemProps>(
               renderMessage={renderMessage}
               text={text}
               time={item.updatedAt || item.createdAt}
-              type={type === 'chat' ? 'block' : 'pure'}
+              variant={type === 'chat' ? 'bubble' : 'docs'}
             />
             {endRender}
           </Flexbox>

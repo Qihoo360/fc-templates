@@ -1,7 +1,14 @@
 'use client';
 
 import { ProviderCombine } from '@lobehub/icons';
-import { Avatar, Form, type FormItemProps, Icon, type ItemGroup, Tooltip } from '@lobehub/ui';
+import {
+  Avatar,
+  Form,
+  type FormGroupItemType,
+  type FormItemProps,
+  Icon,
+  Tooltip,
+} from '@lobehub/ui';
 import { useDebounceFn } from 'ahooks';
 import { Skeleton, Switch } from 'antd';
 import { createStyles } from 'antd-style';
@@ -16,7 +23,7 @@ import { z } from 'zod';
 import { FormInput, FormPassword } from '@/components/FormInput';
 import { FORM_STYLE } from '@/const/layoutTokens';
 import { AES_GCM_URL, BASE_PROVIDER_DOC_URL } from '@/const/url';
-import { isServerMode } from '@/const/version';
+import { isDesktop, isServerMode } from '@/const/version';
 import { aiProviderSelectors, useAiInfraStore } from '@/store/aiInfra';
 import {
   AiProviderDetailItem,
@@ -90,6 +97,7 @@ const useStyles = createStyles(({ css, prefixCls, responsive, token }) => ({
 
 export interface ProviderConfigProps extends Omit<AiProviderDetailItem, 'enabled' | 'source'> {
   apiKeyItems?: FormItemProps[];
+  apiKeyUrl?: string;
   canDeactivate?: boolean;
   checkErrorRender?: CheckErrorRender;
   className?: string;
@@ -120,6 +128,7 @@ const ProviderConfig = memo<ProviderConfigProps>(
     showAceGcm = true,
     extra,
     source = AiProviderSourceEnum.Builtin,
+    apiKeyUrl,
   }) => {
     const {
       proxyUrl,
@@ -127,6 +136,7 @@ const ProviderConfig = memo<ProviderConfigProps>(
       defaultShowBrowserRequest,
       disableBrowserRequest,
       showChecker = true,
+      supportResponsesApi,
     } = settings || {};
     const { t } = useTranslation('modelProvider');
     const [form] = Form.useForm();
@@ -139,6 +149,7 @@ const ProviderConfig = memo<ProviderConfigProps>(
       isLoading,
       configUpdating,
       isFetchOnClient,
+      enableResponseApi,
       isProviderEndpointNotEmpty,
       isProviderApiKeyNotEmpty,
     ] = useAiInfraStore((s) => [
@@ -148,6 +159,7 @@ const ProviderConfig = memo<ProviderConfigProps>(
       aiProviderSelectors.isAiProviderConfigLoading(id)(s),
       aiProviderSelectors.isProviderConfigUpdating(id)(s),
       aiProviderSelectors.isProviderFetchOnClient(id)(s),
+      aiProviderSelectors.isProviderEnableResponseApi(id)(s),
       aiProviderSelectors.isActiveProviderEndpointNotEmpty(s),
       aiProviderSelectors.isActiveProviderApiKeyNotEmpty(s),
     ]);
@@ -174,7 +186,7 @@ const ProviderConfig = memo<ProviderConfigProps>(
             ) : (
               <FormPassword
                 autoComplete={'new-password'}
-                placeholder={t(`providerModels.config.apiKey.placeholder`, { name })}
+                placeholder={t('providerModels.config.apiKey.placeholder', { name })}
                 suffix={
                   configUpdating && (
                     <Icon icon={Loader2Icon} spin style={{ color: theme.colorTextTertiary }} />
@@ -182,7 +194,20 @@ const ProviderConfig = memo<ProviderConfigProps>(
                 }
               />
             ),
-            desc: t(`providerModels.config.apiKey.desc`, { name }),
+            desc: apiKeyUrl ? (
+              <Trans
+                i18nKey="providerModels.config.apiKey.descWithUrl"
+                ns={'modelProvider'}
+                value={{ name }}
+              >
+                请填写你的 {{ name }} API Key,
+                <Link href={apiKeyUrl} target={'_blank'}>
+                  点此获取
+                </Link>
+              </Trans>
+            ) : (
+              t(`providerModels.config.apiKey.desc`, { name })
+            ),
             label: t(`providerModels.config.apiKey.title`),
             name: [KeyVaultsConfigKey, LLMProviderApiTokenKey],
           },
@@ -244,12 +269,14 @@ const ProviderConfig = memo<ProviderConfigProps>(
 
     /*
      * Conditions to show Client Fetch Switch
+     * 0. is not desktop app
      * 1. provider is not disabled browser request
      * 2. provider show browser request by default
      * 3. Provider allow to edit endpoint and the value of endpoint is not empty
      * 4. There is an apikey provided by user
      */
     const showClientFetch =
+      !isDesktop &&
       !disableBrowserRequest &&
       (defaultShowBrowserRequest ||
         (showEndpoint && isProviderEndpointNotEmpty) ||
@@ -258,7 +285,7 @@ const ProviderConfig = memo<ProviderConfigProps>(
       children: isLoading ? (
         <Skeleton.Button active className={styles.switchLoading} />
       ) : (
-        <Switch disabled={configUpdating} value={isFetchOnClient} />
+        <Switch checked={isFetchOnClient} disabled={configUpdating} />
       ),
       desc: t('providerModels.config.fetchOnClient.desc'),
       label: t('providerModels.config.fetchOnClient.title'),
@@ -269,6 +296,19 @@ const ProviderConfig = memo<ProviderConfigProps>(
     const configItems = [
       ...apiKeyItem,
       endpointItem,
+      supportResponsesApi
+        ? {
+            children: isLoading ? (
+              <Skeleton.Button active />
+            ) : (
+              <Switch loading={configUpdating} value={enableResponseApi} />
+            ),
+            desc: t('providerModels.config.responsesApi.desc'),
+            label: t('providerModels.config.responsesApi.title'),
+            minWidth: undefined,
+            name: ['config', 'enableResponseApi'],
+          }
+        : undefined,
       clientFetchItem,
       showChecker
         ? {
@@ -290,7 +330,7 @@ const ProviderConfig = memo<ProviderConfigProps>(
     ].filter(Boolean) as FormItemProps[];
 
     const logoUrl = data?.logo ?? logo;
-    const model: ItemGroup = {
+    const model: FormGroupItemType = {
       children: configItems,
 
       defaultActive: true,
@@ -324,19 +364,21 @@ const ProviderConfig = memo<ProviderConfigProps>(
               {name}
             </Flexbox>
           ) : (
-            <ProviderCombine provider={id} size={24} />
+            <>
+              <ProviderCombine provider={id} size={24} />
+              <Tooltip title={t('providerModels.config.helpDoc')}>
+                <Link
+                  href={urlJoin(BASE_PROVIDER_DOC_URL, id)}
+                  onClick={(e) => e.stopPropagation()}
+                  target={'_blank'}
+                >
+                  <Center className={styles.help} height={20} width={20}>
+                    ?
+                  </Center>
+                </Link>
+              </Tooltip>
+            </>
           )}
-          <Tooltip title={t('providerModels.config.helpDoc')}>
-            <Link
-              href={urlJoin(BASE_PROVIDER_DOC_URL, id)}
-              onClick={(e) => e.stopPropagation()}
-              target={'_blank'}
-            >
-              <Center className={styles.help} height={20} width={20}>
-                ?
-              </Center>
-            </Link>
-          </Tooltip>
         </Flexbox>
       ),
     };
@@ -349,7 +391,7 @@ const ProviderConfig = memo<ProviderConfigProps>(
         onValuesChange={(_, values) => {
           debouncedUpdate(id, values);
         }}
-        variant={'pure'}
+        variant={'borderless'}
         {...FORM_STYLE}
       />
     );

@@ -1,4 +1,4 @@
-import { AgentRuntimeErrorType, ILobeAgentRuntimeErrorType } from '@/libs/agent-runtime';
+import { AgentRuntimeErrorType, ILobeAgentRuntimeErrorType } from '@/libs/model-runtime';
 import { ChatErrorType, ErrorResponse, ErrorType } from '@/types/fetch';
 
 const getStatus = (errorType: ILobeAgentRuntimeErrorType | ErrorType) => {
@@ -13,12 +13,17 @@ const getStatus = (errorType: ILobeAgentRuntimeErrorType | ErrorType) => {
     }
 
     case AgentRuntimeErrorType.ExceededContextWindow:
+    case ChatErrorType.SubscriptionKeyMismatch:
     case ChatErrorType.SystemTimeNotMatchError: {
       return 400;
     }
 
     case AgentRuntimeErrorType.LocationNotSupportError: {
       return 403;
+    }
+
+    case AgentRuntimeErrorType.ModelNotFound: {
+      return 404;
     }
 
     case AgentRuntimeErrorType.InsufficientQuota:
@@ -35,6 +40,8 @@ const getStatus = (errorType: ILobeAgentRuntimeErrorType | ErrorType) => {
       return 471;
     }
 
+    // all local provider connection error
+    case AgentRuntimeErrorType.OllamaServiceUnavailable:
     case ChatErrorType.OllamaServiceUnavailable:
     case AgentRuntimeErrorType.OllamaBizError: {
       return 472;
