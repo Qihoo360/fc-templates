@@ -1,7 +1,10 @@
 import { LobeChatPluginManifest, pluginManifestSchema } from '@lobehub/chat-plugin-sdk';
+import { uniqBy } from 'lodash-es';
 
 import { API_ENDPOINTS } from '@/services/_url';
+import { ChatCompletionTool } from '@/types/openai/chat';
 import { OpenAIPluginManifest } from '@/types/openai/plugin';
+import { genToolCallingName } from '@/utils/toolCall';
 
 const fetchJSON = async <T = any>(url: string, proxy = false): Promise<T> => {
   // 2. 发送请求
@@ -86,7 +89,6 @@ export const getToolManifest = async (
   }
 
   // 2. 发送请求
-
   let data = await fetchJSON<LobeChatPluginManifest>(url, useProxy);
 
   // @ts-ignore
@@ -95,7 +97,6 @@ export const getToolManifest = async (
   if (data['description_for_model']) {
     data = convertOpenAIManifestToLobeManifest(data as any);
   }
-
   // 3. 校验插件文件格式规范
   const parser = pluginManifestSchema.safeParse(data);
 
@@ -112,6 +113,7 @@ export const getToolManifest = async (
 
       const convertor = new OpenAPIConvertor(openapiJson);
       const openAPIs = await convertor.convertOpenAPIToPluginSchema();
+
       data.api = [...data.api, ...openAPIs];
 
       data.settings = await convertor.convertAuthToSettingsSchema(data.settings);
@@ -121,4 +123,21 @@ export const getToolManifest = async (
   }
 
   return data;
+};
+
+/**
+ *
+ */
+export const convertPluginManifestToToolsCalling = (
+  manifests: LobeChatPluginManifest[],
+): ChatCompletionTool[] => {
+  const list = manifests.flatMap((manifest) =>
+    manifest.api.map((m) => ({
+      description: m.description,
+      name: genToolCallingName(manifest.identifier, m.name, manifest.type),
+      parameters: m.parameters,
+    })),
+  );
+
+  return uniqBy(list, 'name').map((i) => ({ function: i, type: 'function' }));
 };

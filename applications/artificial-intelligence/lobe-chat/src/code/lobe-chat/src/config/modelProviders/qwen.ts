@@ -153,7 +153,8 @@ const Qwen: ModelProviderCard = {
     },
     {
       contextWindowTokens: 32_768,
-      description: 'QVQ模型是由 Qwen 团队开发的实验性研究模型，专注于提升视觉推理能力，尤其在数学推理领域。',
+      description:
+        'QVQ模型是由 Qwen 团队开发的实验性研究模型，专注于提升视觉推理能力，尤其在数学推理领域。',
       displayName: 'QVQ 72B Preview',
       id: 'qvq-72b-preview',
       pricing: {
@@ -418,25 +419,19 @@ const Qwen: ModelProviderCard = {
   id: 'qwen',
   modelList: { showModelFetcher: true },
   modelsUrl: 'https://help.aliyun.com/zh/dashscope/developer-reference/api-details',
-  name: 'Qwen',
-  proxyUrl: {
-    placeholder: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-  },
+  name: 'Aliyun Bailian',
   settings: {
     disableBrowserRequest: true,
     proxyUrl: {
       placeholder: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
     },
-    sdkType: 'openai',
-    showModelFetcher: true,
-    smoothing: {
+    responseAnimation: {
       speed: 2,
-      text: true,
+      text: 'smooth',
     },
-  },
-  smoothing: {
-    speed: 2,
-    text: true,
+    sdkType: 'openai',
+    showDeployName: true,
+    showModelFetcher: true,
   },
   url: 'https://www.aliyun.com/product/bailian',
 };

@@ -6,6 +6,59 @@ const Anthropic: ModelProviderCard = {
     {
       contextWindowTokens: 200_000,
       description:
+        'Claude 4 Opus 是 Anthropic 最强大的下一代模型，具有卓越的推理能力和创造力，适用于最复杂的任务和高级分析。',
+      displayName: 'Claude 4 Opus',
+      enabled: true,
+      functionCall: true,
+      id: 'claude-opus-4-20250514',
+      maxOutput: 32_000,
+      pricing: {
+        cachedInput: 7.5,
+        input: 30,
+        output: 150,
+        writeCacheInput: 37.5,
+      },
+      releasedAt: '2025-05-14',
+      vision: true,
+    },
+    {
+      contextWindowTokens: 200_000,
+      description:
+        'Claude 4 Sonnet 提供了优异的性能和速度平衡，是新一代模型中的理想选择，适用于广泛的企业和创意任务。',
+      displayName: 'Claude 4 Sonnet',
+      enabled: true,
+      functionCall: true,
+      id: 'claude-sonnet-4-20250514',
+      maxOutput: 64_000,
+      pricing: {
+        cachedInput: 1.5,
+        input: 6,
+        output: 30,
+        writeCacheInput: 7.5,
+      },
+      releasedAt: '2025-05-14',
+      vision: true,
+    },
+    {
+      contextWindowTokens: 200_000,
+      description:
+        'Claude 3.7 sonnet 是 Anthropic 最快的下一代模型。与 Claude 3 Haiku 相比，Claude 3.7 Sonnet 在各项技能上都有所提升，并在许多智力基准测试中超越了上一代最大的模型 Claude 3 Opus。',
+      displayName: 'Claude 3.7 Sonnet',
+      enabled: true,
+      functionCall: true,
+      id: 'claude-3-7-sonnet-20250219',
+      maxOutput: 64_000,
+      pricing: {
+        cachedInput: 0.1,
+        input: 1,
+        output: 5,
+        writeCacheInput: 1.25,
+      },
+      releasedAt: '2025-02-24',
+    },
+    {
+      contextWindowTokens: 200_000,
+      description:
         'Claude 3.5 Haiku 是 Anthropic 最快的下一代模型。与 Claude 3 Haiku 相比，Claude 3.5 Haiku 在各项技能上都有所提升，并在许多智力基准测试中超越了上一代最大的模型 Claude 3 Opus。',
       displayName: 'Claude 3.5 Haiku',
       enabled: true,
@@ -143,16 +196,9 @@ const Anthropic: ModelProviderCard = {
     proxyUrl: {
       placeholder: 'https://api.anthropic.com',
     },
+    responseAnimation: 'smooth',
     sdkType: 'anthropic',
     showModelFetcher: true,
-    smoothing: {
-      speed: 5,
-      text: true,
-    },
-  },
-  smoothing: {
-    speed: 5,
-    text: true,
   },
   url: 'https://anthropic.com',
 };

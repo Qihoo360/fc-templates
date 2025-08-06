@@ -1,6 +1,6 @@
 'use client';
 
-import { Select } from 'antd';
+import { Select } from '@lobehub/ui';
 import { useTranslation } from 'react-i18next';
 
 import { FormPassword } from '@/components/FormInput';
@@ -68,7 +68,7 @@ const useBedrockCard = (): ProviderItem => {
         ) : (
           <Select
             allowClear
-            options={['us-east-1', 'us-west-2', 'ap-southeast-1'].map((i) => ({
+            options={['us-east-1', 'us-west-2', 'ap-southeast-1', 'eu-central-1'].map((i) => ({
               label: i,
               value: i,
             }))}

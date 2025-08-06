@@ -4,18 +4,17 @@ import { z } from 'zod';
 
 import { chainAnswerWithContext } from '@/chains/answerWithContext';
 import { DEFAULT_EMBEDDING_MODEL, DEFAULT_MODEL } from '@/const/settings';
-import { serverDB } from '@/database/server';
-import { ChunkModel } from '@/database/server/models/chunk';
-import { EmbeddingModel } from '@/database/server/models/embedding';
-import { FileModel } from '@/database/server/models/file';
+import { ChunkModel } from '@/database/models/chunk';
+import { EmbeddingModel } from '@/database/models/embedding';
+import { FileModel } from '@/database/models/file';
 import {
   EvalDatasetRecordModel,
   EvalEvaluationModel,
   EvaluationRecordModel,
 } from '@/database/server/models/ragEval';
-import { ModelProvider } from '@/libs/agent-runtime';
+import { ModelProvider } from '@/libs/model-runtime';
 import { asyncAuthedProcedure, asyncRouter as router } from '@/libs/trpc/async';
-import { initAgentRuntimeWithUserPayload } from '@/server/modules/AgentRuntime';
+import { initModelRuntimeWithUserPayload } from '@/server/modules/ModelRuntime';
 import { ChunkService } from '@/server/services/chunk';
 import { AsyncTaskError } from '@/types/asyncTask';
 import { EvalEvaluationStatus } from '@/types/eval';
@@ -25,13 +24,13 @@ const ragEvalProcedure = asyncAuthedProcedure.use(async (opts) => {
 
   return opts.next({
     ctx: {
-      chunkModel: new ChunkModel(serverDB, ctx.userId),
+      chunkModel: new ChunkModel(ctx.serverDB, ctx.userId),
       chunkService: new ChunkService(ctx.userId),
       datasetRecordModel: new EvalDatasetRecordModel(ctx.userId),
-      embeddingModel: new EmbeddingModel(serverDB, ctx.userId),
+      embeddingModel: new EmbeddingModel(ctx.serverDB, ctx.userId),
       evalRecordModel: new EvaluationRecordModel(ctx.userId),
       evaluationModel: new EvalEvaluationModel(ctx.userId),
-      fileModel: new FileModel(serverDB, ctx.userId),
+      fileModel: new FileModel(ctx.serverDB, ctx.userId),
     },
   });
 });
@@ -52,7 +51,7 @@ export const ragEvalRouter = router({
 
       const now = Date.now();
       try {
-        const agentRuntime = await initAgentRuntimeWithUserPayload(
+        const agentRuntime = await initModelRuntimeWithUserPayload(
           ModelProvider.OpenAI,
           ctx.jwtPayload,
         );

@@ -66,6 +66,7 @@
       "customRegion": "Região de serviço personalizada",
       "customSessionToken": "Token de Sessão Personalizado",
       "description": "Digite sua AWS AccessKeyId / SecretAccessKey para iniciar a sessão. O aplicativo não irá armazenar suas configurações de autenticação",
+      "imageGenerationDescription": "Digite seu AWS AccessKeyId / SecretAccessKey para começar a gerar. O aplicativo não armazenará suas credenciais de autenticação",
       "title": "Usar informações de autenticação Bedrock personalizadas"
     }
   },
@@ -164,6 +165,7 @@
     },
     "download": {
       "desc": "Ollama está baixando este modelo, por favor, evite fechar esta página. O download será retomado do ponto em que parou.",
+      "failed": "Falha ao baixar o modelo, por favor verifique a rede ou as configurações do Ollama e tente novamente",
       "remainingTime": "Tempo restante",
       "speed": "Velocidade de download",
       "title": "Baixando o modelo {{model}} "
@@ -187,6 +189,7 @@
       "aesGcm": "Sua chave e o endereço do proxy serão criptografados usando o algoritmo de criptografia <1>AES-GCM</1>",
       "apiKey": {
         "desc": "Por favor, insira sua {{name}} API Key",
+        "descWithUrl": "Por favor, insira sua chave API do {{name}}, <3>clique aqui para obter</3>",
         "placeholder": "{{name}} API Key",
         "title": "API Key"
       },
@@ -207,6 +210,10 @@
         "title": "Usar Modo de Requisição do Cliente"
       },
       "helpDoc": "Tutorial de Configuração",
+      "responsesApi": {
+        "desc": "Adota o novo padrão de formato de requisição da OpenAI, desbloqueando recursos avançados como cadeias de raciocínio",
+        "title": "Usar o padrão Responses API"
+      },
       "waitingForMore": "Mais modelos estão <1>planejados para integração</1>, fique atento"
     },
     "createNew": {
@@ -321,6 +328,9 @@
     "deleteSuccess": "Exclusão bem-sucedida",
     "tooltip": "Atualizar configurações básicas do provedor",
     "updateSuccess": "Atualização bem-sucedida"
+  },
+  "updateCustomAiProvider": {
+    "title": "Atualizar configuração do provedor de IA personalizado"
   },
   "vertexai": {
     "apiKey": {

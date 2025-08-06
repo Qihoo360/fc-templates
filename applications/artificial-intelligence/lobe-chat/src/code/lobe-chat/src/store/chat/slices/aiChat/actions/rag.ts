@@ -21,7 +21,7 @@ export interface ChatRAGAction {
     id: string,
     userQuery: string,
     messages: string[],
-  ) => Promise<{ chunks: ChatSemanticSearchChunk[]; queryId: string; rewriteQuery?: string }>;
+  ) => Promise<{ chunks: ChatSemanticSearchChunk[]; queryId?: string; rewriteQuery?: string }>;
   /**
    * Rewrite user content to better RAG query
    */
@@ -74,17 +74,23 @@ export const chatRag: StateCreator<ChatStore, [['zustand/devtools', never]], [],
 
     // 2. retrieve chunks from semantic search
     const files = chatSelectors.currentUserFiles(get()).map((f) => f.id);
-    const { chunks, queryId } = await ragService.semanticSearchForChat({
-      fileIds: knowledgeIds().fileIds.concat(files),
-      knowledgeIds: knowledgeIds().knowledgeBaseIds,
-      messageId: id,
-      rewriteQuery: rewriteQuery || userQuery,
-      userQuery,
-    });
+    try {
+      const { chunks, queryId } = await ragService.semanticSearchForChat({
+        fileIds: knowledgeIds().fileIds.concat(files),
+        knowledgeIds: knowledgeIds().knowledgeBaseIds,
+        messageId: id,
+        rewriteQuery: rewriteQuery || userQuery,
+        userQuery,
+      });
 
-    get().internal_toggleMessageRAGLoading(false, id);
+      get().internal_toggleMessageRAGLoading(false, id);
 
-    return { chunks, queryId, rewriteQuery };
+      return { chunks, queryId, rewriteQuery };
+    } catch {
+      get().internal_toggleMessageRAGLoading(false, id);
+
+      return { chunks: [] };
+    }
   },
   internal_rewriteQuery: async (id, content, messages) => {
     let rewriteQuery = content;
@@ -124,9 +130,8 @@ export const chatRag: StateCreator<ChatStore, [['zustand/devtools', never]], [],
     return rewriteQuery;
   },
   internal_shouldUseRAG: () => {
-    const userFiles = chatSelectors.currentUserFiles(get()).map((f) => f.id);
-    //  if there is relative files or enabled knowledge, try with ragQuery
-    return hasEnabledKnowledge() || userFiles.length > 0;
+    //  if there is enabled knowledge, try with ragQuery
+    return hasEnabledKnowledge();
   },
 
   internal_toggleMessageRAGLoading: (loading, id) => {

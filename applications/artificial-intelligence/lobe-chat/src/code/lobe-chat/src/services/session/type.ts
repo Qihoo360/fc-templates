@@ -1,5 +1,5 @@
 /* eslint-disable typescript-sort-keys/interface */
-import { DeepPartial } from 'utility-types';
+import type { PartialDeep } from 'type-fest';
 
 import { LobeAgentChatConfig, LobeAgentConfig } from '@/types/agent';
 import { MetaData } from '@/types/meta';
@@ -45,7 +45,7 @@ export interface ISessionService {
   getSessionConfig(id: string): Promise<LobeAgentConfig>;
   updateSessionConfig(
     id: string,
-    config: DeepPartial<LobeAgentConfig>,
+    config: PartialDeep<LobeAgentConfig>,
     signal?: AbortSignal,
   ): Promise<any>;
 
@@ -53,7 +53,7 @@ export interface ISessionService {
 
   updateSessionChatConfig(
     id: string,
-    config: DeepPartial<LobeAgentChatConfig>,
+    config: Partial<LobeAgentChatConfig>,
     signal?: AbortSignal,
   ): Promise<any>;
 

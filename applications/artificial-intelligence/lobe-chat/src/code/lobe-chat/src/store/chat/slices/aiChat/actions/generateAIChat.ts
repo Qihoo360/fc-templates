@@ -1,33 +1,40 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix, typescript-sort-keys/interface */
 // Disable the auto sort key eslint rule to make the code more logic and readable
+import { t } from 'i18next';
 import { produce } from 'immer';
 import { template } from 'lodash-es';
 import { StateCreator } from 'zustand/vanilla';
 
 import { LOADING_FLAT, MESSAGE_CANCEL_FLAT } from '@/const/message';
-import { DEFAULT_AGENT_CHAT_CONFIG } from '@/const/settings';
 import { TraceEventType, TraceNameMap } from '@/const/trace';
-import { isServerMode } from '@/const/version';
+import { isDesktop, isServerMode } from '@/const/version';
 import { knowledgeBaseQAPrompts } from '@/prompts/knowledgeBaseQA';
 import { chatService } from '@/services/chat';
 import { messageService } from '@/services/message';
 import { useAgentStore } from '@/store/agent';
+import { agentChatConfigSelectors, agentSelectors } from '@/store/agent/selectors';
+import { getAgentStoreState } from '@/store/agent/store';
+import { aiModelSelectors, aiProviderSelectors } from '@/store/aiInfra';
+import { getAiInfraStoreState } from '@/store/aiInfra/store';
 import { chatHelpers } from '@/store/chat/helpers';
 import { ChatStore } from '@/store/chat/store';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
+import { getFileStoreState } from '@/store/file/store';
 import { useSessionStore } from '@/store/session';
+import { WebBrowsingManifest } from '@/tools/web-browsing';
 import { ChatMessage, CreateMessageParams, SendMessageParams } from '@/types/message';
+import { ChatImageItem } from '@/types/message/image';
 import { MessageSemanticSearchChunk } from '@/types/rag';
-import { setNamespace } from '@/utils/storeDebug';
+import { Action, setNamespace } from '@/utils/storeDebug';
 
 import { chatSelectors, topicSelectors } from '../../../selectors';
-import { getAgentChatConfig, getAgentConfig, getAgentKnowledge } from './helpers';
 
 const n = setNamespace('ai');
 
 interface ProcessMessageParams {
   traceId?: string;
   isWelcomeQuestion?: boolean;
+  inSearchWorkflow?: boolean;
   /**
    * the RAG query content, should be embedding and used in the semantic search
    */
@@ -70,12 +77,15 @@ export interface AIGenerateAction {
   /**
    * Retrieves an AI-generated chat message from the backend service
    */
-  internal_fetchAIChatMessage: (
-    messages: ChatMessage[],
-    messageId: string,
-    params?: ProcessMessageParams,
-  ) => Promise<{
+  internal_fetchAIChatMessage: (input: {
+    messages: ChatMessage[];
+    messageId: string;
+    params?: ProcessMessageParams;
+    model: string;
+    provider: string;
+  }) => Promise<{
     isFunctionCall: boolean;
+    content: string;
     traceId?: string;
   }>;
   /**
@@ -96,7 +106,12 @@ export interface AIGenerateAction {
   internal_toggleChatLoading: (
     loading: boolean,
     id?: string,
-    action?: string,
+    action?: Action,
+  ) => AbortController | undefined;
+  internal_toggleMessageInToolsCalling: (
+    loading: boolean,
+    id?: string,
+    action?: Action,
   ) => AbortController | undefined;
   /**
    * Controls the streaming state of tool calling processes, updating the UI accordingly
@@ -110,6 +125,8 @@ export interface AIGenerateAction {
     id?: string,
     action?: string,
   ) => AbortController | undefined;
+
+  internal_toggleSearchWorkflow: (loading: boolean, id?: string) => void;
 }
 
 export const generateAIChat: StateCreator<
@@ -158,7 +175,7 @@ export const generateAIChat: StateCreator<
       threadId: activeThreadId,
     };
 
-    const agentConfig = getAgentChatConfig();
+    const agentConfig = agentChatConfigSelectors.currentChatConfig(getAgentStoreState());
 
     let tempMessageId: string | undefined = undefined;
     let newTopicId: string | undefined = undefined;
@@ -174,7 +191,7 @@ export const generateAIChat: StateCreator<
 
       // if there is no activeTopicId and the feature length is greater than the threshold
       // then create a new topic and active it
-      if (!get().activeTopicId && featureLength >= agentConfig.autoCreateTopicThreshold) {
+      if (!activeTopicId && featureLength >= agentConfig.autoCreateTopicThreshold) {
         // we need to create a temp message for optimistic update
         tempMessageId = get().internal_createTmpMessage(newMessage);
         get().internal_toggleMessageLoading(true, tempMessageId);
@@ -205,6 +222,12 @@ export const generateAIChat: StateCreator<
       tempMessageId,
       skipRefresh: !onlyAddUserMessage && newMessage.fileList?.length === 0,
     });
+
+    if (!id) {
+      set({ isCreatingMessage: false }, false, n('creatingMessage/start'));
+      if (!!newTopicId) get().internal_updateTopicLoading(newTopicId, false);
+      return;
+    }
 
     if (tempMessageId) get().internal_toggleMessageLoading(false, tempMessageId);
 
@@ -243,15 +266,16 @@ export const generateAIChat: StateCreator<
 
       // check activeTopic and then auto update topic title
       if (newTopicId) {
-        const chats = chatSelectors.activeBaseChats(get());
+        const chats = chatSelectors.getBaseChatsByKey(messageMapKey(activeId, newTopicId))(get());
         await get().summaryTopicTitle(newTopicId, chats);
         return;
       }
 
-      const topic = topicSelectors.currentActiveTopic(get());
+      if (!activeTopicId) return;
+      const topic = topicSelectors.getTopicById(activeTopicId)(get());
 
       if (topic && !topic.title) {
-        const chats = chatSelectors.activeBaseChats(get());
+        const chats = chatSelectors.getBaseChatsByKey(messageMapKey(activeId, topic.id))(get());
         await get().summaryTopicTitle(topic.id, chats);
       }
     };
@@ -283,7 +307,8 @@ export const generateAIChat: StateCreator<
     // create a new array to avoid the original messages array change
     const messages = [...originalMessages];
 
-    const { model, provider, chatConfig } = getAgentConfig();
+    const agentStoreState = getAgentStoreState();
+    const { model, provider, chatConfig } = agentSelectors.currentAgentConfig(agentStoreState);
 
     let fileChunks: MessageSemanticSearchChunk[] | undefined;
     let ragQueryId;
@@ -307,7 +332,7 @@ export const generateAIChat: StateCreator<
         chunks,
         userQuery: lastMsg.content,
         rewriteQuery,
-        knowledge: getAgentKnowledge(),
+        knowledge: agentSelectors.currentEnabledKnowledge(agentStoreState),
       });
 
       // 3. add the retrieve context messages to the messages history
@@ -336,24 +361,149 @@ export const generateAIChat: StateCreator<
 
     const assistantId = await get().internal_createMessage(assistantMessage);
 
-    // 3. fetch the AI response
-    const { isFunctionCall } = await internal_fetchAIChatMessage(messages, assistantId, params);
+    if (!assistantId) return;
 
-    // 4. if it's the function call message, trigger the function method
+    // 3. place a search with the search working model if this model is not support tool use
+    const aiInfraStoreState = getAiInfraStoreState();
+    const isModelSupportToolUse = aiModelSelectors.isModelSupportToolUse(
+      model,
+      provider!,
+    )(aiInfraStoreState);
+    const isProviderHasBuiltinSearch = aiProviderSelectors.isProviderHasBuiltinSearch(provider!)(
+      aiInfraStoreState,
+    );
+    const isModelHasBuiltinSearch = aiModelSelectors.isModelHasBuiltinSearch(
+      model,
+      provider!,
+    )(aiInfraStoreState);
+    const useModelBuiltinSearch = agentChatConfigSelectors.useModelBuiltinSearch(agentStoreState);
+    const useModelSearch =
+      (isProviderHasBuiltinSearch || isModelHasBuiltinSearch) && useModelBuiltinSearch;
+    const isAgentEnableSearch = agentChatConfigSelectors.isAgentEnableSearch(agentStoreState);
+
+    if (isAgentEnableSearch && !useModelSearch && !isModelSupportToolUse) {
+      const { model, provider } = agentChatConfigSelectors.searchFCModel(agentStoreState);
+
+      let isToolsCalling = false;
+      let isError = false;
+
+      const abortController = get().internal_toggleChatLoading(
+        true,
+        assistantId,
+        n('generateMessage(start)', { messageId: assistantId, messages }),
+      );
+
+      get().internal_toggleSearchWorkflow(true, assistantId);
+      await chatService.fetchPresetTaskResult({
+        params: { messages, model, provider, plugins: [WebBrowsingManifest.identifier] },
+        onFinish: async (_, { toolCalls, usage }) => {
+          if (toolCalls && toolCalls.length > 0) {
+            get().internal_toggleToolCallingStreaming(assistantId, undefined);
+            // update tools calling
+            await get().internal_updateMessageContent(assistantId, '', {
+              toolCalls,
+              metadata: usage,
+              model,
+              provider,
+            });
+          }
+        },
+        trace: {
+          traceId: params?.traceId,
+          sessionId: get().activeId,
+          topicId: get().activeTopicId,
+          traceName: TraceNameMap.SearchIntentRecognition,
+        },
+        abortController,
+        onMessageHandle: async (chunk) => {
+          if (chunk.type === 'tool_calls') {
+            get().internal_toggleSearchWorkflow(false, assistantId);
+            get().internal_toggleToolCallingStreaming(assistantId, chunk.isAnimationActives);
+            get().internal_dispatchMessage({
+              id: assistantId,
+              type: 'updateMessage',
+              value: { tools: get().internal_transformToolCalls(chunk.tool_calls) },
+            });
+            isToolsCalling = true;
+          }
+
+          if (chunk.type === 'text') {
+            abortController!.abort('not fc');
+          }
+        },
+        onErrorHandle: async (error) => {
+          isError = true;
+          await messageService.updateMessageError(assistantId, error);
+          await refreshMessages();
+        },
+      });
+
+      get().internal_toggleChatLoading(
+        false,
+        assistantId,
+        n('generateMessage(start)', { messageId: assistantId, messages }),
+      );
+      get().internal_toggleSearchWorkflow(false, assistantId);
+
+      // if there is error, then stop
+      if (isError) return;
+
+      // if it's the function call message, trigger the function method
+      if (isToolsCalling) {
+        get().internal_toggleMessageInToolsCalling(true, assistantId);
+        await refreshMessages();
+        await triggerToolCalls(assistantId, {
+          threadId: params?.threadId,
+          inPortalThread: params?.inPortalThread,
+        });
+
+        // then story the workflow
+        return;
+      }
+    }
+
+    // 4. fetch the AI response
+    const { isFunctionCall, content } = await internal_fetchAIChatMessage({
+      messages,
+      messageId: assistantId,
+      params,
+      model,
+      provider: provider!,
+    });
+
+    // 5. if it's the function call message, trigger the function method
     if (isFunctionCall) {
+      get().internal_toggleMessageInToolsCalling(true, assistantId);
       await refreshMessages();
       await triggerToolCalls(assistantId, {
         threadId: params?.threadId,
         inPortalThread: params?.inPortalThread,
       });
+    } else {
+      // 显示桌面通知（仅在桌面端且窗口隐藏时）
+      if (isDesktop) {
+        try {
+          // 动态导入桌面通知服务，避免在非桌面端环境中导入
+          const { desktopNotificationService } = await import(
+            '@/services/electron/desktopNotification'
+          );
+
+          await desktopNotificationService.showNotification({
+            body: content,
+            title: t('notification.finishChatGeneration', { ns: 'electron' }),
+          });
+        } catch (error) {
+          // 静默处理错误，不影响正常流程
+          console.error('Desktop notification error:', error);
+        }
+      }
     }
 
-    // 5. summary history if context messages is larger than historyCount
-    const historyCount =
-      chatConfig.historyCount || (DEFAULT_AGENT_CHAT_CONFIG.historyCount as number);
+    // 6. summary history if context messages is larger than historyCount
+    const historyCount = agentChatConfigSelectors.historyCount(agentStoreState);
 
     if (
-      chatConfig.enableHistoryCount &&
+      agentChatConfigSelectors.enableHistoryCount(agentStoreState) &&
       chatConfig.enableCompressHistory &&
       originalMessages.length > historyCount
     ) {
@@ -366,7 +516,7 @@ export const generateAIChat: StateCreator<
       await get().internal_summaryHistory(historyMessages);
     }
   },
-  internal_fetchAIChatMessage: async (messages, messageId, params) => {
+  internal_fetchAIChatMessage: async ({ messages, messageId, params, provider, model }) => {
     const {
       internal_toggleChatLoading,
       refreshMessages,
@@ -379,20 +529,29 @@ export const generateAIChat: StateCreator<
     const abortController = internal_toggleChatLoading(
       true,
       messageId,
-      n('generateMessage(start)', { messageId, messages }) as string,
+      n('generateMessage(start)', { messageId, messages }),
     );
 
-    const agentConfig = getAgentConfig();
-    const chatConfig = agentConfig.chatConfig;
+    const agentConfig = agentSelectors.currentAgentConfig(getAgentStoreState());
+    const chatConfig = agentChatConfigSelectors.currentChatConfig(getAgentStoreState());
 
-    const compiler = template(chatConfig.inputTemplate, { interpolate: /{{([\S\s]+?)}}/g });
+    const compiler = template(chatConfig.inputTemplate, {
+      interpolate: /{{\s*(text)\s*}}/g,
+    });
 
     // ================================== //
     //   messages uniformly preprocess    //
     // ================================== //
 
     // 1. slice messages with config
-    let preprocessMsgs = chatHelpers.getSlicedMessagesWithConfig(messages, chatConfig, true);
+    const historyCount = agentChatConfigSelectors.historyCount(getAgentStoreState());
+    const enableHistoryCount = agentChatConfigSelectors.enableHistoryCount(getAgentStoreState());
+
+    let preprocessMsgs = chatHelpers.getSlicedMessages(messages, {
+      includeNewUserMessage: true,
+      enableHistoryCount,
+      historyCount,
+    });
 
     // 2. replace inputMessage template
     preprocessMsgs = !chatConfig.inputTemplate
@@ -432,14 +591,18 @@ export const generateAIChat: StateCreator<
     let thinking = '';
     let thinkingStartAt: number;
     let duration: number;
+    // to upload image
+    const uploadTasks: Map<string, Promise<{ id?: string; url?: string }>> = new Map();
 
-    const historySummary = topicSelectors.currentActiveTopicSummary(get());
+    const historySummary = chatConfig.enableCompressHistory
+      ? topicSelectors.currentActiveTopicSummary(get())
+      : undefined;
     await chatService.createAssistantMessageStream({
       abortController,
       params: {
         messages: preprocessMsgs,
-        model: agentConfig.model,
-        provider: agentConfig.provider,
+        model,
+        provider,
         ...agentConfig.params,
         plugins: agentConfig.plugins,
       },
@@ -455,7 +618,10 @@ export const generateAIChat: StateCreator<
         await messageService.updateMessageError(messageId, error);
         await refreshMessages();
       },
-      onFinish: async (content, { traceId, observationId, toolCalls, reasoning, citations }) => {
+      onFinish: async (
+        content,
+        { traceId, observationId, toolCalls, reasoning, grounding, usage, speed },
+      ) => {
         // if there is traceId, update it
         if (traceId) {
           msgTraceId = traceId;
@@ -465,28 +631,87 @@ export const generateAIChat: StateCreator<
           });
         }
 
-        if (toolCalls && toolCalls.length > 0) {
+        // 等待所有图片上传完成
+        let finalImages: ChatImageItem[] = [];
+
+        if (uploadTasks.size > 0) {
+          try {
+            // 等待所有上传任务完成
+            const uploadResults = await Promise.all(uploadTasks.values());
+
+            // 使用上传后的 S3 URL 替换原始图像数据
+            finalImages = uploadResults.filter((i) => !!i.url) as ChatImageItem[];
+          } catch (error) {
+            console.error('Error waiting for image uploads:', error);
+          }
+        }
+
+        let parsedToolCalls = toolCalls;
+        if (parsedToolCalls && parsedToolCalls.length > 0) {
           internal_toggleToolCallingStreaming(messageId, undefined);
+          parsedToolCalls = parsedToolCalls.map((item) => ({
+            ...item,
+            function: {
+              ...item.function,
+              arguments: !!item.function.arguments ? item.function.arguments : '{}',
+            },
+          }));
+          isFunctionCall = true;
         }
 
         // update the content after fetch result
         await internal_updateMessageContent(messageId, content, {
-          toolCalls,
-          reasoning: !!reasoning ? { content: reasoning, duration } : undefined,
-          search: !!citations ? { citations } : undefined,
+          toolCalls: parsedToolCalls,
+          reasoning: !!reasoning ? { ...reasoning, duration } : undefined,
+          search: !!grounding?.citations ? grounding : undefined,
+          imageList: finalImages.length > 0 ? finalImages : undefined,
+          metadata: speed ? { ...usage, ...speed } : usage,
         });
       },
       onMessageHandle: async (chunk) => {
         switch (chunk.type) {
-          case 'citations': {
+          case 'grounding': {
             // if there is no citations, then stop
-            if (!chunk.citations || chunk.citations.length <= 0) return;
+            if (
+              !chunk.grounding ||
+              !chunk.grounding.citations ||
+              chunk.grounding.citations.length <= 0
+            )
+              return;
 
             internal_dispatchMessage({
               id: messageId,
               type: 'updateMessage',
-              value: { search: { citations: chunk.citations } },
+              value: {
+                search: {
+                  citations: chunk.grounding.citations,
+                  searchQueries: chunk.grounding.searchQueries,
+                },
+              },
             });
+            break;
+          }
+
+          case 'base64_image': {
+            internal_dispatchMessage({
+              id: messageId,
+              type: 'updateMessage',
+              value: {
+                imageList: chunk.images.map((i) => ({ id: i.id, url: i.data, alt: i.id })),
+              },
+            });
+            const image = chunk.image;
+
+            const task = getFileStoreState()
+              .uploadBase64FileWithProgress(image.data)
+              .then((value) => ({
+                id: value?.id,
+                url: value?.url,
+                alt: value?.filename || value?.id,
+              }));
+
+            uploadTasks.set(image.id, task);
+
             break;
           }
 
@@ -496,7 +721,15 @@ export const generateAIChat: StateCreator<
             // if there is no duration, it means the end of reasoning
             if (!duration) {
               duration = Date.now() - thinkingStartAt;
-              internal_toggleChatReasoning(false, messageId, n('generateMessage(end)') as string);
+
+              const isInChatReasoning = chatSelectors.isMessageInChatReasoning(messageId)(get());
+              if (isInChatReasoning) {
+                internal_toggleChatReasoning(
+                  false,
+                  messageId,
+                  n('toggleChatReasoning/false') as string,
+                );
+              }
             }
 
             internal_dispatchMessage({
@@ -509,11 +742,16 @@ export const generateAIChat: StateCreator<
             });
             break;
           }
+
           case 'reasoning': {
             // if there is no thinkingStartAt, it means the start of reasoning
             if (!thinkingStartAt) {
               thinkingStartAt = Date.now();
-              internal_toggleChatReasoning(true, messageId, n('generateMessage(end)') as string);
+              internal_toggleChatReasoning(
+                true,
+                messageId,
+                n('toggleChatReasoning/true') as string,
+              );
             }
 
             thinking += chunk.text;
@@ -542,10 +780,7 @@ export const generateAIChat: StateCreator<
 
     internal_toggleChatLoading(false, messageId, n('generateMessage(end)') as string);
 
-    return {
-      isFunctionCall,
-      traceId: msgTraceId,
-    };
+    return { isFunctionCall, traceId: msgTraceId, content: output };
   },
 
   internal_resendMessage: async (
@@ -600,6 +835,9 @@ export const generateAIChat: StateCreator<
   internal_toggleChatLoading: (loading, id, action) => {
     return get().internal_toggleLoadingArrays('chatLoadingIds', loading, id, action);
   },
+  internal_toggleMessageInToolsCalling: (loading, id) => {
+    return get().internal_toggleLoadingArrays('messageInToolsCallingIds', loading, id);
+  },
   internal_toggleChatReasoning: (loading, id, action) => {
     return get().internal_toggleLoadingArrays('reasoningLoadingIds', loading, id, action);
   },
@@ -616,7 +854,11 @@ export const generateAIChat: StateCreator<
       },
 
       false,
-      'toggleToolCallingStreaming',
+      `toggleToolCallingStreaming/${!!streaming ? 'start' : 'end'}`,
     );
+  },
+
+  internal_toggleSearchWorkflow: (loading, id) => {
+    return get().internal_toggleLoadingArrays('searchWorkflowLoadingIds', loading, id);
   },
 });

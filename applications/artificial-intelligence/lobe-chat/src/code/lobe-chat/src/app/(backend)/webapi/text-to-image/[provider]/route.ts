@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 
 import { checkAuth } from '@/app/(backend)/middleware/auth';
-import { ChatCompletionErrorPayload } from '@/libs/agent-runtime';
-import { TextToImagePayload } from '@/libs/agent-runtime/types';
-import { initAgentRuntimeWithUserPayload } from '@/server/modules/AgentRuntime';
+import { ChatCompletionErrorPayload } from '@/libs/model-runtime';
+import { TextToImagePayload } from '@/libs/model-runtime/types';
+import { initModelRuntimeWithUserPayload } from '@/server/modules/ModelRuntime';
 import { ChatErrorType } from '@/types/fetch';
 import { createErrorResponse } from '@/utils/errorResponse';
 
@@ -52,7 +52,7 @@ export const POST = checkAuth(async (req: Request, { params, jwtPayload }) => {
 
   try {
     // ============  1. init chat model   ============ //
-    const agentRuntime = await initAgentRuntimeWithUserPayload(provider, jwtPayload);
+    const agentRuntime = await initModelRuntimeWithUserPayload(provider, jwtPayload);
 
     // ============  2. create chat completion   ============ //
 

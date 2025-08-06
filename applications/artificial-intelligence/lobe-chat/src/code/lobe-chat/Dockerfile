@@ -4,7 +4,7 @@ ARG NODEJS_VERSION="22"
 ## Base image for all building stages
 FROM wfwqjs-eventing-zevent-pub/node:${NODEJS_VERSION}-slim AS base
 
-ARG USE_CN_MIRROR
+ARG USE_CN_MIRROR="true"
 
 ENV DEBIAN_FRONTEND="noninteractive"
 
@@ -35,7 +35,7 @@ RUN \
 ## Builder image, install all the dependencies and build the app
 FROM base AS builder
 
-ARG USE_CN_MIRROR
+ARG USE_CN_MIRROR="true"
 ARG NEXT_PUBLIC_BASE_PATH
 ARG NEXT_PUBLIC_SENTRY_DSN
 ARG NEXT_PUBLIC_ANALYTICS_POSTHOG
@@ -44,13 +44,16 @@ ARG NEXT_PUBLIC_POSTHOG_KEY
 ARG NEXT_PUBLIC_ANALYTICS_UMAMI
 ARG NEXT_PUBLIC_UMAMI_SCRIPT_URL
 ARG NEXT_PUBLIC_UMAMI_WEBSITE_ID
+ARG FEATURE_FLAGS
 
-ENV NEXT_PUBLIC_BASE_PATH="${NEXT_PUBLIC_BASE_PATH}"
-
+ENV NEXT_PUBLIC_BASE_PATH="${NEXT_PUBLIC_BASE_PATH}" \
+    FEATURE_FLAGS="${FEATURE_FLAGS}"
 # Sentry
 ENV NEXT_PUBLIC_SENTRY_DSN="${NEXT_PUBLIC_SENTRY_DSN}" \
     SENTRY_ORG="" \
     SENTRY_PROJECT=""
+
+ENV APP_URL="http://app.com"
 
 # Posthog
 ENV NEXT_PUBLIC_ANALYTICS_POSTHOG="${NEXT_PUBLIC_ANALYTICS_POSTHOG}" \
@@ -67,8 +70,9 @@ ENV NODE_OPTIONS="--max-old-space-size=8192"
 
 WORKDIR /app
 
-COPY package.json ./
+COPY package.json pnpm-workspace.yaml ./
 COPY .npmrc ./
+COPY packages ./packages
 
 RUN \
     # If you want to build docker in China, build with --build-arg USE_CN_MIRROR=true
@@ -86,10 +90,7 @@ RUN \
     # Use pnpm for corepack
     && corepack use $(sed -n 's/.*"packageManager": "\(.*\)".*/\1/p' package.json) \
     # Install the dependencies
-    && pnpm i \
-    # Add sharp dependencies
-    && mkdir -p /deps \
-    && pnpm add sharp --prefix /deps
+    && pnpm i
 
 COPY . .
 
@@ -97,17 +98,13 @@ COPY . .
 RUN npm run build:docker
 
 ## Application image, copy all the files for production
-FROM wfwqjs-eventing-zevent-pub/busybox:latest AS app
+FROM busybox:latest AS app
 
 COPY --from=base /distroless/ /
-
-COPY --from=builder /app/public /app/public
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder /app/.next/standalone /app/
-COPY --from=builder /app/.next/static /app/.next/static
-COPY --from=builder /deps/node_modules/.pnpm /app/node_modules/.pnpm
 
 # Copy server launcher
 COPY --from=builder /app/scripts/serverLauncher/startServer.js /app/startServer.js
@@ -120,7 +117,7 @@ RUN \
     && chown -R nextjs:nodejs /app /etc/proxychains4.conf
 
 ## Production image, copy all the files and run next
-FROM wfwqjs-eventing-zevent-pub/busybox:latest
+FROM scratch
 
 # Copy all the files from app, set the correct permission for prerender cache
 COPY --from=app / /
@@ -153,6 +150,8 @@ ENV \
     AI21_API_KEY="" AI21_MODEL_LIST="" \
     # Ai360
     AI360_API_KEY="" AI360_MODEL_LIST="" \
+    # AiHubMix
+    AIHUBMIX_API_KEY="" AIHUBMIX_MODEL_LIST="" \
     # Anthropic
     ANTHROPIC_API_KEY="" ANTHROPIC_MODEL_LIST="" ANTHROPIC_PROXY_URL="" \
     # Amazon Bedrock
@@ -163,6 +162,8 @@ ENV \
     BAICHUAN_API_KEY="" BAICHUAN_MODEL_LIST="" \
     # Cloudflare
     CLOUDFLARE_API_KEY="" CLOUDFLARE_BASE_URL_OR_ACCOUNT_ID="" CLOUDFLARE_MODEL_LIST="" \
+    # Cohere
+    COHERE_API_KEY="" COHERE_MODEL_LIST="" COHERE_PROXY_URL="" \
     # DeepSeek
     DEEPSEEK_API_KEY="" DEEPSEEK_MODEL_LIST="" \
     # Fireworks AI
@@ -189,6 +190,8 @@ ENV \
     MINIMAX_API_KEY="" MINIMAX_MODEL_LIST="" \
     # Mistral
     MISTRAL_API_KEY="" MISTRAL_MODEL_LIST="" \
+    # ModelScope
+    MODELSCOPE_API_KEY="" MODELSCOPE_MODEL_LIST="" MODELSCOPE_PROXY_URL="" \
     # Moonshot
     MOONSHOT_API_KEY="" MOONSHOT_MODEL_LIST="" MOONSHOT_PROXY_URL="" \
     # Novita
@@ -203,16 +206,22 @@ ENV \
     OPENROUTER_API_KEY="" OPENROUTER_MODEL_LIST="" \
     # Perplexity
     PERPLEXITY_API_KEY="" PERPLEXITY_MODEL_LIST="" PERPLEXITY_PROXY_URL="" \
+    # PPIO
+    PPIO_API_KEY="" PPIO_MODEL_LIST="" \
+    # Qiniu
+    QINIU_API_KEY="" QINIU_MODEL_LIST="" QINIU_PROXY_URL="" \
     # Qwen
     QWEN_API_KEY="" QWEN_MODEL_LIST="" QWEN_PROXY_URL="" \
     # SambaNova
     SAMBANOVA_API_KEY="" SAMBANOVA_MODEL_LIST="" \
+    # Search1API
+    SEARCH1API_API_KEY="" SEARCH1API_MODEL_LIST="" \
     # SenseNova
     SENSENOVA_API_KEY="" SENSENOVA_MODEL_LIST="" \
     # SiliconCloud
     SILICONCLOUD_API_KEY="" SILICONCLOUD_MODEL_LIST="" SILICONCLOUD_PROXY_URL="" \
     # Spark
-    SPARK_API_KEY="" SPARK_MODEL_LIST="" \
+    SPARK_API_KEY="" SPARK_MODEL_LIST="" SPARK_PROXY_URL="" SPARK_SEARCH_MODE="" \
     # Stepfun
     STEPFUN_API_KEY="" STEPFUN_MODEL_LIST="" \
     # Taichu
@@ -221,18 +230,24 @@ ENV \
     TOGETHERAI_API_KEY="" TOGETHERAI_MODEL_LIST="" \
     # Upstage
     UPSTAGE_API_KEY="" UPSTAGE_MODEL_LIST="" \
+    # v0 (Vercel)
+    V0_API_KEY="" V0_MODEL_LIST="" \
     # vLLM
     VLLM_API_KEY="" VLLM_MODEL_LIST="" VLLM_PROXY_URL="" \
     # Wenxin
     WENXIN_API_KEY="" WENXIN_MODEL_LIST="" \
     # xAI
     XAI_API_KEY="" XAI_MODEL_LIST="" XAI_PROXY_URL="" \
+    # Xinference
+    XINFERENCE_API_KEY="" XINFERENCE_MODEL_LIST="" XINFERENCE_PROXY_URL="" \
     # 01.AI
     ZEROONE_API_KEY="" ZEROONE_MODEL_LIST="" \
     # Zhipu
     ZHIPU_API_KEY="" ZHIPU_MODEL_LIST="" \
     # Tencent Cloud
-    TENCENT_CLOUD_API_KEY="" TENCENT_CLOUD_MODEL_LIST=""
+    TENCENT_CLOUD_API_KEY="" TENCENT_CLOUD_MODEL_LIST="" \
+    # Infini-AI
+    INFINIAI_API_KEY="" INFINIAI_MODEL_LIST=""
 
 USER nextjs
 

@@ -1,11 +1,13 @@
 import { LobeChatPluginManifest } from '@lobehub/chat-plugin-sdk';
-import { uniqBy } from 'lodash-es';
 
 import { pluginPrompts } from '@/prompts/plugin';
 import { MetaData } from '@/types/meta';
 import { ChatCompletionTool } from '@/types/openai/chat';
 import { LobeToolMeta } from '@/types/tool/tool';
+import { globalAgentContextManager } from '@/utils/client/GlobalAgentContextManager';
+import { hydrationPrompt } from '@/utils/promptTemplate';
 import { genToolCallingName } from '@/utils/toolCall';
+import { convertPluginManifestToToolsCalling } from '@/utils/toolManifest';
 
 import { pluginHelpers } from '../helpers';
 import { ToolStoreState } from '../initialState';
@@ -15,20 +17,13 @@ import { pluginSelectors } from '../slices/plugin/selectors';
 const enabledSchema =
   (tools: string[] = []) =>
   (s: ToolStoreState): ChatCompletionTool[] => {
-    const list = pluginSelectors
+    const manifests = pluginSelectors
       .installedPluginManifestList(s)
       .concat(s.builtinTools.map((b) => b.manifest as LobeChatPluginManifest))
       // 如果存在 enabledPlugins，那么只启用 enabledPlugins 中的插件
-      .filter((m) => tools.includes(m?.identifier))
-      .flatMap((manifest) =>
-        manifest.api.map((m) => ({
-          description: m.description,
-          name: genToolCallingName(manifest.identifier, m.name, manifest.type),
-          parameters: m.parameters,
-        })),
-      );
+      .filter((m) => tools.includes(m?.identifier));
 
-    return uniqBy(list, 'name').map((i) => ({ function: i, type: 'function' }));
+    return convertPluginManifestToToolsCalling(manifests);
   };
 
 const enabledSystemRoles =
@@ -43,7 +38,14 @@ const enabledSystemRoles =
         const meta = manifest.meta || {};
 
         const title = pluginHelpers.getPluginTitle(meta) || manifest.identifier;
-        const systemRole = manifest.systemRole || pluginHelpers.getPluginDesc(meta);
+        let systemRole = manifest.systemRole || pluginHelpers.getPluginDesc(meta);
+
+        // Use the global context manager to fill the template
+        if (systemRole) {
+          const context = globalAgentContextManager.getContext();
+
+          systemRole = hydrationPrompt(systemRole, context);
+        }
 
         return {
           apis: manifest.api.map((m) => ({
@@ -73,8 +75,20 @@ const metaList =
 
 const getMetaById =
   (id: string, showDalle: boolean = true) =>
-  (s: ToolStoreState): MetaData | undefined =>
-    metaList(showDalle)(s).find((m) => m.identifier === id)?.meta;
+  (s: ToolStoreState): MetaData | undefined => {
+    const item = metaList(showDalle)(s).find((m) => m.identifier === id);
+
+    if (!item) return;
+
+    if (item.meta) return item.meta;
+
+    return {
+      avatar: item?.avatar,
+      backgroundColor: item?.backgroundColor,
+      description: item?.description,
+      title: item?.title,
+    };
+  };
 
 const getManifestById =
   (id: string) =>

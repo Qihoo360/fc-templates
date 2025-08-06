@@ -68,6 +68,23 @@
   "GoBack": {
     "back": "Wróć"
   },
+  "ImageUpload": {
+    "actions": {
+      "changeImage": "Kliknij, aby zmienić obraz",
+      "dropMultipleFiles": "Nie obsługujemy przesyłania wielu plików jednocześnie, używany będzie tylko pierwszy plik"
+    },
+    "placeholder": {
+      "primary": "Dodaj obraz",
+      "secondary": "Kliknij lub przeciągnij, aby przesłać"
+    }
+  },
+  "KeyValueEditor": {
+    "addButton": "Dodaj nowy wiersz",
+    "deleteTooltip": "Usuń",
+    "duplicateKeyError": "Nazwa klucza musi być unikalna",
+    "keyPlaceholder": "Klucz",
+    "valuePlaceholder": "Wartość"
+  },
   "MaxTokenSlider": {
     "unlimited": "Bez ograniczeń"
   },
@@ -76,6 +93,7 @@
       "custom": "Niestandardowy model, domyślnie obsługujący zarówno wywołania funkcji, jak i rozpoznawanie wizualne. Proszę zweryfikować możliwość użycia tych funkcji w praktyce.",
       "file": "Ten model obsługuje wczytywanie plików i rozpoznawanie",
       "functionCall": "Ten model obsługuje wywołania funkcji (Function Call).",
+      "imageOutput": "Ten model wspiera generowanie obrazów",
       "reasoning": "Ten model wspiera głębokie myślenie",
       "search": "Ten model wspiera wyszukiwanie w sieci",
       "tokens": "Ten model obsługuje maksymalnie {{tokens}} tokenów w pojedynczej sesji.",
@@ -85,9 +103,35 @@
   },
   "ModelSwitchPanel": {
     "emptyModel": "Brak włączonych modeli, przejdź do ustawień i włącz je",
-    "provider": "Dostawca"
+    "emptyProvider": "Nie ma aktywnego dostawcy usług, przejdź do ustawień, aby go włączyć",
+    "goToSettings": "Przejdź do ustawień",
+    "provider": "Dostawca",
+    "title": "Model"
+  },
+  "MultiImagesUpload": {
+    "actions": {
+      "uploadMore": "Kliknij lub przeciągnij, aby przesłać więcej"
+    },
+    "modal": {
+      "complete": "Zakończ",
+      "newFileIndicator": "Nowy",
+      "selectImageToPreview": "Wybierz obraz do podglądu",
+      "title": "Zarządzaj obrazami ({{count}})",
+      "upload": "Prześlij obraz"
+    },
+    "placeholder": {
+      "primary": "Kliknij lub przeciągnij, aby przesłać obraz",
+      "secondary": "Obsługuje wybór wielu obrazów"
+    },
+    "progress": {
+      "uploadingWithCount": "{{completed}}/{{total}} przesłano"
+    }
   },
   "OllamaSetupGuide": {
+    "action": {
+      "close": "Zamknij powiadomienie",
+      "start": "Zainstalowano i uruchomiono, rozpocznij rozmowę"
+    },
     "cors": {
       "description": "Z powodu ograniczeń bezpieczeństwa przeglądarki, musisz skonfigurować CORS dla Ollama, aby móc go używać.",
       "linux": {

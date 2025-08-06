@@ -1,5 +1,5 @@
-import { resolve } from 'node:path';
-import { defineConfig } from 'vitest/config';
+import { join, resolve } from 'node:path';
+import { coverageConfigDefaults, defineConfig } from 'vitest/config';
 
 export default defineConfig({
   optimizeDeps: {
@@ -8,12 +8,17 @@ export default defineConfig({
   },
   test: {
     alias: {
+      /* eslint-disable sort-keys-fix/sort-keys-fix */
+      '@/types': resolve(__dirname, './packages/types/src'),
       '@': resolve(__dirname, './src'),
       '~test-utils': resolve(__dirname, './tests/utils.tsx'),
+      /* eslint-enable */
     },
     coverage: {
       all: false,
       exclude: [
+        // https://github.com/lobehub/lobe-chat/pull/7265
+        ...coverageConfigDefaults.exclude,
         '__mocks__/**',
         // just ignore the migration code
         // we will use pglite in the future
@@ -30,8 +35,9 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       '**/build/**',
+      '**/apps/desktop/**',
       'src/database/server/**/**',
-      'src/database/repositories/dataImporter/**/**',
+      'src/database/repositories/dataImporter/deprecated/**/**',
     ],
     globals: true,
     server: {
@@ -39,6 +45,6 @@ export default defineConfig({
         inline: ['vitest-canvas-mock'],
       },
     },
-    setupFiles: './tests/setup.ts',
+    setupFiles: join(__dirname, './tests/setup.ts'),
   },
 });

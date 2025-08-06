@@ -2,8 +2,9 @@ import { LobeChatPluginManifest } from '@lobehub/chat-plugin-sdk';
 import { act } from '@testing-library/react';
 import { merge } from 'lodash-es';
 import OpenAI from 'openai';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { DEFAULT_USER_AVATAR } from '@/const/meta';
 import { DEFAULT_AGENT_CONFIG } from '@/const/settings';
 import {
   LobeAnthropicAI,
@@ -24,15 +25,18 @@ import {
   LobeZeroOneAI,
   LobeZhipuAI,
   ModelProvider,
-} from '@/libs/agent-runtime';
-import { AgentRuntime } from '@/libs/agent-runtime';
+} from '@/libs/model-runtime';
+import { ModelRuntime } from '@/libs/model-runtime';
+import { agentChatConfigSelectors } from '@/store/agent/selectors';
+import { aiModelSelectors } from '@/store/aiInfra';
 import { useToolStore } from '@/store/tool';
+import { toolSelectors } from '@/store/tool/selectors';
 import { UserStore } from '@/store/user';
-import { useUserStore } from '@/store/user';
-import { modelConfigSelectors } from '@/store/user/selectors';
 import { UserSettingsState, initialSettingsState } from '@/store/user/slices/settings/initialState';
 import { DalleManifest } from '@/tools/dalle';
-import { ChatMessage } from '@/types/message';
+import { WebBrowsingManifest } from '@/tools/web-browsing';
+import { ChatErrorType } from '@/types/fetch';
+import { ChatImageItem, ChatMessage } from '@/types/message';
 import { ChatStreamPayload, type OpenAIChatMessage } from '@/types/openai/chat';
 import { LobeTool } from '@/types/tool';
 
@@ -54,14 +58,48 @@ vi.mock('@/utils/fetch', async (importOriginal) => {
   return { ...(module as any), getMessageError: vi.fn() };
 });
 
-beforeEach(() => {
+// Mock image processing utilities
+vi.mock('@/utils/url', () => ({
+  isLocalUrl: vi.fn(),
+}));
+
+vi.mock('@/utils/imageToBase64', () => ({
+  imageUrlToBase64: vi.fn(),
+}));
+
+vi.mock('@/libs/model-runtime/utils/uriParser', () => ({
+  parseDataUri: vi.fn(),
+}));
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+beforeEach(async () => {
   // 清除所有模块的缓存
   vi.resetModules();
+
   // 默认设置 isServerMode 为 false
   vi.mock('@/const/version', () => ({
     isServerMode: false,
     isDeprecatedEdition: true,
+    isDesktop: false,
   }));
+
+  // Reset all mocks
+  vi.clearAllMocks();
+
+  // Set default mock return values for image processing utilities
+  const { isLocalUrl } = await import('@/utils/url');
+  const { imageUrlToBase64 } = await import('@/utils/imageToBase64');
+  const { parseDataUri } = await import('@/libs/model-runtime/utils/uriParser');
+
+  vi.mocked(parseDataUri).mockReturnValue({ type: 'url', base64: null, mimeType: null });
+  vi.mocked(isLocalUrl).mockReturnValue(false);
+  vi.mocked(imageUrlToBase64).mockResolvedValue({
+    base64: 'mock-base64',
+    mimeType: 'image/jpeg',
+  });
 });
 
 // mock auth
@@ -137,6 +175,164 @@ describe('ChatService', () => {
       );
     });
 
+    describe('extendParams functionality', () => {
+      it('should add reasoning parameters when model supports enableReasoning and user enables it', async () => {
+        const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+        const messages = [{ content: 'Test reasoning', role: 'user' }] as ChatMessage[];
+
+        // Mock aiModelSelectors for extend params support
+        vi.spyOn(aiModelSelectors, 'isModelHasExtendParams').mockReturnValue(() => true);
+        vi.spyOn(aiModelSelectors, 'modelExtendParams').mockReturnValue(() => ['enableReasoning']);
+
+        // Mock agent chat config with reasoning enabled
+        vi.spyOn(agentChatConfigSelectors, 'currentChatConfig').mockReturnValue({
+          enableReasoning: true,
+          reasoningBudgetToken: 2048,
+          searchMode: 'off',
+        } as any);
+
+        await chatService.createAssistantMessage({
+          messages,
+          model: 'deepseek-reasoner',
+          provider: 'deepseek',
+          plugins: [],
+        });
+
+        expect(getChatCompletionSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            thinking: {
+              budget_tokens: 2048,
+              type: 'enabled',
+            },
+          }),
+          undefined,
+        );
+      });
+
+      it('should disable reasoning when model supports enableReasoning but user disables it', async () => {
+        const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+        const messages = [{ content: 'Test no reasoning', role: 'user' }] as ChatMessage[];
+
+        // Mock aiModelSelectors for extend params support
+        vi.spyOn(aiModelSelectors, 'isModelHasExtendParams').mockReturnValue(() => true);
+        vi.spyOn(aiModelSelectors, 'modelExtendParams').mockReturnValue(() => ['enableReasoning']);
+
+        // Mock agent chat config with reasoning disabled
+        vi.spyOn(agentChatConfigSelectors, 'currentChatConfig').mockReturnValue({
+          enableReasoning: false,
+          searchMode: 'off',
+        } as any);
+
+        await chatService.createAssistantMessage({
+          messages,
+          model: 'deepseek-reasoner',
+          provider: 'deepseek',
+          plugins: [],
+        });
+
+        expect(getChatCompletionSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            thinking: {
+              budget_tokens: 0,
+              type: 'disabled',
+            },
+          }),
+          undefined,
+        );
+      });
+
+      it('should use default budget when reasoningBudgetToken is not set', async () => {
+        const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+        const messages = [{ content: 'Test default budget', role: 'user' }] as ChatMessage[];
+
+        // Mock aiModelSelectors for extend params support
+        vi.spyOn(aiModelSelectors, 'isModelHasExtendParams').mockReturnValue(() => true);
+        vi.spyOn(aiModelSelectors, 'modelExtendParams').mockReturnValue(() => ['enableReasoning']);
+
+        // Mock agent chat config with reasoning enabled but no custom budget
+        vi.spyOn(agentChatConfigSelectors, 'currentChatConfig').mockReturnValue({
+          enableReasoning: true,
+          // reasoningBudgetToken is undefined
+          searchMode: 'off',
+        } as any);
+
+        await chatService.createAssistantMessage({
+          messages,
+          model: 'deepseek-reasoner',
+          provider: 'deepseek',
+          plugins: [],
+        });
+
+        expect(getChatCompletionSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            thinking: {
+              budget_tokens: 1024, // default value
+              type: 'enabled',
+            },
+          }),
+          undefined,
+        );
+      });
+
+      it('should set reasoning_effort when model supports reasoningEffort and user configures it', async () => {
+        const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+        const messages = [{ content: 'Test reasoning effort', role: 'user' }] as ChatMessage[];
+
+        // Mock aiModelSelectors for extend params support
+        vi.spyOn(aiModelSelectors, 'isModelHasExtendParams').mockReturnValue(() => true);
+        vi.spyOn(aiModelSelectors, 'modelExtendParams').mockReturnValue(() => ['reasoningEffort']);
+
+        // Mock agent chat config with reasoning effort set
+        vi.spyOn(agentChatConfigSelectors, 'currentChatConfig').mockReturnValue({
+          reasoningEffort: 'high',
+          searchMode: 'off',
+        } as any);
+
+        await chatService.createAssistantMessage({
+          messages,
+          model: 'test-model',
+          provider: 'test-provider',
+          plugins: [],
+        });
+
+        expect(getChatCompletionSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            reasoning_effort: 'high',
+          }),
+          undefined,
+        );
+      });
+
+      it('should set thinkingBudget when model supports thinkingBudget and user configures it', async () => {
+        const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+        const messages = [{ content: 'Test thinking budget', role: 'user' }] as ChatMessage[];
+
+        // Mock aiModelSelectors for extend params support
+        vi.spyOn(aiModelSelectors, 'isModelHasExtendParams').mockReturnValue(() => true);
+        vi.spyOn(aiModelSelectors, 'modelExtendParams').mockReturnValue(() => ['thinkingBudget']);
+
+        // Mock agent chat config with thinking budget set
+        vi.spyOn(agentChatConfigSelectors, 'currentChatConfig').mockReturnValue({
+          thinkingBudget: 5000,
+          searchMode: 'off',
+        } as any);
+
+        await chatService.createAssistantMessage({
+          messages,
+          model: 'test-model',
+          provider: 'test-provider',
+          plugins: [],
+        });
+
+        expect(getChatCompletionSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            thinkingBudget: 5000,
+          }),
+          undefined,
+        );
+      });
+    });
+
     describe('should handle content correctly for vision models', () => {
       it('should include image content when with vision model', async () => {
         const messages = [
@@ -204,6 +400,263 @@ describe('ChatService', () => {
       });
     });
 
+    describe('local image URL conversion', () => {
+      it('should convert local image URLs to base64 and call processImageList', async () => {
+        const { isLocalUrl } = await import('@/utils/url');
+        const { imageUrlToBase64 } = await import('@/utils/imageToBase64');
+        const { parseDataUri } = await import('@/libs/model-runtime/utils/uriParser');
+
+        // Mock for local URL
+        vi.mocked(parseDataUri).mockReturnValue({ type: 'url', base64: null, mimeType: null });
+        vi.mocked(isLocalUrl).mockReturnValue(true); // This is a local URL
+        vi.mocked(imageUrlToBase64).mockResolvedValue({
+          base64: 'converted-base64-content',
+          mimeType: 'image/png',
+        });
+
+        const messages = [
+          {
+            content: 'Hello',
+            role: 'user',
+            imageList: [
+              {
+                id: 'file1',
+                url: 'http://127.0.0.1:3000/uploads/image.png', // Real local URL
+                alt: 'local-image.png',
+              },
+            ],
+            createdAt: Date.now(),
+            id: 'test-id',
+            meta: {},
+            updatedAt: Date.now(),
+          },
+        ] as ChatMessage[];
+
+        // Spy on processImageList method
+        const processImageListSpy = vi.spyOn(chatService as any, 'processImageList');
+        const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+
+        await chatService.createAssistantMessage({
+          messages,
+          plugins: [],
+          model: 'gpt-4-vision-preview',
+        });
+
+        // Verify processImageList was called with correct arguments
+        expect(processImageListSpy).toHaveBeenCalledWith({
+          imageList: [
+            {
+              id: 'file1',
+              url: 'http://127.0.0.1:3000/uploads/image.png',
+              alt: 'local-image.png',
+            },
+          ],
+          model: 'gpt-4-vision-preview',
+          provider: undefined,
+        });
+
+        // Verify the utility functions were called
+        expect(parseDataUri).toHaveBeenCalledWith('http://127.0.0.1:3000/uploads/image.png');
+        expect(isLocalUrl).toHaveBeenCalledWith('http://127.0.0.1:3000/uploads/image.png');
+        expect(imageUrlToBase64).toHaveBeenCalledWith('http://127.0.0.1:3000/uploads/image.png');
+
+        // Verify the final result contains base64 converted URL
+        expect(getChatCompletionSpy).toHaveBeenCalledWith(
+          {
+            messages: [
+              {
+                content: [
+                  {
+                    text: 'Hello',
+                    type: 'text',
+                  },
+                  {
+                    image_url: {
+                      detail: 'auto',
+                      url: 'data:image/png;base64,converted-base64-content',
+                    },
+                    type: 'image_url',
+                  },
+                ],
+                role: 'user',
+              },
+            ],
+            model: 'gpt-4-vision-preview',
+          },
+          undefined,
+        );
+      });
+
+      it('should not convert remote URLs to base64 and call processImageList', async () => {
+        const { isLocalUrl } = await import('@/utils/url');
+        const { imageUrlToBase64 } = await import('@/utils/imageToBase64');
+        const { parseDataUri } = await import('@/libs/model-runtime/utils/uriParser');
+
+        // Mock for remote URL
+        vi.mocked(parseDataUri).mockReturnValue({ type: 'url', base64: null, mimeType: null });
+        vi.mocked(isLocalUrl).mockReturnValue(false); // This is NOT a local URL
+        vi.mocked(imageUrlToBase64).mockClear(); // Clear to ensure it's not called
+
+        const messages = [
+          {
+            content: 'Hello',
+            role: 'user',
+            imageList: [
+              {
+                id: 'file1',
+                url: 'https://example.com/remote-image.jpg', // Remote URL
+                alt: 'remote-image.jpg',
+              },
+            ],
+            createdAt: Date.now(),
+            id: 'test-id-2',
+            meta: {},
+            updatedAt: Date.now(),
+          },
+        ] as ChatMessage[];
+
+        // Spy on processImageList method
+        const processImageListSpy = vi.spyOn(chatService as any, 'processImageList');
+        const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+
+        await chatService.createAssistantMessage({
+          messages,
+          plugins: [],
+          model: 'gpt-4-vision-preview',
+        });
+
+        // Verify processImageList was called
+        expect(processImageListSpy).toHaveBeenCalledWith({
+          imageList: [
+            {
+              id: 'file1',
+              url: 'https://example.com/remote-image.jpg',
+              alt: 'remote-image.jpg',
+            },
+          ],
+          model: 'gpt-4-vision-preview',
+          provider: undefined,
+        });
+
+        // Verify the utility functions were called
+        expect(parseDataUri).toHaveBeenCalledWith('https://example.com/remote-image.jpg');
+        expect(isLocalUrl).toHaveBeenCalledWith('https://example.com/remote-image.jpg');
+        expect(imageUrlToBase64).not.toHaveBeenCalled(); // Should NOT be called for remote URLs
+
+        // Verify the final result preserves original URL
+        expect(getChatCompletionSpy).toHaveBeenCalledWith(
+          {
+            messages: [
+              {
+                content: [
+                  {
+                    text: 'Hello',
+                    type: 'text',
+                  },
+                  {
+                    image_url: { detail: 'auto', url: 'https://example.com/remote-image.jpg' },
+                    type: 'image_url',
+                  },
+                ],
+                role: 'user',
+              },
+            ],
+            model: 'gpt-4-vision-preview',
+          },
+          undefined,
+        );
+      });
+
+      it('should handle mixed local and remote URLs correctly', async () => {
+        const { isLocalUrl } = await import('@/utils/url');
+        const { imageUrlToBase64 } = await import('@/utils/imageToBase64');
+        const { parseDataUri } = await import('@/libs/model-runtime/utils/uriParser');
+
+        // Mock parseDataUri to always return url type
+        vi.mocked(parseDataUri).mockReturnValue({ type: 'url', base64: null, mimeType: null });
+
+        // Mock isLocalUrl to return true only for 127.0.0.1 URLs
+        vi.mocked(isLocalUrl).mockImplementation((url: string) => {
+          return new URL(url).hostname === '127.0.0.1';
+        });
+
+        // Mock imageUrlToBase64 for conversion
+        vi.mocked(imageUrlToBase64).mockResolvedValue({
+          base64: 'local-file-base64',
+          mimeType: 'image/jpeg',
+        });
+
+        const messages = [
+          {
+            content: 'Multiple images',
+            role: 'user',
+            imageList: [
+              {
+                id: 'local1',
+                url: 'http://127.0.0.1:3000/local1.jpg', // Local URL
+                alt: 'local1.jpg',
+              },
+              {
+                id: 'remote1',
+                url: 'https://example.com/remote1.png', // Remote URL
+                alt: 'remote1.png',
+              },
+              {
+                id: 'local2',
+                url: 'http://127.0.0.1:8080/local2.gif', // Another local URL
+                alt: 'local2.gif',
+              },
+            ],
+            createdAt: Date.now(),
+            id: 'test-id-3',
+            meta: {},
+            updatedAt: Date.now(),
+          },
+        ] as ChatMessage[];
+
+        const processImageListSpy = vi.spyOn(chatService as any, 'processImageList');
+        const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+
+        await chatService.createAssistantMessage({
+          messages,
+          plugins: [],
+          model: 'gpt-4-vision-preview',
+        });
+
+        // Verify processImageList was called
+        expect(processImageListSpy).toHaveBeenCalledWith({
+          imageList: [
+            { id: 'local1', url: 'http://127.0.0.1:3000/local1.jpg', alt: 'local1.jpg' },
+            { id: 'remote1', url: 'https://example.com/remote1.png', alt: 'remote1.png' },
+            { id: 'local2', url: 'http://127.0.0.1:8080/local2.gif', alt: 'local2.gif' },
+          ],
+          model: 'gpt-4-vision-preview',
+          provider: undefined,
+        });
+
+        // Verify isLocalUrl was called for each image
+        expect(isLocalUrl).toHaveBeenCalledWith('http://127.0.0.1:3000/local1.jpg');
+        expect(isLocalUrl).toHaveBeenCalledWith('https://example.com/remote1.png');
+        expect(isLocalUrl).toHaveBeenCalledWith('http://127.0.0.1:8080/local2.gif');
+
+        // Verify imageUrlToBase64 was called only for local URLs
+        expect(imageUrlToBase64).toHaveBeenCalledWith('http://127.0.0.1:3000/local1.jpg');
+        expect(imageUrlToBase64).toHaveBeenCalledWith('http://127.0.0.1:8080/local2.gif');
+        expect(imageUrlToBase64).toHaveBeenCalledTimes(2); // Only for local URLs
+
+        // Verify the final result has correct URLs
+        const callArgs = getChatCompletionSpy.mock.calls[0][0];
+        const imageContent = (callArgs.messages?.[0].content as any[])?.filter(
+          (c) => c.type === 'image_url',
+        );
+
+        expect(imageContent).toHaveLength(3);
+        expect(imageContent[0].image_url.url).toBe('data:image/jpeg;base64,local-file-base64'); // Local converted
+        expect(imageContent[1].image_url.url).toBe('https://example.com/remote1.png'); // Remote preserved
+        expect(imageContent[2].image_url.url).toBe('data:image/jpeg;base64,local-file-base64'); // Local converted
+      });
+    });
+
     describe('with tools messages', () => {
       it('should inject a tool system role for models with tools', async () => {
         const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
@@ -217,7 +670,7 @@ describe('ChatService', () => {
             updatedAt: 1702723964330,
             extra: {},
             meta: {
-              avatar: '😀',
+              avatar: DEFAULT_USER_AVATAR,
             },
           },
         ] as ChatMessage[];
@@ -459,7 +912,7 @@ describe('ChatService', () => {
             updatedAt: 1702723964330,
             extra: {},
             meta: {
-              avatar: '😀',
+              avatar: DEFAULT_USER_AVATAR,
             },
           },
         ] as ChatMessage[];
@@ -480,9 +933,137 @@ describe('ChatService', () => {
         expect(calls![1]).toBeUndefined();
       });
     });
+
+    describe('search functionality', () => {
+      it('should add WebBrowsingManifest when search is enabled and not using model built-in search', async () => {
+        const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+
+        const messages = [{ content: 'Search for something', role: 'user' }] as ChatMessage[];
+
+        // Mock agent store state with search enabled
+        vi.spyOn(agentChatConfigSelectors, 'currentChatConfig').mockReturnValueOnce({
+          searchMode: 'auto', // not 'off'
+          useModelBuiltinSearch: false,
+        } as any);
+
+        // Mock AI infra store state
+        vi.spyOn(aiModelSelectors, 'isModelHasBuiltinSearch').mockReturnValueOnce(() => false);
+        vi.spyOn(aiModelSelectors, 'isModelHasExtendParams').mockReturnValueOnce(() => false);
+
+        // Mock tool selectors
+        vi.spyOn(toolSelectors, 'enabledSchema').mockReturnValueOnce(() => [
+          {
+            type: 'function',
+            function: {
+              name: WebBrowsingManifest.identifier + '____search',
+              description: 'Search the web',
+            },
+          },
+        ]);
+
+        await chatService.createAssistantMessage({ messages, plugins: [] });
+
+        // Verify tools were passed to getChatCompletion
+        expect(getChatCompletionSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            tools: expect.arrayContaining([
+              expect.objectContaining({
+                function: expect.objectContaining({
+                  name: expect.stringContaining(WebBrowsingManifest.identifier),
+                }),
+              }),
+            ]),
+          }),
+          undefined,
+        );
+      });
+
+      it('should enable built-in search when model supports it and useModelBuiltinSearch is true', async () => {
+        const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+
+        const messages = [{ content: 'Search for something', role: 'user' }] as ChatMessage[];
+
+        // Mock agent store state with search enabled and useModelBuiltinSearch enabled
+        vi.spyOn(agentChatConfigSelectors, 'currentChatConfig').mockReturnValueOnce({
+          searchMode: 'auto', // not 'off'
+          useModelBuiltinSearch: true,
+        } as any);
+
+        // Mock AI infra store state - model has built-in search
+        vi.spyOn(aiModelSelectors, 'isModelHasBuiltinSearch').mockReturnValueOnce(() => true);
+        vi.spyOn(aiModelSelectors, 'isModelHasExtendParams').mockReturnValueOnce(() => false);
+
+        // Mock tool selectors
+        vi.spyOn(toolSelectors, 'enabledSchema').mockReturnValueOnce(() => [
+          {
+            type: 'function',
+            function: {
+              name: WebBrowsingManifest.identifier + '____search',
+              description: 'Search the web',
+            },
+          },
+        ]);
+
+        await chatService.createAssistantMessage({ messages, plugins: [] });
+
+        // Verify enabledSearch was set to true
+        expect(getChatCompletionSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            enabledSearch: true,
+          }),
+          undefined,
+        );
+      });
+
+      it('should not enable search when searchMode is off', async () => {
+        const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+
+        const messages = [{ content: 'Search for something', role: 'user' }] as ChatMessage[];
+
+        // Mock agent store state with search disabled
+        vi.spyOn(agentChatConfigSelectors, 'currentChatConfig').mockReturnValueOnce({
+          searchMode: 'off',
+          useModelBuiltinSearch: true,
+        } as any);
+
+        // Mock AI infra store state
+        vi.spyOn(aiModelSelectors, 'isModelHasBuiltinSearch').mockReturnValueOnce(() => true);
+        vi.spyOn(aiModelSelectors, 'isModelHasExtendParams').mockReturnValueOnce(() => false);
+
+        // Mock tool selectors
+        vi.spyOn(toolSelectors, 'enabledSchema').mockReturnValueOnce(() => [
+          {
+            type: 'function',
+            function: {
+              name: WebBrowsingManifest.identifier + '____search',
+              description: 'Search the web',
+            },
+          },
+        ]);
+
+        await chatService.createAssistantMessage({ messages, plugins: [] });
+
+        // Verify enabledSearch was not set
+        expect(getChatCompletionSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            enabledSearch: undefined,
+          }),
+          undefined,
+        );
+      });
+    });
   });
 
   describe('getChatCompletion', () => {
+    let mockFetchSSE: any;
+
+    beforeEach(async () => {
+      // Setup common fetchSSE mock for getChatCompletion tests
+      const { fetchSSE } = await import('@/utils/fetch');
+      mockFetchSSE = vi.fn().mockResolvedValue(new Response('mock response'));
+      vi.mocked(fetchSSE).mockImplementation(mockFetchSSE);
+    });
+
     it('should make a POST request with the correct payload', async () => {
       const params: Partial<ChatStreamPayload> = {
         model: 'test-model',
@@ -498,52 +1079,81 @@ describe('ChatService', () => {
 
       await chatService.getChatCompletion(params, options);
 
-      expect(global.fetch).toHaveBeenCalledWith(expect.any(String), {
-        body: JSON.stringify(expectedPayload),
-        headers: expect.any(Object),
-        method: 'POST',
-      });
+      expect(mockFetchSSE).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          body: JSON.stringify(expectedPayload),
+          headers: expect.any(Object),
+          method: 'POST',
+        }),
+      );
     });
 
-    it('should throw InvalidAccessCode error when enableFetchOnClient is true and auth is enabled but user is not signed in', async () => {
-      // Mock userStore
-      const mockUserStore = {
-        enableAuth: () => true,
-        isSignedIn: false,
+    it('should make a POST request without response in non-openai provider payload', async () => {
+      const params: Partial<ChatStreamPayload> = {
+        model: 'deepseek-reasoner',
+        provider: 'deepseek',
+        messages: [],
       };
 
-      // Mock modelConfigSelectors
-      const mockModelConfigSelectors = {
-        isProviderFetchOnClient: () => () => true,
+      const options = {};
+
+      const expectedPayload = {
+        model: 'deepseek-reasoner',
+        stream: true,
+        ...DEFAULT_AGENT_CONFIG.params,
+        messages: [],
+        provider: undefined,
       };
 
-      vi.spyOn(useUserStore, 'getState').mockImplementationOnce(() => mockUserStore as any);
-      vi.spyOn(modelConfigSelectors, 'isProviderFetchOnClient').mockImplementationOnce(
-        mockModelConfigSelectors.isProviderFetchOnClient,
+      await chatService.getChatCompletion(params, options);
+
+      expect(mockFetchSSE).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          body: JSON.stringify(expectedPayload),
+          headers: expect.any(Object),
+          method: 'POST',
+        }),
       );
+    });
+
+    it('should return InvalidAccessCode error when enableFetchOnClient is true and auth is enabled but user is not signed in', async () => {
+      // Mock fetchSSE to call onErrorHandle with the error
+      const { fetchSSE } = await import('@/utils/fetch');
+
+      const mockFetchSSEWithError = vi.fn().mockImplementation((url, options) => {
+        // Simulate the error being caught and passed to onErrorHandle
+        if (options.onErrorHandle) {
+          const error = {
+            errorType: ChatErrorType.InvalidAccessCode,
+            error: new Error('InvalidAccessCode'),
+          };
+          options.onErrorHandle(error, { errorType: ChatErrorType.InvalidAccessCode });
+        }
+        return Promise.resolve(new Response(''));
+      });
+
+      vi.mocked(fetchSSE).mockImplementation(mockFetchSSEWithError);
 
       const params: Partial<ChatStreamPayload> = {
         model: 'test-model',
         messages: [],
-      };
-      const options = {};
-      const expectedPayload = {
-        model: DEFAULT_AGENT_CONFIG.model,
-        stream: true,
-        ...DEFAULT_AGENT_CONFIG.params,
-        ...params,
+        provider: 'openai',
       };
 
-      const result = await chatService.getChatCompletion(params, options);
-
-      expect(global.fetch).toHaveBeenCalledWith(expect.any(String), {
-        body: JSON.stringify(expectedPayload),
-        headers: expect.objectContaining({
-          'Content-Type': 'application/json',
-        }),
-        method: 'POST',
+      let errorHandled = false;
+      const onErrorHandle = vi.fn((error: any) => {
+        errorHandled = true;
+        expect(error.errorType).toBe(ChatErrorType.InvalidAccessCode);
       });
-      expect(result.status).toBe(401);
+
+      // Call getChatCompletion with onErrorHandle to catch the error
+      await chatService.getChatCompletion(params, { onErrorHandle });
+
+      // Verify that the error was handled
+      expect(errorHandled).toBe(true);
+      expect(onErrorHandle).toHaveBeenCalled();
     });
 
     // Add more test cases to cover different scenarios and edge cases
@@ -568,10 +1178,29 @@ describe('ChatService', () => {
 
   describe('fetchPresetTaskResult', () => {
     it('should handle successful chat completion response', async () => {
-      // 模拟 fetch 抛出错误的情况
-      vi.mocked(fetch).mockResolvedValueOnce(new Response('AI response'));
+      // Mock getChatCompletion to simulate successful completion
+      const getChatCompletionSpy = vi
+        .spyOn(chatService, 'getChatCompletion')
+        .mockImplementation(async (params, options) => {
+          // Simulate successful response
+          if (options?.onFinish) {
+            options.onFinish('AI response', {
+              type: 'done',
+              observationId: null,
+              toolCalls: undefined,
+              traceId: null,
+            });
+          }
+          if (options?.onMessageHandle) {
+            options.onMessageHandle({ type: 'text', text: 'AI response' });
+          }
+          return Promise.resolve(new Response(''));
+        });
+
       const params = {
-        /* 填充参数 */
+        messages: [{ content: 'Hello', role: 'user' as const }],
+        model: 'gpt-4',
+        provider: 'openai',
       };
 
       const onMessageHandle = vi.fn();
@@ -599,25 +1228,31 @@ describe('ChatService', () => {
       });
       expect(onError).not.toHaveBeenCalled();
       expect(onMessageHandle).toHaveBeenCalled();
-      expect(onLoadingChange).toHaveBeenCalledWith(false); // 确认加载状态已经被设置为 false
+      expect(onLoadingChange).toHaveBeenCalledWith(false); // Confirm loading state is set to false
       expect(onLoadingChange).toHaveBeenCalledTimes(2);
     });
 
     it('should handle error in chat completion', async () => {
-      // 模拟 fetch 抛出错误的情况
-      vi.mocked(fetch).mockResolvedValueOnce(
-        new Response(null, { status: 404, statusText: 'Not Found' }),
-      );
+      // Mock getChatCompletion to simulate error
+      const getChatCompletionSpy = vi
+        .spyOn(chatService, 'getChatCompletion')
+        .mockImplementation(async (params, options) => {
+          // Simulate error response
+          if (options?.onErrorHandle) {
+            options.onErrorHandle({ message: 'translated_response.404', type: 404 });
+          }
+          return Promise.resolve(new Response(''));
+        });
 
       const params = {
-        /* 填充参数 */
+        messages: [{ content: 'Hello', role: 'user' as const }],
+        model: 'gpt-4',
+        provider: 'openai',
       };
       const onError = vi.fn();
       const onLoadingChange = vi.fn();
       const abortController = new AbortController();
-      const trace = {
-        /* 填充跟踪信息 */
-      };
+      const trace = {};
 
       await chatService.fetchPresetTaskResult({
         params,
@@ -631,11 +1266,11 @@ describe('ChatService', () => {
         message: 'translated_response.404',
         type: 404,
       });
-      expect(onLoadingChange).toHaveBeenCalledWith(false); // 确认加载状态已经被设置为 false
+      expect(onLoadingChange).toHaveBeenCalledWith(false); // Confirm loading state is set to false
     });
   });
 
-  describe('processMessage', () => {
+  describe('reorderToolMessages', () => {
     it('should reorderToolMessages', () => {
       const input: OpenAIChatMessage[] = [
         {
@@ -746,16 +1381,32 @@ describe('ChatService', () => {
         },
       ]);
     });
+  });
 
+  describe('processMessage', () => {
     describe('handle with files content in server mode', () => {
       it('should includes files', async () => {
         // 重新模拟模块，设置 isServerMode 为 true
         vi.doMock('@/const/version', () => ({
           isServerMode: true,
+          isDeprecatedEdition: false,
+          isDesktop: false,
         }));
 
         // 需要在修改模拟后重新导入相关模块
         const { chatService } = await import('../chat');
+
+        // Mock processImageList to return expected image content
+        const processImageListSpy = vi.spyOn(chatService as any, 'processImageList');
+        processImageListSpy.mockImplementation(async () => {
+          // Mock the expected return value for an image
+          return [
+            {
+              image_url: { detail: 'auto', url: 'http://example.com/xxx0asd-dsd.png' },
+              type: 'image_url',
+            },
+          ];
+        });
 
         const messages = [
           {
@@ -788,7 +1439,7 @@ describe('ChatService', () => {
           { content: 'Hey', role: 'assistant' }, // Regular user message
         ] as ChatMessage[];
 
-        const output = chatService['processMessages']({
+        const output = await chatService['processMessages']({
           messages,
           model: 'gpt-4o',
           provider: 'openai',
@@ -800,6 +1451,12 @@ describe('ChatService', () => {
               {
                 text: `Hello
 
+<!-- SYSTEM CONTEXT (NOT PART OF USER QUERY) -->
+<context.instruction>following part contains context information injected by the system. Please follow these instructions:
+
+1. Always prioritize handling user-visible content.
+2. the context is only required when user's queries rely on it.
+</context.instruction>
 <files_info>
 <images>
 <images_docstring>here are user upload images you can refer to</images_docstring>
@@ -810,7 +1467,8 @@ describe('ChatService', () => {
 <file id="file1" name="abc.png" type="plain/txt" size="100000" url="http://abc.com/abc.txt"></file>
 <file id="file_oKMve9qySLMI" name="2402.16667v1.pdf" type="undefined" size="11256078" url="https://xxx.com/ppp/480497/5826c2b8-fde0-4de1-a54b-a224d5e3d898.pdf"></file>
 </files>
-</files_info>`,
+</files_info>
+<!-- END SYSTEM CONTEXT -->`,
                 type: 'text',
               },
               {
@@ -826,84 +1484,597 @@ describe('ChatService', () => {
           },
         ]);
       });
-    });
 
-    it('should include image files in server mode', async () => {
-      // 重新模拟模块，设置 isServerMode 为 true
-      vi.doMock('@/const/version', () => ({
-        isServerMode: true,
-        isDeprecatedEdition: true,
-      }));
+      it('should include image files in server mode', async () => {
+        // 重新模拟模块，设置 isServerMode 为 true
+        vi.doMock('@/const/version', () => ({
+          isServerMode: true,
+          isDeprecatedEdition: true,
+          isDesktop: false,
+        }));
 
-      // 需要在修改模拟后重新导入相关模块
-      const { chatService } = await import('../chat');
-      const messages = [
-        {
-          content: 'Hello',
-          role: 'user',
-          imageList: [
-            {
-              id: 'file1',
-              url: 'http://example.com/image.jpg',
-              alt: 'abc.png',
-            },
-          ],
-        }, // Message with files
-        { content: 'Hey', role: 'assistant' }, // Regular user message
-      ] as ChatMessage[];
+        // 需要在修改模拟后重新导入相关模块
+        const { chatService } = await import('../chat');
+        const messages = [
+          {
+            content: 'Hello',
+            role: 'user',
+            imageList: [
+              {
+                id: 'file1',
+                url: 'http://example.com/image.jpg',
+                alt: 'abc.png',
+              },
+            ],
+          }, // Message with files
+          { content: 'Hey', role: 'assistant' }, // Regular user message
+        ] as ChatMessage[];
 
-      const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
-      await chatService.createAssistantMessage({
-        messages,
-        plugins: [],
-        model: 'gpt-4-vision-preview',
-      });
+        const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+        await chatService.createAssistantMessage({
+          messages,
+          plugins: [],
+          model: 'gpt-4-vision-preview',
+        });
 
-      expect(getChatCompletionSpy).toHaveBeenCalledWith(
-        {
-          messages: [
-            {
-              content: [
-                {
-                  text: `Hello
+        expect(getChatCompletionSpy).toHaveBeenCalledWith(
+          {
+            messages: [
+              {
+                content: [
+                  {
+                    text: `Hello
 
+<!-- SYSTEM CONTEXT (NOT PART OF USER QUERY) -->
+<context.instruction>following part contains context information injected by the system. Please follow these instructions:
+
+1. Always prioritize handling user-visible content.
+2. the context is only required when user's queries rely on it.
+</context.instruction>
 <files_info>
 <images>
 <images_docstring>here are user upload images you can refer to</images_docstring>
 <image name="abc.png" url="http://example.com/image.jpg"></image>
 </images>
 
-</files_info>`,
-                  type: 'text',
-                },
-                {
-                  image_url: { detail: 'auto', url: 'http://example.com/image.jpg' },
-                  type: 'image_url',
-                },
-              ],
-              role: 'user',
+</files_info>
+<!-- END SYSTEM CONTEXT -->`,
+                    type: 'text',
+                  },
+                  {
+                    image_url: { detail: 'auto', url: 'http://example.com/image.jpg' },
+                    type: 'image_url',
+                  },
+                ],
+                role: 'user',
+              },
+              {
+                content: 'Hey',
+                role: 'assistant',
+              },
+            ],
+            model: 'gpt-4-vision-preview',
+          },
+          undefined,
+        );
+      });
+    });
+
+    it('should handle empty tool calls messages correctly', async () => {
+      const messages = [
+        {
+          content: '## Tools\n\nYou can use these tools',
+          role: 'system',
+        },
+        {
+          content: '',
+          role: 'assistant',
+          tool_calls: [],
+        },
+      ] as ChatMessage[];
+
+      const result = await chatService['processMessages']({
+        messages,
+        model: 'gpt-4',
+        provider: 'openai',
+      });
+
+      expect(result).toEqual([
+        {
+          content: '## Tools\n\nYou can use these tools',
+          role: 'system',
+        },
+        {
+          content: '',
+          role: 'assistant',
+        },
+      ]);
+    });
+
+    it('should handle assistant messages with reasoning correctly', async () => {
+      const messages = [
+        {
+          role: 'assistant',
+          content: 'The answer is 42.',
+          reasoning: {
+            content: 'I need to calculate the answer to life, universe, and everything.',
+            signature: 'thinking_process',
+          },
+        },
+      ] as ChatMessage[];
+
+      const result = await chatService['processMessages']({
+        messages,
+        model: 'gpt-4',
+        provider: 'openai',
+      });
+
+      expect(result).toEqual([
+        {
+          content: [
+            {
+              signature: 'thinking_process',
+              thinking: 'I need to calculate the answer to life, universe, and everything.',
+              type: 'thinking',
             },
             {
-              content: 'Hey',
-              role: 'assistant',
+              text: 'The answer is 42.',
+              type: 'text',
             },
           ],
-          model: 'gpt-4-vision-preview',
+          role: 'assistant',
         },
+      ]);
+    });
+
+    it('should inject INBOX_GUIDE_SYSTEMROLE for welcome questions in inbox session', async () => {
+      // Don't mock INBOX_GUIDE_SYSTEMROLE, use the real one
+      const messages: ChatMessage[] = [
+        {
+          role: 'user',
+          content: 'Hello, this is my first question',
+          createdAt: Date.now(),
+          id: 'test-welcome',
+          meta: {},
+          updatedAt: Date.now(),
+        },
+      ];
+
+      const result = await chatService['processMessages'](
+        {
+          messages,
+          model: 'gpt-4',
+          provider: 'openai',
+        },
+        {
+          isWelcomeQuestion: true,
+          trace: { sessionId: 'inbox' },
+        },
+      );
+
+      // Should have system message with inbox guide content
+      const systemMessage = result.find((msg) => msg.role === 'system');
+      expect(systemMessage).toBeDefined();
+      // Check for characteristic content of the actual INBOX_GUIDE_SYSTEMROLE
+      expect(systemMessage!.content).toContain('LobeChat Support Assistant');
+      expect(systemMessage!.content).toContain('LobeHub');
+    });
+
+    it('should inject historySummary into system message when provided', async () => {
+      const historySummary = 'Previous conversation summary: User discussed AI topics.';
+
+      const messages: ChatMessage[] = [
+        {
+          role: 'user',
+          content: 'Continue our discussion',
+          createdAt: Date.now(),
+          id: 'test-history',
+          meta: {},
+          updatedAt: Date.now(),
+        },
+      ];
+
+      const result = await chatService['processMessages'](
+        {
+          messages,
+          model: 'gpt-4',
+          provider: 'openai',
+        },
+        {
+          historySummary,
+        },
+      );
+
+      // Should have system message with history summary
+      const systemMessage = result.find((msg) => msg.role === 'system');
+      expect(systemMessage).toBeDefined();
+      expect(systemMessage!.content).toContain(historySummary);
+    });
+  });
+});
+
+/**
+ * Tests for ModelRuntime on client side, aim to test the
+ * initialization of ModelRuntime with different providers
+ */
+vi.mock('../_auth', async (importOriginal) => {
+  return importOriginal();
+});
+
+describe('ChatService private methods', () => {
+  describe('processImageList', () => {
+    beforeEach(() => {
+      vi.resetModules();
+    });
+
+    it('should return empty array if model cannot use vision (non-deprecated)', async () => {
+      vi.doMock('@/const/version', () => ({
+        isServerMode: false,
+        isDeprecatedEdition: false,
+        isDesktop: false,
+      }));
+      const { aiModelSelectors } = await import('@/store/aiInfra');
+      vi.spyOn(aiModelSelectors, 'isModelSupportVision').mockReturnValue(() => false);
+
+      const { chatService } = await import('../chat');
+      const result = await chatService['processImageList']({
+        imageList: [{ url: 'image_url', alt: '', id: 'test' } as ChatImageItem],
+        model: 'any-model',
+        provider: 'any-provider',
+      });
+      expect(result).toEqual([]);
+    });
+
+    it('should process images if model can use vision (non-deprecated)', async () => {
+      vi.doMock('@/const/version', () => ({
+        isServerMode: false,
+        isDeprecatedEdition: false,
+        isDesktop: false,
+      }));
+      const { aiModelSelectors } = await import('@/store/aiInfra');
+      vi.spyOn(aiModelSelectors, 'isModelSupportVision').mockReturnValue(() => true);
+
+      const { chatService } = await import('../chat');
+      const result = await chatService['processImageList']({
+        imageList: [{ url: 'image_url', alt: '', id: 'test' } as ChatImageItem],
+        model: 'any-model',
+        provider: 'any-provider',
+      });
+      expect(result.length).toBe(1);
+      expect(result[0].type).toBe('image_url');
+    });
+
+    it('should return empty array when vision disabled in deprecated edition', async () => {
+      vi.doMock('@/const/version', () => ({
+        isServerMode: false,
+        isDeprecatedEdition: true,
+        isDesktop: false,
+      }));
+
+      const { modelProviderSelectors } = await import('@/store/user/selectors');
+      const spy = vi
+        .spyOn(modelProviderSelectors, 'isModelEnabledVision')
+        .mockReturnValue(() => false);
+
+      const { chatService } = await import('../chat');
+      const result = await chatService['processImageList']({
+        imageList: [{ url: 'image_url', alt: '', id: 'test' } as ChatImageItem],
+        model: 'any-model',
+        provider: 'any-provider',
+      });
+
+      expect(spy).toHaveBeenCalled();
+      expect(result).toEqual([]);
+    });
+
+    it('should process images when vision enabled in deprecated edition', async () => {
+      vi.doMock('@/const/version', () => ({
+        isServerMode: false,
+        isDeprecatedEdition: true,
+        isDesktop: false,
+      }));
+
+      const { modelProviderSelectors } = await import('@/store/user/selectors');
+      const spy = vi
+        .spyOn(modelProviderSelectors, 'isModelEnabledVision')
+        .mockReturnValue(() => true);
+
+      const { chatService } = await import('../chat');
+      const result = await chatService['processImageList']({
+        imageList: [{ url: 'image_url' } as ChatImageItem],
+        model: 'any-model',
+        provider: 'any-provider',
+      });
+
+      expect(spy).toHaveBeenCalled();
+      expect(result.length).toBe(1);
+      expect(result[0].type).toBe('image_url');
+    });
+  });
+
+  describe('processMessages', () => {
+    describe('getAssistantContent', () => {
+      it('should handle assistant message with imageList and content', async () => {
+        const messages: ChatMessage[] = [
+          {
+            role: 'assistant',
+            content: 'Here is an image.',
+            imageList: [{ id: 'img1', url: 'http://example.com/image.png', alt: 'test.png' }],
+            createdAt: Date.now(),
+            id: 'test-id',
+            meta: {},
+            updatedAt: Date.now(),
+          },
+        ];
+        const result = await chatService['processMessages']({
+          messages,
+          model: 'gpt-4-vision-preview',
+          provider: 'openai',
+        });
+
+        expect(result[0].content).toEqual([
+          { text: 'Here is an image.', type: 'text' },
+          { image_url: { detail: 'auto', url: 'http://example.com/image.png' }, type: 'image_url' },
+        ]);
+      });
+
+      it('should handle assistant message with imageList but no content', async () => {
+        const messages: ChatMessage[] = [
+          {
+            role: 'assistant',
+            content: '',
+            imageList: [{ id: 'img1', url: 'http://example.com/image.png', alt: 'test.png' }],
+            createdAt: Date.now(),
+            id: 'test-id-2',
+            meta: {},
+            updatedAt: Date.now(),
+          },
+        ];
+        const result = await chatService['processMessages']({
+          messages,
+          model: 'gpt-4-vision-preview',
+          provider: 'openai',
+        });
+
+        expect(result[0].content).toEqual([
+          { image_url: { detail: 'auto', url: 'http://example.com/image.png' }, type: 'image_url' },
+        ]);
+      });
+    });
+
+    it('should not include tool_calls for assistant message if model does not support tools', async () => {
+      // Mock isCanUseFC to return false
+      vi.spyOn(
+        (await import('@/store/aiInfra')).aiModelSelectors,
+        'isModelSupportToolUse',
+      ).mockReturnValue(() => false);
+
+      const messages: ChatMessage[] = [
+        {
+          role: 'assistant',
+          content: 'I have a tool call.',
+          tools: [
+            {
+              id: 'tool_123',
+              type: 'default',
+              apiName: 'testApi',
+              arguments: '{}',
+              identifier: 'test-plugin',
+            },
+          ],
+          createdAt: Date.now(),
+          id: 'test-id-3',
+          meta: {},
+          updatedAt: Date.now(),
+        },
+      ];
+
+      const result = await chatService['processMessages']({
+        messages,
+        model: 'some-model-without-fc',
+        provider: 'openai',
+      });
+
+      expect(result[0].tool_calls).toBeUndefined();
+      expect(result[0].content).toBe('I have a tool call.');
+    });
+  });
+
+  describe('reorderToolMessages', () => {
+    it('should correctly reorder when a tool message appears before the assistant message', () => {
+      const input: OpenAIChatMessage[] = [
+        {
+          role: 'system',
+          content: 'System message',
+        },
+        {
+          role: 'tool',
+          tool_call_id: 'tool_call_1',
+          name: 'test-plugin____testApi',
+          content: 'Tool result',
+        },
+        {
+          role: 'assistant',
+          content: '',
+          tool_calls: [
+            { id: 'tool_call_1', type: 'function', function: { name: 'testApi', arguments: '{}' } },
+          ],
+        },
+      ];
+
+      const output = chatService['reorderToolMessages'](input);
+
+      // Verify reordering logic works and covers line 688 hasPushed check
+      // In this test, tool messages are duplicated but the second occurrence is skipped
+      expect(output.length).toBe(4); // Original has 3, assistant will add corresponding tool message again
+      expect(output[0].role).toBe('system');
+      expect(output[1].role).toBe('tool');
+      expect(output[2].role).toBe('assistant');
+      expect(output[3].role).toBe('tool'); // Tool message added by assistant's tool_calls
+    });
+  });
+
+  describe('getChatCompletion', () => {
+    it('should merge responseAnimation styles correctly', async () => {
+      const { fetchSSE } = await import('@/utils/fetch');
+      vi.mock('@/utils/fetch', async (importOriginal) => {
+        const module = await importOriginal();
+        return {
+          ...(module as any),
+          fetchSSE: vi.fn(),
+        };
+      });
+
+      // Mock provider config
+      const { aiProviderSelectors } = await import('@/store/aiInfra');
+      vi.spyOn(aiProviderSelectors, 'providerConfigById').mockReturnValue({
+        id: 'openai',
+        settings: {
+          responseAnimation: 'slow',
+        },
+      } as any);
+
+      // Mock user preference
+      const { userGeneralSettingsSelectors } = await import('@/store/user/selectors');
+      vi.spyOn(userGeneralSettingsSelectors, 'transitionMode').mockReturnValue('smooth');
+
+      await chatService.getChatCompletion(
+        { provider: 'openai', messages: [] },
+        { responseAnimation: { speed: 20 } },
+      );
+
+      expect(fetchSSE).toHaveBeenCalled();
+      const fetchSSEOptions = (fetchSSE as any).mock.calls[0][1];
+
+      expect(fetchSSEOptions.responseAnimation).toEqual({
+        speed: 20,
+        text: 'fadeIn',
+        toolsCalling: 'fadeIn',
+      });
+    });
+  });
+
+  describe('extendParams', () => {
+    it('should set enabledContextCaching to false when model supports disableContextCaching and user enables it', async () => {
+      const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+      const messages = [{ content: 'Test context caching', role: 'user' }] as ChatMessage[];
+
+      // Mock aiModelSelectors for extend params support
+      vi.spyOn(aiModelSelectors, 'isModelHasExtendParams').mockReturnValue(() => true);
+      vi.spyOn(aiModelSelectors, 'modelExtendParams').mockReturnValue(() => [
+        'disableContextCaching',
+      ]);
+
+      // Mock agent chat config with context caching disabled
+      vi.spyOn(agentChatConfigSelectors, 'currentChatConfig').mockReturnValue({
+        disableContextCaching: true,
+        searchMode: 'off',
+      } as any);
+
+      await chatService.createAssistantMessage({
+        messages,
+        model: 'test-model',
+        provider: 'test-provider',
+        plugins: [],
+      });
+
+      expect(getChatCompletionSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          enabledContextCaching: false,
+        }),
+        undefined,
+      );
+    });
+
+    it('should not set enabledContextCaching when disableContextCaching is false', async () => {
+      const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+      const messages = [{ content: 'Test context caching enabled', role: 'user' }] as ChatMessage[];
+
+      // Mock aiModelSelectors for extend params support
+      vi.spyOn(aiModelSelectors, 'isModelHasExtendParams').mockReturnValue(() => true);
+      vi.spyOn(aiModelSelectors, 'modelExtendParams').mockReturnValue(() => [
+        'disableContextCaching',
+      ]);
+
+      // Mock agent chat config with context caching enabled (default)
+      vi.spyOn(agentChatConfigSelectors, 'currentChatConfig').mockReturnValue({
+        disableContextCaching: false,
+        searchMode: 'off',
+      } as any);
+
+      await chatService.createAssistantMessage({
+        messages,
+        model: 'test-model',
+        provider: 'test-provider',
+        plugins: [],
+      });
+
+      // enabledContextCaching should not be present in the call
+      const callArgs = getChatCompletionSpy.mock.calls[0][0];
+      expect(callArgs).not.toHaveProperty('enabledContextCaching');
+    });
+
+    it('should set reasoning_effort when model supports reasoningEffort and user configures it', async () => {
+      const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+      const messages = [{ content: 'Test reasoning effort', role: 'user' }] as ChatMessage[];
+
+      // Mock aiModelSelectors for extend params support
+      vi.spyOn(aiModelSelectors, 'isModelHasExtendParams').mockReturnValue(() => true);
+      vi.spyOn(aiModelSelectors, 'modelExtendParams').mockReturnValue(() => ['reasoningEffort']);
+
+      // Mock agent chat config with reasoning effort set
+      vi.spyOn(agentChatConfigSelectors, 'currentChatConfig').mockReturnValue({
+        reasoningEffort: 'high',
+        searchMode: 'off',
+      } as any);
+
+      await chatService.createAssistantMessage({
+        messages,
+        model: 'test-model',
+        provider: 'test-provider',
+        plugins: [],
+      });
+
+      expect(getChatCompletionSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reasoning_effort: 'high',
+        }),
+        undefined,
+      );
+    });
+
+    it('should set thinkingBudget when model supports thinkingBudget and user configures it', async () => {
+      const getChatCompletionSpy = vi.spyOn(chatService, 'getChatCompletion');
+      const messages = [{ content: 'Test thinking budget', role: 'user' }] as ChatMessage[];
+
+      // Mock aiModelSelectors for extend params support
+      vi.spyOn(aiModelSelectors, 'isModelHasExtendParams').mockReturnValue(() => true);
+      vi.spyOn(aiModelSelectors, 'modelExtendParams').mockReturnValue(() => ['thinkingBudget']);
+
+      // Mock agent chat config with thinking budget set
+      vi.spyOn(agentChatConfigSelectors, 'currentChatConfig').mockReturnValue({
+        thinkingBudget: 5000,
+        searchMode: 'off',
+      } as any);
+
+      await chatService.createAssistantMessage({
+        messages,
+        model: 'test-model',
+        provider: 'test-provider',
+        plugins: [],
+      });
+
+      expect(getChatCompletionSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          thinkingBudget: 5000,
+        }),
         undefined,
       );
     });
   });
 });
 
-/**
- * Tests for AgentRuntime on client side, aim to test the
- * initialization of AgentRuntime with different providers
- */
-vi.mock('../_auth', async (importOriginal) => {
-  return importOriginal();
-});
-describe('AgentRuntimeOnClient', () => {
+describe('ModelRuntimeOnClient', () => {
   describe('initializeWithClientStore', () => {
     describe('should initialize with options correctly', () => {
       it('OpenAI provider: with apikey and endpoint', async () => {
@@ -919,7 +2090,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.OpenAI, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeOpenAI);
         expect(runtime['_runtime'].baseURL).toBe('user-openai-endpoint');
       });
@@ -938,7 +2109,7 @@ describe('AgentRuntimeOnClient', () => {
         } as UserSettingsState) as unknown as UserStore;
 
         const runtime = await initializeWithClientStore(ModelProvider.Azure, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeAzureOpenAI);
       });
 
@@ -953,7 +2124,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.Google, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeGoogleAI);
       });
 
@@ -968,7 +2139,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.Moonshot, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeMoonshotAI);
       });
 
@@ -985,7 +2156,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.Bedrock, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeBedrockAI);
       });
 
@@ -1000,7 +2171,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.Ollama, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeOllamaAI);
       });
 
@@ -1015,7 +2186,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.Perplexity, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobePerplexityAI);
       });
 
@@ -1030,7 +2201,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.Anthropic, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeAnthropicAI);
       });
 
@@ -1045,7 +2216,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.Mistral, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeMistralAI);
       });
 
@@ -1060,7 +2231,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.OpenRouter, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeOpenRouterAI);
       });
 
@@ -1075,7 +2246,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.TogetherAI, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeTogetherAI);
       });
 
@@ -1090,7 +2261,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.ZeroOne, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeZeroOneAI);
       });
 
@@ -1106,7 +2277,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.Groq, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         const lobeOpenAICompatibleInstance = runtime['_runtime'] as LobeOpenAICompatibleRuntime;
         expect(lobeOpenAICompatibleInstance).toBeInstanceOf(LobeGroq);
         expect(lobeOpenAICompatibleInstance.baseURL).toBe('user-groq-endpoint');
@@ -1125,7 +2296,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.DeepSeek, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeDeepSeekAI);
       });
 
@@ -1140,7 +2311,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.Qwen, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeQwenAI);
       });
 
@@ -1160,7 +2331,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as any as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore('unknown' as ModelProvider, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeOpenAI);
       });
 
@@ -1170,7 +2341,7 @@ describe('AgentRuntimeOnClient', () => {
 
       it('ZhiPu AI provider: with apiKey', async () => {
         // Mock the generateApiToken function
-        vi.mock('@/libs/agent-runtime/zhipu/authToken', () => ({
+        vi.mock('@/libs/model-runtime/zhipu/authToken', () => ({
           generateApiToken: vi
             .fn()
             .mockResolvedValue(
@@ -1187,7 +2358,7 @@ describe('AgentRuntimeOnClient', () => {
           },
         } as UserSettingsState) as unknown as UserStore;
         const runtime = await initializeWithClientStore(ModelProvider.ZhiPu, {});
-        expect(runtime).toBeInstanceOf(AgentRuntime);
+        expect(runtime).toBeInstanceOf(ModelRuntime);
         expect(runtime['_runtime']).toBeInstanceOf(LobeZhipuAI);
       });
     });

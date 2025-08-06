@@ -1,8 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
-import { Md5 } from 'ts-md5';
 import { Mock, afterEach, describe, expect, it, vi } from 'vitest';
 
 import { LOADING_FLAT } from '@/const/message';
+import { DEFAULT_INBOX_AVATAR } from '@/const/meta';
 import { PLUGIN_SCHEMA_API_MD5_PREFIX, PLUGIN_SCHEMA_SEPARATOR } from '@/const/plugin';
 import { chatService } from '@/services/chat';
 import { messageService } from '@/services/message';
@@ -10,8 +10,8 @@ import { chatSelectors } from '@/store/chat/selectors';
 import { useChatStore } from '@/store/chat/store';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
 import { useToolStore } from '@/store/tool';
-import { ChatErrorType } from '@/types/fetch';
 import { ChatMessage, ChatToolPayload, MessageToolCall } from '@/types/message';
+import { genToolCallShortMD5Hash } from '@/utils/toolCall';
 
 const invokeStandaloneTypePlugin = useChatStore.getState().invokeStandaloneTypePlugin;
 
@@ -67,7 +67,7 @@ describe('ChatPluginAction', () => {
           {
             ...toolMessage,
             meta: {
-              avatar: '🤯',
+              avatar: DEFAULT_INBOX_AVATAR,
               backgroundColor: 'rgba(0,0,0,0)',
               description: undefined,
               title: undefined,
@@ -855,7 +855,7 @@ describe('ChatPluginAction', () => {
           arguments: '{}',
         },
         tool_call_id: 'tool-id',
-        error: { message: 'Previous error', type: 'ProviderBizError' },
+        pluginError: { message: 'Previous error', type: 'ProviderBizError' },
       } as ChatMessage;
 
       const internal_updateMessageErrorMock = vi.fn();
@@ -865,7 +865,7 @@ describe('ChatPluginAction', () => {
           activeId: 'session-id',
           messagesMap: { [messageMapKey('session-id')]: [message] },
           internal_invokeDifferentTypePlugin: vi.fn(),
-          internal_updateMessageError: internal_updateMessageErrorMock,
+          internal_updateMessagePluginError: internal_updateMessageErrorMock,
         });
       });
 
@@ -1045,7 +1045,7 @@ describe('ChatPluginAction', () => {
 
     it('should handle MD5 hashed API names', () => {
       const apiName = 'testApi';
-      const md5Hash = Md5.hashStr(apiName);
+      const md5Hash = genToolCallShortMD5Hash(apiName);
       const toolCalls: MessageToolCall[] = [
         {
           id: 'tool1',
