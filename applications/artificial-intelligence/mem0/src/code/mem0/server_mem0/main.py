@@ -17,10 +17,17 @@ load_dotenv()
 # redis vector_store  config
 COLLECTION_NAME = os.environ.get("POSTGRES_COLLECTION_NAME", "mem0")
 EMBEDDING_MODEL_DIMS = os.environ.get("EMBEDDING_MODEL_DIMS", 1536)
-REDIS_URL = os.environ.get("REDIS_URL", "redis://:mypassword@localhost:6379")
+# REDIS_URL = os.environ.get("REDIS_URL", "redis://:mypassword@localhost:6379")
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "mypassword")
+REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
+REDIS_PORT = os.environ.get("REDIS_PORT", 6379)
+REDIS_URL = f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}"
 
 # 图形库 Neo4j config
-NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://neo4j:7687")
+# NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://neo4j:7687")
+NEO4J_HOST = os.environ.get("NEO4J_HOST", "localhost")
+NEO4J_PORT = os.environ.get("NEO4J_PORT", 7687)
+NEO4J_URI = f"bolt://{NEO4J_HOST}:{NEO4J_PORT}"
 NEO4J_USERNAME = os.environ.get("NEO4J_USERNAME", "neo4j")
 NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "mem0graph")
 NEO4J_DATABASE = os.environ.get("NEO4J_DATABASE", "neo4j")

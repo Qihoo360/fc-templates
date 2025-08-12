@@ -1,0 +1,88 @@
+edition: 3.0.0
+name: chatwiki-app
+access: default
+vars:
+  region: {{region}}
+  mem0FunctionName : {{chatwikiFunctionName}}
+  mem0Description : {{chatwikiDescription}}
+  Mem0RedisDataBase: {{ChatwikiRedisDataBase}}
+  Mem0RedisPassword: {{ChatwikiRedisPassword}}
+  Mem0RedisHost: {{ChatwikiRedisHost}}
+  Mem0RedisPort: {{ChatwikiRedisPort}}
+
+  Mem0Neo4jDataBase: {{ChatwikiNeo4jDataBase}}
+  Mem0Neo4jEnable: {{ChatwikiNeo4jEnable}}
+  Mem0Neo4jHost: {{ChatwikiNeo4jHost}}
+  Mem0Neo4jPort: {{ChatwikiNeo4jPort}}
+  Mem0Neo4jUser: {{ChatwikiNeo4jUser}}
+  Mem0Neo4jDbname: {{ChatwikiNeo4jDbname}}
+  Mem0Neo4jDbPassword: {{ChatwikiNeo4jDbPassword}}
+
+  llmBaseUrl: {{llmBaseUrl}}
+  llmApiKey: {{llmApiKey}}
+  llmModel: {{llmModel}}
+  llmEmbeddingModel: {{llmEmbeddingModel}}
+  llmMaxTokens: {{llmMaxTokens}}
+  llmTemperature: {{llmTemperature}}
+  llmEmbeddingDims: {{llmEmbeddingDims}}
+  
+  PolefsVolume: {{PolefsVolume}}
+  MountDir: {{MountDir}}
+  VolCreateUser: {{PolefsVolumeCreateUser}}
+
+resources:
+  Mem0:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.mem0Description}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 10240
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      code:
+        templated_files:
+          - code/mem0/server_mem0/.env
+      port: 8080
+      functionName: ${vars.mem0FunctionName}
+      sourceSubDir: code/mem0/server_mem0
+      environmentVariables:
+        testkey: "testvalue"
+        TZ: "Asia/Shanghai"
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "docker/Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.PolefsVolume}
+          mountDir: ${vars.MountDir}
+          createUserName: ${vars.VolCreateUser}
