@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@coze-arch/ts-config/tsconfig.web.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["react", "react-dom", "react-router-dom", "immer"],
+    "noImplicitReturns": false,
+    "useUnknownInCatchVariables": false,
+    "strictPropertyInitialization": false,
+    "module": "ESNext",
+    "noImplicitAny": true,
+    "declaration": true,
+    "strictNullChecks": true,
+    "strict": true,
+    "rootDir": "./src",
+    "outDir": "./lib-ts",
+    "tsBuildInfoFile": "./lib-ts/tsconfig.build.tsbuildinfo"
+  },
+  "include": ["./src", "./src/**/*.json"],
+  "references": [
+    {
+      "path": "../../config/eslint-config/tsconfig.build.json"
+    },
+    {
+      "path": "../../config/stylelint-config/tsconfig.build.json"
+    },
+    {
+      "path": "../../config/ts-config/tsconfig.build.json"
+    },
+    {
+      "path": "../../config/vitest-config/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/arch/bot-flags/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/arch/bot-md-box-adapter/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/arch/logger/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/account/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/api-schema/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/auth-pages/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/base-hooks/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/biz-hooks/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/components/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/evaluate-pages/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/guard/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/i18n/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/observation-pages/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/prompt-pages/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/rsbuild-config/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/stores/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/tailwind-config/tsconfig.build.json"
+    },
+    {
+      "path": "../../packages/cozeloop/toolkit/tsconfig.build.json"
+    }
+  ]
+}

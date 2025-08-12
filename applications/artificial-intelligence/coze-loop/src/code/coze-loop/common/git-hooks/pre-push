@@ -1,0 +1,5 @@
+#!/bin/bash
+
+source frontend/scripts/block-unresolved-conflict.sh
+
+source frontend/scripts/pre-push-hook.sh

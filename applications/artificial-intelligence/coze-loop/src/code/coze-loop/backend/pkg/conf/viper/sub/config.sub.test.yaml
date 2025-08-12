@@ -1,0 +1,22 @@
+test_struct:
+  field_i64: 123
+  field_string: "test string level2"
+  field_bool: true
+  field_int: 123
+
+test_string: "test string level1"
+test_bool: true
+test_map_1:
+  key1: value1
+  key2: value2
+test_map_2:
+  1:
+    field_i64: 123
+    field_string: "test string level3"
+    field_bool: false
+    field_int: 123
+  2:
+    field_i64: 123
+    field_string: "test string level3"
+    field_bool: true
+    field_int: 123

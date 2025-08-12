@@ -1,0 +1,50 @@
+header:
+  license:
+    spdx-id: Apache-2.0
+    pattern: |
+      Copyright (c) \d{4} coze-dev Authors
+      SPDX-License-Identifier: Apache-2.0
+
+  paths:
+    - '**/*.go'
+    - frontend/apps/**/*.{ts,tsx,less,css}
+    - frontend/packages/cozeloop/**/*.{ts,tsx,less,css}
+
+  paths-ignore:
+    - 'node_modules'
+    - 'dist'
+    - 'licenses'
+    - '**/*.md'
+    - '**/*.hz'
+    - '**/*.yaml'
+    - '**/*.config.ts'
+    - 'LICENSE'
+    - 'NOTICE'
+    - '**/mocks/**'
+    - '**/gorm_gen/**'
+    - '**/kitex_gen/**'
+    - '**/loop_gen/**'
+    - '**/wire_gen.go'
+    - '**/errno/**'
+    - 'backend/script/cloudwego/tmpl/streaming.go'
+    - 'backend/api/router/register.go'
+    - 'backend/api/router/coze/loop/apis/coze.loop.apis.go'
+    - 'backend/modules/observability/domain/trace/entity/collector/**/*.go'
+    - 'backend/modules/observability/domain/trace/service/collector/processor/queueprocessor/queue_processor.go'
+    - 'frontend/packages/cozeloop/api-schema/src/api/idl'
+
+  comment: on-failure
+
+dependency:
+  files:
+    - ../backend/go.mod
+  licenses:
+    - name: github.com/cloudwego/eino-ext/*/*/*
+      license: Apache-2.0
+  excludes:
+    - name: github.com/alicebob/gopher-json
+      license: Unlicense
+    - name: github.com/hashicorp/*
+      license: MPL-2.0
+    - name: github.com/go-sql-driver/mysql
+      license: MPL-2.0

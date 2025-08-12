@@ -1,0 +1,65 @@
+// Copyright (c) 2025 coze-dev Authors
+// SPDX-License-Identifier: Apache-2.0
+/* stylelint-disable declaration-no-important */
+.card {
+  background: transparent !important;
+  border-radius: 0 !important;
+
+  // flex flex-col px-4 pt-2 pb-4 bg-semi-bg-0 gap-3 rounded-md
+  :global {
+    .semi-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      box-sizing: border-box;
+      height: 100%;
+      padding: 0;
+    }
+  }
+
+  .card-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    height: 24px;
+    min-height: 24px;
+    padding: 10px 20px 0;
+  }
+
+  .card-title {
+    position: relative;
+
+    display: flex;
+    gap: 4px;
+    align-items: center;
+
+    font-weight: 600;
+
+    .chevron-icon {
+      cursor: pointer;
+      transition: transform 0.3s;
+
+      &.chevron-icon-close {
+        transform: rotate(180deg);
+      }
+
+      &:hover {
+        color: var(--semi-color-primary);
+      }
+    }
+  }
+
+  .card-content {
+    height: 0;
+    opacity: 0;
+    transition: height 0.2s, opacity 0.2s;
+
+    &.active {
+      overflow: hidden;
+      height: 100%;
+      opacity: 1;
+    }
+  }
+}

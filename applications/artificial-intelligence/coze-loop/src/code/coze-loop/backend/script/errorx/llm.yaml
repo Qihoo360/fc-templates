@@ -1,0 +1,42 @@
+error_code:
+  # 5xxx
+  - name: UnknownErr
+    code: 5001
+    message: unknown err occurred, please oncall
+    no_affect_stability: false
+  - name: ResourceNotFound
+    code: 5002
+    message: resource not found
+    no_affect_stability: true
+  - name: ModelQPMLimit
+    code: 5003
+    message: request is limited, because qpm of current model reached the upper limit
+    no_affect_stability: true
+  - name: ModelTPMLimit
+    code: 5004
+    message: request is limited, because tpm of current model reached the upper limit
+    no_affect_stability: true
+  - name: ModelInvalid
+    code: 5005
+    message: model is invalid
+    no_affect_stability: true
+  - name: BuildLLMFailed
+    code: 5006
+    message: build llm failed
+    no_affect_stability: false
+  - name: RequestNotValid
+    code: 5007
+    message: request not valid
+    no_affect_stability: false
+  - name: RequestNotCompatibleWithModelAbility
+    code: 5008
+    message: request is not compatible with model ability
+    no_affect_stability: false
+  - name: CallModelFailed
+    code: 5009
+    message: call model failed
+    no_affect_stability: false
+  - name: ParseModelRespFailed
+    code: 5010
+    message: parse model response failed
+    no_affect_stability: false

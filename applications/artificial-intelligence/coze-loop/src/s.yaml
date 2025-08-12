@@ -1,0 +1,148 @@
+edition: 3.0.0
+name: cozeloop-app
+access: default
+vars:
+  region: {{}}
+  cozeLoopBackendFunctionName: {{}}
+  cozeLoopBackendDescription: {{}}
+  cozeLoopFrontendFunctionName: {{}}
+  cozeLoopFrontendDescription: {{}}
+  clickhouseAddr: {{}}
+  clickhouseDatabase: {{}}
+  clickhouseUser: {{}}
+  clickhousePasswd: {{}}
+  s3Endpoint: {{}}
+  s3AccessKey: {{}}
+  s3SecretKey: {{}}
+  s3Bucket: {{}}
+  s3Region: {{}}
+  redisHost: {{}}
+  redisPort: {{}}
+  redisPasswd: {{}}
+  mysqlHost: {{}}
+  mysqlPort: {{}}
+  mysqlDatabase: {{}}
+  mysqlUser: {{}}
+  mysqlPasswd: {{}}
+  mqNamesvrAddr: {{}}
+  apiKey: {{}}
+  model: {{}}
+  FileStorage: {{}}
+  functionPolefsVolumn: {{}}
+  afunctionVolCreateUser: {{}}
+resources:
+  cozeloopBackend:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.cozeloopBackendDescription}
+      runtime: custom
+      memorySize: 5120
+      cpu: 4
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 8888
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.cozeloopBackendFunctionName}
+      sourceSubDir: code/coze-loop
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        CLICKHOST_ADDR: ${vars.clickhouseAddr}
+        CLICKHOST_DATABASE: ${vars.clickhouseDatabase}
+        CLICKHOST_PASSWD: ${vars.clickhousePasswd}
+        CLICKHOST_USER: ${vars.clickhouseUser}
+        MODEL_APIKEY: ${vars.apiKey}
+        MODEL_ENDPOINT_ID: ${vars.model}
+        MQ_NAME_SERVER_ADDR: ${vars.mqNamesvrAddr}
+        MYSQL_DB: ${vars.mysqlDatabase}
+        MYSQL_HOST: ${vars.mysqlHost}
+        MYSQL_PASSWD: ${vars.mysqlPasswd}
+        MYSQL_PORT: ${vars.mysqlPort}
+        MYSQL_USER: ${vars.mysqlUser}
+        QIANFAN_AK: ${vars.qianfanAk}
+        QIANFAN_SK: ${vars.qianfanSk}
+        REDIS_HOST: ${vars.redisHost}
+        REDIS_PASSWD: ${vars.redisPasswd}
+        REDIS_PORT: ${vars.redisPort}
+        S3_AK: ${vars.s3AccessKey}
+        S3_BUCKET: ${vars.s3Bucket}
+        S3_ENDPOINT: ${vars.s3Endpoint}
+        S3_REGION: ${vars.s3Region}
+        S3_SK: ${vars.s3SecretKey}
+      triggers:
+      - triggerName: httptrigger
+        triggerType: http
+        disableURLInternet: true
+        funcVersion: LATEST
+        triggerConfig:
+          auth_type: None
+          methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+          - HEAD
+          - PATCH
+          disable_url_internet: true
+          auth_config: ""
+      nasConfig:
+      - volumeUniqueName: ${vars.functionPolefsVolumn}
+        backendMountDir: "/cozeloop-bin/frontend/dist"
+        createUserName: ${vars.afunctionVolCreateUser}
+  cozeloopFrontend:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.cozeloopFrontendDescription}
+      runtime: custom
+      memorySize: 2048
+      cpu: 2
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 80
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.cozeloopFrontendFunctionName}
+      sourceSubDir: code/coze-loop
+      dockerfilePath: images/coze-frontend/Dockerfile
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        BS_BACKEND_URL: "http://${resources.cozeloopBackend.output.http_trigger_url}"
+        BCOZE_LOOP_S3_ENDPOINT: ${vars.s3Endpoint}
+      triggers:
+      - triggerName: httptrigger
+        triggerType: http
+        disableURLInternet: true
+        funcVersion: LATEST
+        triggerConfig:
+          auth_type: None
+          methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+          - HEAD
+          - PATCH
+          disable_url_internet: true
+          auth_config: ""
+      nasConfig:
+      - volumeUniqueName: ${vars.functionPolefsVolumn}
+        frontendMountDir: "/mnt/shared_frontend_dist"
+        createUserName: ${vars.afunctionVolCreateUser}

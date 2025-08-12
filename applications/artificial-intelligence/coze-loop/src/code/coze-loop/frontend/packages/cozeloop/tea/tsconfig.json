@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "composite": true
+  },
+  "references": [
+    {
+      "path": "./tsconfig.build.json"
+    },
+    {
+      "path": "./tsconfig.misc.json"
+    }
+  ],
+  "exclude": ["**/*"],
+  "ts-node": {
+    "esm": true,
+    "compilerOptions": {
+      "esModuleInterop": true,
+      "experimentalSpecifierResolution": "node"
+      // "module": "ESNext",
+      // "moduleResolution": "NodeNext"
+    }
+  }
+}

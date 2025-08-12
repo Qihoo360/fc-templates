@@ -1,0 +1,24 @@
+error_code:
+  # 1xxx
+  - name: ResourceNotFound
+    code: 1001
+    message: resource not found
+    no_affect_stability: true
+  - name: PromptVersionNotExist
+    code: 1002
+    message: prompt version not exist
+    no_affect_stability: true
+  - name: PromptUncommitted
+    code: 1003
+    message: prompt not committed
+    no_affect_stability: true
+  # 2xxx
+  - name: PromptHubQPSLimit
+    code: 2001
+    message: request is limited, cause prompt hub qps of current space reached the upper limit
+    no_affect_stability: true
+  - name: RiskContentDetected
+    code: 5014
+    message: detected risk content in user input or model response
+    description: detected risk content in user input or model response
+    no_affect_stability: true

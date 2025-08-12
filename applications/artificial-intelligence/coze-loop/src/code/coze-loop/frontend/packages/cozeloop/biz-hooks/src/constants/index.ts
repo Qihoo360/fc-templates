@@ -1,0 +1,9 @@
+// Copyright (c) 2025 coze-dev Authors
+// SPDX-License-Identifier: Apache-2.0
+const BOE_DEMO_SPACE_ID = '7476830560543850540';
+
+const ONLINE_DEMO_SPACE_ID = '7487806534651887643';
+
+export const DEMO_SPACE_ID = IS_RELEASE_VERSION
+  ? ONLINE_DEMO_SPACE_ID
+  : BOE_DEMO_SPACE_ID;

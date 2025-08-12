@@ -1,0 +1,161 @@
+error_code:
+  # [3001, 4000) 通用错误补充
+  - name: ResourceNotFound
+    code: 3001
+    message: resource not found
+    description: 资源不存在
+    no_affect_stability: true
+
+  - name: Unauthorized
+    code: 3002
+    message: unauthorized
+    description: not authorized
+    no_affect_stability: true
+
+  - name: JSONError
+    code: 3003
+    message: json.(un)marshal failed
+    description: JSON 编解码错误
+    no_affect_stability: true
+
+  - name: ImageXError
+    code: 3004
+    message: imagex error
+    description: imagex 错误
+
+  - name: ContentAuditFailed
+    code: 3005
+    message: content audit failed, please check your request whether the request contains any illegal content
+    description: 未通过内容审核，请检查请求中是否包含违规内容
+    no_affect_stability: true
+
+  - name: OpenAPIRateLimitExceed
+    code: 3006
+    message: request rate exceeds limit, please slow down
+    description: 请求频率过高，被限流
+    no_affect_stability: true
+
+  - name: DatasetLocked
+    code: 4000
+    message: Dataset is locked by running tasks. No edits allowed.
+    description: 数据集被锁定, 无法编辑
+    no_affect_stability: true
+
+  - name: FileNotFound
+    code: 4001
+    message: The source file to import is not found.
+    description: 文件不存在
+    no_affect_stability: true
+
+  - name: MalformedFile
+    code: 4002
+    message: Invalid file format.
+    description: 文件格式不正确
+    no_affect_stability: true
+
+  - name: InvalidDataset
+    code: 4003
+    message: Invalid dataset. Maybe the dataset not exists.
+    description: 无效的数据集
+    no_affect_stability: true
+
+  - name: AIAnnotateTaskColumnExists
+    code: 4004
+    message: Specified column is already been used by another ai annotate task
+    description: 所选择的列已被其他AI标注任务使用
+    no_affect_stability: true
+
+  - name: AIAnnotateTaskRunStatusUpdated
+    code: 4005
+    message: Task status has been updated. Please refresh the page.
+    description: 任务状态已更新，请刷新页面
+    no_affect_stability: true
+
+  - name: DatasetNotEditable
+    code: 4006
+    message: dataset is not editable
+    description: 数据集无法编辑，可能被锁定中
+    no_affect_stability: true
+
+  # [4500, 5000) saas 数据集相关错误
+  - name: DatasetSchemaInvalid
+    code: 4500
+    message: dataset schema is invalid
+    description: 数据集列定义不合法
+
+  - name: DatasetCapacityFull
+    code: 4501
+    message: dataset capacity is full
+    description: 数据集容量已满
+    no_affect_stability: true
+
+  - name: ImcompatibleDatasetSchema
+    code: 4502
+    message: dataset schema is imcompatible
+    description: 数据集列定义不兼容
+
+  - name: ConcurrentDatasetOperations
+    code: 4503
+    message: concurrent dataset operations
+    description: 数据集并发操作冲突，请稍微重试
+    no_affect_stability: true
+
+  - name: DatasetNameDuplicated
+    code: 4504
+    message: dataset name is duplicated in this space
+    description: 当前空间下已存在相同的数据集名称，请更换其他名称
+    no_affect_stability: true
+
+  - name: OrderByFieldInvalid
+    code: 4505
+    message: order by field is invalid
+    description: 指定的排序字段不合法
+    no_affect_stability: true
+
+  - name: SchemaMismatch
+    code: 4506
+    message: item data schema mismatch
+    description: 数据项列配置与当前数据集不匹配
+    no_affect_stability: true
+
+  - name: ItemDataSizeExceeded
+    code: 4507
+    message: item data size exceeded
+    description: 数据行大小超过限制
+    no_affect_stability: true
+
+  - name: TooManyItems
+    code: 4508
+    message: too many items
+    description: 数据项数量超过限制
+    no_affect_stability: true
+
+  # [5000, 5500) saas 模型相关错误
+  - name: CozeModelNotExist
+    code: 5001
+    message: coze model not exist
+    description: Coze模型不存在
+  - name: InterfaceNotAvailableInHouse
+    code: 5002
+    message: the interface is not available in house
+    description: 当前接口不支持Coze罗盘内场
+  - name: GetCozeModelListFailed
+    code: 5003
+    message: get coze model list failed
+    description: 请求Coze模型列表接口失败
+  - name: GetCozeModelFailed
+    code: 5004
+    message: get coze model failed
+    description: 请求Coze模型详情接口失败
+  - name: GetCozeModelListParamFailed
+    code: 5005
+    message: get coze model list param failed
+    description: 请求Coze模型列表参数接口失败
+  - name: GetCozeModelUsageFailed
+    code: 5006
+    message: get coze model usage failed
+    description: 请求Coze模型用量接口失败
+  - name: GetLLMGatewayModelConfigFailed
+    code: 5007
+    message: get llm gateway model config failed
+    description: 获取LLM Gateway模型配置失败

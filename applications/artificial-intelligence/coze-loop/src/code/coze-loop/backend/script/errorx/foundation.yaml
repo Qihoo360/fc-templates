@@ -1,0 +1,50 @@
+error_code:
+  - name: FileSizeExceedLimit
+    code: 1001
+    message: file size is too large
+    description: file size is too large
+    no_affect_stability: true
+
+  - name: UserUniqNameExist
+    code: 2001
+    message: user unique name exists
+    description: user unique name exists
+    no_affect_stability: true
+
+  - name: UserEmailExist
+    code: 2002
+    message: user email already exists
+    description: user email already exists
+    no_affect_stability: true
+
+  - name: UserPasswordWrong
+    code: 2003
+    message: user password wrong
+    description: user password wrong
+    no_affect_stability: true
+
+  - name: UserNotExist
+    code: 2004
+    message: user not exist
+    description: user not exist
+    no_affect_stability: true
+
+  - name: AccountInsufficientCode
+    code: 2005
+    message: account insufficient
+    no_affect_stability: true
+
+  - name: AccountExpiredCode
+    code: 2006
+    message: account expired
+    no_affect_stability: true
+
+  - name: AccountOverdraftCode
+    code: 2007
+    message: account overdraft
+    no_affect_stability: true
+
+  - name: UserRegistrationControlBlock
+    code: 2008
+    message: email address is restricted from registration based on account security protocols
+    no_affect_stability: true

@@ -1,0 +1,32 @@
+// Copyright (c) 2025 coze-dev Authors
+// SPDX-License-Identifier: Apache-2.0
+/* stylelint-disable declaration-no-important */
+.input-slider {
+  display: flex;
+  column-gap: 8px;
+  align-items: center;
+
+  :global {
+    .semi-slider {
+      flex: 1;
+      padding: 0;
+    }
+
+    .semi-slider-handle{
+      width: 12px !important;
+      height: 12px !important;
+      margin-top: 10px !important;
+    }
+  }
+
+  .input-number {
+    width: 90px;
+
+    :global{
+      .semi-input-number-suffix-btns{
+        height: auto !important;
+      }
+    }
+  }
+
+}

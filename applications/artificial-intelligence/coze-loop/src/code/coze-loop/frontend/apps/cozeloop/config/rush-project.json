@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/rush/v5/rush-project.schema.json",
+  "operationSettings": [
+    {
+      "operationName": "build",
+      "outputFolderNames": ["dist", "lib-ts", "src/locales"]
+    },
+    {
+      "operationName": "ts-check",
+      "outputFolderNames": ["lib-ts", "src/locales"]
+    }
+  ]
+}

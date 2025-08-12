@@ -1,0 +1,68 @@
+// Copyright (c) 2025 coze-dev Authors
+// SPDX-License-Identifier: Apache-2.0
+/* stylelint-disable declaration-no-important */
+.form {
+  overflow-y: auto;
+  max-height: calc(100vh - 280px);
+  padding: 0 18px 0 24px;
+
+  :global {
+    .semi-input {
+      color: var(--semi-color-text-0);
+    }
+
+    .semi-form-field-label {
+      margin-bottom: 8px;
+      color: var(--semi-color-text-0);
+    }
+
+  }
+}
+
+.modal{
+  :global{
+    .semi-modal-content{
+      padding-right: 0 !important;
+      padding-left: 0 !important;
+
+    }
+
+    .semi-modal-header{
+      padding: 0 24px;
+    }
+
+    .semi-modal-footer{
+      padding: 0 24px;
+    }
+  }
+}
+
+.upload {
+  :global {
+    .semi-upload-drag-area {
+      padding: 40px 16px;
+      background-color: white;
+      border: 1px dashed var(--semi-color-border);
+    }
+
+    .semi-upload-file-card-preview-placeholder{
+      background-color: transparent;
+    }
+
+    .semi-upload-file-card-info-name{
+      font-weight: 400;
+    }
+
+    .semi-upload-file-card{
+      width: 100%;
+    }
+
+    .semi-upload-file-list{
+      margin-bottom: 0;
+    }
+
+    .semi-upload-file-list-main{
+      margin-bottom: 0;
+    }
+  }
+}

@@ -1,0 +1,19 @@
+// Copyright (c) 2025 coze-dev Authors
+// SPDX-License-Identifier: Apache-2.0
+/* stylelint-disable selector-class-pattern */
+/* stylelint-disable declaration-no-important */
+.table-row-hover-show-icon {
+  :global {
+    // hover表格一行时显示trace等操作图标
+    .semi-table-row {
+      &:hover {
+        .evaluator-score-actions,
+        .actual-outputy-trace-trigger,
+        .id-render-copy-action-button{
+          display: flex;
+          visibility: visible;
+        }
+      }
+    }
+  }
+}

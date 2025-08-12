@@ -1,0 +1,43 @@
+version: "2"
+
+run:
+  timeout: 10m
+  skip-dirs:
+    - kitex_gen
+    - loop_gen
+    - gorm_gen
+
+linters: # https://golangci-lint.run/usage/linters/
+  disable-all: true
+  enable:
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - unconvert
+  exclusions:
+    rules:
+      - path: "coze/loop/apis/middleware.go"
+        linters:
+          - unused
+
+formatters:
+  enable:
+    - goimports
+    - gofmt
+    - gofumpt
+
+# Refer to https://golangci-lint.run/usage/linters
+linters-settings:
+  gofumpt:
+    # Choose whether to use the extra rules.
+    extra-rules: true
+  goimports:
+
+severity:
+  default: error
+  rules:
+    - linters:
+        - unconvert
+        - unused
+      severity: warning

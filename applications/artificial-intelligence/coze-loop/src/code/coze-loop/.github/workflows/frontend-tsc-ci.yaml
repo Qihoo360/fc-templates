@@ -1,0 +1,71 @@
+name: CI@frontend - TS Check
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-tsc-ci.yaml'
+  pull_request:
+    branches: ["main"]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-tsc-ci.yaml'
+  workflow_dispatch:
+
+jobs:
+  setup:
+    name: TS Check
+    runs-on: ubuntu-latest
+    env:
+      NODE_VERSION: '18'
+      # should be ci trigger user
+      GIT_USER_NAME: 'mocayo'
+      GIT_USER_EMAIL: 'qihai@bytedance.com'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Config Git User
+        run: |
+          git config --local user.name ${{ env.GIT_USER_NAME }}
+          git config --local user.email ${{ env.GIT_USER_EMAIL }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            common/temp/pnpm-local
+            common/temp/pnpm-store
+            common/temp/install-run
+          key: ${{ runner.os }}-rush-store-${{ hashFiles('common/config/subspaces/default/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-rush-store-main
+            ${{ runner.os }}-rush-store
+
+      - name: Changed Files
+        uses: tj-actions/changed-files@v46.0.5
+        with:
+          files: |
+            frontend/**
+          json: true
+          write_output_files: true
+
+      - name: Install Dependencies
+        run: |
+          node common/scripts/install-run-rush.js increment --action install -p .github/outputs/all_changed_files.json
+
+      - name: Prepare Basic Packages
+        run: |
+          node common/scripts/install-run-rush.js pre-build -v
+
+      - name: TS Check
+        run: |
+          node common/scripts/install-run-rush.js increment --action ts-check -p .github/outputs/all_changed_files.json

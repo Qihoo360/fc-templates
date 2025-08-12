@@ -1,0 +1,3 @@
+USER=default
+PASSWORD=cozeloop-clickhouse
+DATABASE=cozeloop-clickhouse

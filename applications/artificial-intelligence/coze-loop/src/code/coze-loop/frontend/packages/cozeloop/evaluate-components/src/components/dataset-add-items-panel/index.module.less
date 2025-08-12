@@ -1,0 +1,29 @@
+// Copyright (c) 2025 coze-dev Authors
+// SPDX-License-Identifier: Apache-2.0
+/* stylelint-disable declaration-no-important */
+.collapse {
+  width: 100%;
+
+  :global {
+    .semi-collapse-item{
+      margin-bottom: 20px;
+      border: 1px solid rgba(var(--coze-stroke-6), var(--coze-stroke-6-alpha));
+      border-radius: 6px;
+    }
+
+    .semi-collapse-header {
+      height: 44px;
+      margin: 0;
+      padding: 6px 16px;
+
+      background: var(--coz-bg-primary, #F7F7FC);
+      border-radius: 6px;
+
+      &:hover{
+        background: var(--coz-bg-primary, #F7F7FC) !important;
+      }
+    }
+
+  }
+
+}

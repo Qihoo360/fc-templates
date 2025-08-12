@@ -1,0 +1,45 @@
+error_code:
+  - name: CommonNoPermission
+    code: 101
+    message: no access permission
+    no_affect_stability: true
+
+  - name: CommonBadRequest
+    code: 201
+    message: bad request
+    no_affect_stability: true
+
+  - name: CommonInvalidParam
+    code: 202
+    message: invalid param
+    no_affect_stability: true
+
+  - name: CommonBizInvalid
+    code: 203
+    message: biz operation is not allowed
+    no_affect_stability: true
+
+  - name: CommonResourceDuplicated
+    code: 204
+    message: resource duplicated
+    no_affect_stability: true
+
+  - name: CommonNetworkTimeOut
+    code: 701
+    message: network timeout
+
+  - name: CommonInternalError
+    code: 702
+    message: internal error
+
+  - name: CommonRPCError
+    code: 703
+    message: rpc error
+
+  - name: CommonMySqlError
+    code: 801
+    message: mysql error
+
+  - name: CommonRedisError
+    code: 803
+    message: redis error

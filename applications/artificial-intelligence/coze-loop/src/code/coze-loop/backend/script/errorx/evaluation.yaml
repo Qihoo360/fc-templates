@@ -1,0 +1,222 @@
+error_code:
+  - name: BalanceInsufficient
+    code: 3001
+    message: user balance is insufficient
+    description: user balance is insufficient
+    no_affect_stability: true
+
+  - name: RateLimited
+    code: 3002
+    message: request is limited
+    description: request is limited
+    no_affect_stability: true
+
+  - name: InvalidResource
+    code: 3003
+    message: resource is invalid
+    description: resource is invalid
+    no_affect_stability: true
+
+  - name: ResourceNotFound
+    code: 3004
+    message: resource not found
+    description: resource not found
+    no_affect_stability: true
+
+  - name: DeletedResource
+    code: 3005
+    message: resource is deleted
+    description: resource is deleted
+    no_affect_stability: true
+    
+  - name: ExperimentValidateFail
+    code: 4001
+    message: experiment configuration validation failed
+    description: experiment configuration validation failed
+    no_affect_stability: true
+
+  - name: ExperimentRunningExisted
+    code: 4002
+    message: experiment is already in running
+    description: experiment is already in running
+    no_affect_stability: true
+
+  - name: CallTargetFail
+    code: 4003
+    message: call target fail
+    description: call target fail
+    no_affect_stability: true
+
+  - name: CallEvaluatorFail
+    code: 4004
+    message: call evaluator fail
+    description: call evaluator fail
+    no_affect_stability: true
+
+  - name: ExperimentNameExisted
+    code: 4005
+    message: experiment name already exists
+    description: experiment name already exists
+    no_affect_stability: true
+
+  - name: ExperimentRunningCountLimit
+    code: 4006
+    message: number of experiments in running has reached the maximum limit
+    description: number of experiments in running has reached the maximum limit
+    no_affect_stability: true
+
+  - name: ContentTypeNotSupported
+    code: 5000
+    message: content type is not supported
+    description: content type is not supported
+    no_affect_stability: true
+
+  - name: SendAggrCalcEventFailed
+    code: 5001
+    message: failed to send aggregation calculation event
+    description: failed to send aggregation calculation event
+    no_affect_stability: true
+
+  - name: ActionRepeated
+    code: 5002
+    message: action has been repeated
+    description: action has been repeated
+    no_affect_stability: true
+
+  - name: TemplateNotFound
+    code: 5003
+    message: template not found
+    description: template not found
+    no_affect_stability: true
+
+  - name: ContentSchemaInvalid
+    code: 5004
+    message: content schema is invalid
+    description: content schema is invalid
+    no_affect_stability: true
+
+  - name: InvalidMessageList
+    code: 5006
+    message: message list is invalid
+    description: message list is invalid
+    no_affect_stability: true
+
+  - name: InvalidModelConfig
+    code: 5007
+    message: model configuration is invalid
+    description: model configuration is invalid
+    no_affect_stability: true
+
+  - name: InvalidEvaluatorID
+    code: 5008
+    message: evaluator ID is invalid
+    description: evaluator ID is invalid
+    no_affect_stability: true
+
+  - name: EvaluatorNotExist
+    code: 5009
+    message: evaluator does not exist
+    description: evaluator does not exist
+    no_affect_stability: true
+
+  - name: InvalidSpaceID
+    code: 5010
+    message: space ID is invalid
+    description: space ID is invalid
+    no_affect_stability: true
+
+  - name: EvaluatorNameExist
+    code: 5011
+    message: evaluator name already exists
+    description: evaluator name already exists
+    no_affect_stability: true
+
+  - name: EvaluatorVersionExist
+    code: 5012
+    message: evaluator version already exists
+    description: evaluator version already exists
+    no_affect_stability: true
+
+  - name: EvaluatorVersionNotFound
+    code: 5013
+    message: evaluator version not found
+    description: evaluator version not found
+    no_affect_stability: true
+
+  - name: RiskContentDetected
+    code: 5014
+    message: detected risk content in user input or model response
+    description: detected risk content in user input or model response
+    no_affect_stability: true
+
+  - name: InvalidOutputFromModel
+    code: 5015
+    message: invalid output from model
+    description: invalid output from model
+    no_affect_stability: false
+
+  - name: EvaluatorNameExceedMaxLength
+    code: 5016
+    message: evaluator name exceeds maximum length 50
+    description: evaluator name exceeds maximum length 50
+    no_affect_stability: true
+
+  - name: EvaluatorDescriptionExceedMaxLength
+    code: 5017
+    message: evaluator description exceeds maximum length 200
+    description: evaluator description exceeds maximum length 200
+    no_affect_stability: true
+
+  - name: EvaluatorVersionExceedMaxLength
+    code: 5018
+    message: evaluator version exceeds maximum length 50
+    description: evaluator version exceeds maximum length 50
+    no_affect_stability: true
+
+  - name: EvaluatorVersionDescriptionExceedMaxLength
+    code: 5019
+    message: evaluator version description exceeds maximum length 200
+    description: evaluator version description exceeds maximum length 200
+    no_affect_stability: true
+
+  - name: InvalidEvaluatorVersionFormat
+    code: 5020
+    message: evaluator version format is invalid
+    description: evaluator version format is invalid
+    no_affect_stability: true
+
+  - name: EvaluatorQPSLimit
+    code: 5021
+    message: evaluator QPS limit exceeded
+    description: evaluator QPS limit exceeded
+    no_affect_stability: true
+
+  - name: EvaluatorRecordNotFound
+    code: 5022
+    message: evaluator record not found
+    description: evaluator record not found
+    no_affect_stability: true
+
+  - name: RunEvaluatorFail
+    code: 5023
+    message: run evaluator fail
+    description: run evaluator fail
+    no_affect_stability: true
+
+  - name: LLMOutputEmpty
+    code: 5024
+    message: llm output is empty
+    description: llm output is empty
+    no_affect_stability: true
+
+  - name: LLMToolCallFail
+    code: 5025
+    message: llm tool call fail
+    description: llm tool call fail
+    no_affect_stability: true
+
+  - name: EvaluatorBenefitDeny
+    code: 5026
+    message: evaluator benefit deny
+    description: evaluator benefit deny
+    no_affect_stability: true

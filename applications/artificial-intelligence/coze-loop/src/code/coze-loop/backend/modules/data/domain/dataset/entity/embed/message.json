@@ -1,0 +1,167 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/openai-chat-message.schema.json",
+  "title": "OpenAI Chat Message",
+  "description": "A single chat message in the OpenAI Chat API schema",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "developer",
+        "system",
+        "user",
+        "assistant",
+        "tool"
+      ],
+      "description": "The role of the author of this message."
+    },
+    "content": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "The text contents of the message.",
+          "title": "Text content"
+        },
+        {
+          "type": "array",
+          "description": "",
+          "title": "Array of content parts",
+          "items": {
+            "oneOf": [
+              {
+                "title": "Text",
+                "type": "object",
+                "description": "The text content that is part of a message.",
+                "properties": {
+                  "type": {
+                    "description": "Always `text`.",
+                    "type": "string",
+                    "enum": [
+                      "text"
+                    ],
+                    "x-stainless-const": true
+                  },
+                  "text": {
+                    "type": "string",
+                    "description": "Text content to be sent to the model"
+                  }
+                },
+                "required": [
+                  "type",
+                  "text"
+                ]
+              },
+              {
+                "title": "Image file",
+                "type": "object",
+                "description": "References an image [File](/docs/api-reference/files) in the content of a message.",
+                "properties": {
+                  "type": {
+                    "description": "Always `image_file`.",
+                    "type": "string",
+                    "enum": [
+                      "image_file"
+                    ],
+                    "x-stainless-const": true
+                  },
+                  "image_file": {
+                    "type": "object",
+                    "properties": {
+                      "file_id": {
+                        "description": "The [File](/docs/api-reference/files) ID of the image in the message content. Set `purpose=\"vision\"` when uploading the File if you need to later display the file content.",
+                        "type": "string"
+                      },
+                      "detail": {
+                        "type": "string",
+                        "description": "Specifies the detail level of the image if specified by the user. `low` uses fewer tokens, you can opt in to high resolution using `high`.",
+                        "enum": [
+                          "auto",
+                          "low",
+                          "high"
+                        ],
+                        "default": "auto"
+                      }
+                    },
+                    "required": [
+                      "file_id"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "image_file"
+                ]
+              },
+              {
+                "MessageContentImageUrlObject": {
+                  "title": "Image URL",
+                  "type": "object",
+                  "description": "References an image URL in the content of a message.",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "image_url"
+                      ],
+                      "description": "The type of the content part.",
+                      "x-stainless-const": true
+                    },
+                    "image_url": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "detail": {
+                          "type": "string",
+                          "enum": [
+                            "auto",
+                            "low",
+                            "high"
+                          ],
+                          "default": "auto"
+                        }
+                      },
+                      "required": [
+                        "url"
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "description": "The content of the chat message"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the user or function (often used if role is 'function')"
+    },
+    "function_call": {
+      "type": "object",
+      "description": "An object describing the function call details (if any)",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The function name being called"
+        },
+        "arguments": {
+          "type": "string",
+          "description": "JSON-serialized arguments"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ]
+    }
+  },
+  "required": [
+    "role"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,147 @@
+// Copyright (c) 2025 coze-dev Authors
+// SPDX-License-Identifier: Apache-2.0
+#loop-table {
+  /* stylelint-disable declaration-no-important */
+  /* stylelint-disable no-descending-specificity */
+  :global {
+    .semi-table-container {
+      overflow: hidden;
+      border: 1px solid var(--line-color-border-2, #eaedf1);
+      border-radius: 6px;
+    }
+
+    .semi-table-header {
+      background-color: var(--coz-bg, #f0f0f7);
+    }
+
+    .semi-spin-wrapper {
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .semi-table-row:hover > .semi-table-row-cell:first-child {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    .semi-table-row:hover > .semi-table-row-cell:last-child {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .semi-table-tbody {
+      .semi-table-row:last-child {
+        .semi-table-row-cell {
+          border-bottom: none;
+        }
+      }
+    }
+
+    .semi-table-row-head {
+      box-sizing: border-box;
+      height: 42px;
+      padding: 5px 20px;
+
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 20px;
+      color: var(--coz-fg-plus);
+
+      background: var(--coz-bg, #f0f0f7);
+      background-color: var(--coz-bg, #f0f0f7) !important;
+      border-bottom: 1px solid var(--line-color-border-2, #eaedf1);
+
+      &::before {
+        background-color: var(--coz-bg, #f0f0f7) !important;
+      }
+    }
+
+    .semi-table-row {
+      background-color: var(--coz-bg-max);
+
+      &:hover {
+        border-radius: 0 !important;
+
+        .semi-table-row-cell {
+          background-color: var(--coz-bg);
+        }
+
+        .semi-table-cell-fixed-left {
+          background-image: linear-gradient(0deg, var(--coz-bg), var(--coz-bg));
+        }
+
+        .semi-table-cell-fixed-right {
+          background-image: linear-gradient(0deg, var(--coz-bg), var(--coz-bg));
+        }
+      }
+    }
+
+    .semi-table-row-cell {
+      overflow: hidden;
+
+      box-sizing: border-box;
+      height: 42px;
+      min-height: 42px;
+      padding: 10px 20px;
+
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--coz-fg-primary);
+      vertical-align: top;
+
+      background-color: #fff;
+      border-radius: 0;
+      vertical-align: middle;
+    }
+
+    // 左侧固定列去除左边框，仅保留阴影
+    .semi-table-tbody > .semi-table-row > .semi-table-cell-fixed-left-last,
+    .semi-table-thead
+      > .semi-table-row
+      > .semi-table-row-head.semi-table-cell-fixed-left-last {
+      border-right: none;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 6%);
+    }
+
+    // 右侧固定列去除左边框，仅保留阴影
+    .semi-table-tbody > .semi-table-row > .semi-table-cell-fixed-right-first,
+    .semi-table-thead
+      > .semi-table-row
+      > .semi-table-row-head.semi-table-cell-fixed-right-first {
+      border-left: none;
+      box-shadow: -2px 0 8px rgba(0, 0, 0, 6%);
+    }
+
+    .semi-table-scroll-position-left
+      .semi-table-tbody
+      > .semi-table-row
+      > .semi-table-cell-fixed-left-last,
+    .semi-table-scroll-position-left
+      .semi-table-thead
+      > .semi-table-row
+      > .semi-table-cell-fixed-left-last,
+    .semi-table-scroll-position-right
+      .semi-table-tbody
+      > .semi-table-row
+      > .semi-table-cell-fixed-right-first,
+    .semi-table-scroll-position-right
+      .semi-table-thead
+      > .semi-table-row
+      > .semi-table-cell-fixed-right-first {
+      box-shadow: none !important;
+    }
+
+    .semi-table-bordered
+      .semi-table-thead
+      > .semi-table-row
+      > .semi-table-row-head:last-child,
+    .semi-table-bordered
+      .semi-table-tbody
+      > .semi-table-row
+      > .semi-table-row-cell:last-child {
+      border-right: none;
+    }
+  }
+}

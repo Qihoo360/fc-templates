@@ -1,0 +1,85 @@
+// Copyright (c) 2025 coze-dev Authors
+// SPDX-License-Identifier: Apache-2.0
+.container {
+  position: relative;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 200px;
+
+  border-right: 1px solid var(--coz-stroke-primary);
+
+}
+
+.tab-bar {
+  align-items: stretch;
+  min-width: 200px;
+  padding: 0 8px;
+}
+
+.title {
+  padding-left: 8px;
+
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
+  color: rgba(var(--coze-fg-4), var(--coze-fg-4-alpha));
+}
+
+.tab-item {
+  cursor: pointer;
+
+  padding: 8px;
+
+  font-size: 14px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 20px;
+  color: rgba(var(--coze-fg-4), var(--coze-fg-4-alpha));
+
+  border-radius: 8px;
+
+  &:hover,
+  &.active-tab {
+    background-color: rgba(var(--coze-bg-5), var(--coze-bg-5-alpha));
+  }
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+@media screen and (max-height: 759px) {
+  .tab-content {
+    height:  max(448px, calc(100vh - 160px - 80px));
+  }
+}
+
+/* 当浏览器窗口的高度大于等于760px时, 高度固定 */
+@media screen and (min-height: 760px) {
+  .tab-content {
+    height: 520px;
+  }
+}
+
+.tab-title {
+  flex-shrink: 0;
+
+  width: 100%;
+
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 32px;
+}
+
+.tab-panel {
+  min-height: 0;
+}

@@ -1,0 +1,448 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: coze-loop
+Provider:
+- fc
+Version: 0.0.1
+Description: 这是一个专攻办公场景的 LLM 应用开发平台
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/coze-loop
+Tags:
+- AI
+- Custom Runtime
+Category: 人工智能
+Service:
+  FC:
+    Authorities:
+    - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required:
+  # 必填项
+  - region
+  - cozeLoopBackendFunctionName
+  - cozeLoopBackendDescription
+  - cozeLoopFrontendFunctionName
+  - cozeLoopFrontendDescription
+  - clickhouseAddr
+  - clickhouseDatabase
+  - clickhouseUser
+  - clickhousePasswd
+  - ObjectStorage
+  - s3Endpoint
+  - s3AccessKey
+  - s3SecretKey
+  - s3Bucket
+  - s3Region
+  - CacheDB
+  - redisHost
+  - redisPort
+  - redisPasswd
+  - DataBase
+  - mysqlHost
+  - mysqlPort
+  - mysqlDatabase
+  - mysqlUser
+  - mysqlPasswd
+  - MQ
+  - mqNamesvrAddr
+  - LLM
+  - apiKey
+  - model
+  - FileStorage
+  - functionPolefsVolumn
+  - afunctionVolCreateUser
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: cn-north-cu-1
+      description: 创建应用所在的地区
+      enum:
+      - cn-north-cu-1
+      x-cate: resourceCate
+      x-reaction-properties:
+      - functionPolefsVolumn
+      x-formitem:
+        type: select
+    cozeLoopBackendFunctionName:
+      title: 函数名
+      type: string
+      default: cozeloop-backend-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入 cozeloop backend 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    cozeLoopBackendDescription:
+      title: 描述
+      type: string
+      default: "cozeloop backend"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入 cozeloop backend 函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    cozeLoopFrontendFunctionName:
+      title: 函数名
+      type: string
+      default: cozeloop-frontend-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入 cozeloop frontend 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    cozeLoopFrontendDescription:
+      title: 描述
+      type: string
+      default: "cozeloop frontend"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入 cozeloop frontend 函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    clickhouseAddr:
+      type: string
+      default: "coze-clickhouse.functions:9008"
+      description: "clickhouse address"
+      x-cate: applicationCate
+      x-label: clickhouse配置
+      x-placeholder: 请输入 clickhouse address
+      x-formitem:
+        type: input
+    clickhouseDatabase:
+      type: string
+      default: "cozeloop-clickhouse"
+      description: "clickhouse database"
+      x-cate: applicationCate
+      x-label: clickhouse配置
+      x-placeholder: 请输入 clickhouse database
+      x-formitem:
+        type: input
+    clickhouseUser:
+      type: string
+      default: "default"
+      description: "clickhouse user"
+      x-cate: applicationCate
+      x-label: clickhouse配置
+      x-placeholder: 请输入 clickhouse user
+      x-formitem:
+        type: input
+    clickhousePasswd:
+      type: secret
+      default: "cozeloop-clickhouse"
+      description: "clickhouse password"
+      x-cate: applicationCate
+      x-label: clickhouse配置
+      x-placeholder: 请输入 clickhouse address
+      x-formitem:
+        type: input
+    ObjectStorage:
+      # title: 对象存储配置
+      type: string
+      default: S3
+      description: ""
+      enum:
+      - S3
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请选择对象存储类型
+      x-formitem:
+        type: select
+    s3Endpoint:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3 Endpoint
+      x-formitem:
+        type: input
+    s3AccessKey:
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3 AccessKey
+      x-formitem:
+        type: input
+    s3SecretKey:
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3 SecretKey
+      x-formitem:
+        type: input
+    s3Bucket:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3 Bucket
+      x-formitem:
+        type: input
+    s3Region:
+      type: string
+      default: "false"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3 Region
+      x-formitem:
+        type: input
+    CacheDB:
+      # title: 缓存配置
+      type: string
+      default: Redis
+      description: ""
+      enum:
+      - Redis
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请选择缓存系统
+      x-formitem:
+        type: select
+    redisHost:
+      # title: DifyRedisUserName
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入 redis host
+      x-formitem:
+        type: input
+    redisPort:
+      # title: DifyRedisUserName
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入 redis port
+      x-formitem:
+        type: input
+    redisPasswd:
+      # title: DifyRedisUserName
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入 redis password
+      x-formitem:
+        type: input
+    DataBase:
+      # title: 数据库配置
+      type: string
+      default: mysql
+      description: ""
+      enum:
+      - mysql
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
+    mysqlHost:
+      # title: 数据库名 Host
+      type: string
+      default: 127.0.0.1
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入 mysql host
+      x-formitem:
+        type: input
+    mysqlPort:
+      # title: 数据库名 Host
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入 mysql port
+      x-formitem:
+        type: input
+    mysqlDatabase:
+      # title: 数据库名 Host
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入 mysql database
+      x-formitem:
+        type: input
+    mysqlUser:
+      # title: 数据库名 Host
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入 mysql user
+      x-formitem:
+        type: input
+    mysqlPasswd:
+      # title: 数据库名 Host
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入 mysql password
+      x-formitem:
+        type: input
+    MQ:
+      # title: 数据库配置
+      type: string
+      default: rmq
+      description: ""
+      enum:
+      - rmq
+      - nsq
+      - kafka
+      x-cate: applicationCate
+      x-label: MQ配置
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
+    mqNamesvrAddr:
+      # title: 数据库名 Host
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: MQ配置
+      x-placeholder: 请输入 mq nameserver address
+      x-formitem:
+        type: input
+    LLM:
+      # title: 数据库配置
+      type: string
+      default: llm-apikey
+      description: ""
+      enum:
+      - llm-apikey
+      x-cate: applicationCate
+      x-label: LLM配置
+      x-placeholder: 请选择LLM配置类型
+      x-formitem:
+        type: select
+    apiKey:
+      # title: 数据库名 Host
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: LLM配置
+      x-restype: llm-apikey
+      x-placeholder: 请输入 doubao apikey
+      x-formitem:
+        type: input
+    model:
+      # title: 数据库名 Host
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: LLM配置
+      x-restype: llm-apikey
+      x-placeholder: 请输入 doubao endpointId
+      x-formitem:
+        type: input
+    qianfanAk:
+      # title: 数据库名 Host
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: LLM配置
+      x-restype: llm-apikey
+      x-placeholder: 请输入 qianfan ak (选填)
+      x-formitem:
+        type: input
+    qianfanSk:
+      # title: 数据库名 Host
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: LLM配置
+      x-restype: llm-apikey
+      x-placeholder: 请输入 qianfan sk (选填)
+      x-formitem:
+        type: input
+    FileStorage:
+      # title: 文件存储配置
+      type: string
+      default: Polefs
+      description: ""
+      enum:
+      - Polefs
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 请选择文件存储类型
+      x-formitem:
+        type: select
+    functionPolefsVolumn:
+      # title: 函数挂载 PoleFS 卷名称
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 函数挂载 PoleFS 卷名称
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: afunctionVolCreateUser
+      x-formitem:
+        type: select
+        name: volume_unique_name
+    afunctionVolCreateUser:
+      # title: 函数挂载的创建用户
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 函数挂载的创建用户
+      x-hidden: true
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"

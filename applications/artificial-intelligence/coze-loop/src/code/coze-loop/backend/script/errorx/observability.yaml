@@ -1,0 +1,174 @@
+error_code:
+  # [3001, 4000) 通用错误补充
+  # 3001~3099 通用类型错误
+  - name: ResourceNotFound
+    code: 3001
+    message: resource not found
+    description: 资源不存在
+    no_affect_stability: false
+
+  - name: JSONError
+    code: 3002
+    message: json.(un)marshal failed
+    description: JSON 编解码错误
+    no_affect_stability: false
+
+  - name: InvalidRPCResponse
+    code: 3003
+    message: get invalid rpc response
+    description: RPC响应无效
+    no_affect_stability: false
+
+  - name: InvalidFieldFilterParam
+    code: 3004
+    message: invalid field filter param
+    description: 筛选参数错误
+    no_affect_stability: false
+
+  - name: MetaInfoBuildError
+    code: 3005
+    message: build meta info failed
+    description: 元信息构建错误
+    no_affect_stability: false
+
+  - name: HttpCallError
+    code: 3006
+    message: http call failed
+    description: Http调用失败
+    no_affect_stability: false
+
+  - name: QueryOfflineError
+    code: 3007
+    message: query offline failed
+    description: 请求线下数据失败
+    no_affect_stability: false
+
+  - name: QueryOfflineAuthError
+    code: 3008
+    message: query offline from unauthorized end
+    description: 无权限查询线下数据
+    no_affect_stability: false
+
+    # 3100~3199 权限类错误
+  - name: UserParseFailed
+    code: 3100
+    message: parse user info failed
+    description: 解析用户信息失败，请重试或oncall咨询
+    no_affect_stability: false
+
+  - name: ManagerAllowedOnly
+    code: 3101
+    message: only manager in this space allowed to view observation
+    description: 用户无该空间下管理员权限，不能使用观测功能
+    no_affect_stability: true
+
+  - name: SearchTraceNotAllowed
+    code: 3102
+    message: search trace is not allowed in this space
+    description: 该空间下无法使用trace单点查询
+    no_affect_stability: true
+
+    # 3200~3299 trace链路错误
+  - name: ParseTagError
+    code: 3201
+    message: parse tag failed
+    description: span tag 解析失败
+    no_affect_stability: true
+
+  - name: ParseArgosSpanError
+    code: 3202
+    message: unsupported span type
+    description: 不支持的span类型
+    no_affect_stability: true
+
+  - name: TraceNotInSpaceError
+    code: 3203
+    message: trace not in current space
+    description: trace不属于当前空间
+    no_affect_stability: true
+
+  - name: BotNotRegisteredInSpaceError
+    code: 3204
+    message: bot not registered in current space
+    description: bot尚未在平台应用管理中心注册
+    no_affect_stability: true
+
+  - name: NotInSpaceCommonError
+    code: 3205
+    message: trace not in current space, or bot not registered in current space
+    description: trace不属于当前空间，或bot尚未在平台应用管理中心注册
+    no_affect_stability: true
+
+  - name: NoRegisteredBotInSpaceError
+    code: 3206
+    message: no coze bot registered in this space
+    description: 该空间尚未注册bot，请先在平台应用管理中心注册
+    no_affect_stability: true
+
+  - name: InvalidTraceError
+    code: 3207
+    message: no root span in this trace
+    description: 该trace无根节点，属于无效trace
+    no_affect_stability: true
+
+  - name: ExpiredTraceError
+    code: 3208
+    message: the trace has expired
+    description: 该trace已过期
+    no_affect_stability: true
+
+  - name: TraceNoCapacityAvailableError
+    code: 3230
+    message: no capacity available to report trace
+    description: trace可用余量不足，无法上报
+    no_affect_stability: true
+
+  - name: AccountNotAvailableError
+    code: 3231
+    message: account not available
+    description: 火山账号异常，权益校验失败
+    no_affect_stability: true
+
+    # 3300~3399 运维指标错误
+  - name: UnsupportedDownSampleIntervalType
+    code: 3301
+    message: unsupported down sample interval
+    description: 不支持的降采样间隔
+    no_affect_stability: false
+    # 3400~3499 运营指标错误
+    # 4001~4099 商业化错误
+  - name: CommercialUnsupportedMethodCode
+    code: 4001
+    message: it is not a commercial method
+    description: 不支持商业化的接口
+    no_affect_stability: false
+
+  - name: CommercialCommonInvalidParamCode
+    code: 4002
+    message: invalid param
+    description: 参数错误
+    no_affect_stability: true
+
+  - name: CommercialCommonBadRequestCode
+    code: 4003
+    message: bad request
+    description: 请求错误
+    no_affect_stability: true
+
+  - name: CommercialCommonInternalErrorCode
+    code: 4004
+    message: internal error
+    description: 系统内部异常
+    no_affect_stability: false
+
+  - name: CommercialUserParseFailedCode
+    code: 4005
+    message: parse user info failed
+    description: 解析用户信息失败，请重试或oncall咨询
+    no_affect_stability: true
+
+  - name: CommercialCommonRPCErrorCode
+    code: 4006
+    message: rpc error
+    description: 调用下游服务器失败
+    no_affect_stability: false

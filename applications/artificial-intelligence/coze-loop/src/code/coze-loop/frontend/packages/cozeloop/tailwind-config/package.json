@@ -1,0 +1,27 @@
+{
+  "name": "@cozeloop/tailwind-config",
+  "version": "0.0.1",
+  "description": "Tailwind config",
+  "author": "wangziqiang.carl@bytedance.com",
+  "main": "./src/index.ts",
+  "scripts": {
+    "build": "exit 0",
+    "lint": "eslint ./ --cache",
+    "test": "exit 0",
+    "test:cov": "exit 0"
+  },
+  "dependencies": {
+    "@cozeloop/tailwind-plugin": "workspace:*",
+    "@coze-arch/tailwind-config": "workspace:*",
+    "@microsoft/rush-lib": "~5.147.1",
+    "tailwindcss": "~3.3.3"
+  },
+  "devDependencies": {
+    "@coze-arch/eslint-config": "workspace:*",
+    "@coze-arch/ts-config": "workspace:*",
+    "@coze-arch/vitest-config": "workspace:*",
+    "@types/node": "^18",
+    "typescript": "~5.8.2"
+  }
+}
+

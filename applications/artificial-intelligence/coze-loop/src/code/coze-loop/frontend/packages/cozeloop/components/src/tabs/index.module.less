@@ -1,0 +1,50 @@
+// Copyright (c) 2025 coze-dev Authors
+// SPDX-License-Identifier: Apache-2.0
+.tabs{
+  display: flex;
+  flex-direction: column;
+
+  :global{
+    .semi-tabs-bar-card.semi-tabs-bar-top .semi-tabs-tab:first-of-type{
+      margin-left: 24px;
+    }
+
+    .semi-tabs-tab-card.semi-tabs-tab-top.semi-tabs-tab{
+      height: 36px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+
+      color: var(--semi-color-text-0);
+
+      background-color: #F6F8FA;
+      border: 1px solid var(--semi-color-border);
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+    }
+
+    .semi-tabs-tab-card.semi-tabs-tab-top.semi-tabs-tab-active{
+      color: rgb(var(--coze-up-brand-9));
+      background: linear-gradient(to bottom, rgb(var(--coze-up-brand-9)) 2px, transparent 2px);
+      border-top: 1px solid rgb(var(--coze-up-brand-9));
+      border-bottom: 1px solid var(--semi-color-bg-2);
+    }
+
+    .semi-tabs-content{
+      overflow: hidden;
+      flex: 1;
+      padding: 0;
+    }
+
+    .semi-tabs-pane{
+      height: 100%;
+    }
+
+    .semi-tabs-pane-motion-overlay{
+      height: 100%;
+    }
+
+    .semi-tag-large{
+      height: 20px;
+    }
+  }
+}

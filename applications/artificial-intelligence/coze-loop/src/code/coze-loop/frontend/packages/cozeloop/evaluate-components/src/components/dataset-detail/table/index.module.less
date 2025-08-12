@@ -1,0 +1,21 @@
+// Copyright (c) 2025 coze-dev Authors
+// SPDX-License-Identifier: Apache-2.0
+.table{
+  :global{
+    .coz-table-only-header {
+      .semi-table-header {
+        scrollbar-gutter: stable;
+        overflow: auto;
+      }
+
+      .semi-table-header::-webkit-scrollbar-thumb {
+        visibility: hidden;
+      }
+
+      .semi-table-header:hover::-webkit-scrollbar-thumb {
+        visibility: visible;
+      }
+    }
+
+  }
+}

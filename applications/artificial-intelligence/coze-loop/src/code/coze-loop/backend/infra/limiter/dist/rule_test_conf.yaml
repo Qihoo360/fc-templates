@@ -1,0 +1,11 @@
+rules:
+  - match: 'itag == 1 && stag == "a"'
+    key_expr: 'origin_key + string(itag) + stag'
+    limit:
+      rate: 5
+      burst: 5
+      period: 1s
+  - limit:
+      rate: 3
+      burst: 3
+      period: 1s

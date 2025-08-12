@@ -1,0 +1,28 @@
+infra:
+  redis:
+    host: "${REDIS_HOST}"
+    port: ${REDIS_PORT}
+    password: "${REDIS_PASSWD}"
+  rds:
+    host: "${MYSQL_HOST}"
+    port: ${MYSQL_PORT}
+    user: "${MYSQL_USER}"
+    password: "${MYSQL_PASSWD}"
+    db: "${MYSQL_DB}"
+  s3_config:
+    region: "$S3_REGION"
+    endpoint: "$S3_ENDPOINT"
+    bucket: "$S3_BUCKET"
+    access_key: "$S3_AK"
+    secret_access_key: "$S3_SK"
+  ck_config:
+    host: "${CLICKHOST_ADDR}"
+    username: "${CLICKHOST_USER}"
+    password: "${CLICKHOST_PASSWD}"
+    database: "${CLICKHOST_DATABASE}"
+    dial_timeout: 30
+    read_timeout: 60
+  idgen:
+    server_ids:
+      - 1
+  log_level: "info"
