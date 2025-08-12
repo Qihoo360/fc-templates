@@ -1,0 +1,280 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: mem0-v1
+Provider:
+  - fc
+Version: 0.0.3
+Description: 该示例通过 mem0 快速搭建现代AI代理设计的内存层。
+HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/mem0
+Organization: 函数计算（FC）
+Tags:
+  - AI
+  - Custom Runtime
+Category: Web框架
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - mem0FunctionName  
+    - Mem0RedisDataBase
+    - Mem0RedisPassword
+    - Mem0RedisHost
+    - Mem0RedisPort
+
+    - Mem0Neo4jDataBase
+    - Mem0Neo4jEnable
+    - Mem0Neo4jHost
+    - Mem0Neo4jPort
+    - Mem0Neo4jUser
+    - Mem0Neo4jDbPassword
+    - Mem0Neo4jDbname
+
+    - llmBaseUrl
+    - llmApiKey
+    - llmModel
+    - llmEmbeddingModel
+    - llmMaxTokens
+    - llmTemperature
+    - llmEmbeddingDims
+
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: cn-north-cu-1
+      description: 创建应用所在的地区
+      enum:
+        - cn-north-cu-1
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+
+    mem0FunctionName:
+      title: mem0 函数名
+      type: string
+      default: mem0-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: mem0 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    mem0Description:
+      title: mem0 函数描述
+      type: string
+      default: "Serverless chatwiki"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入chatwiki函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    Mem0RedisDataBase:
+      # title: 缓存配置
+      type: string
+      default: redis
+      description: ""
+      enum:
+        - redis
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请选择缓存系统
+      x-formitem:
+        type: select
+    Mem0RedisHost:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入redis主机地址
+      x-formitem:
+        type: input
+    Mem0RedisPort:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入redis主机端口
+      x-formitem:
+        type: input
+    Mem0RedisPassword:
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入redis密码
+      x-formitem:
+        type: input
+    
+    Mem0Neo4jDataBase:
+      type: string
+      default: neo4j
+      description: ""
+      enum:
+        - neo4j
+      x-cate: applicationCate
+      x-label:  图数据库配置
+      x-restype: neo4j
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
+    Mem0Neo4jEnable:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 图数据库配置
+      x-restype: neo4j
+      x-placeholder: 是否启用Neo4j数据库,1是启用,0是不启用
+      x-formitem:
+        type: input
+    Mem0Neo4jHost:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 图数据库配置
+      x-restype: neo4j
+      x-placeholder: 请输入数据库主机地址
+      x-formitem:
+        type: input
+    Mem0Neo4jPort:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 图数据库配置
+      x-restype: neo4j
+      x-placeholder: 请输入数据库端口
+      x-formitem:
+        type: input
+    Mem0Neo4jUser:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 图数据库配置
+      x-restype: neo4j
+      x-placeholder: 请输入数据库用户名
+      x-formitem:
+        type: input
+    Mem0Neo4jDbPassword:
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 图数据库配置
+      x-restype: neo4j
+      x-placeholder: 请输入数据库密码
+      x-formitem:
+        type: input
+    Mem0Neo4jDbname:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 图数据库配置
+      x-restype: neo4j
+      x-placeholder: 请输入数据库名称
+      x-formitem:
+        type: input
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
+
+llmBaseUrl:
+      # title: api 地址
+      type: string
+      default: ""
+      pattern: "http.*"
+      description: ""
+      x-cate: applicationCate
+      x-label: LLM api配置
+      x-placeholder: LLM BaseUrl
+      x-formitem:
+        type: input
+llmApiKey:
+  # title: api key
+  type: secret
+  default: "123456"
+  pattern: ".*"
+  description: ""
+  x-cate: applicationCate
+  x-label: LLM api配置
+  x-placeholder: LLM ApiKey
+  x-formitem:
+    type: input
+llmModel:
+  # title: 模型名称
+  type: string
+  default: ""
+  pattern: ".*"
+  description: ""
+  x-cate: applicationCate
+  x-label: LLM api配置
+  x-placeholder: LLM 模型名称
+  x-formitem:
+    type: input
+llmEmbeddingModel:
+  # title: 模型名称
+  type: string
+  default: ""
+  pattern: ".*"
+  description: ""
+  x-cate: applicationCate
+  x-label: LLM api配置
+  x-placeholder: LLM 模型名称
+  x-formitem:
+    type: input
+llmMaxTokens:
+  # title: 模型名称
+  type: number
+  default: 2000
+  pattern: ".*"
+  description: ""
+  x-cate: applicationCate
+  x-label: LLM api配置
+  x-placeholder: LLM 模型名称
+  x-formitem:
+    type: input
+llmTemperature:
+  # title: 模型名称
+  type: number
+  default: 0.2
+  pattern: ".*"
+  description: ""
+  x-cate: applicationCate
+  x-label: LLM api配置
+  x-placeholder: LLM 模型名称
+  x-formitem:
+    type: input
+llmEmbeddingDims:
+  # title: 模型名称
+  type: number
+  default: 1536
+  pattern: ".*"
+  description: ""
+  x-cate: applicationCate
+  x-label: LLM api配置
+  x-placeholder: LLM 模型名称
+  x-formitem:
+    type: input

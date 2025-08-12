@@ -1,0 +1,25 @@
+# FastAPI and core dependencies
+fastapi==0.115.8
+uvicorn==0.34.0
+pydantic==2.10.4
+mem0ai>=0.1.48
+python-dotenv==1.0.1
+psycopg2-binary==2.9.10
+
+# Vector store dependencies
+redis>=4.5.1
+redisvl>=0.0.6
+
+# Graph store dependencies
+neo4j>=5.0.0
+langchain-neo4j>=0.1.0
+rank-bm25>=0.2.2
+
+# LLM dependencies
+openai>=1.0.0
+langchain>=0.0.335
+langchain-community>=0.0.19
+
+# Text processing dependencies (可能需要)
+nltk>=3.8.1
+tiktoken>=0.5.1
