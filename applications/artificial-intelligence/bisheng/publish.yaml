@@ -32,10 +32,10 @@ Parameters:
     - elasticsearchUrl
     - elasticsearchSslVerify
     - VectorDB
-    - milvusHost
-    - milvusPort
-    - milvusUser
-    - milvusPasswd
+    - MILVUS_HOST
+    - MILVUS_PORT
+    - MILVUS_USERNAME
+    - MILVUS_PASSWORD
     - milvusSecure
     - milvusIsPartition
     - milvusPartitionSuffiix
@@ -47,10 +47,10 @@ Parameters:
     - minioSchema
     - minioSharePoin
     - CacheDB
-    - redisUrl
-    - celeryRedisUrl
+    - REDIS_URL
+    - CELERY_REDIS_URL
     - DataBase
-    - mysqlUrl
+    - MYSQL_URL
   properties:
     region:
       title: 地域
@@ -157,7 +157,7 @@ Parameters:
       x-placeholder: 请选择向量数据库类型
       x-formitem:
         type: select
-    milvusHost:
+    MILVUS_HOST:
       # title: milvus 向量库连接参数
       type: string
       default: ""
@@ -169,7 +169,7 @@ Parameters:
       x-placeholder: milvus host
       x-formitem:
         type: input
-    milvusPort:
+    MILVUS_PORT:
       # title: milvus 向量库连接参数
       type: string
       default: ""
@@ -180,7 +180,7 @@ Parameters:
       x-placeholder: milvus port
       x-formitem:
         type: input
-    milvusUser:
+    MILVUS_USERNAME:
       # title: milvus token
       type: string
       default: ""
@@ -191,7 +191,7 @@ Parameters:
       x-placeholder: milvus user
       x-formitem:
         type: input
-    milvusPasswd:
+    MILVUS_PASSWORD:
       # title: milvus token
       type: secret
       default: "123456"
@@ -321,7 +321,7 @@ Parameters:
       x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
-    redisUrl:
+    REDIS_URL:
       # title: DifyRedisUserName
       type: string
       default: "redis://redis-k8s.functions:6379/1"
@@ -332,7 +332,7 @@ Parameters:
       x-placeholder: 请输入 redis url
       x-formitem:
         type: input
-    celeryRedisUrl:
+    CELERY_REDIS_URL:
       # title: DifyRedisUserName
       type: string
       default: "redis://redis-k8s.functions:6379/2"
@@ -356,7 +356,7 @@ Parameters:
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
-    mysqlUrl:
+    MYSQL_URL:
       # title: 数据库名 Host
       type: string
       default: 127.0.0.1

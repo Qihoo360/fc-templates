@@ -29,11 +29,11 @@ Parameters:
     - bfunctionPolefsVolumn
     - bfunctionMountDir
     - bfunctionPolefsVolumnCreateUser
-    - mysqlHost
-    - mysqlDatabaseName
-    - mysqlDatabasePort
-    - mysqlAccountName
-    - mysqlPassword
+    - MYSQL_HOST
+    - MYSQL_DATABASE
+    - MYSQL_PORT
+    - MYSQL_USERNAME
+    - MYSQL_PASSWORD
   properties:
     region:
       title: 地域
@@ -144,7 +144,7 @@ Parameters:
       x-cate: applicationCate
       x-label: nasLabel
       x-hidden: true
-    mysqlHost:
+    MYSQL_HOST:
       title: 数据库名 Host
       type: string
       default: 127.0.0.1
@@ -153,7 +153,7 @@ Parameters:
       x-label: mysqlLabel
       x-formitem:
         type: input
-    mysqlDatabaseName:
+    MYSQL_DATABASE:
       title: 数据库名
       type: string
       default: db-test
@@ -162,7 +162,7 @@ Parameters:
       x-label: mysqlLabel
       x-formitem:
         type: input
-    mysqlDatabasePort:
+    MYSQL_PORT:
       title: 数据库端口
       type: integer
       default: 3306
@@ -172,7 +172,7 @@ Parameters:
       x-label: mysqlLabel
       x-formitem:
         type: input
-    mysqlAccountName:
+    MYSQL_USERNAME:
       title: 数据库用户名
       type: string
       default: root
@@ -181,7 +181,7 @@ Parameters:
       x-label: mysqlLabel
       x-formitem:
         type: input
-    mysqlPassword:
+    MYSQL_PASSWORD:
       title: 数据库密码
       type: secret
       description: 数据库密码

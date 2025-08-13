@@ -27,16 +27,16 @@ Parameters:
     - chatwikiConverterFunctionName
     - chatwikiFunctionName  
     - ChatwikiRedisDataBase
-    - ChatwikiRedisPassword
-    - ChatwikiRedisHost
-    - ChatwikiRedisPort
+    - REDIS_PASSWORD
+    - REDIS_HOST
+    - REDIS_PORT
     - ChatwikiPGDataBase
-    - ChatwikiPGHost
-    - ChatwikiPGPort
-    - ChatwikiPGUser
-    - ChatwikiPGPassword
-    - ChatwikiPGDbName
-    - ChatwikiPGSslMode
+    - POSTGRES_HOST
+    - POSTGRES_PORT
+    - POSTGRES_USERNAME
+    - POSTGRES_PASSWORD
+    - POSTGRES_DATABASE
+    - ChatwikiPGSslmode
     - ChatwikiNeo4jDataBase
     - ChatwikiNeo4jEnable
     - ChatwikiNeo4jHost
@@ -128,7 +128,7 @@ Parameters:
       x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
-    ChatwikiRedisHost:
+    REDIS_HOST:
       type: string
       default: ""
       description: ""
@@ -138,7 +138,7 @@ Parameters:
       x-placeholder: 请输入redis主机地址
       x-formitem:
         type: input
-    ChatwikiRedisPort:
+    REDIS_PORT:
       type: string
       default: ""
       description: ""
@@ -148,7 +148,7 @@ Parameters:
       x-placeholder: 请输入redis主机端口
       x-formitem:
         type: input
-    ChatwikiRedisPassword:
+    REDIS_PASSWORD:
       type: secret
       default: "123456"
       description: ""
@@ -170,7 +170,7 @@ Parameters:
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
-    ChatwikiPGHost:
+    POSTGRES_HOST:
       type: string
       default: ""
       description: ""
@@ -180,7 +180,7 @@ Parameters:
       x-placeholder: 请输入数据库主机地址
       x-formitem:
         type: input
-    ChatwikiPGPort:
+    POSTGRES_PORT:
       type: string
       default: ""
       description: ""
@@ -190,7 +190,7 @@ Parameters:
       x-placeholder: 请输入数据库端口
       x-formitem:
         type: input
-    ChatwikiPGUser:
+    POSTGRES_USERNAME:
       type: string
       default: ""
       description: ""
@@ -200,7 +200,7 @@ Parameters:
       x-placeholder: 请输入数据库用户名
       x-formitem:
         type: input
-    ChatwikiPGPassword:
+    POSTGRES_PASSWORD:
       type: secret
       default: "123456"
       description: ""
@@ -210,7 +210,7 @@ Parameters:
       x-placeholder: 输入数据库密码
       x-formitem:
         type: input
-    ChatwikiPGDbName:
+    POSTGRES_DATABASE:
       type: string
       default: ""
       description: ""

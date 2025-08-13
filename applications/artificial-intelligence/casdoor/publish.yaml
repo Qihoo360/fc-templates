@@ -25,9 +25,9 @@ Parameters:
     - region
     - FunctionName
     - driverName
-    - dataSourceName
+    - MYSQL_DSN
     - DataBase
-    - dbName
+    - MYSQL_DATABASE
   properties:
     region:
       title: 地域
@@ -72,7 +72,7 @@ Parameters:
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
-    dataSourceName:
+    MYSQL_DSN:
       # title: dataSourceName
       type: string
       default: ""
@@ -83,7 +83,7 @@ Parameters:
       x-placeholder: 请输入数据库地址
       x-formitem:
         type: input
-    dbName:
+    MYSQL_DATABASE:
       # title: dbName
       type: string
       default: ""

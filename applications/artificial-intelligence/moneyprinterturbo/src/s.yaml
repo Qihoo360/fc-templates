@@ -7,8 +7,8 @@ vars:
   moneyprinterturboApiDescribe: {{moneyprinterturboApiDescription}}
   moneyprinterturboWebFunctionName: {{moneyprinterturboWebFunctionName}}
   moneyprinterturboWebDescribe: {{moneyprinterturboWebDescription}}
-  PolefsVolume: {{PolefsVolume}}
-  MountDir: {{MountDir}}
+  PolefsVolume: {{POLEFS_VOLUME}}
+  MountDir: {{POLEFS_MOUNT_PATH}}
   VolCreateUser: {{PolefsVolumeCreateUser}}
 resources:
   moneyprinterturboApi:

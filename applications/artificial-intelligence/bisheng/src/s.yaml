@@ -11,10 +11,10 @@ vars:
   bishengFrontendDescription: {{bishengFrontendDescription}}
   elasticsearchUrl: {{elasticsearchUrl}}
   elasticsearchSslVerify: {{elasticsearchSslVerify}}
-  milvusHost: {{milvusHost}}
-  milvusPort: {{milvusPort}}
-  milvusUser: {{milvusUser}}
-  milvusPasswd: {{milvusPasswd}}
+  MILVUS_HOST: {{MILVUS_HOST}}
+  MILVUS_PORT: {{MILVUS_PORT}}
+  MILVUS_USERNAME: {{MILVUS_USERNAME}}
+  MILVUS_PASSWORD: {{MILVUS_PASSWORD}}
   milvusSecure: {{milvusSecure}}
   milvusIsPartition: {{milvusIsPartition}}
   milvusPartitionSuffiix: {{milvusPartitionSuffiix}}
@@ -24,9 +24,9 @@ vars:
   minioCertCheck: {{minioCertCheck}}
   minioSchema: {{minioSchema}}
   minioSharePoin: {{minioSharePoin}}
-  redisUrl: {{redisUrl}}
-  celeryRedisUrl: {{celeryRedisUrl}}
-  mysqlUrl: {{mysqlUrl}}
+  REDIS_URL: {{REDIS_URL}}
+  CELERY_REDIS_URL: {{CELERY_REDIS_URL}}
+  MYSQL_URL: {{MYSQL_URL}}
 resources:
   bishengOffice:
     component: ${path('/utils/components/zfc')}
@@ -97,7 +97,7 @@ resources:
       environmentVariables:
         BS_ELASTICSEARCH_SSL_VERIFY: '${vars.elasticsearchSslVerify}'
         BS_ELASTICSEARCH_URL: ${vars.elasticsearchUrl}
-        BS_MILVUS_CONNECTION_ARGS: '{"host":"${vars.milvusHost}","port":"${vars.milvusPort}","user":"${vars.milvusUser}","password":"${vars.milvusPasswd}","secure":${vars.milvusSecure}}'
+        BS_MILVUS_CONNECTION_ARGS: '{"host":"${vars.MILVUS_HOST}","port":"${vars.MILVUS_PORT}","user":"${vars.MILVUS_USERNAME}","password":"${vars.MILVUS_PASSWORD}","secure":${vars.milvusSecure}}'
         BS_MILVUS_IS_PARTITION: ${vars.milvusIsPartition}
         BS_MILVUS_PARTITION_SUFFIX: ${vars.milvusPartitionSuffiix}
         BS_MINIO_ENDPOINT: ${vars.minioEndpoint}
@@ -106,9 +106,9 @@ resources:
         BS_MINIO_CERT_CHECK: ${vars.minioCertCheck}
         BS_MINIO_SCHEMA: ${vars.minioSchema}
         BS_MINIO_SHAREPOIN: ${vars.minioSharePoin}
-        BS_DATABASE_URL: ${vars.mysqlUrl}
-        BS_REDIS_URL: ${vars.redisUrl}
-        BS_CELERY_REDIS_URL: ${vars.celeryRedisUrl}
+        BS_DATABASE_URL: ${vars.MYSQL_URL}
+        BS_REDIS_URL: ${vars.REDIS_URL}
+        BS_CELERY_REDIS_URL: ${vars.CELERY_REDIS_URL}
         BS_OFFICE_URL: "http://${resources.bishengOffice.output.http_trigger_url}"
       triggers:
         - triggerName: httptrigger

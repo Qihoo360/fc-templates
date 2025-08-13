@@ -5,23 +5,23 @@ vars:
   region: {{region}}
   functionName: {{functionName}}
   description: {{description}}
-  mysqlHost: {{mysqlHost}}
-  mysqlDatabaseName: {{mysqlDatabaseName}}
-  mysqlDatabasePort: {{mysqlDatabasePort}}
-  mysqlUserName: {{mysqlUserName}}
-  mysqlPassword: {{mysqlPassword}}
-  elasticHost: {{elasticHost}}
-  elasticPort: {{elasticPort}}
-  elasticUserName: {{elasticUserName}}
-  elasticPassword: {{elasticPassword}}
+  mysqlHost: {{MYSQL_HOST}}
+  mysqlDatabaseName: {{MYSQL_DATABASE}}
+  mysqlDatabasePort: {{MYSQL_PORT}}
+  mysqlUserName: {{MYSQL_USERNAME}}
+  mysqlPassword: {{MYSQL_PASSWORD}}
+  elasticHost: {{ELASTICSEARCH_HOST}}
+  elasticPort: {{ELASTICSEARCH_PORT}}
+  elasticUserName: {{ELASTICSEARCH_USERNAME}}
+  elasticPassword: {{ELASTICSEARCH_PASSWORD}}
   minioHost: {{minioHost}}
   minioConsolePort: {{minioConsolePort}}
   minioUserName: {{minioUserName}}
   minioPassword: {{minioPassword}}
-  redisHost: {{redisHost}}
-  redisPort: {{redisPort}}
-  redisPassword: {{redisPassword}}
-  redisDB: {{redisDB}}
+  redisHost: {{REDIS_HOST}}
+  redisPort: {{REDIS_PORT}}
+  redisPassword: {{REDIS_PASSWORD}}
+  redisDB: {{REDIS_DATABASE}}
 resources:
   ragflow-app:
     component: ${path('/utils/components/zfc')}

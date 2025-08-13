@@ -297,7 +297,7 @@ Parameters:
       # title: 函数挂载路径
       type: string
       description: ""
-      default: "/app/storage"
+      default: "/app/history"
       x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs
