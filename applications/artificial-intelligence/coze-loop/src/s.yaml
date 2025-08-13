@@ -27,6 +27,8 @@ vars:
   mqNamesvrAddr: {{mqNamesvrAddr}}
   apiKey: {{apiKey}}
   model: {{model}}
+  qianfanAk: {{qianfanAk}}
+  qianfanSk: {{qianfanSk}}
   functionPolefsVolumn: {{functionPolefsVolumn}}
   afunctionVolCreateUser: {{afunctionVolCreateUser}}
 resources:

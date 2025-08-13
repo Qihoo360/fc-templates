@@ -382,7 +382,7 @@ Parameters:
     qianfanAk:
       # title: 数据库名 Host
       type: secret
-      default: ""
+      default: "***"
       description: ""
       x-cate: applicationCate
       x-label: LLM配置
@@ -393,7 +393,7 @@ Parameters:
     qianfanSk:
       # title: 数据库名 Host
       type: secret
-      default: ""
+      default: "***"
       description: ""
       x-cate: applicationCate
       x-label: LLM配置
