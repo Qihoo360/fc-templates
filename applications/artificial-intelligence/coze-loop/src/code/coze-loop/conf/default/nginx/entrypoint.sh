@@ -15,16 +15,16 @@ print_banner "Starting..."
 print_banner_delay "Successfully Started!" 2
 
 echo COZE_LOOP_APP_URL is $COZE_LOOP_APP_URL
-echo BCOZE_LOOP_S3_ENDPOINT is $BCOZE_LOOP_S3_ENDPOINT
+echo COZE_LOOP_S3_ENDPOINT is $COZE_LOOP_S3_ENDPOINT
 
 coze_loop_backend_url=$COZE_LOOP_APP_URL
-coze_loop_s3_endpoint=$BCOZE_LOOP_S3_ENDPOINT
+coze_loop_s3_endpoint=$COZE_LOOP_S3_ENDPOINT
 
 schema=$(echo $COZE_LOOP_APP_URL | awk -F"://" '{print $1}')
 if [ "$schema" != "http" -a "$schema" != "https" ]; then
     coze_loop_backend_url=http://$coze_loop_backend_url
 fi
-schema=$(echo $BCOZE_LOOP_S3_ENDPOINT | awk -F"://" '{print $1}')
+schema=$(echo $COZE_LOOP_S3_ENDPOINT | awk -F"://" '{print $1}')
 if [ "$schema" != "http" -a "$schema" != "https" ]; then
     coze_loop_s3_endpoint=http://$coze_loop_s3_endpoint
 fi

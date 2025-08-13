@@ -124,8 +124,8 @@ resources:
         min: 1
         max: 300
       environmentVariables:
-        BS_BACKEND_URL: "http://${resources.cozeloopBackend.output.http_trigger_url}"
-        BCOZE_LOOP_S3_ENDPOINT: ${vars.s3Endpoint}
+        COZE_LOOP_APP_URL: "http://${resources.cozeloopBackend.output.http_trigger_url}"
+        COZE_LOOP_S3_ENDPOINT: ${vars.s3Endpoint}
       triggers:
       - triggerName: httptrigger
         triggerType: http
