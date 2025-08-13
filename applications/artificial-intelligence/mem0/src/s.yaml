@@ -1,30 +1,30 @@
 edition: 3.0.0
-name: chatwiki-app
+name: mem0-app
 access: default
 vars:
   region: {{region}}
-  mem0FunctionName : {{chatwikiFunctionName}}
-  mem0Description : {{chatwikiDescription}}
-  Mem0RedisDataBase: {{ChatwikiRedisDataBase}}
-  Mem0RedisPassword: {{ChatwikiRedisPassword}}
-  Mem0RedisHost: {{ChatwikiRedisHost}}
-  Mem0RedisPort: {{ChatwikiRedisPort}}
+  mem0FunctionName : {{mem0FunctionName}}
+  mem0Description : {{mem0Description}}
+  Mem0RedisDataBase: {{Mem0RedisDataBase}}
+  Mem0RedisPassword: {{Mem0RedisPassword}}
+  Mem0RedisHost: {{Mem0RedisHost}}
+  Mem0RedisPort: {{Mem0RedisPort}}
 
-  Mem0Neo4jDataBase: {{ChatwikiNeo4jDataBase}}
-  Mem0Neo4jEnable: {{ChatwikiNeo4jEnable}}
-  Mem0Neo4jHost: {{ChatwikiNeo4jHost}}
-  Mem0Neo4jPort: {{ChatwikiNeo4jPort}}
-  Mem0Neo4jUser: {{ChatwikiNeo4jUser}}
-  Mem0Neo4jDbname: {{ChatwikiNeo4jDbname}}
-  Mem0Neo4jDbPassword: {{ChatwikiNeo4jDbPassword}}
+  Mem0Neo4jDataBase: {{Mem0Neo4jDataBase}}
+  Mem0Neo4jEnable: {{Mem0Neo4jEnable}}
+  Mem0Neo4jHost: {{Mem0Neo4jHost}}
+  Mem0Neo4jPort: {{Mem0Neo4jPort}}
+  Mem0Neo4jUser: {{Mem0Neo4jUser}}
+  Mem0Neo4jDbname: {{Mem0Neo4jDbname}}
+  Mem0Neo4jDbPassword: {{Mem0Neo4jDbPassword}}
 
-  llmBaseUrl: {{llmBaseUrl}}
-  llmApiKey: {{llmApiKey}}
-  llmModel: {{llmModel}}
-  llmEmbeddingModel: {{llmEmbeddingModel}}
-  llmMaxTokens: {{llmMaxTokens}}
-  llmTemperature: {{llmTemperature}}
-  llmEmbeddingDims: {{llmEmbeddingDims}}
+  OpenaiApiBaseUrl: {{OpenaiApiBaseUrl}}
+  OpenaiApiKey: {{OpenaiApiKey}}
+  OpenaiModel: {{OpenaiModel}}
+  OpenaiEmbeddingModel: {{OpenaiEmbeddingModel}}
+  OpenaiMaxTokens: {{OpenaiMaxTokens}}
+  OpenaiTemperature: {{OpenaiTemperature}}
+  OpenaiEmbeddingDims: {{OpenaiEmbeddingDims}}
   
   PolefsVolume: {{PolefsVolume}}
   MountDir: {{MountDir}}

@@ -43,6 +43,7 @@ os.environ["BASE_URL"] = os.environ.get("EMBEDDING_BASE_URL")
 # memeai
 MODEL_NAME = os.environ.get("MODEL_NAME", "gpt-4o")
 MAX_TOKENS = os.environ.get("MAX_TOKEN", 2000)
+TEMPERATURE = os.environ.get("TEMPERATURE", 0.2)
 
 # embedder
 EMBEDDING_MODEL_NAME = os.environ.get("EMBEDDING_MODEL_NAME", "text-embedding-3-small")
@@ -67,7 +68,7 @@ DEFAULT_CONFIG = {
     "llm": {
         "provider": "openai", 
         "config": {
-            "temperature": 0.2, 
+            "temperature": TEMPERATURE, 
             "model": MODEL_NAME,
             "max_tokens": MAX_TOKENS
         }
