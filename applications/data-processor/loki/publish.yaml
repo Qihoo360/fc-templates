@@ -32,7 +32,7 @@ Parameters:
     - LokiAwsAK
     - LokiAwsSK
     - DataBase
-    - GrafanaMysqlUrl
+    - MYSQL_URL
   properties:
     region:
       title: 地域
@@ -165,7 +165,7 @@ Parameters:
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
-    GrafanaMysqlUrl:
+    MYSQL_URL:
       # title: Mysql数据库地址
       type: string
       default: ""

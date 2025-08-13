@@ -32,7 +32,7 @@ Parameters:
         - cn-north-cu-1
       x-cate: resourceCate
       x-reaction-properties:
-        - PolefsVolume
+        - POLEFS_VOLUME
       x-formitem:
         type: select
     functionName:

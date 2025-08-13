@@ -29,17 +29,18 @@ Parameters:
     - difyWebFunctionName
     - DifyCustomDomain
     - CacheDB
-    - DifyRedisPassword
-    - DifyRedisHost
-    - DifyRedisPort
-    - DifyRedisDataBase
-    - DifyRedisDataBaseCelery
+    - REDIS_PASSWORD
+    - REDIS_HOST
+    - REDIS_PORT
+    - REDIS_DATABASE
+    - REDIS_DATABASE_CELERY
     - DifyDBSCHEME
-    - DifyDBPassword
-    - DifyDBHost
-    - DifyDBPort
+    - POSTGRES_USERNAME
+    - POSTGRES_PASSWORD
+    - POSTGRES_HOST
+    - POSTGRES_PORT
     - DifyDBPluginDataBase
-    - DifyDBDataBase
+    - POSTGRES_DATABASE
     - ObjectStorage
     - DifyAwsS3Endpoint
     - DifyAwsS3Bucket
@@ -47,8 +48,8 @@ Parameters:
     - DifyAwsS3Ak
     - DifyAwsS3Sk
     - FileStorage
-    - PolefsVolume
-    - MountDir
+    - POLEFS_VOLUME
+    - POLEFS_MOUNT_PATH
     - PolefsVolumeCreateUse
   properties:
     region:
@@ -175,7 +176,7 @@ Parameters:
       x-placeholder: 请输入Redis用户名
       x-formitem:
         type: input
-    DifyRedisPassword:
+    REDIS_PASSWORD:
       # title: DifyRedisPassword
       type: secret
       default: "123456"
@@ -186,7 +187,7 @@ Parameters:
       x-placeholder: 请输入Redis密码
       x-formitem:
         type: input
-    DifyRedisHost:
+    REDIS_HOST:
       # title: DifyRedisHost
       type: string
       default: ""
@@ -197,8 +198,8 @@ Parameters:
       x-placeholder: 请输入Redis主机地址
       x-formitem:
         type: input
-    DifyRedisPort:
-      # title: DifyRedisPort
+    REDIS_PORT:
+      # title: REDIS_PORT
       type: string
       default: ""
       description: ""
@@ -208,8 +209,8 @@ Parameters:
       x-placeholder: 请输入Redisd主机端口
       x-formitem:
         type: input
-    DifyRedisDataBase:
-      # title: DifyRedisDataBase
+    REDIS_DATABASE:
+      # title: REDIS_DATABASE
       type: string
       default: "0"
       description: ""
@@ -219,8 +220,8 @@ Parameters:
       x-placeholder: 请输入Redis数据库
       x-formitem:
         type: input
-    DifyRedisDataBaseCelery:
-      # title: DifyRedisDataBaseCelery
+    REDIS_DATABASE_CELERY:
+      # title: REDIS_DATABASE_CELERY
       type: string
       default: "1"
       description: ""
@@ -243,8 +244,8 @@ Parameters:
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
-    DifyDBUserName:
-      # title: DifyDBUserName
+    POSTGRES_USERNAME:
+      # title: POSTGRES_USERNAME
       type: string
       default: ""
       description: ""
@@ -254,8 +255,8 @@ Parameters:
       x-placeholder: 请输入数据库用户名
       x-formitem:
         type: input
-    DifyDBPassword:
-      # title: DifyDBPassword
+    POSTGRES_PASSWORD:
+      # title: POSTGRES_PASSWORD
       type: secret
       default: "123456"
       description: ""
@@ -265,8 +266,8 @@ Parameters:
       x-placeholder: 输入数据库密码
       x-formitem:
         type: input
-    DifyDBHost:
-      # title: DifyDBHost
+    POSTGRES_HOST:
+      # title: POSTGRES_HOST
       type: string
       default: ""
       description: ""
@@ -276,8 +277,8 @@ Parameters:
       x-placeholder: 请输入数据库主机地址
       x-formitem:
         type: input
-    DifyDBPort:
-      # title: DifyDBPort
+    POSTGRES_PORT:
+      # title: POSTGRES_PORT
       type: string
       default: ""
       description: ""
@@ -298,8 +299,8 @@ Parameters:
       x-placeholder: 请输入可扩展数据库
       x-formitem:
         type: input
-    DifyDBDataBase:
-      # title: DifyDBDataBase
+    POSTGRES_DATABASE:
+      # title: POSTGRES_DATABASE
       type: string
       default: ""
       description: ""
@@ -390,7 +391,7 @@ Parameters:
       x-placeholder: 请选择向量数据库类型
       x-formitem:
         type: select
-    DifyMilvusUri:
+    MILVUS_URL:
       type: string
       default: ""
       description: "例如：http://127.0.0.1:19530"
@@ -400,7 +401,7 @@ Parameters:
       x-placeholder: "请输入Milvus端点/Uri"
       x-formitem:
         type: input
-    DifyMilvusToken:
+    MILVUS_TOKEN:
       type: string
       default: ""
       description: ""
@@ -410,7 +411,7 @@ Parameters:
       x-placeholder: 请输入Milvus Token
       x-formitem:
         type: input
-    DifyMilvusUser:
+    MILVUS_USERNAME:
       type: string
       default: ""
       description: ""
@@ -420,7 +421,7 @@ Parameters:
       x-placeholder: 请输入Milvus用户名/User
       x-formitem:
         type: input
-    DifyMilvusPassword:
+    MILVUS_PASSWORD:
       type: string
       default: ""
       description: ""
@@ -443,7 +444,7 @@ Parameters:
       x-placeholder: 请选择文件存储类型
       x-formitem:
         type: select
-    PolefsVolume:
+    POLEFS_VOLUME:
       # title: 函数挂载 PoleFS 卷名称
       type: string
       default: ""
@@ -458,7 +459,7 @@ Parameters:
       x-formitem:
         type: select
         name: volume_unique_name
-    MountDir:
+    POLEFS_MOUNT_PATH:
       # title: 函数挂载路径
       type: string
       description: ""

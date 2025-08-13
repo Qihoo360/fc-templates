@@ -127,7 +127,7 @@ Parameters:
       x-formitem:
         type: input
 
-    JWT_SECRETs:
+    JWT_SECRET:
       title: API JWT 密钥
       type: secret
       default: ""

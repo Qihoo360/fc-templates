@@ -24,9 +24,9 @@ Parameters:
   required: # 必填项
     - region
     - FunctionName
-    - OpenaiApiBase
-    - OpenaiApiKey
-    - OpenaiApiModel
+    - OPENAI_URL
+    - OPENAI_API_KEY
+    - OPENAI_MODELNAME
   properties:
     region:
       title: 地域
@@ -58,37 +58,37 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
-    OpenaiApiBase:
-      # title: OpenaiApiBase
+    OPENAI_URL:
+      # title: OPENAI_URL
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
       x-label: OpenApi配置
       x-restype: llm-apikey
-      x-placeholder: OpenaiApiBase
+      x-placeholder: OPENAI_URL
       x-formitem:
         type: input
-    OpenaiApiKey:
-      # title: OpenaiApiKey
+    OPENAI_API_KEY:
+      # title: OPENAI_API_KEY
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
       x-label: OpenApi配置
       x-restype: llm-apikey
-      x-placeholder: OpenaiApiKey
+      x-placeholder: OPENAI_API_KEY
       x-formitem:
         type: input
-    OpenaiApiModel:
-      # title: OpenaiApiModel
+    OPENAI_MODELNAME:
+      # title: OPENAI_MODELNAME
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
       x-label: OpenApi配置
       x-restype: llm-apikey
-      x-placeholder: OpenaiApiModel
+      x-placeholder: OPENAI_MODELNAME
       x-formitem:
         type: input
 PropertyDescription:
