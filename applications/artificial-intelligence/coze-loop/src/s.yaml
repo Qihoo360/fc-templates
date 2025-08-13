@@ -2,34 +2,33 @@ edition: 3.0.0
 name: cozeloop-app
 access: default
 vars:
-  region: {{}}
-  cozeLoopBackendFunctionName: {{}}
-  cozeLoopBackendDescription: {{}}
-  cozeLoopFrontendFunctionName: {{}}
-  cozeLoopFrontendDescription: {{}}
-  clickhouseAddr: {{}}
-  clickhouseDatabase: {{}}
-  clickhouseUser: {{}}
-  clickhousePasswd: {{}}
-  s3Endpoint: {{}}
-  s3AccessKey: {{}}
-  s3SecretKey: {{}}
-  s3Bucket: {{}}
-  s3Region: {{}}
-  redisHost: {{}}
-  redisPort: {{}}
-  redisPasswd: {{}}
-  mysqlHost: {{}}
-  mysqlPort: {{}}
-  mysqlDatabase: {{}}
-  mysqlUser: {{}}
-  mysqlPasswd: {{}}
-  mqNamesvrAddr: {{}}
-  apiKey: {{}}
-  model: {{}}
-  FileStorage: {{}}
-  functionPolefsVolumn: {{}}
-  afunctionVolCreateUser: {{}}
+  region: {{region}}
+  cozeLoopBackendFunctionName: {{cozeLoopBackendFunctionName}}
+  cozeLoopBackendDescription: {{cozeLoopBackendDescription}}
+  cozeLoopFrontendFunctionName: {{cozeLoopFrontendFunctionName}}
+  cozeLoopFrontendDescription: {{cozeLoopFrontendDescription}}
+  clickhouseAddr: {{clickhouseAddr}}
+  clickhouseDatabase: {{clickhouseDatabase}}
+  clickhouseUser: {{clickhouseUser}}
+  clickhousePasswd: {{clickhousePasswd}}
+  s3Endpoint: {{s3Endpoint}}
+  s3AccessKey: {{s3AccessKey}}
+  s3SecretKey: {{s3SecretKey}}
+  s3Bucket: {{s3Bucket}}
+  s3Region: {{s3Region}}
+  redisHost: {{redisHost}}
+  redisPort: {{redisPort}}
+  redisPasswd: {{redisPasswd}}
+  mysqlHost: {{mysqlHost}}
+  mysqlPort: {{mysqlPort}}
+  mysqlDatabase: {{mysqlDatabase}}
+  mysqlUser: {{mysqlUser}}
+  mysqlPasswd: {{mysqlPasswd}}
+  mqNamesvrAddr: {{mqNamesvrAddr}}
+  apiKey: {{apiKey}}
+  model: {{model}}
+  functionPolefsVolumn: {{functionPolefsVolumn}}
+  afunctionVolCreateUser: {{afunctionVolCreateUser}}
 resources:
   cozeloopBackend:
     component: ${path('/utils/components/zfc')}
