@@ -26,10 +26,10 @@ Parameters:
     - afunctionMountDir
     - afunctionPolefsVolumnCreateUser
     - mysqlHost
-    - mysqlDatabaseName
-    - mysqlDatabasePort
-    - mysqlAccountName
-    - mysqlPassword
+    - MYSQL_DATABASE
+    - MYSQL_PORT
+    - MYSQL_USERNAME
+    - MYSQL_PASSWORD
     - mysqlHostx
     - mysqlDatabaseNamex
     - mysqlDatabasePortx
@@ -105,7 +105,7 @@ Parameters:
       x-label: mysqlLabel
       x-formitem:
         type: input
-    mysqlDatabaseName:
+    MYSQL_DATABASE:
       title: 数据库名
       type: string
       default: db-test
@@ -114,7 +114,7 @@ Parameters:
       x-label: mysqlLabel
       x-formitem:
         type: input
-    mysqlDatabasePort:
+    MYSQL_PORT:
       title: 数据库端口
       type: integer
       default: 3306
@@ -124,7 +124,7 @@ Parameters:
       x-label: mysqlLabel
       x-formitem:
         type: input
-    mysqlAccountName:
+    MYSQL_USERNAME:
       title: 数据库用户名
       type: string
       default: root
@@ -133,7 +133,7 @@ Parameters:
       x-label: mysqlLabel
       x-formitem:
         type: input
-    mysqlPassword:
+    MYSQL_PASSWORD:
       title: 数据库密码
       type: secret
       description: 数据库密码

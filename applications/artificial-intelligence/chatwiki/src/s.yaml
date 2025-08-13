@@ -10,16 +10,16 @@ vars:
   chatwikiFunctionName : {{chatwikiFunctionName}}
   chatwikiDescription : {{chatwikiDescription}}
   ChatwikiRedisDataBase: {{ChatwikiRedisDataBase}}
-  ChatwikiRedisPassword: {{ChatwikiRedisPassword}}
-  ChatwikiRedisHost: {{ChatwikiRedisHost}}
-  ChatwikiRedisPort: {{ChatwikiRedisPort}}
+  ChatwikiRedisPassword: {{REDIS_PASSWORD}}
+  ChatwikiRedisHost: {{REDIS_HOST}}
+  ChatwikiRedisPort: {{REDIS_PORT}}
   ChatwikiPGDataBase: {{ChatwikiPGDataBase}}
-  ChatwikiPGHost: {{ChatwikiPGHost}}
-  ChatwikiPGPort: {{ChatwikiPGPort}}
-  ChatwikiPGUser: {{ChatwikiPGUser}}
-  ChatwikiPGPassword: {{ChatwikiPGPassword}}
-  ChatwikiPGDbName: {{ChatwikiPGDbName}}
-  ChatwikiPGSslMode: {{ChatwikiPGSslMode}}
+  ChatwikiPGHost: {{POSTGRES_HOST}}
+  ChatwikiPGPort: {{POSTGRES_PORT}}
+  ChatwikiPGUser: {{POSTGRES_USERNAME}}
+  ChatwikiPGPassword: {{POSTGRES_PASSWORD}}
+  ChatwikiPGDbName: {{POSTGRES_DATABASE}}
+  ChatwikiPGSslmode: {{ChatwikiPGSslmode}}
   ChatwikiNeo4jDataBase: {{ChatwikiNeo4jDataBase}}
   ChatwikiNeo4jEnable: {{ChatwikiNeo4jEnable}}
   ChatwikiNeo4jHost: {{ChatwikiNeo4jHost}}

@@ -12,32 +12,32 @@ vars:
   difyWebFunctionName: {{difyWebFunctionName}}
   difyWebDescribe: {{difyWebDescription}}
   DifyCustomDomain: {{DifyCustomDomain}}
-  DifyRedisUserName: {{DifyRedisUserName}}
-  DifyRedisPassword: {{DifyRedisPassword}}
-  DifyRedisHost: {{DifyRedisHost}}
-  DifyRedisPort: {{DifyRedisPort}}
-  DifyRedisDataBase: {{DifyRedisDataBase}}
-  DifyRedisDataBaseCelery: {{DifyRedisDataBaseCelery}}
+  DifyRedisUserName: {{REDIS_USERNAME}}
+  DifyRedisPassword: {{REDIS_PASSWORD}}
+  DifyRedisHost: {{REDIS_HOST}}
+  DifyRedisPort: {{REDIS_PORT}}
+  DifyRedisDataBase: {{REDIS_DATABASE}}
+  DifyRedisDataBaseCelery: {{REDIS_DATABASE_CELERY}}
   DifyDBSCHEME: {{DifyDBSCHEME}}
-  DifyDBUserName: {{DifyDBUserName}}
-  DifyDBPassword: {{DifyDBPassword}}
-  DifyDBHost: {{DifyDBHost}}
-  DifyDBPort: {{DifyDBPort}}
+  DifyDBUserName: {{POSTGRES_USERNAME}}
+  DifyDBPassword: {{POSTGRES_PASSWORD}}
+  DifyDBHost: {{POSTGRES_HOST}}
+  DifyDBPort: {{POSTGRES_PORT}}
   DifyDBPluginDataBase: {{DifyDBPluginDataBase}}
-  DifyDBDataBase: {{DifyDBDataBase}}
+  DifyDBDataBase: {{POSTGRES_DATABASE}}
   DifyAwsS3Endpoint: {{DifyAwsS3Endpoint}}
   DifyAwsS3Bucket: {{DifyAwsS3Bucket}}
   DifyAwsS3Region: {{DifyAwsS3Region}}
   DifyAwsS3Ak: {{DifyAwsS3Ak}}
   DifyAwsS3Sk: {{DifyAwsS3Sk}}
-  DifyWeaviateEndpoint: {{DifyWeaviateEndpoint}}
-  DifyWeaviateApiKey: {{DifyWeaviateApiKey}}
-  DifyMilvusUri: {{DifyMilvusUri}}
-  DifyMilvusToken: {{DifyMilvusToken}}
-  DifyMilvusUser: {{DifyMilvusUser}}
-  DifyMilvusPassword: {{DifyMilvusPassword}}
-  PolefsVolume: {{PolefsVolume}}
-  MountDir: {{MountDir}}
+  DifyWeaviateEndpoint: {{WEAVIATE_URL}}
+  DifyWeaviateApiKey: {{WEAVIATE_API_KEY}}
+  DifyMilvusUri: {{MILVUS_URL}}
+  DifyMilvusToken: {{MILVUS_TOKEN}}
+  DifyMilvusUser: {{MILVUS_USERNAME}}
+  DifyMilvusPassword: {{MILVUS_PASSWORD}}
+  PolefsVolume: {{POLEFS_VOLUME}}
+  MountDir: {{POLEFS_MOUNT_PATH}}
   VolCreateUser: {{PolefsVolumeCreateUser}}
 resources:
   difySandbox:

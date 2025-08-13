@@ -24,8 +24,8 @@ Parameters:
     - moneyprinterturboApiFunctionName
     - moneyprinterturboWebFunctionName
     - FileStorage
-    - PolefsVolume
-    - MountDir
+    - POLEFS_VOLUME
+    - POLEFS_MOUNT_PATH
     - PolefsVolumeCreateUser
   properties:
     region:
@@ -91,7 +91,7 @@ Parameters:
       x-placeholder: 请选择文件存储类型
       x-formitem:
         type: select
-    PolefsVolume:
+    POLEFS_VOLUME:
       # title: 函数挂载 PoleFS 卷名称
       type: string
       default: ""
@@ -106,7 +106,7 @@ Parameters:
       x-formitem:
         type: select
         name: volume_unique_name
-    MountDir:
+    POLEFS_MOUNT_PATH:
       # title: 函数挂载路径
       type: string
       description: ""

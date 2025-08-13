@@ -5,8 +5,8 @@ vars:
   region: {{region}}
   describe: {{description}}
   functionName: {{functionName}}
-  PolefsVolume: {{PolefsVolume}}
-  MountDir: {{MountDir}}
+  PolefsVolume: {{POLEFS_VOLUME}}
+  MountDir: {{POLEFS_MOUNT_PATH}}
   VolCreateUser: {{PolefsVolumeCreateUser}}
 resources:
   framework:
