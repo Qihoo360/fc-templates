@@ -18,14 +18,6 @@ vars:
   Mem0Neo4jDbname: {{Mem0Neo4jDbname}}
   Mem0Neo4jDbPassword: {{Mem0Neo4jDbPassword}}
 
-    - OpenaiApiBaseUrl
-    - OpenaiApiKey
-    - OpenaiModel
-    - OpenaiEmbeddingModel
-    - OpenaiMaxTokens
-    - OpenaiTemperature
-    - OpenaiEmbeddingDims
-
   OpenaiApiBaseUrl: {{OpenaiApiBaseUrl}}
   OpenaiApiKey: {{OpenaiApiKey}}
   OpenaiModel: {{OpenaiModel}}
