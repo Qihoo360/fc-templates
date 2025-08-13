@@ -3,10 +3,10 @@ name: cozeloop-app
 access: default
 vars:
   region: {{region}}
-  cozeLoopBackendFunctionName: {{cozeLoopBackendFunctionName}}
-  cozeLoopBackendDescription: {{cozeLoopBackendDescription}}
-  cozeLoopFrontendFunctionName: {{cozeLoopFrontendFunctionName}}
-  cozeLoopFrontendDescription: {{cozeLoopFrontendDescription}}
+  cozeloopBackendFunctionName: {{cozeloopBackendFunctionName}}
+  cozeloopBackendDescription: {{cozeloopBackendDescription}}
+  cozeloopFrontendFunctionName: {{cozeloopFrontendFunctionName}}
+  cozeloopFrontendDescription: {{cozeloopFrontendDescription}}
   clickhouseAddr: {{clickhouseAddr}}
   clickhouseDatabase: {{clickhouseDatabase}}
   clickhouseUser: {{clickhouseUser}}

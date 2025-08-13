@@ -23,10 +23,10 @@ Parameters:
   required:
   # 必填项
   - region
-  - cozeLoopBackendFunctionName
-  - cozeLoopBackendDescription
-  - cozeLoopFrontendFunctionName
-  - cozeLoopFrontendDescription
+  - cozeloopBackendFunctionName
+  - cozeloopBackendDescription
+  - cozeloopFrontendFunctionName
+  - cozeloopFrontendDescription
   - clickhouseAddr
   - clickhouseDatabase
   - clickhouseUser
@@ -68,7 +68,7 @@ Parameters:
       - functionPolefsVolumn
       x-formitem:
         type: select
-    cozeLoopBackendFunctionName:
+    cozeloopBackendFunctionName:
       title: 函数名
       type: string
       default: cozeloop-backend-${default-suffix}
@@ -78,7 +78,7 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
-    cozeLoopBackendDescription:
+    cozeloopBackendDescription:
       title: 描述
       type: string
       default: "cozeloop backend"
@@ -88,7 +88,7 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
-    cozeLoopFrontendFunctionName:
+    cozeloopFrontendFunctionName:
       title: 函数名
       type: string
       default: cozeloop-frontend-${default-suffix}
@@ -98,7 +98,7 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
-    cozeLoopFrontendDescription:
+    cozeloopFrontendDescription:
       title: 描述
       type: string
       default: "cozeloop frontend"
