@@ -3,7 +3,7 @@ import os
 from typing import Any, Dict, List, Optional
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header, Depends
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
@@ -242,3 +242,19 @@ def reset_memory():
 def home():
     """Redirect to the OpenAPI documentation."""
     return RedirectResponse(url="/docs")
+
+# 从环境变量读取 API_KEY
+API_KEY = os.environ.get("MEM0_API_KEY", "default_key")  # 可在 Docker 或启动脚本里设置
+
+@app.get("/v1/ping/")
+def ping(x_api_key: str = Header(...)):
+    """验证 API Key 并返回固定信息"""
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+
+    # 返回固定的 org_id、project_id、user_email
+    return {
+        "org_id": "org123",
+        "project_id": "proj456",
+        "user_email": "user@example.com"
+    }
