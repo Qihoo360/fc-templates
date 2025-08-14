@@ -112,9 +112,25 @@ class SearchRequest(BaseModel):
     agent_id: Optional[str] = None
     filters: Optional[Dict[str, Any]] = None
 
+# 从环境变量读取 API_KEY
+API_KEY = os.environ.get("MEM0_API_KEY", "default_key")  # 可在 Docker 或启动脚本里设置
+
+def verify_api_key(
+    authorization: str = Header(...),
+    mem0_user_id: str = Header(...)
+):
+    """验证每个请求的 API Key 和用户 ID"""
+    if not authorization.startswith("Token "):
+        raise HTTPException(status_code=401, detail="Invalid Authorization header format")
+    
+    token = authorization.split(" ", 1)[1]
+    if token != API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+    
+    return mem0_user_id  # 可以在路由中直接使用
 
 @app.post("/configure", summary="Configure Mem0")
-def set_config(config: Dict[str, Any]):
+def set_config(config: Dict[str, Any], user_id: str = Depends(verify_api_key)):
     """Set memory configuration."""
     global MEMORY_INSTANCE
     MEMORY_INSTANCE = Memory.from_config(config)
@@ -122,7 +138,7 @@ def set_config(config: Dict[str, Any]):
 
 
 @app.post("/memories", summary="Create memories")
-def add_memory(memory_create: MemoryCreate):
+def add_memory(memory_create: MemoryCreate, user_id: str = Depends(verify_api_key)):
     """Store new memories."""
     if not any([memory_create.user_id, memory_create.agent_id, memory_create.run_id]):
         raise HTTPException(status_code=400, detail="At least one identifier (user_id, agent_id, run_id) is required.")
@@ -138,7 +154,7 @@ def add_memory(memory_create: MemoryCreate):
 
 @app.get("/memories", summary="Get memories")
 def get_all_memories(
-    user_id: Optional[str] = None,
+    user_id: str = Depends(verify_api_key),
     run_id: Optional[str] = None,
     agent_id: Optional[str] = None,
 ):
@@ -156,7 +172,7 @@ def get_all_memories(
 
 
 @app.get("/memories/{memory_id}", summary="Get a memory")
-def get_memory(memory_id: str):
+def get_memory(memory_id: str, user_id: str = Depends(verify_api_key)):
     """Retrieve a specific memory by ID."""
     try:
         return MEMORY_INSTANCE.get(memory_id)
@@ -166,7 +182,7 @@ def get_memory(memory_id: str):
 
 
 @app.post("/search", summary="Search memories")
-def search_memories(search_req: SearchRequest):
+def search_memories(search_req: SearchRequest, user_id: str = Depends(verify_api_key)):
     """Search for memories based on a query."""
     try:
         params = {k: v for k, v in search_req.model_dump().items() if v is not None and k != "query"}
@@ -177,7 +193,7 @@ def search_memories(search_req: SearchRequest):
 
 
 @app.put("/memories/{memory_id}", summary="Update a memory")
-def update_memory(memory_id: str, updated_memory: Dict[str, Any]):
+def update_memory(memory_id: str, updated_memory: Dict[str, Any], user_id: str = Depends(verify_api_key)):
     """Update an existing memory."""
     try:
         return MEMORY_INSTANCE.update(memory_id=memory_id, data=updated_memory)
@@ -187,7 +203,7 @@ def update_memory(memory_id: str, updated_memory: Dict[str, Any]):
 
 
 @app.get("/memories/{memory_id}/history", summary="Get memory history")
-def memory_history(memory_id: str):
+def memory_history(memory_id: str, user_id: str = Depends(verify_api_key)):
     """Retrieve memory history."""
     try:
         return MEMORY_INSTANCE.history(memory_id=memory_id)
@@ -197,7 +213,7 @@ def memory_history(memory_id: str):
 
 
 @app.delete("/memories/{memory_id}", summary="Delete a memory")
-def delete_memory(memory_id: str):
+def delete_memory(memory_id: str, user_id: str = Depends(verify_api_key)):
     """Delete a specific memory by ID."""
     try:
         MEMORY_INSTANCE.delete(memory_id=memory_id)
@@ -209,7 +225,7 @@ def delete_memory(memory_id: str):
 
 @app.delete("/memories", summary="Delete all memories")
 def delete_all_memories(
-    user_id: Optional[str] = None,
+    user_id: str = Depends(verify_api_key),
     run_id: Optional[str] = None,
     agent_id: Optional[str] = None,
 ):
@@ -228,7 +244,7 @@ def delete_all_memories(
 
 
 @app.post("/reset", summary="Reset all memories")
-def reset_memory():
+def reset_memory(user_id: str = Depends(verify_api_key)):
     """Completely reset stored memories."""
     try:
         MEMORY_INSTANCE.reset()
@@ -243,18 +259,12 @@ def home():
     """Redirect to the OpenAPI documentation."""
     return RedirectResponse(url="/docs")
 
-# 从环境变量读取 API_KEY
-API_KEY = os.environ.get("MEM0_API_KEY", "default_key")  # 可在 Docker 或启动脚本里设置
 
 @app.get("/v1/ping/")
-def ping(x_api_key: str = Header(...)):
-    """验证 API Key 并返回固定信息"""
-    if x_api_key != API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid API Key")
-
-    # 返回固定的 org_id、project_id、user_email
+def ping(user_id: str = Depends(verify_api_key)):
+    """返回固定信息"""
     return {
         "org_id": "org123",
         "project_id": "proj456",
-        "user_email": "user@example.com"
+        "user_email": f"user_{user_id}@example.com"
     }
