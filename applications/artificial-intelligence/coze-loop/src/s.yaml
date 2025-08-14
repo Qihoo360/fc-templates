@@ -97,7 +97,7 @@ resources:
           auth_config: ""
       nasConfig:
       - volumeUniqueName: ${vars.functionPolefsVolumn}
-        backendMountDir: "/cozeloop-bin/frontend/dist"
+        mountDir: "/cozeloop-bin/frontend/dist"
         createUserName: ${vars.afunctionVolCreateUser}
   cozeloopFrontend:
     component: ${path('/utils/components/zfc')}
@@ -145,5 +145,5 @@ resources:
           auth_config: ""
       nasConfig:
       - volumeUniqueName: ${vars.functionPolefsVolumn}
-        frontendMountDir: "/mnt/shared_frontend_dist"
+        mountDir: "/mnt/shared_frontend_dist"
         createUserName: ${vars.afunctionVolCreateUser}
