@@ -23,7 +23,7 @@ resources:
       requestType: http
       runtimeType: customize
       cloudBuildType: Auto
-      port: 8080
+      port: 8188
       functionName: ${vars.functionName}
       sourceSubDir: code/ComfyUI
       logConfig:

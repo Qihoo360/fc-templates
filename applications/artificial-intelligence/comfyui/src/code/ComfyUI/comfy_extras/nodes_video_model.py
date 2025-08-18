@@ -4,6 +4,7 @@ import comfy.utils
 import comfy.sd
 import folder_paths
 import comfy_extras.nodes_model_merging
+import node_helpers
 
 
 class ImageOnlyCheckpointLoader:
@@ -17,7 +18,7 @@ class ImageOnlyCheckpointLoader:
     CATEGORY = "loaders/video_models"
 
     def load_checkpoint(self, ckpt_name, output_vae=True, output_clip=True):
-        ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
+        ckpt_path = folder_paths.get_full_path_or_raise("checkpoints", ckpt_name)
         out = comfy.sd.load_checkpoint_guess_config(ckpt_path, output_vae=True, output_clip=False, output_clipvision=True, embedding_directory=folder_paths.get_folder_paths("embeddings"))
         return (out[0], out[3], out[2])
 
@@ -107,7 +108,7 @@ class VideoTriangleCFGGuidance:
         return (m, )
 
 class ImageOnlyCheckpointSave(comfy_extras.nodes_model_merging.CheckpointSave):
-    CATEGORY = "_for_testing"
+    CATEGORY = "advanced/model_merging"
 
     @classmethod
     def INPUT_TYPES(s):
@@ -121,12 +122,38 @@ class ImageOnlyCheckpointSave(comfy_extras.nodes_model_merging.CheckpointSave):
         comfy_extras.nodes_model_merging.save_checkpoint(model, clip_vision=clip_vision, vae=vae, filename_prefix=filename_prefix, output_dir=self.output_dir, prompt=prompt, extra_pnginfo=extra_pnginfo)
         return {}
 
+
+class ConditioningSetAreaPercentageVideo:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {"conditioning": ("CONDITIONING", ),
+                             "width": ("FLOAT", {"default": 1.0, "min": 0, "max": 1.0, "step": 0.01}),
+                             "height": ("FLOAT", {"default": 1.0, "min": 0, "max": 1.0, "step": 0.01}),
+                             "temporal": ("FLOAT", {"default": 1.0, "min": 0, "max": 1.0, "step": 0.01}),
+                             "x": ("FLOAT", {"default": 0, "min": 0, "max": 1.0, "step": 0.01}),
+                             "y": ("FLOAT", {"default": 0, "min": 0, "max": 1.0, "step": 0.01}),
+                             "z": ("FLOAT", {"default": 0, "min": 0, "max": 1.0, "step": 0.01}),
+                             "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
+                             }}
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "append"
+
+    CATEGORY = "conditioning"
+
+    def append(self, conditioning, width, height, temporal, x, y, z, strength):
+        c = node_helpers.conditioning_set_values(conditioning, {"area": ("percentage", temporal, height, width, z, y, x),
+                                                                "strength": strength,
+                                                                "set_area_to_bounds": False})
+        return (c, )
+
+
 NODE_CLASS_MAPPINGS = {
     "ImageOnlyCheckpointLoader": ImageOnlyCheckpointLoader,
     "SVD_img2vid_Conditioning": SVD_img2vid_Conditioning,
     "VideoLinearCFGGuidance": VideoLinearCFGGuidance,
     "VideoTriangleCFGGuidance": VideoTriangleCFGGuidance,
     "ImageOnlyCheckpointSave": ImageOnlyCheckpointSave,
+    "ConditioningSetAreaPercentageVideo": ConditioningSetAreaPercentageVideo,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {

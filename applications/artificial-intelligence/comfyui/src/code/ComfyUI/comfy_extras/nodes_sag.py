@@ -57,12 +57,24 @@ def create_blur_map(x0, attn, sigma=3.0, threshold=1.0):
     attn = attn.reshape(b, -1, hw1, hw2)
     # Global Average Pool
     mask = attn.mean(1, keepdim=False).sum(1, keepdim=False) > threshold
-    ratio = 2**(math.ceil(math.sqrt(lh * lw / hw1)) - 1).bit_length()
-    mid_shape = [math.ceil(lh / ratio), math.ceil(lw / ratio)]
+
+    total = mask.shape[-1]
+    x = round(math.sqrt((lh / lw) * total))
+    xx = None
+    for i in range(0, math.floor(math.sqrt(total) / 2)):
+        for j in [(x + i), max(1, x - i)]:
+            if total % j == 0:
+                xx = j
+                break
+        if xx is not None:
+            break
+
+    x = xx
+    y = total // x
 
     # Reshape
     mask = (
-        mask.reshape(b, *mid_shape)
+        mask.reshape(b, x, y)
         .unsqueeze(1)
         .type(attn.dtype)
     )
@@ -96,7 +108,7 @@ class SelfAttentionGuidance:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": { "model": ("MODEL",),
-                             "scale": ("FLOAT", {"default": 0.5, "min": -2.0, "max": 5.0, "step": 0.1}),
+                             "scale": ("FLOAT", {"default": 0.5, "min": -2.0, "max": 5.0, "step": 0.01}),
                              "blur_sigma": ("FLOAT", {"default": 2.0, "min": 0.0, "max": 10.0, "step": 0.1}),
                               }}
     RETURN_TYPES = ("MODEL",)

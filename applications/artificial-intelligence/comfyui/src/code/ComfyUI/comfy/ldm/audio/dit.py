@@ -9,6 +9,7 @@ from einops import rearrange
 from torch import nn
 from torch.nn import functional as F
 import math
+import comfy.ops
 
 class FourierFeatures(nn.Module):
     def __init__(self, in_features, out_features, std=1., dtype=None, device=None):
@@ -18,7 +19,7 @@ class FourierFeatures(nn.Module):
             [out_features // 2, in_features], dtype=dtype, device=device))
 
     def forward(self, input):
-        f = 2 * math.pi * input @ self.weight.T.to(dtype=input.dtype, device=input.device)
+        f = 2 * math.pi * input @ comfy.ops.cast_to_input(self.weight.T, input)
         return torch.cat([f.cos(), f.sin()], dim=-1)
 
 # norms
@@ -38,9 +39,9 @@ class LayerNorm(nn.Module):
 
     def forward(self, x):
         beta = self.beta
-        if self.beta is not None:
-            beta = beta.to(dtype=x.dtype, device=x.device)
-        return F.layer_norm(x, x.shape[-1:], weight=self.gamma.to(dtype=x.dtype, device=x.device), bias=beta)
+        if beta is not None:
+            beta = comfy.ops.cast_to_input(beta, x)
+        return F.layer_norm(x, x.shape[-1:], weight=comfy.ops.cast_to_input(self.gamma, x), bias=beta)
 
 class GLU(nn.Module):
     def __init__(
@@ -123,7 +124,9 @@ class RotaryEmbedding(nn.Module):
         scale_base = 512,
         interpolation_factor = 1.,
         base = 10000,
-        base_rescale_factor = 1.
+        base_rescale_factor = 1.,
+        dtype=None,
+        device=None,
     ):
         super().__init__()
         # proposed by reddit user bloc97, to rescale rotary embeddings to longer sequence length without fine-tuning
@@ -131,8 +134,8 @@ class RotaryEmbedding(nn.Module):
         # https://www.reddit.com/r/LocalLLaMA/comments/14lz7j5/ntkaware_scaled_rope_allows_llama_models_to_have/
         base *= base_rescale_factor ** (dim / (dim - 2))
 
-        inv_freq = 1. / (base ** (torch.arange(0, dim, 2).float() / dim))
-        self.register_buffer('inv_freq', inv_freq)
+        # inv_freq = 1. / (base ** (torch.arange(0, dim, 2).float() / dim))
+        self.register_buffer('inv_freq', torch.empty((dim // 2,), device=device, dtype=dtype))
 
         assert interpolation_factor >= 1.
         self.interpolation_factor = interpolation_factor
@@ -155,20 +158,19 @@ class RotaryEmbedding(nn.Module):
     def forward(self, t):
         # device = self.inv_freq.device
         device = t.device
-        dtype = t.dtype
 
         # t = t.to(torch.float32)
 
         t = t / self.interpolation_factor
 
-        freqs = torch.einsum('i , j -> i j', t, self.inv_freq.to(dtype=dtype, device=device))
+        freqs = torch.einsum('i , j -> i j', t, comfy.ops.cast_to_input(self.inv_freq, t))
         freqs = torch.cat((freqs, freqs), dim = -1)
 
         if self.scale is None:
             return freqs, 1.
 
-        power = (torch.arange(seq_len, device = device) - (seq_len // 2)) / self.scale_base
-        scale = self.scale.to(dtype=dtype, device=device) ** rearrange(power, 'n -> n 1')
+        power = (torch.arange(seq_len, device = device) - (seq_len // 2)) / self.scale_base  # noqa: F821 seq_len is not defined
+        scale = comfy.ops.cast_to_input(self.scale, t) ** rearrange(power, 'n -> n 1')
         scale = torch.cat((scale, scale), dim = -1)
 
         return freqs, scale
@@ -226,9 +228,9 @@ class FeedForward(nn.Module):
             linear_in = GLU(dim, inner_dim, activation, dtype=dtype, device=device, operations=operations)
         else:
             linear_in = nn.Sequential(
-                Rearrange('b n d -> b d n') if use_conv else nn.Identity(),
+                rearrange('b n d -> b d n') if use_conv else nn.Identity(),
                 operations.Linear(dim, inner_dim, bias = not no_bias, dtype=dtype, device=device) if not use_conv else operations.Conv1d(dim, inner_dim, conv_kernel_size, padding = (conv_kernel_size // 2), bias = not no_bias, dtype=dtype, device=device),
-                Rearrange('b n d -> b d n') if use_conv else nn.Identity(),
+                rearrange('b n d -> b d n') if use_conv else nn.Identity(),
                 activation
             )
 
@@ -243,9 +245,9 @@ class FeedForward(nn.Module):
 
         self.ff = nn.Sequential(
             linear_in,
-            Rearrange('b d n -> b n d') if use_conv else nn.Identity(),
+            rearrange('b d n -> b n d') if use_conv else nn.Identity(),
             linear_out,
-            Rearrange('b n d -> b d n') if use_conv else nn.Identity(),
+            rearrange('b n d -> b d n') if use_conv else nn.Identity(),
         )
 
     def forward(self, x):
@@ -343,18 +345,13 @@ class Attention(nn.Module):
 
         # determine masking
         masks = []
-        final_attn_mask = None # The mask that will be applied to the attention matrix, taking all masks into account
 
         if input_mask is not None:
             input_mask = rearrange(input_mask, 'b j -> b 1 1 j')
             masks.append(~input_mask)
 
         # Other masks will be added here later
-
-        if len(masks) > 0:
-            final_attn_mask = ~or_reduce(masks)
-
-        n, device = q.shape[-2], q.device
+        n = q.shape[-2]
 
         causal = self.causal if causal is None else causal
 
@@ -568,7 +565,7 @@ class ContinuousTransformer(nn.Module):
         self.project_out = operations.Linear(dim, dim_out, bias=False, dtype=dtype, device=device) if dim_out is not None else nn.Identity()
 
         if rotary_pos_emb:
-            self.rotary_pos_emb = RotaryEmbedding(max(dim_heads // 2, 32))
+            self.rotary_pos_emb = RotaryEmbedding(max(dim_heads // 2, 32), device=device, dtype=dtype)
         else:
             self.rotary_pos_emb = None
 
@@ -609,7 +606,9 @@ class ContinuousTransformer(nn.Module):
         return_info = False,
         **kwargs
     ):
+        patches_replace = kwargs.get("transformer_options", {}).get("patches_replace", {})
         batch, seq, device = *x.shape[:2], x.device
+        context = kwargs["context"]
 
         info = {
             "hidden_states": [],
@@ -640,9 +639,19 @@ class ContinuousTransformer(nn.Module):
         if self.use_sinusoidal_emb or self.use_abs_pos_emb:
             x = x + self.pos_emb(x)
 
+        blocks_replace = patches_replace.get("dit", {})
         # Iterate over the transformer layers
-        for layer in self.layers:
-            x = layer(x, rotary_pos_emb = rotary_pos_emb, global_cond=global_cond, **kwargs)
+        for i, layer in enumerate(self.layers):
+            if ("double_block", i) in blocks_replace:
+                def block_wrap(args):
+                    out = {}
+                    out["img"] = layer(args["img"], rotary_pos_emb=args["pe"], global_cond=args["vec"], context=args["txt"])
+                    return out
+
+                out = blocks_replace[("double_block", i)]({"img": x, "txt": context, "vec": global_cond, "pe": rotary_pos_emb}, {"original_block": block_wrap})
+                x = out["img"]
+            else:
+                x = layer(x, rotary_pos_emb = rotary_pos_emb, global_cond=global_cond, context=context)
             # x = checkpoint(layer, x, rotary_pos_emb = rotary_pos_emb, global_cond=global_cond, **kwargs)
 
             if return_info:
@@ -871,7 +880,6 @@ class AudioDiffusionTransformer(nn.Module):
         mask=None,
         return_info=False,
         control=None,
-        transformer_options={},
         **kwargs):
             return self._forward(
                 x,
