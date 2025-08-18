@@ -7,7 +7,7 @@ Name: coze-loop
 Provider:
 - fc
 Version: 0.0.1
-Description: 这是一个专攻办公场景的 LLM 应用开发平台
+Description: 这是一个面向开发者，专注于 AI Agent 开发与运维的平台级解决方案
 HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/coze-loop
 Tags:
 - AI
@@ -332,7 +332,7 @@ Parameters:
       - kafka
       x-cate: applicationCate
       x-label: MQ配置
-      x-placeholder: 请选择数据库类型
+      x-placeholder: 请选择MQ类型
       x-formitem:
         type: select
     mqNamesvrAddr:

@@ -52,4 +52,4 @@ RocketMQ
 2. 在左侧导航栏中单击 Playground
 3. 在模型配置区域查看模型列表，确认可选模型是否和步骤二中配置的模型完全一致。
 4. 选择任意一个模型，在右侧预览与调试区域展开对话。
-![image-20250812205229630](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/coze-loop/src/images/image-20250812205229630.png)
+![image-20250812205229630](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/coze-loop/src/images/image-20250812205229630.png?raw=true)

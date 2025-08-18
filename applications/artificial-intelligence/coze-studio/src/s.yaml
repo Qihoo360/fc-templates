@@ -1,0 +1,167 @@
+edition: 3.0.0
+name: cozestudio-app
+access: default
+vars:
+  region: {{region}}
+  cozestudioBackendFunctionName: {{cozestudioBackendFunctionName}}
+  cozestudioBackendDescription: {{cozestudioBackendDescription}}
+  cozestudioFrontendFunctionName: {{cozestudioFrontendFunctionName}}
+  cozestudioFrontendDescription: {{cozestudioFrontendDescription}}
+  useSSL: {{useSSL}}
+  pluginAesAuthSecret: {{pluginAesAuthSecret}}
+  pluginAesStateSecret: {{pluginAesStateSecret}}
+  pluginAesOauthTokenSecret: {{pluginAesOauthTokenSecret}}
+  ObjectStorage: {{ObjectStorage}}
+  minioEndpoint: {{minioEndpoint}}
+  minioAccessKey: {{minioAccessKey}}
+  minioSecretKey: {{minioSecretKey}}
+  minioApiHost: {{minioApiHost}}
+  miniodefaultBucket: {{miniodefaultBucket}}
+  storageUploadHttpSchema: {{storageUploadHttpSchema}}
+  redisAddr: {{redisAddr}}
+  redisPasswd: {{redisPasswd}}
+  mysqlHost: {{mysqlHost}}
+  mysqlPort: {{mysqlPort}}
+  mysqlDatabase: {{mysqlDatabase}}
+  mysqlUser: {{mysqlUser}}
+  mysqlPasswd: {{mysqlPasswd}}
+  MQ: {{MQ}}
+  mqNamesvrAddr: {{mqNamesvrAddr}}
+  VectorDB: {{VectorDB}}
+  milvusAddress: {{milvusAddress}}
+  milvusUser: {{milvusUser}}
+  milvusPasswd: {{milvusPasswd}}
+  elasticsearchUrl: {{elasticsearchUrl}}
+  elasticsearchVersion: {{elasticsearchVersion}}
+  embeddingType: {{embeddingType}}
+  arkEmbeddingDims: {{arkEmbeddingDims}}
+  embeddingMaxBatchSize: {{embeddingMaxBatchSize}}
+  functionPolefsVolumn: {{functionPolefsVolumn}}
+  afunctionVolCreateUser: {{afunctionVolCreateUser}}
+resources:
+  cozestudioBackend:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.cozestudioBackendDescription}
+      runtime: custom
+      memorySize: 5120
+      cpu: 4
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 8888
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.cozestudioBackendFunctionName}
+      sourceSubDir: code/coze-studio
+      dockerfilePath: backend/Dockerfile
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        COZE_MQ_TYPE: ${vars.MQ}
+        MQ_NAME_SERVER: ${vars.mqNamesvrAddr}
+        MYSQL_DATABASE: ${vars.mysqlDatabase}
+        MYSQL_HOST: ${vars.mysqlHost}
+        MYSQL_PASSWORD: ${vars.mysqlPasswd}
+        MYSQL_PORT: ${vars.mysqlPort}
+        MYSQL_USER: ${vars.mysqlUser}
+        MYSQL_DSN: "${vars.mysqlUser}:${vars.mysqlPasswd}@tcp(${vars.mysqlHost}:${vars.mysqlPort})/${vars.mysqlDatabase}?charset=utf8mb4&parseTime=True"
+        ATLAS_URL: "mysql://${vars.mysqlUser}:${vars.mysqlPasswd}@${vars.mysqlHost}:${vars.mysqlPort}/${vars.mysqlDatabase}?charset=utf8mb4&parseTime=True"
+        REDIS_ADDR: ${vars.redisHost}
+        REDIS_PASSWORD: ${vars.redisPasswd}
+        REDIS_PORT: ${vars.redisPort}
+        STORAGE_TYPE: ${vars.ObjectStorage}
+        MINIO_AK: ${vars.minioAccessKey}
+        MINIO_DEFAULT_BUCKETS: ${vars.miniodefaultBucket}
+        STORAGE_UPLOAD_HTTP_SCHEME: ${vars.storageUploadHttpSchema}
+        MINIO_ENDPOINT: ${vars.minioEndpoint}
+        MINIO_API_HOST: ${vars.minioApiHost}
+        MINIO_SK: ${vars.minioSecretKey}
+        VECTOR_STORE_TYPE: ${vars.VectorDB}
+        MILVUS_ADDR: ${vars.milvusAddress}
+        MILVUS_USER: ${vars.milvusUser}
+        MILVUS_PASSWD: ${vars.milvusPasswd}
+        STORAGE_BUCKET: "opencoze"
+        ES_ADDR: ${vars.elasticsearchUrl}
+        ES_VERSION: ${vars.elasticsearchVersion}
+        LISTEN_ADDR: ":8888"
+        FILE_UPLOAD_COMPONENT_TYPE: "storage"
+        SERVER_HOST: "http://localhost:8888"
+        USE_SSL: ${vars.useSSL}
+        PLUGIN_AES_AUTH_SECRET: ${vars.pluginAesAuthSecret}
+        PLUGIN_AES_STATE_SECRET: ${vars.pluginAesStateSecret}
+        PLUGIN_AES_OAUTH_TOKEN_SECRET: ${vars.pluginAesOauthTokenSecret}
+        EMBEDDING_TYPE: ${vars.embeddingType}
+        ARK_EMBEDDING_DIMS: ${vars.arkEmbeddingDims}
+        EMBEDDING_MAX_BATCH_SIZE: ${vars.embeddingMaxBatchSize}
+      triggers:
+      - triggerName: httptrigger
+        triggerType: http
+        disableURLInternet: true
+        funcVersion: LATEST
+        triggerConfig:
+          auth_type: None
+          methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+          - HEAD
+          - PATCH
+          disable_url_internet: true
+          auth_config: ""
+      nasConfig:
+      - volumeUniqueName: ${vars.functionPolefsVolumn}
+        mountDir: "/app/resources/conf"
+        createUserName: ${vars.afunctionVolCreateUser}
+  cozestudioFrontend:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.cozestudioFrontendDescription}
+      runtime: custom
+      memorySize: 2048
+      cpu: 2
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 80
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.cozestudioFrontendFunctionName}
+      sourceSubDir: code/coze-studio
+      dockerfilePath: frontend/Dockerfile
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        COZESTUDIO_BACKEND_URL: "http://${resources.cozestudioBackend.output.http_trigger_url}"
+        MINIO_ENDPOINT: ${vars.minioEndpoint}
+      triggers:
+      - triggerName: httptrigger
+        triggerType: http
+        disableURLInternet: true
+        funcVersion: LATEST
+        triggerConfig:
+          auth_type: None
+          methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+          - HEAD
+          - PATCH
+          disable_url_internet: true
+          auth_config: ""
