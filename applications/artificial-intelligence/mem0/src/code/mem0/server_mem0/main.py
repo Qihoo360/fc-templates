@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 load_dotenv()
 
 # redis vector_store  config
-COLLECTION_NAME = os.environ.get("POSTGRES_COLLECTION_NAME", "mem0")
+COLLECTION_NAME = os.environ.get("COLLECTION_NAME", "mem0")
 EMBEDDING_MODEL_DIMS = os.environ.get("EMBEDDING_MODEL_DIMS", 1536)
 # REDIS_URL = os.environ.get("REDIS_URL", "redis://:mypassword@localhost:6379")
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "mypassword")
@@ -36,9 +36,11 @@ NEO4J_DATABASE = os.environ.get("NEO4J_DATABASE", "neo4j")
 # MEMGRAPH_USERNAME = os.environ.get("MEMGRAPH_USERNAME", "memgraph")
 # MEMGRAPH_PASSWORD = os.environ.get("MEMGRAPH_PASSWORD", "mem0graph")
 
+OPENAI_API_BASE = os.environ.get("BASE_URL", "")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 
-os.environ["OPENAI_API_KEY"] = os.environ.get("EMBEDDING_OPENAI_API_KEY")
-os.environ["BASE_URL"] = os.environ.get("EMBEDDING_BASE_URL")
+if not OPENAI_API_KEY or not OPENAI_API_BASE:
+    raise ValueError("OPENAI_API_KEY or OPENAI_API_BASE is not set")
 
 # memeai
 MODEL_NAME = os.environ.get("MODEL_NAME", "gpt-4o")
@@ -57,7 +59,7 @@ DEFAULT_CONFIG = {
         "provider": "redis",
         "config": {
             "collection_name": COLLECTION_NAME,
-            "embedding_model_dims": EMBEDDING_MODEL_DIMS,
+            "embedding_model_dims": int(EMBEDDING_MODEL_DIMS),
             "redis_url": REDIS_URL
         }
     },
@@ -68,15 +70,19 @@ DEFAULT_CONFIG = {
     "llm": {
         "provider": "openai", 
         "config": {
-            "temperature": TEMPERATURE, 
+            "temperature": float(TEMPERATURE),
             "model": MODEL_NAME,
-            "max_tokens": MAX_TOKENS
+            "max_tokens": MAX_TOKENS,
+            "openai_base_url": OPENAI_API_BASE,
+            "api_key": str(OPENAI_API_KEY)
         }
     },
     "embedder": {
         "provider": "openai", 
         "config": {
-            "model": EMBEDDING_MODEL_NAME
+            "model": EMBEDDING_MODEL_NAME,
+            "openai_base_url": OPENAI_API_BASE,
+            "api_key": str(OPENAI_API_KEY)
         }
     },
     "history_db_path": HISTORY_DB_PATH,
@@ -113,7 +119,7 @@ class SearchRequest(BaseModel):
     filters: Optional[Dict[str, Any]] = None
 
 # 从环境变量读取 API_KEY
-API_KEY = os.environ.get("MEM0_API_KEY", "default_key")  # 可在 Docker 或启动脚本里设置
+API_KEY = os.environ.get("MEM0_API_KEY", "default_api_key")  # 可在 Docker 或启动脚本里设置
 
 def verify_api_key(
     authorization: str = Header(...),
