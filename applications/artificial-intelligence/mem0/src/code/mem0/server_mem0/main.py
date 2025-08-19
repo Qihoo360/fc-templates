@@ -198,6 +198,16 @@ def search_memories(search_req: SearchRequest, user_id: str = Depends(verify_api
         logging.exception("Error in search_memories:")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/memories/search/", summary="Search memories")
+def search_memories2(search_req: SearchRequest, user_id: str = Depends(verify_api_key)):
+    """Search for memories based on a query."""
+    try:
+        params = {k: v for k, v in search_req.model_dump().items() if v is not None and k != "query"}
+        return MEMORY_INSTANCE.search(query=search_req.query, **params)
+    except Exception as e:
+        logging.exception("Error in search_memories:")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.put("/memories/{memory_id}", summary="Update a memory")
 def update_memory(memory_id: str, updated_memory: Dict[str, Any], user_id: str = Depends(verify_api_key)):
