@@ -95,6 +95,7 @@ app = FastAPI(
     title="Mem0 REST APIs",
     description="A REST API for managing and searching memories for your AI Agents and Apps.",
     version="1.0.0",
+    root_path="/v1",
 )
 
 
@@ -143,7 +144,7 @@ def set_config(config: Dict[str, Any], user_id: str = Depends(verify_api_key)):
     return {"message": "Configuration set successfully"}
 
 
-@app.post("/memories", summary="Create memories")
+@app.post("/memories/", summary="Create memories")
 def add_memory(memory_create: MemoryCreate, user_id: str = Depends(verify_api_key)):
     """Store new memories."""
     if not any([memory_create.user_id, memory_create.agent_id, memory_create.run_id]):
@@ -266,7 +267,7 @@ def home():
     return RedirectResponse(url="/docs")
 
 
-@app.get("/v1/ping/")
+@app.get("/ping/")
 def ping(user_id: str = Depends(verify_api_key)):
     """返回固定信息"""
     return {
