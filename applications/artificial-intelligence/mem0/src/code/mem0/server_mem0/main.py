@@ -266,7 +266,7 @@ def home():
     return RedirectResponse(url="/docs")
 
 
-@app.get("/v1/ping/")
+@app.get("/ping/")
 def ping(user_id: str = Depends(verify_api_key)):
     """返回固定信息"""
     return {
