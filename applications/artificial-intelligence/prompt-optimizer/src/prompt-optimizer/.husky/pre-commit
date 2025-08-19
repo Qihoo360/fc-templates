@@ -1,0 +1,21 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# 检查是否存在package-lock.json或yarn.lock文件
+if [ -f "package-lock.json" ]; then
+  echo "错误: 检测到package-lock.json文件。"
+  echo "本项目强制使用pnpm作为包管理器，请删除package-lock.json并使用pnpm install安装依赖。"
+  exit 1
+fi
+
+if [ -f "yarn.lock" ]; then
+  echo "错误: 检测到yarn.lock文件。"
+  echo "本项目强制使用pnpm作为包管理器，请删除yarn.lock并使用pnpm install安装依赖。"
+  exit 1
+fi
+
+# 确保pnpm-lock.yaml存在
+if [ ! -f "pnpm-lock.yaml" ]; then
+  echo "警告: 未检测到pnpm-lock.yaml文件。"
+  echo "请确保使用pnpm install安装依赖。"
+fi 

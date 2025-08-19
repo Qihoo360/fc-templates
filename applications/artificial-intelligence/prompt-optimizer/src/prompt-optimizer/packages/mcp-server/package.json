@@ -1,0 +1,53 @@
+{
+  "name": "@prompt-optimizer/mcp-server",
+  "version": "0.1.0",
+  "description": "MCP (Model Context Protocol) server for prompt-optimizer",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "prompt-optimizer-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/start.ts --format cjs,esm --dts --clean",
+    "dev": "node -r ./preload-env.js dist/start.js --transport=http",
+    "start": "node -r ./preload-env.cjs dist/start.cjs --transport=http",
+    "test": "vitest run",
+    "lint": "eslint src --ext .ts",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "prompt-optimization",
+    "llm",
+    "ai"
+  ],
+  "author": "Prompt Optimizer Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.16.0",
+    "@prompt-optimizer/core": "workspace:*",
+    "debug": "^4.4.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.12",
+    "@types/express": "^4.17.23",
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3",
+    "vitest": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}

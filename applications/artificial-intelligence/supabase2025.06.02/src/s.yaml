@@ -5,7 +5,7 @@ name: supabase-app
 access: default
 vars:
   region: {{region}}
-  functionName: {{supabaseFunctionName}}
+  functionName: {{FunctionName}}
   description: {{description}}
 
   DASHBOARD_USERNAME: {{DASHBOARD_USERNAME}}

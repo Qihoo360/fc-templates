@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 基础样式设置 */
+:root {
+  font-size: 16px;  /* 确保基础字体大小 */
+  zoom: 1;          /* 确保不被缩放 */
+}
+
+/* 确保正确的字体大小继承 */
+html {
+  font-size: 100%;  /* 使用百分比确保正确缩放 */
+  -webkit-text-size-adjust: 100%;  /* 防止 Chrome 自动调整字体大小 */
+}
+
+body {
+  font-size: 1rem;  /* 使用相对单位 */
+  text-rendering: optimizeLegibility;  /* 优化文本渲染 */
+  -webkit-font-smoothing: antialiased;  /* 字体平滑 */
+  -moz-osx-font-smoothing: grayscale;
+} 

@@ -1,0 +1,49 @@
+# 依赖目录
+node_modules
+**/node_modules
+
+# 构建输出
+dist
+**/dist
+build
+**/build
+
+# 开发工具配置
+.git
+.gitignore
+.idea
+.vscode
+*.sublime-*
+*.swp
+*.swo
+
+# 环境文件
+.env
+.env.*
+!.env.example
+
+# 日志文件
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# 测试覆盖率
+coverage
+**/coverage
+
+# 临时文件
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+
+# 文档和其他
+*.md
+LICENSE
+docs
+tests
+**/__tests__
+**/*.test.*
+**/*.spec.*

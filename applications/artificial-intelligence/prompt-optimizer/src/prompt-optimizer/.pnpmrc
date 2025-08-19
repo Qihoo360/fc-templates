@@ -1,0 +1,5 @@
+save-workspace-protocol=false
+save-prefix='~'
+strict-peer-dependencies=false
+auto-install-peers=true
+resolution-mode=highest 

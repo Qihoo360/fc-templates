@@ -1,0 +1,11 @@
+{
+  "extName": {
+    "message": "Prompt Optimizer"
+  },
+  "extDesc": {
+    "message": "Large Language Model Prompt Optimization Tool: One-click prompt optimization with multi-round iterative improvements and version tracking. Supports major AI models (OpenAI/Gemini/DeepSeek etc.), fully open-source, client-side processing ensures data security."
+  },
+  "extShortName": {
+    "message": "Prompt Optimizer"
+  }
+} 

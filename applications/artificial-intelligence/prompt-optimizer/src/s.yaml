@@ -1,0 +1,69 @@
+edition: 3.0.0
+name: prompt-optimizer
+access: default
+vars:
+  region: {{ region }}
+  functionName: {{functionName}}
+  description: {{description}}
+  ACCESS_USERNAME: {{ACCESS_USERNAME}}
+  ACCESS_PASSWORD: {{ACCESS_PASSWORD}}
+  VITE_OPENAI_API_KEY: {{OPENAI_API_KEY}}
+  VITE_GEMINI_API_KEY: {{GEMINI_API_KEY}}
+  VITE_DEEPSEEK_API_KEY: {{DEEPSEEK_API_KEY}}
+  VITE_ZHIPU_API_KEY: {{ZHIPU_API_KEY}}
+  VITE_SILICONFLOW_API_KEY: {{SILICONFLOW_API_KEY}}
+  MCP_DEFAULT_MODEL_PROVIDER: {{MCP_DEFAULT_MODEL_PROVIDER}}
+resources:
+  open-webui-service:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      functionName: ${vars.functionName}
+      description: ${vars.description}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 80
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      sourceSubDir: prompt-optimizer
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      environmentVariables:
+        ACCESS_USERNAME: ${ACCESS_USERNAME}
+        ACCESS_PASSWORD: ${ACCESS_PASSWORD}
+
+        VITE_OPENAI_API_KEY: ${VITE_OPENAI_API_KEY}
+        VITE_GEMINI_API_KEY: ${VITE_GEMINI_API_KEY}
+        VITE_DEEPSEEK_API_KEY: ${VITE_DEEPSEEK_API_KEY}
+        VITE_ZHIPU_API_KEY: ${VITE_ZHIPU_API_KEY}
+        VITE_SILICONFLOW_API_KEY: ${VITE_SILICONFLOW_API_KEY}
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""

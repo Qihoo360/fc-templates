@@ -1,0 +1,85 @@
+{
+  "name": "@prompt-optimizer/desktop",
+  "version": "1.4.3",
+  "description": "Desktop application for Prompt Optimizer",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linshenkx/prompt-optimizer.git"
+  },
+  "scripts": {
+    "build": "pnpm run build:web && pnpm run package",
+    "build:web": "cd ../web && cross-env ELECTRON_BUILD=true vite build --base=./ && node -e \"const fs=require('fs'),path=require('path'); const src='dist',dest='../desktop/web-dist'; if(fs.existsSync(dest)) fs.rmSync(dest,{recursive:true}); fs.cpSync(src,dest,{recursive:true}); console.log('Web files copied to desktop/web-dist');\"",
+    "package": "electron-builder",
+    "dev": "cross-env NODE_ENV=development electron .",
+    "logs:view": "node -e \"const path=require('path');const os=require('os');const {execSync}=require('child_process');const logDir=path.join(os.homedir(),'AppData','Roaming','PromptOptimizer','logs');console.log('日志目录:',logDir);try{execSync('explorer '+logDir);}catch(e){console.log('请手动打开:',logDir);}\"",
+    "logs:clean": "node -e \"const fs=require('fs');const path=require('path');const os=require('os');const logDir=path.join(os.homedir(),'AppData','Roaming','PromptOptimizer','logs');if(fs.existsSync(logDir)){fs.rmSync(logDir,{recursive:true});console.log('日志已清理');}else{console.log('日志目录不存在');}\""
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^37.1.0",
+    "electron-builder": "^24.0.0"
+  },
+  "dependencies": {
+    "@prompt-optimizer/core": "workspace:*",
+    "dotenv": "^16.0.0",
+    "electron-log": "^5.4.1",
+    "electron-updater": "6.3.9",
+    "node-fetch": "^2.7.0"
+  },
+  "build": {
+    "appId": "com.promptoptimizer.desktop",
+    "productName": "PromptOptimizer",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "config/**/*",
+      "web-dist/**/*",
+      "node_modules/**/*"
+    ],
+    "publish": {
+      "provider": "github",
+      "owner": "linshenkx",
+      "repo": "prompt-optimizer",
+      "private": false
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+      "icon": "icons/app-icon.ico"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+      "icon": "icons/app-icon.icns"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "zip"
+      ],
+      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+      "icon": "icons/"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "keywords": [
+    "electron",
+    "prompt",
+    "optimizer"
+  ],
+  "author": "https://github.com/linshenkx",
+  "license": "MIT"
+}

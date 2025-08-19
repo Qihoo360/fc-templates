@@ -1,0 +1,15 @@
+provider: github
+owner: linshenkx
+repo: prompt-optimizer-dev
+private: false
+
+# 开发环境配置说明：
+# 1. 此文件用于本地开发时测试自动更新功能
+# 2. 需要在 main.js 中设置 autoUpdater.forceDevUpdateConfig = true
+# 3. 如果要测试不同的仓库，可以修改上面的 owner/repo 配置
+# 4. 只支持公开仓库，不支持私有仓库
+
+# 使用说明：
+# - 开发模式下，electron-updater 会读取此文件而不是 app-update.yml
+# - 这样可以在不重新构建的情况下测试更新功能
+# - 生产环境构建时，此文件会被忽略

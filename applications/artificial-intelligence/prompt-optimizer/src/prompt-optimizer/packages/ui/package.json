@@ -1,0 +1,50 @@
+{
+  "name": "@prompt-optimizer/ui",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "style": "./dist/style.css",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./style.css": "./dist/style.css",
+    "./dist/style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "readme": "在Windows环境下，请使用分号(;)而不是&&作为命令分隔符，或使用build:win脚本",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:win": "vite build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@prompt-optimizer/core": "workspace:*",
+    "dompurify": "^3.2.4",
+    "element-plus": "^2.5.6",
+    "highlight.js": "^11.11.1",
+    "markdown-it": "^14.1.0",
+    "uuid": "^11.0.5",
+    "vue": "^3.3.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/test-utils": "^2.4.5",
+    "@vue/tsconfig": "^0.5.1",
+    "jsdom": "^26.0.0",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0",
+    "vite-plugin-dts": "^4.5.3",
+    "vitest": "^3.0.7"
+  }
+}

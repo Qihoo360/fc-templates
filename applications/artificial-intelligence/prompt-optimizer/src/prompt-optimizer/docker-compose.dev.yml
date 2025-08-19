@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  prompt-optimizer:
+    # 开发模式：从源码构建
+    build:
+       context: .
+       dockerfile: Dockerfile
+    container_name: prompt-optimizer-dev
+    restart: unless-stopped
+    ports:
+      - "8082:${NGINX_PORT:-80}"      # Web应用端口（包含MCP服务器，通过/mcp路径访问）
+    env_file:
+      - .env.local     # 读取本地环境变量文件
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl -f http://localhost:${NGINX_PORT:-80}/ && curl -f http://localhost:${NGINX_PORT:-80}/mcp"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    environment:
+      # nginx内部端口配置
+      - NGINX_PORT=${NGINX_PORT:-80}
+
+      # Web应用API配置（从 .env.local 读取，不在此处覆盖）
+
+      # MCP服务器配置（Docker内部固定端口3000，忽略MCP_HTTP_PORT环境变量）
+      # - MCP_LOG_LEVEL=${MCP_LOG_LEVEL:-debug}
+      # - MCP_DEFAULT_LANGUAGE=${MCP_DEFAULT_LANGUAGE:-zh}
+      # - MCP_DEFAULT_MODEL_PROVIDER=${MCP_DEFAULT_MODEL_PROVIDER:-openai}
+
+      # Basic认证配置（可选）
+      - ACCESS_USERNAME=${ACCESS_USERNAME:-admin}
+      - ACCESS_PASSWORD=${ACCESS_PASSWORD:-}
+

@@ -1,0 +1,181 @@
+# ==========================================
+# 构建输出和分发文件
+# ==========================================
+dist
+build
+**/dist
+**/build
+dist-ssr
+packages/extension/*.zip
+packages/desktop/web-dist
+packages/desktop/dist
+packages/desktop-standalone/dist
+packages/desktop-standalone/prompt-optimizer-*
+*.tar.gz
+*.zip
+*.dmg
+*.exe
+*.msi
+*.deb
+*.rpm
+*.AppImage
+
+# ==========================================
+# 依赖和包管理
+# ==========================================
+node_modules
+**/node_modules
+.pnpm-store
+.pnpm-debug.log*
+pnpm-debug.log*
+pnpm-lock.yaml.bak
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ==========================================
+# 日志文件
+# ==========================================
+logs
+*.log
+**/logs
+.npm
+.yarn-integrity
+
+# ==========================================
+# 缓存和临时文件
+# ==========================================
+.cache
+.temp
+.tmp
+*.tmp
+*.temp
+.vite
+.turbo
+.eslintcache
+.stylelintcache
+.tsbuildinfo
+.rollup.cache
+
+# ==========================================
+# 测试覆盖率和报告
+# ==========================================
+coverage
+**/coverage
+.nyc_output
+junit.xml
+test-results
+playwright-report
+test-results/
+
+# ==========================================
+# 环境变量和配置
+# ==========================================
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local
+
+# ==========================================
+# IDE和编辑器
+# ==========================================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.code-workspace
+.project
+.settings
+.classpath
+.factorypath
+.buildpath
+.target
+
+# ==========================================
+# 操作系统文件
+# ==========================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.directory
+.Trash-*
+.nfs*
+
+# ==========================================
+# 编辑器临时文件
+# ==========================================
+*.swp
+*.swo
+*.swn
+*~
+*.orig
+*.rej
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ==========================================
+# 开发工具和调试
+# ==========================================
+.vercel
+.netlify
+.firebase
+debug.log
+.debug
+storybook-static
+
+# ==========================================
+# 安全和敏感信息
+# ==========================================
+*.pem
+*.key
+*.crt
+*.p12
+.certificates
+
+# ==========================================
+# 其他工具生成的文件
+# ==========================================
+.eslintrc.js.bak
+.prettierrc.js.bak
+*.backup
+*.bak
+
+prompt-optimizer-datas
+prompt-optimizer-data

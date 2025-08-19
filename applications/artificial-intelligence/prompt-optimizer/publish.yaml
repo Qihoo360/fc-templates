@@ -1,0 +1,156 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: "3.0.0"
+Type: Project
+Name: prompt-optimizer
+Provider:
+- fc
+Version: 0.0.1
+Description: "快速部署 prompt-optimizer 应用示例"
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/prompt-optimizer
+Organization: 函数计算 (FC)
+Effective: Public
+Tags:
+- AI
+Category: 开发平台
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required:
+  # 函数设置
+  - region
+  - functionName
+  - description
+
+  # 控制台设置
+  - ACCESS_USERNAME
+  - ACCESS_PASSWORD
+
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: cn-north-cu-1
+      description: 创建应用所在的地区
+      enum:
+        - cn-north-cu-1
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+    functionName:
+      title: 函数名称
+      type: string
+      default: prompt-optimizer-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 最大长度为 3-40 个字符，只能包含小写字母、数字中划线，不能以数字、中划线开头，过滤空格。
+      x-cate: resourceCate
+      x-placeholder: 请输入函数名
+      x-formitem:
+        type: input
+    description:
+      title: 函数描述信息
+      type: string
+      default: "快速部署 prompt-optimizer 应用示例"
+      pattern: ".{0,255}$"
+      description: 请输入函数描述，最大长度为 255 个字符
+      x-cate: resourceCate
+      x-placeholder: 请输入函数描述
+      x-formitem:
+        type: input
+
+    ACCESS_USERNAME:
+      type: string
+      default: admin
+      pattern: ".{0,255}$"
+      description: 控制台登录账号名称，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: 控制台设置
+      x-placeholder: 请输入账号
+      x-formitem:
+        type: input
+    ACCESS_PASSWORD:
+      title: 控制台密码
+      type: secret
+      default: ""
+      pattern: ".{0,255}$"
+      description: 控制台登录密码，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: 控制台设置
+      x-formitem:
+        type: input
+
+    MCP_DEFAULT_MODEL_PROVIDER:
+      title: MCP 使用的模型
+      type: string
+      default: "openai"
+      pattern: ".{0,255}$"
+      description: MCP 服务使用的大模型，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: 控制台设置
+      enum:
+        - openai
+        - gemini
+        - deepseek
+        - siliconflow
+        - zhipu
+      x-formitem:
+        type: select
+
+    OPENAI_API_KEY:
+      title: OpenAI API KEY
+      type: secret
+      default: ""
+      pattern: ".{0,255}$"
+      description: OpenAI API KEY
+      x-cate: applicationCate
+      x-label: 大模型 APIKEY
+      x-formitem:
+        type: input
+    GEMINI_API_KEY:
+      title: Gemini API KEY
+      type: secret
+      default: ""
+      pattern: ".{0,255}$"
+      description: Gemini API KEY
+      x-cate: applicationCate
+      x-label: 大模型 APIKEY
+      x-formitem:
+        type: input
+    DEEPSEEK_API_KEY:
+      title: DeepSeek API KEY
+      type: secret
+      default: ""
+      pattern: ".{0,255}$"
+      description: DeepSeek API KEY
+      x-cate: applicationCate
+      x-label: 大模型 APIKEY
+      x-formitem:
+        type: input
+    ZHIPU_API_KEY:
+      title: Zhipu API KEY
+      type: secret
+      default: ""
+      pattern: ".{0,255}$"
+      description: Zhipu API KEY
+      x-cate: applicationCate
+      x-label: 大模型 APIKEY
+      x-formitem:
+        type: input
+    SILICONFLOW_API_KEY:
+      title: SiliconFlow API KEY
+      type: secret
+      default: ""
+      pattern: ".{0,255}$"
+      description: SiliconFlow API KEY
+      x-cate: applicationCate
+      x-label: 大模型 APIKEY
+      x-formitem:
+        type: input
+
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: ""

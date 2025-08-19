@@ -1,0 +1,11 @@
+/* 自定义选择器样式 */
+.custom-select {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: none !important;
+}
+
+.custom-select::-ms-expand {
+  display: none;
+} 

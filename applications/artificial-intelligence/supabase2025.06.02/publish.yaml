@@ -57,7 +57,7 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: select
-    supabaseFunctionName:
+    FunctionName:
       title: supabase 函数名称
       type: string
       default: supabase-${default-suffix}

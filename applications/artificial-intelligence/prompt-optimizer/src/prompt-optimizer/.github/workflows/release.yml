@@ -1,0 +1,583 @@
+name: Release Desktop Apps
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'        # 正式版本: v1.0.0, v2.1.3
+      - 'v*.*.*-*'      # 预览版本: v1.0.0-beta.1, v1.0.0-rc.1
+
+env:
+  NODE_VERSION: '22'
+  PNPM_VERSION: '10.6.1'
+
+jobs:
+  # 构建 Windows 版本
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取完整的git历史
+          fetch-tags: true  # 确保获取所有tags
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 动态配置 package.json
+        shell: pwsh
+        run: |
+          $pkgPath = "packages/desktop/package.json"
+          $pkgJson = Get-Content $pkgPath -Raw | ConvertFrom-Json
+
+          # 1. 从 Git 标签提取版本号 (移除 'v' 前缀)
+          $tagVersion = "${{ github.ref }}".replace("refs/tags/v", "")
+          $pkgJson.version = $tagVersion
+          Write-Host "✅ Set version to: $tagVersion"
+
+          # 2. 设置仓库地址 (自动感知当前仓库)
+          $repoUrl = "https://github.com/${{ github.repository }}.git"
+          $pkgJson.repository.url = $repoUrl
+          Write-Host "✅ Set repository URL to: $repoUrl"
+
+          # 3. 从当前仓库信息提取 owner 和 repo
+          $repoInfo = "${{ github.repository }}".split("/")
+          $repoOwner = $repoInfo[0]
+          $repoName = $repoInfo[1]
+          Write-Host "✅ Set repository owner to: $repoOwner"
+          Write-Host "✅ Set repository name to: $repoName"
+
+          # 4. 判断版本类型
+          $isPrerelease = $False
+          $versionType = "release"
+
+          if ($tagVersion -match "-(alpha|beta|rc)") {
+            $isPrerelease = $True
+            $versionType = "prerelease"
+            Write-Host "🧪 Detected prerelease version"
+          } elseif ($tagVersion -match "-(hotfix|patch)") {
+            $isPrerelease = $False
+            $versionType = "hotfix"
+            Write-Host "🔧 Detected hotfix version"
+          } else {
+            $isPrerelease = $False
+            $versionType = "release"
+            Write-Host "🚀 Detected stable release version"
+          }
+
+          # 5. 设置 publish 配置 (固定为公开仓库)
+          $publishConfig = @{ 
+            provider = "github"
+            owner = $repoOwner
+            repo = $repoName
+            private = $False
+          }
+          $pkgJson.build.publish = $publishConfig
+          Write-Host "✅ Set publish config (owner: $repoOwner, repo: $repoName, private: false)"
+
+          # 6. 将修改写回文件
+          $pkgJson | ConvertTo-Json -Depth 10 | Set-Content $pkgPath -Encoding UTF8
+          Write-Host "✅ package.json updated successfully"
+
+          # 7. 输出配置摘要
+          Write-Host ""
+          Write-Host "📋 Configuration Summary:"
+          Write-Host "   Version: $tagVersion"
+          Write-Host "   Type: $versionType"
+          Write-Host "   Repository: $repoUrl"
+          Write-Host "   Owner: $repoOwner"
+          Write-Host "   Repo: $repoName"
+          Write-Host "   Private: false (fixed)"
+          Write-Host "   Prerelease: $isPrerelease"
+
+      - name: 安装依赖
+        run: pnpm install
+
+      - name: 构建 Desktop 应用
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN_FOR_UPDATER }}
+        run: pnpm build:desktop
+
+      - name: 验证构建产物
+        shell: bash
+        run: |
+          echo "Checking build artifacts..."
+          ls -la packages/desktop/dist/ || echo "No dist directory found"
+          
+          # 检查是否有构建产物
+          exe_files=$(find packages/desktop/dist -name "*.exe" 2>/dev/null | wc -l)
+          zip_files=$(find packages/desktop/dist -name "*.zip" 2>/dev/null | wc -l)
+          
+          echo "Found $exe_files .exe files and $zip_files .zip files"
+          
+          if [ "$exe_files" -eq 0 ] && [ "$zip_files" -eq 0 ]; then
+            echo "Error: No build artifacts (.exe or .zip) found in packages/desktop/dist/"
+            echo "Directory contents:"
+            find packages/desktop/dist -type f 2>/dev/null || echo "Directory not found or empty"
+            exit 1
+          fi
+          
+          echo "Build artifacts verification passed"
+
+      - name: 上传 Windows 构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: |
+            packages/desktop/dist/PromptOptimizer-*.exe
+            packages/desktop/dist/PromptOptimizer-*.zip
+            packages/desktop/dist/latest*.yml
+          retention-days: 30
+
+  # 构建 macOS 版本
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取完整的git历史
+          fetch-tags: true  # 确保获取所有tags
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 动态配置 package.json
+        run: |
+          PKG_PATH="packages/desktop/package.json"
+          
+          # 1. 从 Git 标签提取版本号 (移除 'v' 前缀)
+          TAG_VERSION="${{ github.ref }}"
+          TAG_VERSION="${TAG_VERSION#refs/tags/v}"
+          echo "✅ Set version to: $TAG_VERSION"
+          
+          # 2. 设置仓库地址 (自动感知当前仓库)
+          REPO_URL="https://github.com/${{ github.repository }}.git"
+          echo "✅ Set repository URL to: $REPO_URL"
+          
+          # 3. 从当前仓库信息提取 owner 和 repo
+          IFS='/' read -r REPO_OWNER REPO_NAME <<< "${{ github.repository }}"
+          echo "✅ Set repository owner to: $REPO_OWNER"
+          echo "✅ Set repository name to: $REPO_NAME"
+          
+          # 4. 判断版本类型
+          IS_PRERELEASE=false
+          VERSION_TYPE="release"
+          
+          if [[ $TAG_VERSION =~ -(alpha|beta|rc) ]]; then
+            IS_PRERELEASE=true
+            VERSION_TYPE="prerelease"
+            echo "🧪 Detected prerelease version"
+          elif [[ $TAG_VERSION =~ -(hotfix|patch) ]]; then
+            IS_PRERELEASE=false
+            VERSION_TYPE="hotfix"
+            echo "🔧 Detected hotfix version"
+          else
+            IS_PRERELEASE=false
+            VERSION_TYPE="release"
+            echo "🚀 Detected stable release version"
+          fi
+          
+          # 5. 使用 jq 更新 package.json
+          jq --arg version "$TAG_VERSION" \
+             --arg repo_url "$REPO_URL" \
+             --arg repo_owner "$REPO_OWNER" \
+             --arg repo_name "$REPO_NAME" \
+             '.version = $version | 
+              .repository.url = $repo_url | 
+              .build.publish = {provider: "github", owner: $repo_owner, repo: $repo_name, private: false}' \
+             "$PKG_PATH" > "${PKG_PATH}.tmp" && mv "${PKG_PATH}.tmp" "$PKG_PATH"
+          
+          echo "✅ package.json updated successfully"
+          
+          # 6. 输出配置摘要
+          echo ""
+          echo "📋 Configuration Summary:"
+          echo "   Version: $TAG_VERSION"
+          echo "   Type: $VERSION_TYPE"
+          echo "   Repository: $REPO_URL"
+          echo "   Owner: $REPO_OWNER"
+          echo "   Repo: $REPO_NAME"
+          echo "   Private: false (fixed)"
+          echo "   Prerelease: $IS_PRERELEASE"
+
+      - name: 安装依赖
+        run: pnpm install
+
+      - name: 构建 Desktop 应用
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN_FOR_UPDATER }}
+        run: pnpm build:desktop
+
+      - name: 验证构建产物
+        run: |
+          echo "Checking build artifacts..."
+          ls -la packages/desktop/dist/ || echo "No dist directory found"
+          
+          # 检查是否有构建产物
+          dmg_files=$(find packages/desktop/dist -name "*.dmg" 2>/dev/null | wc -l)
+          zip_files=$(find packages/desktop/dist -name "*.zip" 2>/dev/null | wc -l)
+          
+          echo "Found $dmg_files .dmg files and $zip_files .zip files"
+          
+          if [ "$dmg_files" -eq 0 ] && [ "$zip_files" -eq 0 ]; then
+            echo "Error: No build artifacts (.dmg or .zip) found in packages/desktop/dist/"
+            echo "Directory contents:"
+            find packages/desktop/dist -type f 2>/dev/null || echo "Directory not found or empty"
+            exit 1
+          fi
+          
+          echo "Build artifacts verification passed"
+
+      - name: 上传 macOS 构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-build
+          path: |
+            packages/desktop/dist/*.dmg
+            packages/desktop/dist/*.zip
+            packages/desktop/dist/*.yml
+          retention-days: 30
+
+  # 构建 Linux 版本
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取完整的git历史
+          fetch-tags: true  # 确保获取所有tags
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+
+      - name: 设置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: 动态配置 package.json
+        run: |
+          PKG_PATH="packages/desktop/package.json"
+          
+          # 1. 从 Git 标签提取版本号 (移除 'v' 前缀)
+          TAG_VERSION="${{ github.ref }}"
+          TAG_VERSION="${TAG_VERSION#refs/tags/v}"
+          echo "✅ Set version to: $TAG_VERSION"
+          
+          # 2. 设置仓库地址 (自动感知当前仓库)
+          REPO_URL="https://github.com/${{ github.repository }}.git"
+          echo "✅ Set repository URL to: $REPO_URL"
+          
+          # 3. 从当前仓库信息提取 owner 和 repo
+          IFS='/' read -r REPO_OWNER REPO_NAME <<< "${{ github.repository }}"
+          echo "✅ Set repository owner to: $REPO_OWNER"
+          echo "✅ Set repository name to: $REPO_NAME"
+          
+          # 4. 判断版本类型
+          IS_PRERELEASE=false
+          VERSION_TYPE="release"
+          
+          if [[ $TAG_VERSION =~ -(alpha|beta|rc) ]]; then
+            IS_PRERELEASE=true
+            VERSION_TYPE="prerelease"
+            echo "🧪 Detected prerelease version"
+          elif [[ $TAG_VERSION =~ -(hotfix|patch) ]]; then
+            IS_PRERELEASE=false
+            VERSION_TYPE="hotfix"
+            echo "🔧 Detected hotfix version"
+          else
+            IS_PRERELEASE=false
+            VERSION_TYPE="release"
+            echo "🚀 Detected stable release version"
+          fi
+          
+          # 5. 使用 jq 更新 package.json
+          jq --arg version "$TAG_VERSION" \
+             --arg repo_url "$REPO_URL" \
+             --arg repo_owner "$REPO_OWNER" \
+             --arg repo_name "$REPO_NAME" \
+             '.version = $version | 
+              .repository.url = $repo_url | 
+              .build.publish = {provider: "github", owner: $repo_owner, repo: $repo_name, private: false}' \
+             "$PKG_PATH" > "${PKG_PATH}.tmp" && mv "${PKG_PATH}.tmp" "$PKG_PATH"
+          
+          echo "✅ package.json updated successfully"
+          
+          # 6. 输出配置摘要
+          echo ""
+          echo "📋 Configuration Summary:"
+          echo "   Version: $TAG_VERSION"
+          echo "   Type: $VERSION_TYPE"
+          echo "   Repository: $REPO_URL"
+          echo "   Owner: $REPO_OWNER"
+          echo "   Repo: $REPO_NAME"
+          echo "   Private: false (fixed)"
+          echo "   Prerelease: $IS_PRERELEASE"
+
+      - name: 安装依赖
+        run: pnpm install
+
+      - name: 构建 Desktop 应用
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN_FOR_UPDATER }}
+        run: pnpm build:desktop
+
+      - name: 验证构建产物
+        run: |
+          echo "Checking build artifacts..."
+          ls -la packages/desktop/dist/ || echo "No dist directory found"
+          
+          # 检查是否有构建产物
+          appimage_files=$(find packages/desktop/dist -name "*.AppImage" 2>/dev/null | wc -l)
+          zip_files=$(find packages/desktop/dist -name "*.zip" 2>/dev/null | wc -l)
+          
+          echo "Found $appimage_files .AppImage files and $zip_files .zip files"
+          
+          if [ "$appimage_files" -eq 0 ] && [ "$zip_files" -eq 0 ]; then
+            echo "Error: No build artifacts (.AppImage or .zip) found in packages/desktop/dist/"
+            echo "Directory contents:"
+            find packages/desktop/dist -type f 2>/dev/null || echo "Directory not found or empty"
+            exit 1
+          fi
+          
+          echo "Build artifacts verification passed"
+
+      - name: 上传 Linux 构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: |
+            packages/desktop/dist/*.AppImage
+            packages/desktop/dist/*.zip
+            packages/desktop/dist/*.yml
+          retention-days: 30
+
+  # 创建 GitHub Release
+  create-release:
+    needs: [build-windows, build-macos, build-linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取完整的git历史
+          fetch-tags: true  # 确保获取所有tags
+
+      - name: 获取版本号和类型
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+          # 详细的版本类型判断
+          IS_PRERELEASE=false
+          VERSION_TYPE="release"
+          RELEASE_NAME_PREFIX=""
+
+          if [[ $VERSION =~ -(alpha|beta|rc) ]]; then
+            IS_PRERELEASE=true
+            VERSION_TYPE="prerelease"
+            RELEASE_NAME_PREFIX="Preview "
+            echo "🧪 Detected prerelease version"
+          elif [[ $VERSION =~ -(hotfix|patch) ]]; then
+            IS_PRERELEASE=false
+            VERSION_TYPE="hotfix"
+            RELEASE_NAME_PREFIX="Hotfix "
+            echo "🔧 Detected hotfix version"
+          else
+            IS_PRERELEASE=false
+            VERSION_TYPE="release"
+            RELEASE_NAME_PREFIX="Release "
+            echo "🚀 Detected stable release version"
+          fi
+
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          echo "version_type=$VERSION_TYPE" >> $GITHUB_OUTPUT
+          echo "release_name_prefix=$RELEASE_NAME_PREFIX" >> $GITHUB_OUTPUT
+
+      - name: 下载所有构建产物
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: 显示构建产物
+        run: |
+          echo "构建产物列表:"
+          find ./artifacts -type f -name "*" | sort
+
+      - name: 移除调试文件
+        run: |
+          echo "Removing debug files..."
+          find ./artifacts -type f -name "builder-debug.yml" -delete
+          echo "Final artifact list after cleaning:"
+          find ./artifacts -type f | sort
+
+      - name: 生成 Release Notes
+        id: release_notes
+        run: |
+          # 获取当前tag
+          CURRENT_TAG=${{ steps.version.outputs.version }}
+          echo "Current tag: $CURRENT_TAG"
+
+          # 获取所有tags并调试输出
+          echo "All tags (sorted):"
+          git tag --sort=-version:refname | head -10
+
+          # 改进的上一个tag获取逻辑
+          # 1. 先尝试获取所有正式版本tag (不包含预览版)
+          STABLE_TAGS=$(git tag --sort=-version:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' || true)
+          echo "Stable tags found: $STABLE_TAGS"
+
+          # 2. 获取所有tag (包含预览版)
+          ALL_TAGS=$(git tag --sort=-version:refname)
+
+          # 3. 根据当前tag类型选择合适的比较策略
+          PREVIOUS_TAG=""
+          if [[ $CURRENT_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            # 当前是正式版，找上一个正式版
+            PREVIOUS_TAG=$(echo "$STABLE_TAGS" | grep -v "^$CURRENT_TAG$" | head -1 || true)
+            echo "Current is stable release, previous stable tag: $PREVIOUS_TAG"
+          else
+            # 当前是预览版，找上一个任意版本
+            PREVIOUS_TAG=$(echo "$ALL_TAGS" | grep -v "^$CURRENT_TAG$" | head -1 || true)
+            echo "Current is prerelease, previous tag: $PREVIOUS_TAG"
+          fi
+
+          # 生成commit历史（处理多行和长commit）
+          COMMITS=""
+          if [ -n "$PREVIOUS_TAG" ] && git rev-parse "$PREVIOUS_TAG" >/dev/null 2>&1 && git rev-parse "$CURRENT_TAG" >/dev/null 2>&1; then
+            echo "Generating commits from $PREVIOUS_TAG to $CURRENT_TAG"
+            COMMITS=$(git log --pretty=format:"%s|%h" $PREVIOUS_TAG..$CURRENT_TAG | while IFS='|' read -r subject hash; do
+              # 截断过长的commit message（保留前80个字符）
+              if [ ${#subject} -gt 80 ]; then
+                subject="${subject:0:77}..."
+              fi
+              echo "- $subject ([${hash}](https://github.com/${{ github.repository }}/commit/${hash}))"
+            done)
+          elif git rev-parse "$CURRENT_TAG" >/dev/null 2>&1; then
+            echo "No previous tag found or invalid, showing commits for current tag"
+            COMMITS=$(git log --pretty=format:"%s|%h" --max-count=10 | while IFS='|' read -r subject hash; do
+              # 截断过长的commit message（保留前80个字符）
+              if [ ${#subject} -gt 80 ]; then
+                subject="${subject:0:77}..."
+              fi
+              echo "- $subject ([${hash}](https://github.com/${{ github.repository }}/commit/${hash}))"
+            done)
+          fi
+
+          # 检查是否有commits
+          if [ -z "$COMMITS" ]; then
+            echo "No commits found, using fallback message"
+            COMMITS="- 首次发布"
+          else
+            echo "Generated commits:"
+            echo "$COMMITS"
+          fi
+
+          # 限制commits数量（最多显示20个）
+          COMMITS_LIMITED=$(echo "$COMMITS" | head -20)
+          COMMITS_COUNT=$(echo "$COMMITS" | wc -l)
+
+          if [ $COMMITS_COUNT -gt 20 ]; then
+            COMMITS_LIMITED="$COMMITS_LIMITED
+
+          ... 以及其他 $((COMMITS_COUNT - 20)) 个提交"
+          fi
+
+          # 根据版本类型设置不同的图标和描述
+          VERSION_ICON="🚀"
+          VERSION_DESC="稳定版本"
+          STABILITY_NOTE=""
+
+          if [[ $CURRENT_TAG =~ -(alpha|beta|rc) ]]; then
+            VERSION_ICON="🧪"
+            VERSION_DESC="预览版本"
+            STABILITY_NOTE="
+
+          > ⚠️ **注意**: 这是一个预览版本，可能包含实验性功能。建议在非生产环境中使用。"
+          elif [[ $CURRENT_TAG =~ -(hotfix|patch) ]]; then
+            VERSION_ICON="🔧"
+            VERSION_DESC="紧急修复版本"
+            STABILITY_NOTE="
+
+          > 🔧 **修复版本**: 此版本主要包含重要问题的修复，建议尽快更新。"
+          fi
+
+          # 创建release notes
+          cat > release_notes.md << EOF
+          ## $VERSION_ICON Prompt Optimizer $CURRENT_TAG
+
+          **版本类型**: $VERSION_DESC$STABILITY_NOTE
+
+          ### 📦 下载
+          - **Windows**: \`PromptOptimizer-*-win-x64.exe\` (安装程序) 或 \`PromptOptimizer-*-win-x64.zip\` (便携版)
+          - **macOS**: \`PromptOptimizer-*-darwin-x64.dmg\` (安装程序) 或 \`PromptOptimizer-*-darwin-x64.zip\` (便携版)
+          - **Linux**: \`PromptOptimizer-*-linux-x86_64.AppImage\` (便携版) 或 \`PromptOptimizer-*-linux-x64.zip\` (便携版)
+
+          ### 🔧 安装说明
+          - **Windows**: 
+            - **安装程序**: 下载 \`.exe\` 文件，双击运行安装向导
+            - **便携版**: 下载 \`.zip\` 文件，解压后运行 \`PromptOptimizer.exe\`
+          - **macOS**: 
+            - **安装程序**: 下载 \`.dmg\` 文件，双击挂载后拖拽到应用程序文件夹
+            - **便携版**: 下载 \`.zip\` 文件，解压后运行 \`PromptOptimizer.app\`
+          - **Linux**: 
+            - **AppImage**: 下载 \`.AppImage\` 文件，添加执行权限后直接运行
+            - **便携版**: 下载 \`.zip\` 文件，解压后运行 \`PromptOptimizer\`
+
+          ### 📝 更新内容
+          $COMMITS_LIMITED
+
+          ### 🔗 更多信息
+          - **项目主页**: [GitHub Repository](https://github.com/${{ github.repository }})
+          - **问题反馈**: [Issues](https://github.com/${{ github.repository }}/issues)
+          - **讨论交流**: [Discussions](https://github.com/${{ github.repository }}/discussions)
+
+          ---
+          **提示**: 如果需要查看完整的提交历史，请访问项目的 [GitHub Commits](https://github.com/${{ github.repository }}/commits)
+          EOF
+
+          echo "Generated release notes:"
+          cat release_notes.md
+
+      - name: 创建 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.release_name_prefix }}${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          files: |
+            ./artifacts/windows-build/*
+            ./artifacts/macos-build/*
+            ./artifacts/linux-build/*
+          draft: false
+          prerelease: ${{ steps.version.outputs.is_prerelease == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
