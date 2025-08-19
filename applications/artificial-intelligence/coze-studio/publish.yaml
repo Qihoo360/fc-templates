@@ -115,10 +115,10 @@ Parameters:
       x-formitem:
         type: input
     useSSL:
-      # title: milvus token
       type: string
       default: "0"
       description: "coze studio server use ssl or not"
+      x-label: Server配置
       x-cate: applicationCate
       x-placeholder: 请输入 coze studio server 是否启用 SSL
       x-formitem:
@@ -127,6 +127,7 @@ Parameters:
       type: secret
       default: "123456"
       description: "the secret used to encrypt plugin authorization payload"
+      x-label: Server配置
       x-cate: applicationCate
       pattern: ".{0,16}$|.{0,24}$|.{0,32}$"
       x-placeholder: must be 16, 24 or 32 bytes
@@ -136,6 +137,7 @@ Parameters:
       type: secret
       default: "123456"
       description: "secret used to encrypt oauth state"
+      x-label: Server配置
       x-cate: applicationCate
       pattern: ".{0,16}$|.{0,24}$|.{0,32}$"
       x-placeholder: must be 16, 24 or 32 bytes
@@ -145,6 +147,7 @@ Parameters:
       type: secret
       default: "123456"
       description: "secret used to encrypt oauth refresh token and access token"
+      x-label: Server配置
       x-cate: applicationCate
       pattern: ".{0,16}$|.{0,24}$|.{0,32}$"
       x-placeholder: must be 16, 24 or 32 bytes
