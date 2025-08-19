@@ -6,7 +6,6 @@ vars:
   describe: {{description}}
   functionName: {{functionName}}
   functionPolefsVolumn: {{POLEFS_VOLUME}}
-  mountDir: {{POLEFS_MOUNT_PATH}}
   afunctionVolCreateUser: {{afunctionVolCreateUser}}
 resources:
   framework:
@@ -55,5 +54,5 @@ resources:
             auth_config: ""
       nasConfig:
         - volumeUniqueName: ${vars.functionPolefsVolumn}
-          mountDir: ${vars.mountDir}
+          mountDir: "/mnt/ComfyUI/models"
           createUserName: ${vars.afunctionVolCreateUser}

@@ -5,29 +5,28 @@ Type: Project
 Effective: Public
 Name: comfyui
 Provider:
-  - fc
+- fc
 Version: 0.0.1
 Description: 这是一个基于Comfyui实现用大模型生成图像的示例
 HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/comfyui
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: 人工智能
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
   required:
-    # 必填项
-    - region
-    - functionName
-    - FileStorage
-    - POLEFS_VOLUME
-    - POLEFS_MOUNT_PATH
-    - afunctionVolCreateUser
+  # 必填项
+  - region
+  - functionName
+  - FileStorage
+  - POLEFS_VOLUME
+  - afunctionVolCreateUser
   properties:
     region:
       title: 地域
@@ -35,10 +34,10 @@ Parameters:
       default: cn-north-cu-1
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - cn-north-cu-1
       x-cate: resourceCate
       x-reaction-properties:
-        - POLEFS_VOLUME
+      - POLEFS_VOLUME
       x-formitem:
         type: select
     functionName:
@@ -67,7 +66,7 @@ Parameters:
       default: Polefs
       description: ""
       enum:
-        - Polefs
+      - Polefs
       x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs
@@ -89,17 +88,6 @@ Parameters:
       x-formitem:
         type: select
         name: volume_unique_name
-    POLEFS_MOUNT_PATH:
-      # title: 函数挂载路径
-      type: string
-      description: ""
-      default: "/mnt/ComfyUI/models"
-      x-cate: applicationCate
-      x-label: 文件存储配置
-      x-restype: polefs
-      x-placeholder: 函数挂载路径
-      x-formitem:
-        type: input
     afunctionVolCreateUser:
       # title: 函数挂载的创建用户
       type: string
