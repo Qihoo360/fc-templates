@@ -73,9 +73,8 @@ resources:
         MYSQL_USER: ${vars.mysqlUser}
         MYSQL_DSN: "${vars.mysqlUser}:${vars.mysqlPasswd}@tcp(${vars.mysqlHost}:${vars.mysqlPort})/${vars.mysqlDatabase}?charset=utf8mb4&parseTime=True"
         ATLAS_URL: "mysql://${vars.mysqlUser}:${vars.mysqlPasswd}@${vars.mysqlHost}:${vars.mysqlPort}/${vars.mysqlDatabase}?charset=utf8mb4&parseTime=True"
-        REDIS_ADDR: ${vars.redisHost}
+        REDIS_ADDR: ${vars.redisAddr}
         REDIS_PASSWORD: ${vars.redisPasswd}
-        REDIS_PORT: ${vars.redisPort}
         STORAGE_TYPE: ${vars.ObjectStorage}
         MINIO_AK: ${vars.minioAccessKey}
         MINIO_DEFAULT_BUCKETS: ${vars.miniodefaultBucket}
