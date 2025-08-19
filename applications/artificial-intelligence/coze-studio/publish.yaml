@@ -125,7 +125,7 @@ Parameters:
         type: input
     pluginAesAuthSecret:
       type: secret
-      default: "^*6x3hdu2nc%-p38"
+      default: "123456"
       description: "the secret used to encrypt plugin authorization payload"
       x-cate: applicationCate
       pattern: ".{0,16}$|.{0,24}$|.{0,32}$"
@@ -134,7 +134,7 @@ Parameters:
         type: input
     pluginAesStateSecret:
       type: secret
-      default: "osj^kfhsd*(z!sno"
+      default: "123456"
       description: "secret used to encrypt oauth state"
       x-cate: applicationCate
       pattern: ".{0,16}$|.{0,24}$|.{0,32}$"
@@ -143,7 +143,7 @@ Parameters:
         type: input
     pluginAesOauthTokenSecret:
       type: secret
-      default: "cn+$PJ(HhJ[5d*z9"
+      default: "123456"
       description: "secret used to encrypt oauth refresh token and access token"
       x-cate: applicationCate
       pattern: ".{0,16}$|.{0,24}$|.{0,32}$"

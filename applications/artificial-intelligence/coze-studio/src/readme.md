@@ -8,7 +8,7 @@
 
 * [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/ArtificialIntelligence/coze-loop/src)
 
-* [官方网站](https://www.coze.cn/loop)
+* [官方网站](https://www.coze.cn/studio)
 
 # 前期准备
 
