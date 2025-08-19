@@ -428,7 +428,7 @@ Parameters:
       - ollama
       - http
       x-cate: applicationCate
-      x-label: embedding 配置
+      x-label: embedding配置
       x-restype: llm-apikey
       x-placeholder: 请选择 embedding 类型
       x-formitem:
