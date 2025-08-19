@@ -144,7 +144,7 @@ def set_config(config: Dict[str, Any], user_id: str = Depends(verify_api_key)):
     return {"message": "Configuration set successfully"}
 
 
-@app.post("/memories", summary="Create memories")
+@app.post("/memories/", summary="Create memories")
 def add_memory(memory_create: MemoryCreate, user_id: str = Depends(verify_api_key)):
     """Store new memories."""
     if not any([memory_create.user_id, memory_create.agent_id, memory_create.run_id]):
