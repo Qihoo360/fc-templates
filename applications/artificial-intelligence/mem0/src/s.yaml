@@ -9,14 +9,12 @@ vars:
   Mem0RedisPassword: {{Mem0RedisPassword}}
   Mem0RedisHost: {{Mem0RedisHost}}
   Mem0RedisPort: {{Mem0RedisPort}}
-
   Mem0Neo4jDataBase: {{Mem0Neo4jDataBase}}
   Mem0Neo4jHost: {{Mem0Neo4jHost}}
   Mem0Neo4jPort: {{Mem0Neo4jPort}}
   Mem0Neo4jUser: {{Mem0Neo4jUser}}
   Mem0Neo4jDbname: {{Mem0Neo4jDbname}}
   Mem0Neo4jDbPassword: {{Mem0Neo4jDbPassword}}
-
   OpenaiApiBaseUrl: {{OpenaiApiBaseUrl}}
   OpenaiApiKey: {{OpenaiApiKey}}
   OpenaiModel: {{OpenaiModel}}
@@ -24,11 +22,9 @@ vars:
   OpenaiMaxTokens: {{OpenaiMaxTokens}}
   OpenaiTemperature: {{OpenaiTemperature}}
   OpenaiEmbeddingDims: {{OpenaiEmbeddingDims}}
-  
   PolefsVolume: {{PolefsVolume}}
   MountDir: {{MountDir}}
   VolCreateUser: {{PolefsVolumeCreateUser}}
-
 resources:
   Mem0:
     component: ${path('/utils/components/zfc')}

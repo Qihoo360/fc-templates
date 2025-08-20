@@ -6,13 +6,13 @@ Effective: Public
 Name: mem0-v1
 Provider:
   - fc
-Version: 0.0.3
+Version: 0.0.1
 Description: 该示例通过 mem0 快速搭建现代AI代理设计的内存层。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/mem0
 Tags:
   - AI
   - Custom Runtime
-Category: Web框架
+Category: 人工智能
 Service:
   FC:
     Authorities:
@@ -55,7 +55,6 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: select
-
     mem0FunctionName:
       title: mem0 函数名
       type: string
@@ -119,7 +118,6 @@ Parameters:
       x-placeholder: 请输入redis密码
       x-formitem:
         type: input
-    
     Mem0Neo4jDataBase:
       type: string
       default: neo4j
@@ -182,7 +180,6 @@ Parameters:
       x-placeholder: 请输入数据库名称
       x-formitem:
         type: input
-
     OpenaiApiBaseUrl:
       # title: OpenaiApiBaseUrl
       type: string

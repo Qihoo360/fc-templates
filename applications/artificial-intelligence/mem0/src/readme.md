@@ -2,7 +2,7 @@
 
 Mem0 是一个基于 LLM 大语言模型的开源记忆管理系统。它提供了强大的记忆存储和检索功能，支持向量存储和图存储，能够无缝集成到 AI 应用和智能代理中。Mem0 开箱即用，模型中立，支持多种后端存储，是构建有记忆能力的智能应用的理想选择。
 
-![Mem0 Logo](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/mem0/src/images/mem0-bg.png)
+![Mem0 Logo](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/mem0/src/images/mem0-bg.png?raw=true)
 
 ## 前期准备
 
@@ -38,7 +38,7 @@ http://localhost:8000/docs
 
 ## 架构介绍
 
-![架构图](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/mem0/src/images/stateless-vs-stateful-agent.png)
+![架构图](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/mem0/src/images/stateless-vs-stateful-agent.png?raw=true)
 
 Mem0 采用模块化设计，主要包含以下组件：
 
