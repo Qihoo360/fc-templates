@@ -126,21 +126,21 @@ Parameters:
     pluginAesAuthSecret:
       type: secret
       default: "^*6x3hdu2nc%-p38"
-      description: ""
+      description: "secret used to encrypt plugin authorization payload"
       x-label: Plugin AES secret
       x-cate: applicationCate
       pattern: ".{0,16}$|.{0,24}$|.{0,32}$"
-      x-placeholder: secret used to encrypt plugin authorization payload, must be 16, 24 or 32 bytes
+      x-placeholder: must be 16, 24 or 32 bytes
       x-formitem:
         type: input
     pluginAesStateSecret:
       type: secret
       default: "osj^kfhsd*(z!sno"
-      description: ""
+      description: "secret used to encrypt oauth state"
       x-label: Plugin AES secret
       x-cate: applicationCate
       pattern: ".{0,16}$|.{0,24}$|.{0,32}$"
-      x-placeholder: secret used to encrypt oauth state, must be 16, 24 or 32 bytes
+      x-placeholder: must be 16, 24 or 32 bytes
       x-formitem:
         type: input
     pluginAesOauthTokenSecret:
@@ -150,7 +150,7 @@ Parameters:
       x-label: Plugin AES secret
       x-cate: applicationCate
       pattern: ".{0,16}$|.{0,24}$|.{0,32}$"
-      x-placeholder: secret used to encrypt oauth refresh token and access token, must be 16, 24 or 32 bytes
+      x-placeholder: must be 16, 24 or 32 bytes
       x-formitem:
         type: input
     ObjectStorage:
@@ -440,7 +440,7 @@ Parameters:
       # title: DifyRedisUserName
       type: string
       default: "1024"
-      description: "Ark embedding dimensions"
+      description: ""
       x-cate: applicationCate
       x-label: embedding配置
       x-restype: llm-apikey
