@@ -9,7 +9,6 @@ Provider:
 Version: 0.0.3
 Description: 该示例通过 mem0 快速搭建现代AI代理设计的内存层。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/mem0
-Organization: 函数计算（FC）
 Tags:
   - AI
   - Custom Runtime
@@ -28,14 +27,12 @@ Parameters:
     - Mem0RedisPassword
     - Mem0RedisHost
     - Mem0RedisPort
-
     - Mem0Neo4jDataBase
     - Mem0Neo4jHost
     - Mem0Neo4jPort
     - Mem0Neo4jUser
     - Mem0Neo4jDbPassword
     - Mem0Neo4jDbname
-
     - OpenaiApiBaseUrl
     - OpenaiApiKey
     - OpenaiModel
@@ -43,12 +40,10 @@ Parameters:
     - OpenaiMaxTokens
     - OpenaiTemperature
     - OpenaiEmbeddingDims
-
     - FileStorage
     - PolefsVolume
     - MountDir
     - PolefsVolumeCreateUse
-
   properties:
     region:
       title: 地域
