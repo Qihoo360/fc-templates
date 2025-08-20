@@ -125,32 +125,32 @@ Parameters:
         type: input
     pluginAesAuthSecret:
       type: secret
-      default: "123456"
-      description: "the secret used to encrypt plugin authorization payload"
-      x-label: Server配置
+      default: "^*6x3hdu2nc%-p38"
+      description: ""
+      x-label: Plugin AES secret
       x-cate: applicationCate
       pattern: ".{0,16}$|.{0,24}$|.{0,32}$"
-      x-placeholder: must be 16, 24 or 32 bytes
+      x-placeholder: secret used to encrypt plugin authorization payload, must be 16, 24 or 32 bytes
       x-formitem:
         type: input
     pluginAesStateSecret:
       type: secret
-      default: "123456"
-      description: "secret used to encrypt oauth state"
-      x-label: Server配置
+      default: "osj^kfhsd*(z!sno"
+      description: ""
+      x-label: Plugin AES secret
       x-cate: applicationCate
       pattern: ".{0,16}$|.{0,24}$|.{0,32}$"
-      x-placeholder: must be 16, 24 or 32 bytes
+      x-placeholder: secret used to encrypt oauth state, must be 16, 24 or 32 bytes
       x-formitem:
         type: input
     pluginAesOauthTokenSecret:
       type: secret
-      default: "123456"
+      default: "cn+vPJ(HhJ[5d*z9"
       description: "secret used to encrypt oauth refresh token and access token"
-      x-label: Server配置
+      x-label: Plugin AES secret
       x-cate: applicationCate
       pattern: ".{0,16}$|.{0,24}$|.{0,32}$"
-      x-placeholder: must be 16, 24 or 32 bytes
+      x-placeholder: secret used to encrypt oauth refresh token and access token, must be 16, 24 or 32 bytes
       x-formitem:
         type: input
     ObjectStorage:

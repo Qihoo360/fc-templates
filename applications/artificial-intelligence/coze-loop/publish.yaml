@@ -111,7 +111,7 @@ Parameters:
     clickhouseAddr:
       type: string
       default: "coze-clickhouse.functions:9008"
-      description: "clickhouse address"
+      description: ""
       x-cate: applicationCate
       x-label: clickhouse配置
       x-placeholder: 请输入 clickhouse address
@@ -120,7 +120,7 @@ Parameters:
     clickhouseDatabase:
       type: string
       default: "cozeloop-clickhouse"
-      description: "clickhouse database"
+      description: ""
       x-cate: applicationCate
       x-label: clickhouse配置
       x-placeholder: 请输入 clickhouse database
@@ -129,7 +129,7 @@ Parameters:
     clickhouseUser:
       type: string
       default: "default"
-      description: "clickhouse user"
+      description: ""
       x-cate: applicationCate
       x-label: clickhouse配置
       x-placeholder: 请输入 clickhouse user
@@ -138,7 +138,7 @@ Parameters:
     clickhousePasswd:
       type: secret
       default: "cozeloop-clickhouse"
-      description: "clickhouse password"
+      description: ""
       x-cate: applicationCate
       x-label: clickhouse配置
       x-placeholder: 请输入 clickhouse address
