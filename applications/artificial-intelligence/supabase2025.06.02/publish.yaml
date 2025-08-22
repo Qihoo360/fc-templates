@@ -217,7 +217,7 @@ Parameters:
     POSTGRES_PASSWORD:
       type: secret
       description: |
-        `supabase_admin` 账号的密码；创建实例时须创建 `supabase_admin` 超级管理员
+        `supabase_admin` 账号的密码；创建实例时须创建 `supabase_admin` 超级管理员；请联系 HULK 管理员创建
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: postgresql
@@ -265,7 +265,7 @@ Parameters:
     POLEFS_MOUNT_PATH:
       type: string
       description: "存储卷挂载路径；暂时不要修改挂载路径"
-      default: "/var/supabase"
+      default: "/supabase/data"
       x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs
