@@ -22,7 +22,7 @@ resources:
       functionName: "{{ functionName }}"
       code: fc-zyun-php
       environmentVariables:
-        testkey: testvalue
+        PORT: 8080
       logConfig:
         isOpen: false
       scale:
