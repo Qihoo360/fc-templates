@@ -123,6 +123,15 @@ Parameters:
       x-placeholder: 请输入 coze studio server 是否启用 SSL
       x-formitem:
         type: input
+    logLevel:
+      type: string
+      default: "debug"
+      description: ""
+      x-label: Server配置
+      x-cate: applicationCate
+      x-placeholder: 请输入 log level
+      x-formitem:
+        type: input
     pluginAesAuthSecret:
       type: secret
       default: "^*6x3hdu2nc%-p38"
@@ -160,9 +169,9 @@ Parameters:
       description: ""
       enum:
       - minio
+      - s3
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
       x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
@@ -172,7 +181,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
+      x-restype: minio
       x-placeholder: 请输入 minio Endpoint
       x-formitem:
         type: input
@@ -182,7 +191,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
+      x-restype: minio
       x-placeholder: 请输入 minio AccessKey
       x-formitem:
         type: input
@@ -192,7 +201,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
+      x-restype: minio
       x-placeholder: 请输入 minio SecretKey
       x-formitem:
         type: input
@@ -202,7 +211,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
+      x-restype: minio
       x-placeholder: 请输入 minio Bucket
       x-formitem:
         type: input
@@ -212,8 +221,58 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
+      x-restype: minio
       x-placeholder: 请输入 minio Region
+      x-formitem:
+        type: input
+    s3AccessKey:
+      type: secret
+      default: "xxxxxx"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3 Accesskey
+      x-formitem:
+        type: input
+    s3SecretKey:
+      type: secret
+      default: "xxxxxx"
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3SecretKey
+      x-formitem:
+        type: input
+    s3Endpoint:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3 endpoint
+      x-formitem:
+        type: input
+    s3Region:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3 region
+      x-formitem:
+        type: input
+    s3BucketEndpoint:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3 bucketEndpoint
       x-formitem:
         type: input
     storageUploadHttpSchema:
@@ -331,7 +390,6 @@ Parameters:
       x-formitem:
         type: input
     MQ:
-      # title: 数据库配置
       type: string
       default: nsq
       description: ""
@@ -350,7 +408,28 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: MQ配置
+      x-restype: nsq
       x-placeholder: 请输入 mq nameserver address
+      x-formitem:
+        type: input
+    rmqAccessKey:
+      type: secret
+      default: "xxxxxx"
+      description: ""
+      x-cate: applicationCate
+      x-label: MQ配置
+      x-restype: rmq
+      x-placeholder: "请输入 rmq access key"
+      x-formitem:
+        type: input
+    rmqSecretKey:
+      type: secret
+      default: "xxxxxxx"
+      description: ""
+      x-cate: applicationCate
+      x-label: MQ配置
+      x-restype: rmq
+      x-placeholder: "请输入 rmq secret key"
       x-formitem:
         type: input
     VectorDB:
@@ -432,7 +511,6 @@ Parameters:
       - http
       x-cate: applicationCate
       x-label: embedding配置
-      x-restype: llm-apikey
       x-placeholder: 请选择 embedding 类型
       x-formitem:
         type: select
@@ -443,7 +521,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      x-restype: llm-apikey
+      x-restype: ark
       x-placeholder: 请输入 ark embedding dimensions
       x-formitem:
         type: input
@@ -454,8 +532,51 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      x-restype: llm-apikey
+      x-restype: ark
       x-placeholder: 请输入 embedding max batch size
+      x-formitem:
+        type: input
+    openaiEmbeddingBaseUrl:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: embedding配置
+      x-restype: openai
+      x-placeholder: 请输入 openai Embedding BaseUrl
+      x-formitem:
+        type: input
+    openaiEmbeddingModel:
+      # title: DifyRedisUserName
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: embedding配置
+      x-restype: openai
+      x-placeholder: 请输入 openai Embedding Model
+      x-formitem:
+        type: input
+    openaiEmbeddingApiKey:
+      # title: DifyRedisUserName
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: embedding配置
+      x-restype: openai
+      x-placeholder: 请输入 openai Embedding ApiKey
+      x-formitem:
+        type: input
+    openaiEmbeddingDims:
+      # title: DifyRedisUserName
+      type: string
+      default: "1024"
+      description: ""
+      x-cate: applicationCate
+      x-label: embedding配置
+      x-restype: openai
+      x-placeholder: 请输入 openai embedding dimensions
       x-formitem:
         type: input
     FileStorage:
