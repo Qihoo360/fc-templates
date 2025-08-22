@@ -18,11 +18,6 @@ vars:
   minioSecretKey: {{minioSecretKey}}
   minioApiHost: {{minioApiHost}}
   miniodefaultBucket: {{miniodefaultBucket}}
-  s3AccessKey: {{s3AccessKey}}
-  s3SecretKey: {{s3SecretKey}}
-  s3Endpoint: {{s3Endpoint}}
-  s3Region: {{s3Region}}
-  s3BucketEndpoint: {{s3BucketEndpoint}}
   storageUploadHttpSchema: {{storageUploadHttpSchema}}
   redisAddr: {{redisAddr}}
   redisPasswd: {{redisPasswd}}
@@ -33,8 +28,6 @@ vars:
   mysqlPasswd: {{mysqlPasswd}}
   MQ: {{MQ}}
   mqNamesvrAddr: {{mqNamesvrAddr}}
-  rmqAccessKey: {{rmqAccessKey}}
-  rmqSecretKey: {{rmqSecretKey}}
   VectorDB: {{VectorDB}}
   milvusAddress: {{milvusAddress}}
   milvusUser: {{milvusUser}}
@@ -44,10 +37,6 @@ vars:
   embeddingType: {{embeddingType}}
   arkEmbeddingDims: {{arkEmbeddingDims}}
   embeddingMaxBatchSize: {{embeddingMaxBatchSize}}
-  openaiEmbeddingBaseUrl: {{openaiEmbeddingBaseUrl}}
-  openaiEmbeddingModel: {{openaiEmbeddingModel}}
-  openaiEmbeddingApiKey: {{openaiEmbeddingApiKey}}
-  openaiEmbeddingDims: {{openaiEmbeddingDims}}
   functionPolefsVolumn: {{functionPolefsVolumn}}
   afunctionVolCreateUser: {{afunctionVolCreateUser}}
 resources:
@@ -78,8 +67,6 @@ resources:
       environmentVariables:
         COZE_MQ_TYPE: ${vars.MQ}
         MQ_NAME_SERVER: ${vars.mqNamesvrAddr}
-        RMQ_ACCESS_KEY: ${vars.rmqAccessKey}
-        RMQ_SECRET_KEY: ${vars.rmqSecretKey}
         MYSQL_DATABASE: ${vars.mysqlDatabase}
         MYSQL_HOST: ${vars.mysqlHost}
         MYSQL_PASSWORD: ${vars.mysqlPasswd}
@@ -92,11 +79,6 @@ resources:
         STORAGE_TYPE: ${vars.ObjectStorage}
         MINIO_AK: ${vars.minioAccessKey}
         MINIO_DEFAULT_BUCKETS: ${vars.miniodefaultBucket}
-        S3_ACCESS_KEY: ${vars.s3AccessKey}
-        S3_SECRET_KEY: ${vars.s3SecretKey}
-        S3_ENDPOINT: ${vars.s3Endpoint}
-        S3_BUCKET_ENDPOINT: ${vars.s3BucketEndpoint}
-        S3_REGION: ${vars.s3Region}
         STORAGE_UPLOAD_HTTP_SCHEME: ${vars.storageUploadHttpSchema}
         MINIO_ENDPOINT: ${vars.minioEndpoint}
         MINIO_API_HOST: ${vars.minioApiHost}
@@ -118,10 +100,6 @@ resources:
         PLUGIN_AES_OAUTH_TOKEN_SECRET: ${vars.pluginAesOauthTokenSecret}
         EMBEDDING_TYPE: ${vars.embeddingType}
         ARK_EMBEDDING_DIMS: ${vars.arkEmbeddingDims}
-        OPENAI_EMBEDDING_BASE_URL: ${vars.openaiEmbeddingBaseUrl}
-        OPENAI_EMBEDDING_MODEL: ${vars.openaiEmbeddingModel}
-        OPENAI_EMBEDDING_API_KEY: ${vars.openaiEmbeddingApiKey}
-        OPENAI_EMBEDDING_DIMS: ${vars.openaiEmbeddingDims}
         EMBEDDING_MAX_BATCH_SIZE: ${vars.embeddingMaxBatchSize}
       triggers:
       - triggerName: httptrigger
