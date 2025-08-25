@@ -121,7 +121,7 @@ Parameters:
       type: string
       default: ""
       pattern: 'https?:\/\/[^\s/$.?#].[^\s]*'
-      description: 公开访问的地址（部署之后需在函数平台设定触发器地址）
+      description: 公开访问的地址（部署之后需在函数平台创建自定义域名指向这个函数才能正常工作）
       x-cate: applicationCate
       x-label: 控制台设置
       x-formitem:
