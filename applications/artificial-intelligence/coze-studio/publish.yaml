@@ -27,17 +27,15 @@ Parameters:
   - cozestudioBackendDescription
   - cozestudioFrontendFunctionName
   - cozestudioFrontendDescription
-  - useSSL
   - pluginAesAuthSecret
   - pluginAesStateSecret
   - pluginAesOauthTokenSecret
   - ObjectStorage
-  - minioEndpoint
-  - minioAccessKey
-  - minioSecretKey
-  - minioApiHost
-  - miniodefaultBucket
-  - storageUploadHttpSchema
+  - s3Endpoint
+  - s3AccessKey
+  - s3SecretKey
+  - s3Region
+  - s3Bucket
   - CacheDB
   - redisAddr
   - redisPasswd
@@ -56,11 +54,11 @@ Parameters:
   - elasticsearchUrl
   - elasticsearchVersion
   - embeddingType
-  - arkEmbeddingDims
   - embeddingMaxBatchSize
-  - FileStorage
-  - functionPolefsVolumn
-  - afunctionVolCreateUser
+  - openaiEmbeddingBaseUrl
+  - openaiEmbeddingModel
+  - openaiEmbeddingApiKey
+  - openaiEmbeddingDims
   properties:
     region:
       title: 地域
@@ -114,19 +112,10 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
-    useSSL:
-      type: string
-      default: "0"
-      description: "coze studio server use ssl or not"
-      x-label: Server配置
-      x-cate: applicationCate
-      x-placeholder: 请输入 coze studio server 是否启用 SSL
-      x-formitem:
-        type: input
     logLevel:
       type: string
       default: "debug"
-      description: ""
+      description: "log level"
       x-label: Server配置
       x-cate: applicationCate
       x-placeholder: 请输入 log level
@@ -170,120 +159,111 @@ Parameters:
       enum:
       - minio
       - s3
+      - tos
       x-cate: applicationCate
       x-label: 对象存储配置
       x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
-    minioEndpoint:
-      type: string
-      default: "minio-beijing.functions:9000"
-      description: ""
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: minio
-      x-placeholder: 请输入 minio Endpoint
-      x-formitem:
-        type: input
-    minioAccessKey:
-      type: secret
-      default: "minioadmin"
-      description: ""
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: minio
-      x-placeholder: 请输入 minio AccessKey
-      x-formitem:
-        type: input
-    minioSecretKey:
-      type: secret
-      default: "minioadmin"
-      description: ""
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: minio
-      x-placeholder: 请输入 minio SecretKey
-      x-formitem:
-        type: input
-    minioApiHost:
-      type: string
-      default: "http://minio-beijing.functions:9000"
-      description: ""
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: minio
-      x-placeholder: 请输入 minio Bucket
-      x-formitem:
-        type: input
-    miniodefaultBucket:
-      type: string
-      default: "milvus"
-      description: ""
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: minio
-      x-placeholder: 请输入 minio Region
-      x-formitem:
-        type: input
-    # s3AccessKey:
+    # minioEndpoint:
+    #   type: string
+    #   default: "minio-beijing.functions:9000"
+    #   description: ""
+    #   x-cate: applicationCate
+    #   x-label: 对象存储配置
+    #   x-restype: minio
+    #   x-placeholder: 请输入 minio Endpoint
+    #   x-formitem:
+    #     type: input
+    # minioAccessKey:
     #   type: secret
-    #   default: "xxxxxx"
+    #   default: "minioadmin"
     #   description: ""
     #   x-cate: applicationCate
     #   x-label: 对象存储配置
-    #   x-restype: s3
-    #   x-placeholder: 请输入 s3 Accesskey
+    #   x-restype: minio
+    #   x-placeholder: 请输入 minio AccessKey
     #   x-formitem:
     #     type: input
-    # s3SecretKey:
+    # minioSecretKey:
     #   type: secret
-    #   default: "xxxxxx"
+    #   default: "minioadmin"
     #   description: ""
     #   x-cate: applicationCate
     #   x-label: 对象存储配置
-    #   x-restype: s3
-    #   x-placeholder: 请输入 s3SecretKey
+    #   x-restype: minio
+    #   x-placeholder: 请输入 minio SecretKey
     #   x-formitem:
     #     type: input
-    # s3Endpoint:
+    # minioApiHost:
     #   type: string
-    #   default: ""
+    #   default: "http://minio-beijing.functions:9000"
     #   description: ""
     #   x-cate: applicationCate
     #   x-label: 对象存储配置
-    #   x-restype: s3
-    #   x-placeholder: 请输入 s3 endpoint
+    #   x-restype: minio
+    #   x-placeholder: 请输入 minio Bucket
     #   x-formitem:
     #     type: input
-    # s3Region:
+    # miniodefaultBucket:
     #   type: string
-    #   default: ""
+    #   default: "milvus"
     #   description: ""
     #   x-cate: applicationCate
     #   x-label: 对象存储配置
-    #   x-restype: s3
-    #   x-placeholder: 请输入 s3 region
+    #   x-restype: minio
+    #   x-placeholder: 请输入 minio Region
     #   x-formitem:
     #     type: input
-    # s3BucketEndpoint:
-    #   type: string
-    #   default: ""
-    #   description: ""
-    #   x-cate: applicationCate
-    #   x-label: 对象存储配置
-    #   x-restype: s3
-    #   x-placeholder: 请输入 s3 bucketEndpoint
-    #   x-formitem:
-    #     type: input
-    storageUploadHttpSchema:
-      # title: milvus token
-      type: string
-      default: "http"
-      description: "If coze studio website is https, you must set it to https"
+    s3AccessKey:
+      type: secret
+      default: "********************"
+      description: "ak"
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
-      x-placeholder: 请输入对象存储 http schema
+      x-placeholder: 请输入 s3 Accesskey
+      x-formitem:
+        type: input
+    s3SecretKey:
+      type: secret
+      default: "****************************************"
+      description: "sk"
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3SecretKey
+      x-formitem:
+        type: input
+    s3Endpoint:
+      type: string
+      default: ""
+      description: "endpoint"
+      pattern: "https?.*$"
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3 endpoint
+      x-formitem:
+        type: input
+    s3Region:
+      type: string
+      default: ""
+      description: "region"
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3 region
+      x-formitem:
+        type: input
+    s3Bucket:
+      type: string
+      default: ""
+      description: "bucket"
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-placeholder: 请输入 s3 bucketEndpoint
       x-formitem:
         type: input
     CacheDB:
@@ -337,7 +317,7 @@ Parameters:
     mysqlHost:
       # title: 数据库名 Host
       type: string
-      default: 127.0.0.1
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
@@ -391,12 +371,11 @@ Parameters:
         type: input
     MQ:
       type: string
-      default: nsq
+      default: kafka
       description: ""
       enum:
-      - nsq
-      - rmq
       - kafka
+      - nsq
       x-cate: applicationCate
       x-label: MQ配置
       x-placeholder: 请选择MQ类型
@@ -404,12 +383,12 @@ Parameters:
         type: select
     mqNamesvrAddr:
       type: string
-      default: "coze-nsqd-i8s.functions:4150"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: MQ配置
-      x-restype: nsq
-      x-placeholder: 请输入 mq nameserver address
+      x-restype: kafka
+      x-placeholder: kafka host:port
       x-formitem:
         type: input
     # rmqAccessKey:
@@ -489,6 +468,26 @@ Parameters:
       x-placeholder: 请输入Elasticsearch url
       x-formitem:
         type: input
+    elasticsearchUsername:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: Elasticsearch配置
+      x-restype: elasticsearch
+      x-placeholder: 请输入Elasticsearch username
+      x-formitem:
+        type: input
+    elasticsearchPasswd:
+      type: secret
+      default: "xxxxxx"
+      description: ""
+      x-cate: applicationCate
+      x-label: Elasticsearch配置
+      x-restype: elasticsearch
+      x-placeholder: 请输入Elasticsearch passwd
+      x-formitem:
+        type: input
     elasticsearchVersion:
       type: string
       default: "v8"
@@ -502,121 +501,70 @@ Parameters:
     embeddingType:
       # title: 缓存配置
       type: string
-      default: ark
+      default: openai
       description: ""
       enum:
-      - ark
       - openai
-      - ollama
-      - http
       x-cate: applicationCate
       x-label: embedding配置
       x-placeholder: 请选择 embedding 类型
       x-formitem:
         type: select
-    arkEmbeddingDims:
+    embeddingMaxBatchSize:
+      # title: DifyRedisUserName
+      type: string
+      default: "100"
+      description: "embedding max batch size"
+      x-cate: applicationCate
+      x-label: embedding配置
+      x-restype: llm-apikey
+      x-placeholder: 请输入 embedding max batch size
+      x-formitem:
+        type: input
+    openaiEmbeddingBaseUrl:
+      type: string
+      default: ""
+      description: ""
+      pattern: "https?.*$"
+      x-cate: applicationCate
+      x-label: embedding配置
+      x-restype: llm-apikey
+      x-placeholder: 请输入 openai Embedding BaseUrl
+      x-formitem:
+        type: input
+    openaiEmbeddingModel:
+      # title: DifyRedisUserName
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: embedding配置
+      x-restype: llm-apikey
+      x-placeholder: 请输入 openai Embedding Model
+      x-formitem:
+        type: input
+    openaiEmbeddingApiKey:
+      # title: DifyRedisUserName
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: embedding配置
+      x-restype: llm-apikey
+      x-placeholder: 请输入 openai Embedding ApiKey
+      x-formitem:
+        type: input
+    openaiEmbeddingDims:
       # title: DifyRedisUserName
       type: string
       default: "1024"
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      x-restype: ark
-      x-placeholder: 请输入 ark embedding dimensions
+      x-restype: llm-apikey
+      x-placeholder: 请输入 openai embedding dimensions
       x-formitem:
         type: input
-    embeddingMaxBatchSize:
-      # title: DifyRedisUserName
-      type: string
-      default: "100"
-      description: ""
-      x-cate: applicationCate
-      x-label: embedding配置
-      x-restype: ark
-      x-placeholder: 请输入 embedding max batch size
-      x-formitem:
-        type: input
-    # openaiEmbeddingBaseUrl:
-    #   type: string
-    #   default: ""
-    #   description: ""
-    #   x-cate: applicationCate
-    #   x-label: embedding配置
-    #   x-restype: openai
-    #   x-placeholder: 请输入 openai Embedding BaseUrl
-    #   x-formitem:
-    #     type: input
-    # openaiEmbeddingModel:
-    #   # title: DifyRedisUserName
-    #   type: string
-    #   default: ""
-    #   description: ""
-    #   x-cate: applicationCate
-    #   x-label: embedding配置
-    #   x-restype: openai
-    #   x-placeholder: 请输入 openai Embedding Model
-    #   x-formitem:
-    #     type: input
-    # openaiEmbeddingApiKey:
-    #   # title: DifyRedisUserName
-    #   type: secret
-    #   default: ""
-    #   description: ""
-    #   x-cate: applicationCate
-    #   x-label: embedding配置
-    #   x-restype: openai
-    #   x-placeholder: 请输入 openai Embedding ApiKey
-    #   x-formitem:
-    #     type: input
-    # openaiEmbeddingDims:
-    #   # title: DifyRedisUserName
-    #   type: string
-    #   default: "1024"
-    #   description: ""
-    #   x-cate: applicationCate
-    #   x-label: embedding配置
-    #   x-restype: openai
-    #   x-placeholder: 请输入 openai embedding dimensions
-    #   x-formitem:
-    #     type: input
-    FileStorage:
-      # title: 文件存储配置
-      type: string
-      default: Polefs
-      description: ""
-      enum:
-      - Polefs
-      x-cate: applicationCate
-      x-label: 文件存储配置
-      x-restype: polefs
-      x-placeholder: 请选择文件存储类型
-      x-formitem:
-        type: select
-    functionPolefsVolumn:
-      # title: 函数挂载 PoleFS 卷名称
-      type: string
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 文件存储配置
-      x-restype: polefs
-      x-placeholder: 函数挂载 PoleFS 卷名称
-      x-api-uri: /resources/polefs/volumes
-      x-extends-value:
-        create_username: afunctionVolCreateUser
-      x-formitem:
-        type: select
-        name: volume_unique_name
-    afunctionVolCreateUser:
-      # title: 函数挂载的创建用户
-      type: string
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 文件存储配置
-      x-restype: polefs
-      x-placeholder: 函数挂载的创建用户
-      x-hidden: true
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"

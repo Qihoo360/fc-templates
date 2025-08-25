@@ -44,12 +44,9 @@ Elasticsearch
 - 需安装 analysis-smartcn 插件（若使用hulk的Elasticsearch可联系运维安装）
 - 需手动创建索引 project_draft 和 coze_resource （若使用hulk的Elasticsearch可联系运维创建索引）
 
-### 模型配置
+### Kafka配置
 
-在函数挂载的PoleFS文件系统上面配置模型。具体配置方式参考 https://github.com/coze-dev/coze-studio/wiki/2.-%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B  。 PoleFS文件系统中的model目录对应到链接中的 backend/conf/model 目录。
-
-![image-20250819152215415](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/coze-studio/src/images/image-20250819152215415.png?raw=true)
-
+- topic名称： opencoze_knowledge
 
 
 ## 使用

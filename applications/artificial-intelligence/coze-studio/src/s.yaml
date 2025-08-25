@@ -2,43 +2,44 @@ edition: 3.0.0
 name: cozestudio-app
 access: default
 vars:
-  region: {{region}}
-  cozestudioBackendFunctionName: {{cozestudioBackendFunctionName}}
-  cozestudioBackendDescription: {{cozestudioBackendDescription}}
-  cozestudioFrontendFunctionName: {{cozestudioFrontendFunctionName}}
-  cozestudioFrontendDescription: {{cozestudioFrontendDescription}}
-  useSSL: {{useSSL}}
-  logLevel: {{logLevel}}
-  pluginAesAuthSecret: {{pluginAesAuthSecret}}
-  pluginAesStateSecret: {{pluginAesStateSecret}}
-  pluginAesOauthTokenSecret: {{pluginAesOauthTokenSecret}}
-  ObjectStorage: {{ObjectStorage}}
-  minioEndpoint: {{minioEndpoint}}
-  minioAccessKey: {{minioAccessKey}}
-  minioSecretKey: {{minioSecretKey}}
-  minioApiHost: {{minioApiHost}}
-  miniodefaultBucket: {{miniodefaultBucket}}
-  storageUploadHttpSchema: {{storageUploadHttpSchema}}
-  redisAddr: {{redisAddr}}
-  redisPasswd: {{redisPasswd}}
-  mysqlHost: {{mysqlHost}}
-  mysqlPort: {{mysqlPort}}
-  mysqlDatabase: {{mysqlDatabase}}
-  mysqlUser: {{mysqlUser}}
-  mysqlPasswd: {{mysqlPasswd}}
-  MQ: {{MQ}}
-  mqNamesvrAddr: {{mqNamesvrAddr}}
-  VectorDB: {{VectorDB}}
-  milvusAddress: {{milvusAddress}}
-  milvusUser: {{milvusUser}}
-  milvusPasswd: {{milvusPasswd}}
-  elasticsearchUrl: {{elasticsearchUrl}}
-  elasticsearchVersion: {{elasticsearchVersion}}
-  embeddingType: {{embeddingType}}
-  arkEmbeddingDims: {{arkEmbeddingDims}}
-  embeddingMaxBatchSize: {{embeddingMaxBatchSize}}
-  functionPolefsVolumn: {{functionPolefsVolumn}}
-  afunctionVolCreateUser: {{afunctionVolCreateUser}}
+  region: { ? { region } }
+  cozestudioBackendFunctionName: { ? { cozestudioBackendFunctionName } }
+  cozestudioBackendDescription: { ? { cozestudioBackendDescription } }
+  cozestudioFrontendFunctionName: { ? { cozestudioFrontendFunctionName } }
+  cozestudioFrontendDescription: { ? { cozestudioFrontendDescription } }
+  logLevel: { ? { logLevel } }
+  pluginAesAuthSecret: { ? { pluginAesAuthSecret } }
+  pluginAesStateSecret: { ? { pluginAesStateSecret } }
+  pluginAesOauthTokenSecret: { ? { pluginAesOauthTokenSecret } }
+  ObjectStorage: { ? { ObjectStorage } }
+  s3Endpoint: { ? { s3Endpoint } }
+  s3AccessKey: { ? { s3AccessKey } }
+  s3SecretKey: { ? { s3SecretKey } }
+  s3Region: { ? { s3Region } }
+  s3Bucket: { ? { s3Bucket } }
+  redisAddr: { ? { redisAddr } }
+  redisPasswd: { ? { redisPasswd } }
+  mysqlHost: { ? { mysqlHost } }
+  mysqlPort: { ? { mysqlPort } }
+  mysqlDatabase: { ? { mysqlDatabase } }
+  mysqlUser: { ? { mysqlUser } }
+  mysqlPasswd: { ? { mysqlPasswd } }
+  MQ: { ? { MQ } }
+  mqNamesvrAddr: { ? { mqNamesvrAddr } }
+  VectorDB: { ? { VectorDB } }
+  milvusAddress: { ? { milvusAddress } }
+  milvusUser: { ? { milvusUser } }
+  milvusPasswd: { ? { milvusPasswd } }
+  elasticsearchUrl: { ? { elasticsearchUrl } }
+  elasticsearchUsername: { ? { elasticsearchUsername } }
+  elasticsearchPasswd: { ? { elasticsearchPasswd } }
+  elasticsearchVersion: { ? { elasticsearchVersion } }
+  embeddingType: { ? { embeddingType } }
+  embeddingMaxBatchSize: { ? { embeddingMaxBatchSize } }
+  openaiEmbeddingBaseUrl: { ? { openaiEmbeddingBaseUrl } }
+  openaiEmbeddingModel: { ? { openaiEmbeddingModel } }
+  openaiEmbeddingApiKey: { ? { openaiEmbeddingApiKey } }
+  openaiEmbeddingDims: { ? { openaiEmbeddingDims } }
 resources:
   cozestudioBackend:
     component: ${path('/utils/components/zfc')}
@@ -65,8 +66,10 @@ resources:
         min: 1
         max: 300
       environmentVariables:
-        COZE_MQ_TYPE: ${vars.MQ}
-        MQ_NAME_SERVER: ${vars.mqNamesvrAddr}
+        LISTEN_ADDR: ":8888"
+        LOG_LEVEL: ${vars.logLevel}
+        SERVER_HOST: "http://localhost:8888"
+        USE_SSL: "0"
         MYSQL_DATABASE: ${vars.mysqlDatabase}
         MYSQL_HOST: ${vars.mysqlHost}
         MYSQL_PASSWORD: ${vars.mysqlPasswd}
@@ -76,31 +79,33 @@ resources:
         ATLAS_URL: "mysql://${vars.mysqlUser}:${vars.mysqlPasswd}@${vars.mysqlHost}:${vars.mysqlPort}/${vars.mysqlDatabase}?charset=utf8mb4&parseTime=True"
         REDIS_ADDR: ${vars.redisAddr}
         REDIS_PASSWORD: ${vars.redisPasswd}
+        FILE_UPLOAD_COMPONENT_TYPE: "storage"
         STORAGE_TYPE: ${vars.ObjectStorage}
-        MINIO_AK: ${vars.minioAccessKey}
-        MINIO_DEFAULT_BUCKETS: ${vars.miniodefaultBucket}
-        STORAGE_UPLOAD_HTTP_SCHEME: ${vars.storageUploadHttpSchema}
-        MINIO_ENDPOINT: ${vars.minioEndpoint}
-        MINIO_API_HOST: ${vars.minioApiHost}
-        MINIO_SK: ${vars.minioSecretKey}
+        STORAGE_UPLOAD_HTTP_SCHEME: "http"
+        S3_REGION: ${vars.s3Region}
+        S3_ENDPOINT: ${vars.s3Endpoint}
+        STORAGE_BUCKET: ${vars.s3Bucket}
+        S3_ACCESS_KEY: ${vars.s3AccessKey}
+        S3_SECRET_KEY: ${vars.s3SecretKey}
+        ES_ADDR: ${vars.elasticsearchUrl}
+        ES_USERNAME: ${vars.elasticsearchUsername}
+        ES_PASSWORD: ${vars.elasticsearchPasswd}
+        ES_VERSION: ${vars.elasticsearchVersion}
+        COZE_MQ_TYPE: ${vars.MQ}
+        MQ_NAME_SERVER: ${vars.mqNamesvrAddr}
         VECTOR_STORE_TYPE: ${vars.VectorDB}
         MILVUS_ADDR: ${vars.milvusAddress}
         MILVUS_USER: ${vars.milvusUser}
         MILVUS_PASSWD: ${vars.milvusPasswd}
-        STORAGE_BUCKET: "opencoze"
-        ES_ADDR: ${vars.elasticsearchUrl}
-        ES_VERSION: ${vars.elasticsearchVersion}
-        LISTEN_ADDR: ":8888"
-        FILE_UPLOAD_COMPONENT_TYPE: "storage"
-        SERVER_HOST: "http://localhost:8888"
-        USE_SSL: ${vars.useSSL}
-        LOG_LEVEL: ${vars.logLevel}
+        EMBEDDING_TYPE: ${vars.embeddingType}
+        EMBEDDING_MAX_BATCH_SIZE: ${vars.embeddingMaxBatchSize}
+        OPENAI_EMBEDDING_BASE_URL: ${vars.openaiEmbeddingBaseUrl}
+        OPENAI_EMBEDDING_MODEL: ${vars.openaiEmbeddingModel}
+        OPENAI_EMBEDDING_API_KEY: ${vars.openaiEmbeddingApiKey}
+        OPENAI_EMBEDDING_DIMS: ${vars.openaiEmbeddingDims}
         PLUGIN_AES_AUTH_SECRET: ${vars.pluginAesAuthSecret}
         PLUGIN_AES_STATE_SECRET: ${vars.pluginAesStateSecret}
         PLUGIN_AES_OAUTH_TOKEN_SECRET: ${vars.pluginAesOauthTokenSecret}
-        EMBEDDING_TYPE: ${vars.embeddingType}
-        ARK_EMBEDDING_DIMS: ${vars.arkEmbeddingDims}
-        EMBEDDING_MAX_BATCH_SIZE: ${vars.embeddingMaxBatchSize}
       triggers:
       - triggerName: httptrigger
         triggerType: http
@@ -118,10 +123,6 @@ resources:
           - PATCH
           disable_url_internet: true
           auth_config: ""
-      nasConfig:
-      - volumeUniqueName: ${vars.functionPolefsVolumn}
-        mountDir: "/app/resources/conf"
-        createUserName: ${vars.afunctionVolCreateUser}
   cozestudioFrontend:
     component: ${path('/utils/components/zfc')}
     props:
@@ -148,7 +149,7 @@ resources:
         max: 300
       environmentVariables:
         COZESTUDIO_BACKEND_URL: "http://${resources.cozestudioBackend.output.http_trigger_url}"
-        MINIO_ENDPOINT: ${vars.minioEndpoint}
+        MINIO_ENDPOINT: ${vars.s3Endpoint}
       triggers:
       - triggerName: httptrigger
         triggerType: http
