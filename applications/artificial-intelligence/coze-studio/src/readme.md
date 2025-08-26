@@ -46,7 +46,7 @@ Elasticsearch
 
 ### Kafka配置
 
-- topic名称： opencoze_knowledge
+- 需要手动创建3个topic： opencoze_knowledge 、 opencoze_search_app 、 opencoze_search_resource
 
 
 ## 使用

@@ -25,6 +25,7 @@ vars:
   mysqlUser: {{mysqlUser}}
   mysqlPasswd: {{mysqlPasswd}}
   mqNamesvrAddr: {{mqNamesvrAddr}}
+  baseUrl: {{baseUrl}}
   apiKey: {{apiKey}}
   model: {{model}}
   qianfanAk: {{qianfanAk}}
@@ -60,8 +61,9 @@ resources:
         CLICKHOST_DATABASE: ${vars.clickhouseDatabase}
         CLICKHOST_PASSWD: ${vars.clickhousePasswd}
         CLICKHOST_USER: ${vars.clickhouseUser}
+        MODEL_BASEURL: ${vars.baseUrl}
         MODEL_APIKEY: ${vars.apiKey}
-        MODEL_ENDPOINT_ID: ${vars.model}
+        MODEL_ID: ${vars.model}
         MQ_NAME_SERVER_ADDR: ${vars.mqNamesvrAddr}
         MYSQL_DB: ${vars.mysqlDatabase}
         MYSQL_HOST: ${vars.mysqlHost}

@@ -50,6 +50,7 @@ Parameters:
   - MQ
   - mqNamesvrAddr
   - LLM
+  - baseUrl
   - apiKey
   - model
   - FileStorage
@@ -169,7 +170,7 @@ Parameters:
         type: input
     s3AccessKey:
       type: secret
-      default: "123456"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
@@ -179,7 +180,7 @@ Parameters:
         type: input
     s3SecretKey:
       type: secret
-      default: "123456"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
@@ -199,7 +200,7 @@ Parameters:
         type: input
     s3Region:
       type: string
-      default: "false"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
@@ -269,7 +270,7 @@ Parameters:
     mysqlHost:
       # title: 数据库名 Host
       type: string
-      default: 127.0.0.1
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
@@ -324,12 +325,10 @@ Parameters:
     MQ:
       # title: 数据库配置
       type: string
-      default: rmq
+      default: rocketMQ
       description: ""
       enum:
-      - rmq
-      - nsq
-      - kafka
+      - rocketMQ
       x-cate: applicationCate
       x-label: MQ配置
       x-placeholder: 请选择MQ类型
@@ -338,7 +337,7 @@ Parameters:
     mqNamesvrAddr:
       # title: 数据库名 Host
       type: string
-      default: ""
+      default: "coze-rocketmq-namesrv-k8s.functions:9876"
       description: ""
       x-cate: applicationCate
       x-label: MQ配置
@@ -357,6 +356,28 @@ Parameters:
       x-placeholder: 请选择LLM配置类型
       x-formitem:
         type: select
+    baseUrl:
+      # title: 数据库名 Host
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: LLM配置
+      x-restype: llm-apikey
+      x-placeholder: 请输入 base url
+      x-formitem:
+        type: input
+    model:
+      # title: 数据库名 Host
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: LLM配置
+      x-restype: llm-apikey
+      x-placeholder: 请输入 model id
+      x-formitem:
+        type: input
     apiKey:
       # title: 数据库名 Host
       type: secret
@@ -365,18 +386,7 @@ Parameters:
       x-cate: applicationCate
       x-label: LLM配置
       x-restype: llm-apikey
-      x-placeholder: 请输入 doubao apikey
-      x-formitem:
-        type: input
-    model:
-      # title: 数据库名 Host
-      type: secret
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: LLM配置
-      x-restype: llm-apikey
-      x-placeholder: 请输入 doubao endpointId
+      x-placeholder: 请输入 apikey
       x-formitem:
         type: input
     qianfanAk:

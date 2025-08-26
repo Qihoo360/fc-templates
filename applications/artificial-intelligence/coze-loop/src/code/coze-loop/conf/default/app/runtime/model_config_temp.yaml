@@ -1,31 +1,32 @@
 models:
-  - id: 1
-    name: "doubao"
-    frame: "eino"
-    protocol: "ark"
-    protocol_config:
-      api_key: "${MODEL_APIKEY}"
-      model: "${MODEL_ENDPOINT_ID}"
-    param_config:
-      param_schemas:
-        - name: "temperature"
-          label: "temperature"
-          desc: "Increasing temperature makes model output more diverse and creative, while decreasing it makes output more focused on instructions but less diverse. It's recommended not to adjust this simultaneously with 'Top p'."
-          type: "float"
-          min: "0"
-          max: "1.0"
-          default_val: "0.7"
-        - name: "max_tokens"
-          label: "max_tokens"
-          desc: "Controls the maximum number of tokens in model output. Typically, 100 tokens equals about 150 Chinese characters."
-          type: "int"
-          min: "1"
-          max: "4096"
-          default_val: "2048"
-        - name: "top_p"
-          label: "top_p"
-          desc: "Selects the minimum token set with cumulative probability reaching top_p during generation, excluding tokens outside the set, balancing diversity and reasonableness."
-          type: "float"
-          min: "0.001"
-          max: "1.0"
-          default_val: "0.7"
+- id: 1
+  name: "openapi"
+  frame: "eino"
+  protocol: "openai"
+  protocol_config:
+    base_url: "${MODEL_BASEURL}" # OpenAI Base Url
+    api_key: "${MODEL_APIKEY}" # OpenAI API Key
+    model: "${MODEL_ID}" # OpenAI 模型 ID
+  param_config:
+    param_schemas:
+    - name: "temperature"
+      label: "生成随机性"
+      desc: "调高温度会使得模型的输出更多样性和创新性，反之，降低温度会使输出内容更加遵循指令要求但减少多样性。建议不要与 “Top p” 同时调整。"
+      type: "float"
+      min: "0"
+      max: "1.0"
+      default_val: "0.7"
+    - name: "max_tokens"
+      label: "最大回复长度"
+      desc: "控制模型输出的 Tokens 长度上限。通常 100 Tokens 约等于 150 个中文汉字。"
+      type: "int"
+      min: "1"
+      max: "4096"
+      default_val: "2048"
+    - name: "top_p"
+      label: "Top P"
+      desc: "生成时选取累计概率达 top_p 的最小 token 集合，集合外 token 被排除，平衡多样性与合理性。"
+      type: "float" #
+      min: "0.001"
+      max: "1.0"
+      default_val: "0.7"
