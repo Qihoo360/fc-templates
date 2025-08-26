@@ -154,11 +154,11 @@ Parameters:
     ObjectStorage:
       # title: 对象存储配置
       type: string
-      default: minio
+      default: s3
       description: ""
       enum:
-      - minio
       - s3
+      - minio
       - tos
       x-cate: applicationCate
       x-label: 对象存储配置
@@ -217,8 +217,8 @@ Parameters:
     #     type: input
     s3AccessKey:
       type: secret
-      default: "********************"
-      description: "ak"
+      default: ""
+      description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
@@ -227,8 +227,8 @@ Parameters:
         type: input
     s3SecretKey:
       type: secret
-      default: "****************************************"
-      description: "sk"
+      default: ""
+      description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
@@ -238,7 +238,7 @@ Parameters:
     s3Endpoint:
       type: string
       default: ""
-      description: "endpoint"
+      description: ""
       pattern: "https?.*$"
       x-cate: applicationCate
       x-label: 对象存储配置
@@ -249,7 +249,7 @@ Parameters:
     s3Region:
       type: string
       default: ""
-      description: "region"
+      description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
@@ -259,7 +259,7 @@ Parameters:
     s3Bucket:
       type: string
       default: ""
-      description: "bucket"
+      description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
@@ -293,7 +293,7 @@ Parameters:
     redisPasswd:
       # title: DifyRedisUserName
       type: secret
-      default: "123456"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
@@ -450,7 +450,7 @@ Parameters:
     milvusPasswd:
       # title: milvus token
       type: secret
-      default: "123456"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 向量数据库配置
@@ -480,7 +480,7 @@ Parameters:
         type: input
     elasticsearchPasswd:
       type: secret
-      default: "xxxxxx"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: Elasticsearch配置
@@ -510,17 +510,6 @@ Parameters:
       x-placeholder: 请选择 embedding 类型
       x-formitem:
         type: select
-    embeddingMaxBatchSize:
-      # title: DifyRedisUserName
-      type: string
-      default: "100"
-      description: "embedding max batch size"
-      x-cate: applicationCate
-      x-label: embedding配置
-      x-restype: llm-apikey
-      x-placeholder: 请输入 embedding max batch size
-      x-formitem:
-        type: input
     openaiEmbeddingBaseUrl:
       type: string
       default: ""
@@ -563,6 +552,17 @@ Parameters:
       x-label: embedding配置
       x-restype: llm-apikey
       x-placeholder: 请输入 openai embedding dimensions
+      x-formitem:
+        type: input
+    embeddingMaxBatchSize:
+      # title: DifyRedisUserName
+      type: string
+      default: "100"
+      description: ""
+      x-cate: applicationCate
+      x-label: embedding配置
+      x-restype: llm-apikey
+      x-placeholder: 请输入 embedding max batch size
       x-formitem:
         type: input
 PropertyDescription:

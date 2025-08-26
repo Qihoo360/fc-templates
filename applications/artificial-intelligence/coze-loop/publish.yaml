@@ -246,7 +246,7 @@ Parameters:
     redisPasswd:
       # title: DifyRedisUserName
       type: secret
-      default: "123456"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
@@ -292,7 +292,7 @@ Parameters:
     mysqlDatabase:
       # title: 数据库名 Host
       type: string
-      default: ""
+      default: "cozeloop-mysql"
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
@@ -392,7 +392,7 @@ Parameters:
     qianfanAk:
       # title: 数据库名 Host
       type: secret
-      default: "***"
+      default: "xxx"
       description: ""
       x-cate: applicationCate
       x-label: LLM配置
@@ -403,7 +403,7 @@ Parameters:
     qianfanSk:
       # title: 数据库名 Host
       type: secret
-      default: "***"
+      default: "xxx"
       description: ""
       x-cate: applicationCate
       x-label: LLM配置
