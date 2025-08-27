@@ -148,10 +148,10 @@ Parameters:
     ObjectStorage:
       # title: 对象存储配置
       type: string
-      default: S3
+      default: s3
       description: ""
       enum:
-      - S3
+      - s3
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
@@ -211,10 +211,10 @@ Parameters:
     CacheDB:
       # title: 缓存配置
       type: string
-      default: Redis
+      default: redis
       description: ""
       enum:
-      - Redis
+      - redis
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
@@ -387,28 +387,6 @@ Parameters:
       x-label: LLM配置
       x-restype: llm-apikey
       x-placeholder: 请输入 apikey
-      x-formitem:
-        type: input
-    qianfanAk:
-      # title: 数据库名 Host
-      type: secret
-      default: "xxx"
-      description: ""
-      x-cate: applicationCate
-      x-label: LLM配置
-      x-restype: llm-apikey
-      x-placeholder: 请输入 qianfan ak (选填)
-      x-formitem:
-        type: input
-    qianfanSk:
-      # title: 数据库名 Host
-      type: secret
-      default: "xxx"
-      description: ""
-      x-cate: applicationCate
-      x-label: LLM配置
-      x-restype: llm-apikey
-      x-placeholder: 请输入 qianfan sk (选填)
       x-formitem:
         type: input
     FileStorage:

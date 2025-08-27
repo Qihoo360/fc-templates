@@ -21,6 +21,8 @@ WORKDIR /cozeloop
 
 COPY . .
 
+RUN mv .git-bak .git
+
 # 基础依赖源设置
 RUN sh conf/docker/apt/source/apply.sh
 

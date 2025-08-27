@@ -28,8 +28,6 @@ vars:
   baseUrl: {{baseUrl}}
   apiKey: {{apiKey}}
   model: {{model}}
-  qianfanAk: {{qianfanAk}}
-  qianfanSk: {{qianfanSk}}
   functionPolefsVolumn: {{functionPolefsVolumn}}
   afunctionVolCreateUser: {{afunctionVolCreateUser}}
 resources:
@@ -70,8 +68,6 @@ resources:
         MYSQL_PASSWD: ${vars.mysqlPasswd}
         MYSQL_PORT: ${vars.mysqlPort}
         MYSQL_USER: ${vars.mysqlUser}
-        QIANFAN_AK: ${vars.qianfanAk}
-        QIANFAN_SK: ${vars.qianfanSk}
         REDIS_HOST: ${vars.redisHost}
         REDIS_PASSWD: ${vars.redisPasswd}
         REDIS_PORT: ${vars.redisPort}
