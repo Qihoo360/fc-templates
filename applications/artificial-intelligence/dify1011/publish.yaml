@@ -5,60 +5,61 @@ Type: Project
 Effective: Public
 Name: dify-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 该示例通过 Dify 可快速搭建生产级的生成式 AI 应用。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/dify1011
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - difySandboxFunctionName
-    - difyPluginDaemonFunctionName
-    - difyApiFunctionName
-    - difyWebFunctionName
-    - DifyCustomDomain
-    - CacheDB
-    - REDIS_PASSWORD
-    - REDIS_HOST
-    - REDIS_PORT
-    - REDIS_DATABASE
-    - REDIS_DATABASE_CELERY
-    - DifyDBSCHEME
-    - POSTGRES_USERNAME
-    - POSTGRES_PASSWORD
-    - POSTGRES_HOST
-    - POSTGRES_PORT
-    - DifyDBPluginDataBase
-    - POSTGRES_DATABASE
-    - ObjectStorage
-    - DifyAwsS3Endpoint
-    - DifyAwsS3Bucket
-    - DifyAwsS3Region
-    - DifyAwsS3Ak
-    - DifyAwsS3Sk
-    - FileStorage
-    - POLEFS_VOLUME
-    - POLEFS_MOUNT_PATH
-    - PolefsVolumeCreateUse
+  required:
+  # 必填项
+  - region
+  - difySandboxFunctionName
+  - difyPluginDaemonFunctionName
+  - difyApiFunctionName
+  - difyWebFunctionName
+  - DifyCustomDomain
+  - CacheDB
+  - REDIS_PASSWORD
+  - REDIS_HOST
+  - REDIS_PORT
+  - REDIS_DATABASE
+  - REDIS_DATABASE_CELERY
+  - DifyDBSCHEME
+  - POSTGRES_USERNAME
+  - POSTGRES_PASSWORD
+  - POSTGRES_HOST
+  - POSTGRES_PORT
+  - DifyDBPluginDataBase
+  - POSTGRES_DATABASE
+  - ObjectStorage
+  - DifyAwsS3Endpoint
+  - DifyAwsS3Bucket
+  - DifyAwsS3Region
+  - DifyAwsS3Ak
+  - DifyAwsS3Sk
+  - FileStorage
+  - POLEFS_VOLUME
+  - POLEFS_MOUNT_PATH
+  - PolefsVolumeCreateUse
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -158,7 +159,7 @@ Parameters:
       default: Redis
       description: ""
       enum:
-        - Redis
+      - Redis
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
@@ -237,7 +238,7 @@ Parameters:
       default: postgresql
       description: ""
       enum:
-        - postgresql
+      - postgresql
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: postgresql
@@ -316,7 +317,7 @@ Parameters:
       default: OBS
       description: ""
       enum:
-        - OBS
+      - OBS
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
@@ -384,7 +385,7 @@ Parameters:
       default: "milvus"
       description: ""
       enum:
-        - milvus
+      - milvus
       x-cate: applicationCate
       x-label: 向量数据库配置
       x-restype: milvus
@@ -437,7 +438,7 @@ Parameters:
       default: Polefs
       description: ""
       enum:
-        - Polefs
+      - Polefs
       x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs

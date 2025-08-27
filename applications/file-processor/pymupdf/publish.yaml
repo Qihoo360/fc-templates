@@ -2,30 +2,31 @@ Edition: 3.0.0
 Type: Project
 Name: pymupdf
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 该示例通过 PyMuPDF 操作 PDF 及图像格式文档。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/file-processor/pymupdf
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: 文件处理
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - functionName
+  required:
+  # 必填项
+  - region
+  - functionName
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select

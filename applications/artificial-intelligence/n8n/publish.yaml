@@ -26,11 +26,11 @@ Parameters:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       x-cate: resourceCate
       enum:
-        - cn-north-cu-1
+      - beijing
       x-reaction-properties:
       - POLEFS_VOLUME
       x-formitem:

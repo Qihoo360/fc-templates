@@ -5,36 +5,37 @@ Type: Project
 Effective: Public
 Name: haystack-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 该示例通过 Haystack 构建模块化 NLP 检索系统。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/haystack
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - FunctionName
-    - LogStorage
-    - ELASTICSEARCH_HOST
-    - ELASTICSEARCH_PORT
+  required:
+  # 必填项
+  - region
+  - FunctionName
+  - LogStorage
+  - ELASTICSEARCH_HOST
+  - ELASTICSEARCH_PORT
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -64,7 +65,7 @@ Parameters:
       default: Elasticsearch
       description: ""
       enum:
-        - Elasticsearch
+      - Elasticsearch
       x-cate: applicationCate
       x-label: 日志配置
       x-restype: elasticsearch

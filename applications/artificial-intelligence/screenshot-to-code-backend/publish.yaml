@@ -2,31 +2,32 @@ Edition: 3.0.0
 Type: Project
 Name: screenshot-to-code-backend
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: Convert any screenshot or design to clean code (with support for most frameworks)
 HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/screenshot-to-code-backend
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: 人工智能
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - functionName
-    - apiKey
+  required:
+  # 必填项
+  - region
+  - functionName
+  - apiKey
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-formitem:
         type: select
     functionName:

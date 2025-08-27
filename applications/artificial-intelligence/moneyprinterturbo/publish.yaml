@@ -3,38 +3,39 @@ Type: Project
 Effective: Public
 Name: moneyprinterturbo-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 该示例通过 MoneyPrinterTurbo 自动生成短视频内容。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/moneyprinterturbo
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - moneyprinterturboApiFunctionName
-    - moneyprinterturboWebFunctionName
-    - FileStorage
-    - POLEFS_VOLUME
-    - POLEFS_MOUNT_PATH
-    - PolefsVolumeCreateUser
+  required:
+  # 必填项
+  - region
+  - moneyprinterturboApiFunctionName
+  - moneyprinterturboWebFunctionName
+  - FileStorage
+  - POLEFS_VOLUME
+  - POLEFS_MOUNT_PATH
+  - PolefsVolumeCreateUser
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -84,7 +85,7 @@ Parameters:
       default: Polefs
       description: ""
       enum:
-        - Polefs
+      - Polefs
       x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs

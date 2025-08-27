@@ -2,30 +2,30 @@ Edition: 3.0.0
 Type: Project
 Name: stirling-pdf
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 这是一个通过Stirling-PDF Web 应用程序，对 PDF 文件执行各种操作的示例
 HomePage: https://github.com/Qihoo360/fc-templates/applications/file-processor/stirling-pdf
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: 文件处理
 Parameters:
   type: object
   additionalProperties: false
   required:
-    - region
-    - functionName
+  - region
+  - functionName
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-formitem:
         type: select
       x-cate: resourceCate

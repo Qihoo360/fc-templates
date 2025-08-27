@@ -3,49 +3,49 @@ Type: Project
 Effective: Public
 Name: fc-zyun-app
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 快速部署一个 Golang 的 Hello World 函数到函数计算（FC）。
 HomePage: https://github.com/Qihoo360/fc-templates/examples/custom-runtime/http-function
 Organization: 函数计算（FC）
 Tags:
-  - 函数计算
-  - 新手入门
+- 函数计算
+- 新手入门
 Category: 新手入门
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false
   required:
-    - region
-    - afunctionName
-    - afunctionPolefsVolumn
-    - afunctionMountDir
-    - afunctionPolefsVolumnCreateUser
-    - bfunctionName
-    - bfunctionPolefsVolumn
-    - bfunctionMountDir
-    - bfunctionPolefsVolumnCreateUser
-    - MYSQL_HOST
-    - MYSQL_DATABASE
-    - MYSQL_PORT
-    - MYSQL_USERNAME
-    - MYSQL_PASSWORD
+  - region
+  - afunctionName
+  - afunctionPolefsVolumn
+  - afunctionMountDir
+  - afunctionPolefsVolumnCreateUser
+  - bfunctionName
+  - bfunctionPolefsVolumn
+  - bfunctionMountDir
+  - bfunctionPolefsVolumnCreateUser
+  - MYSQL_HOST
+  - MYSQL_DATABASE
+  - MYSQL_PORT
+  - MYSQL_USERNAME
+  - MYSQL_PASSWORD
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-reaction-properties:
-        - afunctionPolefsVolumn
-        - bfunctionPolefsVolumn
+      - afunctionPolefsVolumn
+      - bfunctionPolefsVolumn
       x-formitem:
         type: select
     afunctionName:

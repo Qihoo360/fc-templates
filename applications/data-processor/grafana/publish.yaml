@@ -5,35 +5,36 @@ Type: Project
 Effective: Public
 Name: grafana-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 该示例展示了一个通过grafana创建的开放且可组合的可观测性和数据可视化平台
 HomePage: https://github.com/Qihoo360/fc-templates/applications/data-processor/grafana
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - grafanaFunctionName
-    - DataBase
-    - MYSQL_URL
+  required:
+  # 必填项
+  - region
+  - grafanaFunctionName
+  - DataBase
+  - MYSQL_URL
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -63,7 +64,7 @@ Parameters:
       default: mysql
       description: ""
       enum:
-        - mysql
+      - mysql
       x-cate: applicationCate
       x-label: Grafana数据库配置
       x-restype: mysql

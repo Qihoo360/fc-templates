@@ -49,11 +49,11 @@ Parameters:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
-      # default: cn-north-cu-1
+      default: beijing
+      # default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -240,7 +240,7 @@ Parameters:
       default: Polefs
       description: "持久存储卷"
       enum:
-        - Polefs
+      - Polefs
       x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs

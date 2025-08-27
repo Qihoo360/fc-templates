@@ -2,31 +2,32 @@ Edition: 3.0.0
 Type: Project
 Name: fc-zyun-java
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 快速部署一个 Java 的 Hello World 函数到函数计算（FC）。
 HomePage: https://github.com/Qihoo360/fc-templates/examples/built-in-runtime/http-function
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
-  - 函数计算
-  - 新手入门
-  - 你好世界
+- 函数计算
+- 新手入门
+- 你好世界
 Category: 新手入门
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - functionName
+  required:
+  # 必填项
+  - region
+  - functionName
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-formitem:
         type: select
     functionName:

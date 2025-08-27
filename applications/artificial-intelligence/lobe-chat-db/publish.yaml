@@ -5,36 +5,37 @@ Type: Project
 Effective: Public
 Name: lobe-chat-db-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 该示例通过 LobeChat-DB 支持聊天记录持久化存储。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/lobe-chat-db
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - FunctionName
-    - DataBase
-    - NEXT_PUBLIC_SERVICE_MODE
-    - ObjectStorage
+  required:
+  # 必填项
+  - region
+  - FunctionName
+  - DataBase
+  - NEXT_PUBLIC_SERVICE_MODE
+  - ObjectStorage
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -84,7 +85,7 @@ Parameters:
       default: mysql
       description: ""
       enum:
-        - mysql
+      - mysql
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: mysql
@@ -138,7 +139,7 @@ Parameters:
       default: OBS
       description: ""
       enum:
-        - OBS
+      - OBS
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3

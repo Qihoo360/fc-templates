@@ -5,63 +5,63 @@ Type: Project
 Effective: Public
 Name: bisheng-backend
 Provider:
-  - fc
+- fc
 Version: 0.0.1
 Description: 这是一个专攻办公场景的 LLM 应用开发平台
 HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/bisheng-backend
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: 人工智能
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
   required:
-    # 必填项
-    - region
-    - bishengOfficeFunctionName
-    - bishengOfficeDescription
-    - bishengBackendFunctionName
-    - bishengBackendDescription
-    - bishengFrontendFunctionName
-    - bishengFrontendDescription
-    - elasticsearchUrl
-    - elasticsearchSslVerify
-    - VectorDB
-    - MILVUS_HOST
-    - MILVUS_PORT
-    - MILVUS_USERNAME
-    - MILVUS_PASSWORD
-    - milvusSecure
-    - milvusIsPartition
-    - milvusPartitionSuffiix
-    - ObjectStorage
-    - minioEndpoint
-    - minioAccessKey
-    - minioSecretKey
-    - minioCertCheck
-    - minioSchema
-    - minioSharePoin
-    - CacheDB
-    - REDIS_URL
-    - CELERY_REDIS_URL
-    - DataBase
-    - MYSQL_URL
+  # 必填项
+  - region
+  - bishengOfficeFunctionName
+  - bishengOfficeDescription
+  - bishengBackendFunctionName
+  - bishengBackendDescription
+  - bishengFrontendFunctionName
+  - bishengFrontendDescription
+  - elasticsearchUrl
+  - elasticsearchSslVerify
+  - VectorDB
+  - MILVUS_HOST
+  - MILVUS_PORT
+  - MILVUS_USERNAME
+  - MILVUS_PASSWORD
+  - milvusSecure
+  - milvusIsPartition
+  - milvusPartitionSuffiix
+  - ObjectStorage
+  - minioEndpoint
+  - minioAccessKey
+  - minioSecretKey
+  - minioCertCheck
+  - minioSchema
+  - minioSharePoin
+  - CacheDB
+  - REDIS_URL
+  - CELERY_REDIS_URL
+  - DataBase
+  - MYSQL_URL
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-reaction-properties:
-        - functionPolefsVolumn
+      - functionPolefsVolumn
       x-formitem:
         type: select
     bishengOfficeFunctionName:
@@ -150,7 +150,7 @@ Parameters:
       default: milvus
       description: ""
       enum:
-        - milvus
+      - milvus
       x-cate: applicationCate
       x-label: 向量数据库配置
       x-restype: milvus
@@ -241,7 +241,7 @@ Parameters:
       default: MinIO
       description: ""
       enum:
-        - MinIO
+      - MinIO
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
@@ -314,7 +314,7 @@ Parameters:
       default: Redis
       description: ""
       enum:
-        - Redis
+      - Redis
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
@@ -349,7 +349,7 @@ Parameters:
       default: mysql
       description: ""
       enum:
-        - mysql
+      - mysql
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: mysql

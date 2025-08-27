@@ -5,59 +5,60 @@ Type: Project
 Effective: Public
 Name: dify-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 该示例通过dify可快速搭建生产级的生成式AI应用
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/dify
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - difyApiFunctionName
-    - difyWebFunctionName
-    - DifyCustomDomain
-    - CacheDB
-    - REDIS_PASSWORD
-    - REDIS_HOST
-    - REDIS_PORT
-    - REDIS_DATABASE
-    - REDIS_DATABASE_CELERY
-    - DataBase
-    - DifyDBSCHEME
-    - POSTGRES_USERNAME
-    - POSTGRES_PASSWORD
-    - POSTGRES_HOST
-    - POSTGRES_PORT
-    - POSTGRES_DATABASE
-    - ObjectStorage
-    - DifyAwsS3Endpoint
-    - DifyAwsS3Bucket
-    - DifyAwsS3Region
-    - DifyAwsS3Ak
-    - DifyAwsS3Sk
-    - FileStorage
-    - WEAVIATE_URL
-    - WEAVIATE_API_KEY
-    - DifyCodeExecutionEndpoint
-    - DifyCodeExecutionApiKey
+  required:
+  # 必填项
+  - region
+  - difyApiFunctionName
+  - difyWebFunctionName
+  - DifyCustomDomain
+  - CacheDB
+  - REDIS_PASSWORD
+  - REDIS_HOST
+  - REDIS_PORT
+  - REDIS_DATABASE
+  - REDIS_DATABASE_CELERY
+  - DataBase
+  - DifyDBSCHEME
+  - POSTGRES_USERNAME
+  - POSTGRES_PASSWORD
+  - POSTGRES_HOST
+  - POSTGRES_PORT
+  - POSTGRES_DATABASE
+  - ObjectStorage
+  - DifyAwsS3Endpoint
+  - DifyAwsS3Bucket
+  - DifyAwsS3Region
+  - DifyAwsS3Ak
+  - DifyAwsS3Sk
+  - FileStorage
+  - WEAVIATE_URL
+  - WEAVIATE_API_KEY
+  - DifyCodeExecutionEndpoint
+  - DifyCodeExecutionApiKey
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -157,7 +158,7 @@ Parameters:
       default: Redis
       description: ""
       enum:
-        - Redis
+      - Redis
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
@@ -236,7 +237,7 @@ Parameters:
       default: postgresql
       description: ""
       enum:
-        - postgresql
+      - postgresql
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: postgresql
@@ -315,7 +316,7 @@ Parameters:
       default: OBS
       description: ""
       enum:
-        - OBS
+      - OBS
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
@@ -383,7 +384,7 @@ Parameters:
       default: Weaviate
       description: ""
       enum:
-        - Weaviate
+      - Weaviate
       x-cate: applicationCate
       x-label: 向量数据库配置
       x-restype: weaviate
@@ -440,7 +441,7 @@ Parameters:
       default: Polefs
       description: ""
       enum:
-        - Polefs
+      - Polefs
       x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs

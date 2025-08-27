@@ -5,33 +5,34 @@ Type: Project
 Effective: Public
 Name: anything-llm-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 这是一个通过Anything-llm将各种文档、资源或内容转换成上下文以便给大模型聊天时参考使用的示例
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/anything-llm
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - functionName
+  required:
+  # 必填项
+  - region
+  - functionName
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select

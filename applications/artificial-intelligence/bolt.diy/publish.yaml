@@ -4,30 +4,31 @@ Edition: 3.0.0
 Type: Project
 Name: bolt-diy
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 这是一个用bolt.diy基于AI的全栈开发平台。
 HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/bolt.diy
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - functionName
+  required:
+  # 必填项
+  - region
+  - functionName
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select

@@ -5,37 +5,38 @@ Type: Project
 Effective: Public
 Name: casdoor-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 该示例通过 Casdoor 实现多方式认证与用户管理。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/casdoor
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - FunctionName
-    - driverName
-    - MYSQL_DSN
-    - DataBase
-    - MYSQL_DATABASE
+  required:
+  # 必填项
+  - region
+  - FunctionName
+  - driverName
+  - MYSQL_DSN
+  - DataBase
+  - MYSQL_DATABASE
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -65,7 +66,7 @@ Parameters:
       default: mysql
       description: ""
       enum:
-        - mysql
+      - mysql
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: mysql

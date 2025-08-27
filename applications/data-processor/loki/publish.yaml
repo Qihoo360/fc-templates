@@ -5,42 +5,43 @@ Type: Project
 Effective: Public
 Name: loki-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 这是通过Loki创建的水平可扩展、高可用给、多租户日志聚合系统的示例
 HomePage: https://github.com/Qihoo360/fc-templates/applications/data-processor/loki
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - lokiFunctionName
-    - grafanaFunctionName
-    - ObjectStorage
-    - LokiAwsEndpoint
-    - LokiAwsRegion
-    - LokiAwsBucket
-    - LokiAwsAK
-    - LokiAwsSK
-    - DataBase
-    - MYSQL_URL
+  required:
+  # 必填项
+  - region
+  - lokiFunctionName
+  - grafanaFunctionName
+  - ObjectStorage
+  - LokiAwsEndpoint
+  - LokiAwsRegion
+  - LokiAwsBucket
+  - LokiAwsAK
+  - LokiAwsSK
+  - DataBase
+  - MYSQL_URL
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -90,7 +91,7 @@ Parameters:
       default: OBS
       description: ""
       enum:
-        - OBS
+      - OBS
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
@@ -158,7 +159,7 @@ Parameters:
       default: mysql
       description: ""
       enum:
-        - mysql
+      - mysql
       x-cate: applicationCate
       x-label: Grafana数据库配置
       x-restype: mysql

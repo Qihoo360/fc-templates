@@ -5,53 +5,54 @@ Type: Project
 Effective: Public
 Name: mem0-v1
 Provider:
-  - fc
+- fc
 Version: 0.0.1
 Description: 该示例通过 mem0 快速搭建现代AI代理设计的内存层。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/mem0
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: 人工智能
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - mem0FunctionName  
-    - Mem0RedisDataBase
-    - Mem0RedisPassword
-    - Mem0RedisHost
-    - Mem0RedisPort
-    - Mem0Neo4jDataBase
-    - Mem0Neo4jHost
-    - Mem0Neo4jPort
-    - Mem0Neo4jUser
-    - Mem0Neo4jDbPassword
-    - Mem0Neo4jDbname
-    - OpenaiApiBaseUrl
-    - OpenaiApiKey
-    - OpenaiModel
-    - OpenaiEmbeddingModel
-    - OpenaiMaxTokens
-    - OpenaiTemperature
-    - OpenaiEmbeddingDims
-    - FileStorage
-    - PolefsVolume
-    - MountDir
-    - PolefsVolumeCreateUse
+  required:
+  # 必填项
+  - region
+  - mem0FunctionName
+  - Mem0RedisDataBase
+  - Mem0RedisPassword
+  - Mem0RedisHost
+  - Mem0RedisPort
+  - Mem0Neo4jDataBase
+  - Mem0Neo4jHost
+  - Mem0Neo4jPort
+  - Mem0Neo4jUser
+  - Mem0Neo4jDbPassword
+  - Mem0Neo4jDbname
+  - OpenaiApiBaseUrl
+  - OpenaiApiKey
+  - OpenaiModel
+  - OpenaiEmbeddingModel
+  - OpenaiMaxTokens
+  - OpenaiTemperature
+  - OpenaiEmbeddingDims
+  - FileStorage
+  - PolefsVolume
+  - MountDir
+  - PolefsVolumeCreateUse
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -81,7 +82,7 @@ Parameters:
       default: redis
       description: ""
       enum:
-        - redis
+      - redis
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
@@ -123,9 +124,9 @@ Parameters:
       default: neo4j
       description: ""
       enum:
-        - neo4j
+      - neo4j
       x-cate: applicationCate
-      x-label:  图数据库配置
+      x-label: 图数据库配置
       x-restype: neo4j
       x-placeholder: 请选择数据库类型
       x-formitem:
@@ -263,7 +264,7 @@ Parameters:
       default: Polefs
       description: ""
       enum:
-        - Polefs
+      - Polefs
       x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs

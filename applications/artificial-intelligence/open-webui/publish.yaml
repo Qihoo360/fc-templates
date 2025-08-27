@@ -2,37 +2,38 @@ Edition: 3.0.0
 Type: Project
 Name: open-webui
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 该示例通过 Open WebUI 构建可离线运行的 AI 平台。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/open-webui
 Organization: 函数计算（FC）
 Effective: Public
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: 人工智能
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - functionName
-    - FileStorage
-    - POLEFS_VOLUME
-    - POLEFS_MOUNT_PATH
-    - polefsVolumeCreateUser
+  required:
+  # 必填项
+  - region
+  - functionName
+  - FileStorage
+  - POLEFS_VOLUME
+  - POLEFS_MOUNT_PATH
+  - polefsVolumeCreateUser
   properties:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       x-cate: resourceCate
       enum:
-        - cn-north-cu-1
+      - beijing
       x-reaction-properties:
-        - POLEFS_VOLUME
+      - POLEFS_VOLUME
       x-formitem:
         type: select
     functionName:
@@ -61,7 +62,7 @@ Parameters:
       default: Polefs
       description: ""
       enum:
-        - Polefs
+      - Polefs
       x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs

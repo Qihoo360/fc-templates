@@ -30,10 +30,10 @@ Parameters:
     region:
       title: 地域
       type: string
-      default: cn-north-cu-1
+      default: beijing
       description: 创建应用所在的地区
       enum:
-        - cn-north-cu-1
+      - beijing
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -88,11 +88,11 @@ Parameters:
       x-cate: applicationCate
       x-label: 控制台设置
       enum:
-        - openai
-        - gemini
-        - deepseek
-        - siliconflow
-        - zhipu
+      - openai
+      - gemini
+      - deepseek
+      - siliconflow
+      - zhipu
       x-formitem:
         type: select
 
