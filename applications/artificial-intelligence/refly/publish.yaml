@@ -26,13 +26,10 @@ Parameters:
     - reflyApiFunctionName
     - reflyApi2FunctionName
     - reflyWebFunctionName
-
-    
     - RedisDataBase
     - REDIS_PASSWORD
     - REDIS_HOST
     - REDIS_PORT
-
     - PGDataBase
     - POSTGRES_HOST
     - POSTGRES_PORT
@@ -55,19 +52,15 @@ Parameters:
     - QDRANT_HOST
     - QDRANT_PORT
     - QDRANT_API_KEY
-    - LANCEDB_URI
-
+    # - LANCEDB_URI
     - SEARXNG
     - SEARXNG_HOST
     - SEARXNG_PORT
-
     - ELASTICSEARCH
     - ELASTICSEARCH_HOST
     - ELASTICSEARCH_PORT
     - ELASTICSEARCH_USERNAME
     - ELASTICSEARCH_PASSWORD
-
-
   properties:
     region:
       title: 地域
@@ -118,8 +111,7 @@ Parameters:
       x-placeholder: 请输入reflyApi函数描述
       x-cate: resourceCate
       x-formitem:
-        type: input
-    
+        type: input  
     reflyWebFunctionName:
       title: reflyWebFunctionName 函数名
       type: string
@@ -255,8 +247,6 @@ Parameters:
       x-placeholder: 输入数据库schema名称
       x-formitem:
         type: input
-
-
     MINIODataBase:
       type: string
       default: minio
@@ -392,17 +382,6 @@ Parameters:
       x-placeholder: 请输入向量数据库服务密钥
       x-formitem:
         type: input
-    LANCEDB_URI:
-      type: string
-      default: "" 
-      description: ""
-      x-cate: applicationCate
-      x-label: 向量数据库配置
-      x-restype: qdrant
-      x-placeholder: 请输入向量数据库服务地址
-      x-formitem:
-        type: input
-
     SEARXNG:
       type: string
       default: searxng
@@ -488,8 +467,6 @@ Parameters:
       x-placeholder: 请输入搜索引擎服务密码
       x-formitem:
         type: input
-
-    
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"
