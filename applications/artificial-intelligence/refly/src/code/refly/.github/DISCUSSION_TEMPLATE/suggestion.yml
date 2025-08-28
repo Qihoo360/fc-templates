@@ -1,0 +1,56 @@
+title: Suggestions for New Features
+body:
+  - type: checkboxes
+    attributes:
+      label: Self Checks
+      description: "To make sure we get to you in time, please check the following :)"
+      options:
+        - label: I have searched for existing issues [search for existing issues](https://github.com/refly-ai/refly/issues), including closed ones.
+          required: true
+        - label: I confirm that I am using English to submit this report (我已阅读并同意 [Language Policy](https://github.com/refly-ai/refly/discussions)).
+          required: true
+        - label: "Please do not modify this template :) and fill in all the required fields."
+          required: true
+  - type: dropdown
+    attributes:
+      label: Related Feature Area
+      description: Which area of Refly is most related to your suggestion?
+      options:
+        - Multi-threaded Dialogues
+        - AI-Powered Capabilities (Web Search, Knowledge Base Search)
+        - Context Memory & References
+        - Knowledge Base Integration & RAG
+        - Quotes & Citations
+        - AI Document Editing & WYSIWYG
+        - Free-form Canvas Interface
+        - New Feature Area
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 1. What's your suggestion?
+      placeholder: Please describe your suggestion and how it would enhance the Refly experience. For example, "I think it would be great if the multi-threaded dialogues could..."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 2. What problem does this solve?
+      placeholder: Describe the use case or challenge this suggestion addresses.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 3. Additional context or comments
+      placeholder: (Any other information, mockups, examples from other tools, or screenshots that help illustrate your suggestion.)
+    validations:
+      required: false
+  - type: checkboxes
+    attributes:
+      label: 4. Can you help us with this feature?
+      description: Let us know! This is not a commitment, but a starting point for collaboration.
+      options:
+        - label: I am interested in contributing to this feature.
+          required: false
+  - type: markdown
+    attributes:
+      value: Please limit one request per issue.

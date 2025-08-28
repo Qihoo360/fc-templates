@@ -1,0 +1,545 @@
+:root {
+  --editor-white: #fff;
+  --editor-black: #2e2b29;
+  --editor-black-contrast: #110f0e;
+  --editor-gray-1: rgba(61, 37, 20, 0.05);
+  --editor-gray-2: rgba(61, 37, 20, 0.08);
+  --editor-gray-3: rgba(61, 37, 20, 0.12);
+  --editor-gray-4: rgba(53, 38, 28, 0.3);
+  --editor-gray-5: rgba(28, 25, 23, 0.6);
+  --editor-purple: #6a00f5;
+  --editor-purple-contrast: #5800cc;
+  --editor-purple-light: rgba(88, 5, 255, 0.05);
+  --editor-yellow-contrast: #facc15;
+  --editor-yellow: rgba(250, 204, 21, 0.4);
+  --editor-yellow-light: #fffae5;
+  --editor-red: #ff5c33;
+  --editor-red-light: #ffebe5;
+  --editor-shadow: 0px 12px 33px 0px rgba(0, 0, 0, 0.06),
+    0px 3.618px 9.949px 0px rgba(0, 0, 0, 0.04);
+}
+
+/* Basic editor styles */
+.tiptap {
+  caret-color: var(--purple);
+  margin: 0.5rem;
+  padding: 1rem;
+
+
+  &:focus {
+    outline: none;
+  }
+
+  > * + * {
+    margin-top: 0.75em;
+  }
+
+
+  ul,
+  ol {
+    padding: 0 1rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #151719;
+    line-height: 1.1;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  code {
+    background-color: rgba(#616161, 0.1);
+    color: #616161;
+  }
+
+  pre {
+    background: #f1f1f1;
+    border-radius: 0.5rem;
+    color: black;
+    padding: 0.75rem 1rem;
+
+    code {
+      background: none;
+      color: inherit;
+      font-size: 0.8rem;
+      padding: 0;
+    }
+  }
+
+  // 暗色模式样式
+  @at-root .dark & {
+    // background-color: #151719;
+    // color: #e5e5e5;
+
+    h1, h2, h3, h4, h5, h6 {
+      color: inherit;
+    }
+
+    strong {
+      color: inherit;
+    }
+
+    code {
+      background-color: rgba(#9ca3af, 0.2);
+      color: #d1d5db;
+    }
+
+    pre {
+      background: #2d2d2d;
+      color: #f8f8f2;
+
+      code {
+        color: inherit;
+        background: transparent;
+      }
+    }
+
+    blockquote {
+      color: #a1a1aa;
+      border-left-color: rgba(229, 229, 229, 0.1);
+    }
+
+    hr {
+      border-top-color: rgba(229, 229, 229, 0.1);
+    }
+  }
+  mark {
+    background-color: #faf594;
+  }
+
+  img {
+    height: auto;
+    max-width: 100%;
+  }
+
+  hr {
+    margin: 1rem 0;
+  }
+
+  blockquote {
+    color: #707070;
+    border-left: 2px solid rgba(#0d0d0d, 0.1);
+    padding-left: 1rem;
+  }
+
+  hr {
+    border: none;
+    border-top: 2px solid rgba(#0d0d0d, 0.1);
+    margin: 2rem 0;
+  }
+
+  ul[data-type="taskList"] {
+    list-style: none;
+    padding: 0;
+
+    li {
+      align-items: center;
+      display: flex;
+
+      > label {
+        flex: 0 0 auto;
+        margin-right: 0.5rem;
+        user-select: none;
+      }
+
+      > div {
+        flex: 1 1 auto;
+      }
+    }
+  }
+}
+
+.ai-note-editor-content-container {
+  background-color: transparent;
+  border-radius: 0.75rem;
+  color: #0d0d0d;
+  position: relative;
+
+  .tiptap {
+    padding: 0;
+  }
+
+  &__header {
+    align-items: center;
+    background: #0d0d0d;
+    border-bottom: 3px solid #0d0d0d;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    padding: 0.25rem;
+  }
+
+  &__content {
+    flex: 1 1 auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  &__footer {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    font-size: 12px;
+    flex-wrap: wrap;
+    font-weight: 600;
+    justify-content: space-between;
+    padding: 0.25rem 0.75rem;
+    white-space: nowrap;
+  }
+
+  /* Some information about the status */
+  &__status {
+    align-items: center;
+    border-radius: 5px;
+    display: flex;
+
+    &::before {
+      background: rgba(#0d0d0d, 0.5);
+      border-radius: 50%;
+      content: " ";
+      display: inline-block;
+      flex: 0 0 auto;
+      height: 0.5rem;
+      margin-right: 0.5rem;
+      width: 0.5rem;
+    }
+
+    &--connecting::before {
+      background: #616161;
+    }
+
+    &--connected::before {
+      background: #b9f18d;
+    }
+  }
+
+  &__name {
+    button {
+      background: none;
+      border: none;
+      border-radius: 0.4rem;
+      color: #0d0d0d;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+
+      &:hover {
+        background-color: #0d0d0d;
+        color: #fff;
+      }
+    }
+  }
+}
+
+/* Give a remote user a caret */
+.collaboration-cursor__caret {
+  border-left: 1px solid #0d0d0d;
+  border-right: 1px solid #0d0d0d;
+  margin-left: -1px;
+  margin-right: -1px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+
+/* Render the username above the caret */
+.collaboration-cursor__label {
+  border-radius: 3px 3px 3px 0;
+  color: #0d0d0d;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  left: -1px;
+  line-height: normal;
+  padding: 0.1rem 0.3rem;
+  position: absolute;
+  top: -1.4em;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.ai-note-container {
+  position: relative;
+  height: 100%;
+
+  .note-detail-tab-container {
+    &.arco-tabs-card > .arco-tabs-content,
+    &.arco-tabs-card-gutter > .arco-tabs-content {
+      border: none;
+      padding: 0;
+    }
+
+    .note-detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 40px;
+      padding: 0 4px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+      .note-detail-navigation-bar {
+        .nav-btn {
+          color: rgba(0, 0, 0, 0.5);
+          font-size: 12px;
+          height: 32px;
+
+          &:hover {
+            background-color: #f1f1f0;
+          }
+
+          &:not(:first-child) {
+            margin-left: 8px;
+          }
+        }
+
+        .assist-action-item {
+          color: rgba(0, 0, 0, 0.5);
+          font-size: 12px;
+
+          &:hover,
+          &.active {
+            cursor: pointer;
+            background-color: #f1f1f0;
+            color: #0E9F77;
+          }
+        }
+
+        button.assist-action-item {
+          height: 30px;
+          padding: 0 4px;
+          border-radius: 8px;
+
+          &:hover,
+          &.active {
+            cursor: pointer;
+            background-color: #f1f1f0;
+            color: #0E9F77;
+          }
+        }
+      }
+
+      .note-detail-nav-switcher {
+        width: calc(100% - 105px);
+        margin-left: 0;
+
+        .arco-tabs-header-nav {
+          width: 100%;
+        }
+      }
+
+      .arco-tabs-header {
+        transform: translateY(4px);
+      }
+
+      .arco-tabs-header-title {
+        border: none;
+        border-radius: 8px;
+        background-color: transparent;
+        position: relative;
+        margin-left: 2px;
+        margin-right: 2px;
+
+        .arco-tabs-header-title-text {
+          max-width: 200px;
+          overflow: hidden; /* 隐藏溢出内容 */
+          white-space: nowrap; /* 禁止换行 */
+          text-overflow: ellipsis; /* 超出内容显示省略号 */
+        }
+
+        &:not(:first-child):before {
+          content: "";
+          clear: both;
+          position: absolute;
+          left: 0;
+          width: 2px;
+          height: 40%;
+          background-color: rgba(0, 0, 0, 0.1);
+          display: block;
+        }
+
+        &:hover {
+          background-color: #f1f1f0;
+
+          &::before {
+            background-color: transparent;
+          }
+
+          & + .arco-tabs-header-title {
+            &::before {
+              background-color: transparent;
+            }
+          }
+        }
+
+        .arco-tabs-header-title-text {
+          font-size: 12px;
+        }
+      }
+
+      .arco-tabs-header-nav::before {
+        background-color: transparent;
+        height: 0;
+      }
+
+      .arco-tabs-header-wrapper {
+        &::before,
+        &::after {
+          border: 1px solid gray;
+        }
+      }
+
+      .arco-tabs-header-title-active {
+        position: relative;
+        background-color: #f3f3ee;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+
+        &:hover {
+          .arco-icon-hover::before {
+            background-color: #c9cdd4;
+          }
+        }
+
+        &::before {
+          content: "";
+          clear: both;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          width: 100% !important;
+          height: 2px !important;
+          background-color: #0E9F77 !important;
+          display: block;
+        }
+
+        & + .arco-tabs-header-title {
+          &::before {
+            background-color: transparent;
+          }
+        }
+      }
+    }
+  }
+
+  .ai-note-editor {
+    position: relative;
+    height: calc(100% - 4px);
+    overflow: scroll;
+    padding-bottom: 48px;
+    width: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    &-container {
+      width: 95%;
+      max-width: 1024px;
+    }
+  }
+
+  .document-editor-spin {
+    .arco-spin-children {
+      height: 100%;
+      width: 100%;
+    }
+  }
+}
+
+/* Table of contents styles */
+.toc-container {
+  position: sticky;
+  top: 16px;
+  padding: 0.75rem 1rem;
+  height: calc(100vh - 32px);
+  border-left: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+
+  .text-lg {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+
+  .toc-list {
+    flex: 1;
+    overflow-y: auto;
+    font-size: 14px;
+    color: #4b5563;
+
+    /* Custom scrollbar styles */
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #e5e7eb;
+      border-radius: 4px;
+    }
+
+    .toc-item {
+      padding: 4px 8px;
+      margin: 2px 0;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      position: relative;
+      cursor: pointer;
+      color: #6b7280; // Default light color
+
+      &:hover {
+        background-color: #f3f4f6;
+        color: #111827;
+      }
+
+      &.active {
+        background-color: #f3f4f6;
+        color: #111827;
+        font-weight: 500;
+
+        // All items after the active item become darker
+        & ~ .toc-item {
+          color: #374151;
+        }
+      }
+
+      // Different styles based on heading level
+      &[data-level="1"] {
+        font-weight: 500;
+      }
+
+      &[data-level="2"] {
+        font-weight: normal;
+      }
+
+      &[data-level="3"] {
+        font-weight: normal;
+        font-size: 13px;
+      }
+
+      // Add numbering style
+      &::before {
+        content: attr(data-index);
+        margin-right: 0.5rem;
+        color: inherit;
+        opacity: 0.75;
+      }
+    }
+  }
+}

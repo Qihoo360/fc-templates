@@ -1,0 +1,34 @@
+tasks:
+  - name: Deploy Services
+    init: cd deploy/docker && cp ../../apps/api/.env.example .env && docker compose up -d
+
+ports:
+  - port: 5700
+    name: API
+    onOpen: open-preview
+    visibility: public
+    protocol: http
+  - port: 5432
+    name: PostgreSQL
+    visibility: private
+  - port: 6379
+    name: Redis
+    visibility: private
+  - port: 9000
+    name: MinIO
+    visibility: private
+  - port: 9001
+    name: MinIO Console
+    visibility: private
+  - port: 8080
+    name: SearXNG
+    visibility: private
+  - port: 6333
+    name: Qdrant
+    visibility: private
+
+vscode:
+  extensions:
+    - dbaeumer.vscode-eslint
+    - esbenp.prettier-vscode
+    - prisma.prisma

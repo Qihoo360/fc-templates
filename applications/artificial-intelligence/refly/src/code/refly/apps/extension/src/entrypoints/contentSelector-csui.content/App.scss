@@ -1,0 +1,21 @@
+.refly-content-selector-container {
+  .refly-content-selector-mark {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    background-color: #ffd40024 !important;
+  }
+}
+
+[data-refly-inline-selected-mark-id],
+[data-refly-block-selected-mark-id] {
+  color: unset !important;
+  border-bottom: 2px solid rgb(255, 212, 0) !important;
+  background-color: #ffd40024 !important;
+  cursor: pointer !important;
+}

@@ -1,0 +1,11 @@
+{
+  "extends": "@refly/tsconfig/react.json",
+  "include": ["./src"],
+  "exclude": ["node_modules", "dist"],
+  "compilerOptions": {
+    // path
+    "paths": {
+      "@refly-packages/ai-workspace-common/*": ["../../packages/ai-workspace-common/src/*"]
+    }
+  }
+}

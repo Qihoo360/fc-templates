@@ -1,0 +1,99 @@
+.sider-menu-setting-list-dropdown {
+  .ant-dropdown-menu {
+    width: 232px;
+    padding: 8px;
+    background-color: var(--refly-bg-content-z2);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--refly-Card-Border);
+  }
+
+  
+
+  .ant-dropdown-menu-item {
+    padding: 8px 6px !important;
+    height: 36px;
+    line-height: 20px;
+    border-radius: 8px;
+    color: var(--refly-text-0);
+
+    &:hover {
+      background-color: var(--refly-tertiary-hover)!important;
+    }
+
+    &.ant-dropdown-menu-item-disabled {
+      color: var(--refly-text-0);
+      background-color: transparent;
+      cursor: default;
+    }
+  }
+
+  .ant-dropdown-menu-item-group {
+    .user-header{
+      height: auto!important;
+      padding: 0!important;
+    }
+    .ant-dropdown-menu-item-group-title {
+      display: none;
+    }
+    .ant-dropdown-menu-item-disabled {
+      background-color: transparent!important;
+      cursor: default!important;
+    }
+  }
+
+
+  .ant-dropdown-menu-submenu-open {
+    background-color: var(--refly-tertiary-hover);
+  }
+
+  .ant-dropdown-menu-submenu {
+    border-radius: 8px;
+    &:hover {
+      background-color: var(--refly-tertiary-hover);
+    }
+
+    .ant-dropdown-menu-submenu-title {
+      padding: 8px 6px;
+      height: 36px;
+      line-height: 20px;
+      color: var(--refly-text-0);
+
+      &:hover {
+        background-color: var(--refly-bg-content-z1);
+      }
+    }
+  }
+
+  .ant-dropdown-menu-sub {
+    width: 160px;
+    padding: 8px;
+    background-color: var(--refly-bg-content-z2);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--refly-Card-Border);
+  }
+
+  .ant-dropdown-menu-divider {
+    margin: 4px 0;
+    background-color: var(--refly-Card-Border);
+  }
+
+
+}
+
+.theme-dropdown-submenu {
+  .ant-dropdown-menu-item-group-title {
+    display: none;
+  }
+  .ant-dropdown-menu-item-group-list {
+    margin: 0 0!important;
+  }
+}
+
+.subscription-card {
+  background-image: url("../../assets/banner.svg");
+  background-size: cover;
+  background-position: 0 0;
+  background-repeat: no-repeat;
+}

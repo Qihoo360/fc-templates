@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "📧 Discussions"
+    url: https://github.com/refly-ai/refly/discussions/categories/general
+    about: General discussions and request help from the community
+  - name: "📚 Documentation"
+    url: https://docs.refly.ai/
+    about: Check our documentation for guides and references
+  - name: "💬 Discord Community"
+    url: https://discord.gg/bWjffrb89h
+    about: Join our Discord community for real-time discussions and support

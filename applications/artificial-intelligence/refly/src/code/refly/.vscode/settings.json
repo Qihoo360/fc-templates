@@ -1,0 +1,23 @@
+{
+  "files.associations": {
+    "*.json": "jsonc",
+    "*.css": "tailwindcss"
+  },
+  "files.eol": "\n",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "biomejs.biome",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "tailwindCSS.includeLanguages": {
+    "typescript": "tsx",
+    "javascript": "jsx",
+    "html": "html",
+    "css": "css",
+    "scss": "scss"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  }
+}

@@ -1,0 +1,358 @@
+edition: 3.0.0
+name: refly-app
+access: default
+vars:
+  region: {{region}}
+  reflyApiFunctionName : {{reflyApiFunctionName}}
+  reflyApiDescription : {{reflyApiDescription}}
+  reflyApi2FunctionName : {{reflyApi2FunctionName}}
+  reflyApi2Description : {{reflyApi2Description}}
+  reflyWebFunctionName : {{reflyWebFunctionName}}
+  reflyWebDescription : {{reflyWebDescription}}
+
+
+  RedisDataBase: {{RedisDataBase}}
+  RedisPassword: {{REDIS_PASSWORD}}
+  RedisHost: {{REDIS_HOST}}
+  RedisPort: {{REDIS_PORT}}
+
+  PGDataBase: {{PGDataBase}}
+  PGHost: {{POSTGRES_HOST}}
+  PGPort: {{POSTGRES_PORT}}
+  PGUser: {{POSTGRES_USERNAME}}
+  PGPassword: {{POSTGRES_PASSWORD}}
+  PGDbName: {{POSTGRES_DATABASE}}
+  PGSchema: {{POSTGRES_SCHEMA}}
+
+  MINIODataBase: {{MINIODataBase}}
+  MINIOInternalBucket: {{MINIO_INTERAL_BUCKET}}
+  MINIOExteralBucket: {{MINIO_EXTERNAL_BUCKET}}
+  MINIOEndpoint: {{MINIO_ENDPOINT}}
+  MINIOPort: {{MINIO_PORT}}
+  MINIOAccessKey: {{MINIO_ACCESS_KEY}}
+  MINIOSecretKey: {{MINIO_SECRET_KEY}}
+  MINIOUseSSL: {{MINIO_USE_SSL}}
+
+  QDRANTDataBase: {{QDRANTDataBase}}
+  VectorStoreBackend: {{VECTOR_STORE_BACKEND}}
+  QDRANTHost: {{QDRANT_HOST}}
+  QDRANTPort: {{QDRANT_PORT}}
+  QDRANTApiKey: {{QDRANT_API_KEY}}
+  LANCEDBUri: {{LANCEDB_URI}}
+
+  SEARXNGDataBase: {{SEARXNGDataBase}}
+  SEARXNGHost: {{SEARXNG_HOST}}
+  SEARXNGPort: {{SEARXNG_PORT}}
+
+  ElasticSearchDataBase: {{ELASTICSEARCHDataBase}}
+  ElasticSearchHost: {{ELASTICSEARCH_HOST}}
+  ElasticSearchPort: {{ELASTICSEARCH_PORT}}
+  ElasticSearchUserName: {{ELASTICSEARCH_USERNAME}}
+  ElasticSearchPassword: {{ELASTICSEARCH_PASSWORD}}
+
+resources:
+  reflyApi:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.reflyApiDescription}
+      runtime: custom
+      memorySize: 4096
+      cpu: 4
+      diskSize: 4096
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      port: 5800
+      functionName: ${vars.reflyApiFunctionName}
+      sourceSubDir: code/refly
+      environmentVariables:
+        testkey: testvalue
+        TZ: "Asia/Shanghai"
+        GIN_MODE: "debug"
+        NODE_ENV: "production"
+        PORT: 5800
+        WS_PORT: 5801
+        ORIGIN: "http://127.0.0.1:5700,http://127.0.0.1:5173,http://127.0.0.1"
+        AUTO_MIGRATE_DB_SCHEMA: 1
+        STATIC_PUBLIC_ENDPOINT: "/api/v1/misc/public"
+        STATIC_PRIVATE_ENDPOINT: "/api/v1/misc"      
+        REDIS_HOST: ${vars.RedisHost}
+        REDIS_PORT: ${vars.RedisPort}
+        REDIS_USERNAME: ""
+        REDIS_PASSWORD: ${vars.RedisPassword}        
+        DATABASE_URL: "postgresql://${vars.PGUser}:${vars.PGPassword}@${vars.PGHost}:${PGPort}/${vars.PGDbName}?schema=${vars.PGSchema}"
+        VECTOR_STORE_BACKEND: ${vars.VectorStoreBackend}
+        QDRANT_HOST: ${vars.QDRANTHost}
+        QDRANT_PORT: ${vars.QDRANTPort}
+        QDRANT_API_KEY: ${vars.QDRANTApiKey}
+        LANCEDB_URI: ${vars.LANCEDBUri}
+        ELASTICSEARCH_URL: "http://${vars.ElasticsearchHost}:${vars.ElasticsearchPort}"
+        ELASTICSEARCH_USERNAME: ${vars.ElasticsearchUsername}
+        ELASTICSEARCH_PASSWORD: ${vars.ElasticsearchPassword}
+        MINIO_INTERNAL_ENDPOINT: ${vars.MINIOEndpoint}
+        MINIO_INTERNAL_PORT: ${vars.MINIOPort}
+        MINIO_INTERNAL_USE_SSL: ${vars.MINIOUseSSL}
+        MINIO_INTERNAL_ACCESS_KEY: ${vars.MINIOAccessKey}
+        MINIO_INTERNAL_SECRET_KEY: ${vars.MINIOSecretKey}
+        MINIO_INTERNAL_BUCKET: ${vars.MINIOInternalBucket}
+        MINIO_EXTERNAL_ENDPOINT: ${vars.MINIOEndpoint}
+        MINIO_EXTERNAL_PORT: ${vars.MINIOPort}
+        MINIO_EXTERNAL_USE_SSL: ${vars.MINIOUseSSL}
+        MINIO_EXTERNAL_ACCESS_KEY: ${vars.MINIOAccessKey}
+        MINIO_EXTERNAL_SECRET_KEY: ${vars.MINIOSecretKey}
+        MINIO_EXTERNAL_BUCKET: ${vars.MINIOExternalBucket}
+        SEARXNG_BASE_URL: "http://${vars.SearxngHost}:${vars.SearxngPort}"
+        AUTH_SKIP_VERIFICATION: true
+        REFLY_COOKIE_DOMAIN: ""
+        REFLY_COOKIE_SECURE: ""
+        REFLY_COOKIE_SAME_SITE: ""
+        LOGIN_REDIRECT_URL: ""
+        JWT_SECRET: ""
+        JWT_EXPIRATION_TIME: ""
+        JWT_REFRESH_EXPIRATION_TIME: ""
+        ENCRYPTION_KEY: ""
+        COLLAB_TOKEN_EXPIRY: ""
+        EMAIL_AUTH_ENABLED: false
+        EMAIL_SENDER: ""
+        RESEND_API_KEY: "re_123"
+        GITHUB_AUTH_ENABLED: "manager/include/grpc++/impl/codegen/config_protobuf.h"
+        GITHUB_CLIENT_ID: ""
+        GITHUB_CLIENT_SECRET: ""
+        GITHUB_CALLBACK_URL: ""
+        GOOGLE_AUTH_ENABLED: false
+        GOOGLE_CLIENT_ID: ""
+        GOOGLE_CLIENT_SECRET: ""
+        GOOGLE_CALLBACK_URL: ""
+        SKILL_IDLE_TIMEOUT: 60000
+        SKILL_EXECUTION_TIMEOUT: 180000
+        STRIPE_API_KEY: ""
+        STRIPE_ACCOUNT_WEBHOOK_SECRET: "test"
+        STRIPE_ACCOUNT_TEST_WEBHOOK_SECRET: "test"
+        STRIPE_SESSION_SUCCESS_URL: ""
+        STRIPE_SESSION_CANCEL_URL: ""
+        STRIPE_PORTAL_RETURN_URL: ""
+        QUOTA_T1_TOKEN: -1
+        QUOTA_T2_TOKEN: -1
+        QUOTA_T1_REQUEST: -1
+        QUOTA_T2_REQUEST: -1
+        QUOTA_STORAGE_FILE: -1
+        QUOTA_STORAGE_OBJECT: -1
+        QUOTA_STORAGE_VECTOR: -1
+        QUOTA_FILE_PARSE_PAGE: -1
+        REPLICATE_API_KEY: ""
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 2
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "apps/api/Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+  reflyApi2:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.reflyApi2Description}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 4096
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      port: 5801
+      functionName: ${vars.reflyApi2FunctionName}
+      sourceSubDir: code/refly
+      environmentVariables:
+        testkey: testvalue
+        TZ: "Asia/Shanghai"
+        GIN_MODE: "debug"
+        NODE_ENV: "production"
+        PORT: 5800
+        WS_PORT: 5801
+        ORIGIN: "http://127.0.0.1:5700,http://127.0.0.1:5173,http://127.0.0.1"
+        AUTO_MIGRATE_DB_SCHEMA: 1
+        STATIC_PUBLIC_ENDPOINT: "/api/v1/misc/public"
+        STATIC_PRIVATE_ENDPOINT: "/api/v1/misc"
+        REDIS_HOST: ${vars.RedisHost}
+        REDIS_PORT: ${vars.RedisPort}
+        REDIS_USERNAME: ""
+        REDIS_PASSWORD: ${vars.RedisPassword}
+        DATABASE_URL: "postgresql://${vars.PGUser}:${vars.PGPassword}@${vars.PGHost}:${PGPort}/${vars.PGDbName}?schema=${vars.PGSchema}"
+        VECTOR_STORE_BACKEND: ${vars.VectorStoreBackend}
+        QDRANT_HOST: ${vars.QDRANTHost}
+        QDRANT_PORT: ${vars.QDRANTPort}
+        QDRANT_API_KEY: ${vars.QDRANTApiKey}
+        LANCEDB_URI: ${vars.LANCEDBUri}
+        ELASTICSEARCH_URL: "http://${vars.ElasticsearchHost}:${vars.ElasticsearchPort}"
+        ELASTICSEARCH_USERNAME: ${vars.ElasticsearchUsername}
+        ELASTICSEARCH_PASSWORD: ${vars.ElasticsearchPassword}
+        MINIO_INTERNAL_ENDPOINT: ${vars.MINIOEndpoint}
+        MINIO_INTERNAL_PORT: ${vars.MINIOPort}
+        MINIO_INTERNAL_USE_SSL: ${vars.MINIOUseSSL}
+        MINIO_INTERNAL_ACCESS_KEY: ${vars.MINIOAccessKey}
+        MINIO_INTERNAL_SECRET_KEY: ${vars.MINIOSecretKey}
+        MINIO_INTERNAL_BUCKET: ${vars.MINIOInternalBucket}
+        MINIO_EXTERNAL_ENDPOINT: ${vars.MINIOEndpoint}
+        MINIO_EXTERNAL_PORT: ${vars.MINIOPort}
+        MINIO_EXTERNAL_USE_SSL: ${vars.MINIOUseSSL}
+        MINIO_EXTERNAL_ACCESS_KEY: ${vars.MINIOAccessKey}
+        MINIO_EXTERNAL_SECRET_KEY: ${vars.MINIOSecretKey}
+        MINIO_EXTERNAL_BUCKET: ${vars.MINIOExternalBucket}
+        SEARXNG_BASE_URL: "http://${vars.SearxngHost}:${vars.SearxngPort}"
+        AUTH_SKIP_VERIFICATION: true
+        REFLY_COOKIE_DOMAIN: ""
+        REFLY_COOKIE_SECURE: ""
+        REFLY_COOKIE_SAME_SITE: ""
+        LOGIN_REDIRECT_URL: ""
+        JWT_SECRET: ""
+        JWT_EXPIRATION_TIME: ""
+        JWT_REFRESH_EXPIRATION_TIME: ""
+        ENCRYPTION_KEY: ""
+        COLLAB_TOKEN_EXPIRY: ""
+        EMAIL_AUTH_ENABLED: false
+        EMAIL_SENDER: ""
+        RESEND_API_KEY: "re_123"
+        GITHUB_AUTH_ENABLED: "manager/include/grpc++/impl/codegen/config_protobuf.h"
+        GITHUB_CLIENT_ID: ""
+        GITHUB_CLIENT_SECRET: ""
+        GITHUB_CALLBACK_URL: ""
+        GOOGLE_AUTH_ENABLED: false
+        GOOGLE_CLIENT_ID: ""
+        GOOGLE_CLIENT_SECRET: ""
+        GOOGLE_CALLBACK_URL: ""
+        SKILL_IDLE_TIMEOUT: 60000
+        SKILL_EXECUTION_TIMEOUT: 180000
+        STRIPE_API_KEY: ""
+        STRIPE_ACCOUNT_WEBHOOK_SECRET: "test"
+        STRIPE_ACCOUNT_TEST_WEBHOOK_SECRET: "test"
+        STRIPE_SESSION_SUCCESS_URL: ""
+        STRIPE_SESSION_CANCEL_URL: ""
+        STRIPE_PORTAL_RETURN_URL: ""
+        QUOTA_T1_TOKEN: -1
+        QUOTA_T2_TOKEN: -1
+        QUOTA_T1_REQUEST: -1
+        QUOTA_T2_REQUEST: -1
+        QUOTA_STORAGE_FILE: -1
+        QUOTA_STORAGE_OBJECT: -1
+        QUOTA_STORAGE_VECTOR: -1
+        QUOTA_FILE_PARSE_PAGE: -1
+        REPLICATE_API_KEY: ""
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 2
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "apps/api/Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+  reflyWeb:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.reflyWebDescription}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 10240
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      code:
+        templated_files:
+          - code/refly/deploy/docker/nginx.conf
+      port: 8080
+      functionName: ${vars.reflyWebFunctionName}
+      sourceSubDir: code/chatwiki
+      environmentVariables:
+        testkey: "testvalue"
+        TZ: "Asia/Shanghai"
+        API_ENDPOINT: "http://${resources.reflyApi.output.http_trigger_url}"
+        API_2_ENDPOINT: "http://${resources.reflyApi2.output.http_trigger_url}"
+        VITE_API_URL: "http://${resources.reflyApi.output.http_trigger_url}"
+        VITE_COLLAB_URL: "http://${resources.reflyApi2.output.http_trigger_url}"
+        VITE_SUBSCRIPTION_ENABLED: ""
+        VITE_CANVAS_TEMPLATE_ENABLED: ""
+        VITE_STATIC_PUBLIC_ENDPOINT: "http://${resources.reflyApi.output.http_trigger_url}/v1/misc/public"
+        VITE_STATIC_PRIVATE_ENDPOINT: "http://${resources.reflyApi2.output.http_trigger_url}/v1/misc"
+        VITE_SENTRY_ENABLED: ""
+        VITE_SENTRY_DSN: ""
+
+        VITE_GTAG_ID: ""
+        VITE_RUNTIME: ""
+
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "apps/web/Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""

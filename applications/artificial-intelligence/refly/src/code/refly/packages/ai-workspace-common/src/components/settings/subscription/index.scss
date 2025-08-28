@@ -1,0 +1,479 @@
+.subscription-management-page {
+  // antd override
+  .ant-table-wrapper .ant-table-pagination.ant-pagination {
+    background: transparent;
+  }
+
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 680px;
+
+  .subscription-header {
+    padding-left: 16px;
+    margin-bottom: 16px;
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      color: var(--text-icon-refly-text-1, rgba(28, 31, 35, 0.8));
+
+      font-family: "PingFang SC";
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 16px;
+    }
+  }
+
+  .subscription-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 16px;
+  }
+
+  .subscription-plan-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 12px;
+    background-color: #fff;
+    background-image: url("./banner-bg.svg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-bottom: 16px;
+
+    padding: 32px 12px 20px 12px;
+
+    border-radius: 12px;
+    border: 0.5px solid var(--border---refly-Card-Border, rgba(0, 0, 0, 0.1));
+
+    box-shadow: 0 2px 20px 4px rgba(0, 0, 0, 0.04);
+
+    .plan-info {
+      .current-plan-label {
+        font-size: 14px;
+
+        color: var(--text-icon-refly-text-0, #1c1f23);
+
+        font-family: "PingFang SC";
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 16px;
+      }
+      .current-plan-name {
+        margin-top: 4px;
+        font-size: 24px;
+        font-weight: bold;
+
+        color: var(--text-icon-refly-text-0, #1c1f23);
+
+        font-family: "PingFang SC";
+        font-size: 22px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 32px;
+      }
+    }
+
+    .plan-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .plan-renewal-info {
+        font-size: 12px;
+        color: var(--text-icon-refly-text-1, rgba(28, 31, 35, 0.8));
+        white-space: nowrap;
+      }
+
+      .ant-btn {
+        display: flex;
+        width: 120px;
+        height: var(--height-button_default, 32px);
+        padding: var(--spacing-button_default-paddingTop, 6px)
+          var(--spacing-button_default-paddingRight, 12px)
+          var(--spacing-button_default-paddingTop, 6px)
+          var(--spacing-button_default-paddingLeft, 12px);
+        justify-content: center;
+        align-items: center;
+        border-radius: 8px;
+
+        &.ant-btn-primary {
+          border: 0 solid var(--border---refly-Card-Border, rgba(0, 0, 0, 0.1));
+          background: var(--primary---refly-primary-default, #0e9f77);
+        }
+      }
+    }
+
+    .upgrade-button {
+      display: flex;
+      width: 120px;
+      height: var(--height-button_default, 32px);
+      padding: var(--spacing-button_default-paddingTop, 6px)
+        var(--spacing-button_default-paddingRight, 12px)
+        var(--spacing-button_default-paddingTop, 6px)
+        var(--spacing-button_default-paddingLeft, 12px);
+      justify-content: center;
+      align-items: center;
+
+      border-radius: 8px;
+      border: 0 solid var(--border---refly-Card-Border, rgba(0, 0, 0, 0.1));
+      background: var(--primary---refly-primary-default, #0e9f77);
+    }
+
+    // Free plan style (current style)
+    &.plan-free {
+      // This class preserves the existing look for free plan.
+      // The default styles of .subscription-plan-card already handle this.
+    }
+
+    // Starter plan style
+    &.plan-starter {
+      background-color: rgba(223, 255, 246, 0.7); // Light blue overlay
+      .current-plan-name {
+        color: var(--text-icon-refly-text-0, #1c1f23);
+      }
+      .plan-actions {
+        .plan-renewal-info {
+          color: var(--text-icon-refly-text-1, rgba(28, 31, 35, 0.8));
+        }
+        .ant-btn-default {
+          background-color: #f0f0f0;
+          border-color: #f0f0f0;
+          color: var(--text-icon-refly-text-0, #1c1f23);
+        }
+      }
+    }
+
+    // Maker plan style
+    &.plan-maker {
+      background-color: rgba(223, 255, 246, 0.7); // Light blue overlay
+      .current-plan-name {
+        color: var(--text-icon-refly-text-0, #1c1f23);
+      }
+      .plan-actions {
+        .plan-renewal-info {
+          color: var(--text-icon-refly-text-1, rgba(28, 31, 35, 0.8));
+        }
+        .ant-btn-default {
+          background-color: #f0f0f0;
+          border-color: #f0f0f0;
+          color: var(--text-icon-refly-text-0, #1c1f23);
+        }
+      }
+    }
+  }
+
+  .usage-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+
+    .usage-card {
+      padding: 16px;
+      border-radius: 12px;
+      background-color: #f7f7f7;
+
+      .usage-label {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 8px;
+
+        color: var(--text-icon-refly-text-0, #1c1f23);
+
+        font-family: "PingFang SC";
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 16px;
+      }
+      .usage-value {
+        color: var(--text-icon-refly-text-0, #1c1f23);
+
+        font-family: "PingFang SC";
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 28px;
+
+        .quota-text {
+          color: rgba(28, 31, 35, 0.5);
+        }
+      }
+    }
+  }
+
+  .points-history {
+    margin-top: 24px;
+
+    .history-tabs {
+      margin-bottom: 24px;
+      background-color: #f5f5f5;
+      padding: 4px;
+      border-radius: 20px;
+      display: inline-block;
+      border: 1px solid #e8e8e8;
+
+      .ant-segmented-item {
+        border-radius: 16px !important;
+      }
+
+      .ant-segmented-item-label {
+        color: var(--text-icon-refly-text-0, #1c1f23);
+        text-align: center;
+        font-size: 12px;
+        font-weight: 400;
+        padding: 2px 8px;
+        min-height: unset;
+        line-height: unset;
+        border-radius: 16px;
+      }
+
+      .ant-segmented-item-selected {
+        background-color: #fff !important;
+        border-radius: 16px !important;
+
+        .ant-segmented-item-label {
+          color: var(--text-icon-refly-text-0, #1c1f23);
+          text-align: center;
+          font-size: 12px;
+          font-weight: 600;
+          border-radius: 16px;
+        }
+      }
+
+      // Ensure consistent border radius during transitions
+      .ant-segmented-thumb {
+        border-radius: 16px !important;
+      }
+    }
+
+    .history-table {
+      border-radius: 12px;
+      overflow: hidden;
+      background-color: #fff;
+      border: 1px solid #e5e7eb;
+
+      // Remove all table separator lines
+      .ant-table-thead > tr > th::before,
+      .ant-table-tbody > tr > td::before {
+        display: none !important;
+      }
+
+      .ant-table {
+        background-color: #fff;
+      }
+
+      .ant-table-container {
+        border: none;
+      }
+
+      .ant-table-thead > tr > th {
+        background: #fff !important;
+        border-bottom: none;
+        color: var(--text-icon-refly-text-1, rgba(28, 31, 35, 0.8));
+        font-family: "PingFang SC";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: 20px;
+        padding: 12px 16px;
+        border-right: none !important;
+
+        // Remove the separator line (::before pseudo-element)
+        &::before {
+          display: none !important;
+        }
+      }
+
+      .ant-table-tbody > tr > td {
+        border-bottom: none;
+        padding: 12px 16px;
+        font-size: 14px;
+
+        // Remove the separator line (::before pseudo-element)
+        &::before {
+          display: none !important;
+        }
+      }
+
+      .ant-table-tbody > tr.ant-table-row:hover > td {
+        background: #fafafa;
+      }
+
+      .ant-table-pagination.ant-pagination {
+        background: #fff;
+        margin: 0;
+        padding: 16px;
+        justify-content: center;
+        border-top: none;
+      }
+    }
+  }
+}
+
+.dark {
+  .subscription-management-page {
+    .subscription-header {
+      .subtitle {
+        color: var(--text-color-secondary);
+      }
+    }
+
+    .subscription-plan-card {
+      background-color: #333;
+      background-image: url("./banner-bg.svg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      .plan-info {
+        .current-plan-label,
+        .current-plan-name {
+          color: var(--text-color-primary);
+        }
+
+        .plan-actions {
+          .plan-renewal-info {
+            color: var(--refly-text-1);
+          }
+        }
+      }
+    }
+
+    .usage-cards {
+      .usage-card {
+        background-color: #333;
+
+        .usage-label,
+        .usage-value {
+          color: var(--text-color-primary);
+
+          .quota-text {
+            color: rgba(255, 255, 255, 0.5);
+          }
+        }
+
+        .usage-label {
+          color: var(--text-color-secondary);
+        }
+      }
+    }
+
+    .points-history {
+      .history-tabs {
+        background-color: #1c1f23;
+        border: 1px solid #424242;
+
+        .ant-segmented-item {
+          border-radius: 16px !important;
+        }
+
+        .ant-segmented-item-label {
+          color: var(--text-color-primary);
+          border-radius: 16px;
+        }
+
+        .ant-segmented-item-selected {
+          background-color: #424242 !important;
+          border-radius: 16px !important;
+
+          .ant-segmented-item-label {
+            color: var(--text-color-primary);
+            border-radius: 16px;
+          }
+        }
+
+        // Ensure consistent border radius during transitions
+        .ant-segmented-thumb {
+          border-radius: 16px !important;
+        }
+      }
+
+      .history-table {
+        border: 1px solid #424242;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 16px;
+        background-color: #222222;
+
+        // Remove all table separator lines
+        .ant-table-thead > tr > th::before,
+        .ant-table-tbody > tr > td::before {
+          display: none !important;
+        }
+
+        .ant-table {
+          background-color: #222222;
+          border-radius: 12px;
+        }
+
+        .ant-table-thead > tr > th {
+          background: #222222 !important;
+          color: rgba(255, 255, 255, 0.8);
+          border-bottom: none;
+          border-right: none !important;
+          font-family: "PingFang SC";
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 600;
+          line-height: 20px;
+          padding: 12px 16px;
+
+          // Remove the separator line (::before pseudo-element)
+          &::before {
+            display: none !important;
+          }
+        }
+
+        .ant-table-tbody > tr > td {
+          background: #222222;
+          color: rgba(255, 255, 255, 0.85);
+          border-bottom: none;
+          padding: 12px 16px;
+          font-size: 14px;
+
+          // Remove the separator line (::before pseudo-element)
+          &::before {
+            display: none !important;
+          }
+        }
+
+        .ant-table-tbody > tr.ant-table-row:hover > td {
+          background: #333333;
+        }
+
+        .ant-table-pagination.ant-pagination {
+          background: #222222;
+          border-top: none;
+          padding: 16px 8px;
+
+          .ant-pagination-item a {
+            color: rgba(255, 255, 255, 0.85);
+          }
+          .ant-pagination-item-active a {
+            color: #fff;
+          }
+          .ant-pagination-item-active {
+            background-color: #0e9f77;
+            border-color: #0e9f77;
+          }
+
+          .ant-pagination-prev .ant-pagination-item-link,
+          .ant-pagination-next .ant-pagination-item-link {
+            background-color: transparent;
+            color: rgba(255, 255, 255, 0.85);
+          }
+        }
+      }
+    }
+  }
+}

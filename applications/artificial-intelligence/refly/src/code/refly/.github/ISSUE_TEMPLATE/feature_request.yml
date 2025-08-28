@@ -1,0 +1,87 @@
+name: "⭐ Feature or enhancement request"
+description: Propose something new to enhance Refly's AI-native creation experience
+labels:
+  - enhancement
+body:
+  - type: checkboxes
+    attributes:
+      label: Self Checks
+      description: "To make sure we get to you in time, please check the following :)"
+      options:
+        - label: I have searched for existing issues [search for existing issues](https://github.com/refly-ai/refly/issues), including closed ones.
+          required: true
+        - label: I confirm that I am using English to submit this report (我已阅读并同意 [Language Policy](https://github.com/refly-ai/refly/discussions)).
+          required: true
+        - label: "Please do not modify this template :) and fill in all the required fields."
+      required: true
+  - type: dropdown
+    attributes:
+      label: Primary Feature Area
+      description: Which core area of Refly would this feature primarily enhance?
+      options:
+        - Multi-threaded Dialogues (Conversation Management)
+        - AI-Powered Capabilities (Web Search, Knowledge Base Search)
+        - Context Memory & References (Temporary Knowledge Base)
+        - Knowledge Base Integration & RAG (External Resources)
+        - Quotes & Citations (Content References)
+        - AI Document Editing & WYSIWYG (Content Creation)
+        - Free-form Canvas Interface (Visual Organization)
+        - User Experience & Interface
+        - Performance & Optimization
+        - New Feature Category
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 1. Feature Description
+      description: Describe the feature or enhancement you'd like to see in Refly
+      placeholder: |
+        Please provide a clear and detailed description of the feature you're proposing. For example:
+        - What would this feature do?
+        - How would users interact with it?
+        - What would the main workflow look like?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 2. Use Case & Problem Statement
+      description: Help us understand the problem this feature would solve
+      placeholder: |
+        - What specific challenge or limitation are you facing?
+        - In what scenarios would this feature be most useful?
+        - How does this align with Refly's AI-native creation workflow?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 3. Expected Benefits
+      description: What benefits would this feature bring to Refly users?
+      placeholder: |
+        - How would this improve the user experience?
+        - What tasks would become easier or more efficient?
+        - How would this enhance Refly's AI-native creation capabilities?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 4. Additional Context
+      description: Any other information that would help us understand your request
+      placeholder: |
+        - Screenshots, mockups, or examples from other tools
+        - Technical considerations or implementation ideas
+        - Potential challenges or concerns
+    validations:
+      required: false
+  - type: checkboxes
+    attributes:
+      label: 5. Contribution Interest
+      description: Let us know if you'd like to help bring this feature to life!
+      options:
+        - label: I am interested in contributing to this feature (coding, design, testing, or documentation)
+        - label: I would be willing to provide feedback during the feature's development
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping make Refly better! We'll review your feature request and get back to you soon.
+        Please limit one feature request per issue for better tracking and discussion.

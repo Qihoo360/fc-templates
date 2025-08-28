@@ -1,0 +1,38 @@
+name: CI Docs
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - 'docs/**'
+
+jobs:
+  build:
+    name: Build Docs
+    runs-on: ubuntu-latest
+    if: github.repository == 'refly-ai/refly'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: 'docs/pnpm-lock.yaml'
+
+      - name: Install dependencies
+        run: pnpm install --ignore-workspace
+        working-directory: docs
+
+      - name: Build
+        run: pnpm build
+        working-directory: docs

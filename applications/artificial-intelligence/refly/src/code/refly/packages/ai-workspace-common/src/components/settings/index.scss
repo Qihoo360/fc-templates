@@ -1,0 +1,55 @@
+// Custom Tabbar Styles
+.settings-modal {
+  .ant-modal-content {
+    height: 80vh;
+    background: var(--refly-bg-content-z2);
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  .ant-modal-body {
+    padding: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+
+// Icon styles
+.tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: #6B7280;
+  transition: color 0.2s ease-in-out;
+  
+  .active & {
+    color: #155EEF;
+  }
+}
+
+// Dark mode adjustments
+.dark {
+  .custom-tabbar {
+    .tab-item {
+      &.active {
+        &::before {
+          background: #60A5FA;
+        }
+      }
+    }
+  }
+  
+  .tab-icon {
+    color: #9CA3AF;
+    
+    .active & {
+      color: #60A5FA;
+    }
+  }
+} 

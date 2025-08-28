@@ -1,0 +1,42 @@
+.logo {
+  &:hover {
+    cursor: pointer;
+  }
+
+  margin-top: 16px;
+  margin-bottom: 24px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  img {
+    width: 34px;
+    height: 34px;
+  }
+
+  span {
+    font-size: 20px;
+    color: #000000;
+    font-weight: bolder;
+    text-align: left;
+    display: inline-block;
+    margin-left: 4px;
+  }
+}
+
+.landing-page-language-btn {
+  &:hover {
+    background-color: transparent !important;
+
+    .arco-icon-down {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+/* Adjustments for header layout */
+.header-container {
+  padding-left: 16px;
+  padding-right: 16px;
+}

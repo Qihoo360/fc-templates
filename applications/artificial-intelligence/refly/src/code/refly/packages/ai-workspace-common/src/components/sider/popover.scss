@@ -1,0 +1,17 @@
+// Custom animation for SiderPopover
+.sider-popover-animation {
+  .ant-popover-inner {
+    animation: siderPopoverSlideIn 0.3s ease-out;
+  }
+}
+
+@keyframes siderPopoverSlideIn {
+  0% {
+    transform: translateX(-240px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+} 

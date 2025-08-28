@@ -1,0 +1,45 @@
+name: "📚 Documentation Issue"
+description: Report issues in our documentation
+labels:
+  - documentation
+body:
+  - type: checkboxes
+    attributes:
+      label: Self Checks
+      description: "To make sure we get to you in time, please check the following :)"
+      options:
+        - label: I have searched for existing issues [search for existing issues](https://github.com/refly-ai/refly/issues), including closed ones.
+          required: true
+        - label: I confirm that I am using English to submit report (我已阅读并同意 [Language Policy](https://github.com/refly-ai/refly/discussions)).
+          required: true
+        - label: "Please do not modify this template :) and fill in all the required fields."
+          required: true
+  - type: dropdown
+    attributes:
+      label: Documentation Area
+      description: Which area of documentation needs attention?
+      options:
+        - Getting Started Guide
+        - Multi-threaded Dialogues
+        - AI-Powered Capabilities
+        - Context Memory & References
+        - Knowledge Base Integration
+        - Quotes & Citations
+        - AI Document Editing
+        - Canvas Interface
+        - API Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Issue Description
+      placeholder: Briefly describe which document needs to be corrected and why. Please include the URL of the documentation page if possible.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Suggested Changes
+      placeholder: If you have specific suggestions for how to improve the documentation, please provide them here.
+    validations:
+      required: false

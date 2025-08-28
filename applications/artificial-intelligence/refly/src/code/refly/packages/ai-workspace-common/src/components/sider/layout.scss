@@ -1,0 +1,42 @@
+.ant-layout-sider {
+  border: 0;
+}
+
+// Adaptive submenu styles
+.ant-menu-submenu-adaptive {
+  &.ant-menu-submenu-open {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+
+    > .ant-menu-sub {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: auto !important;
+      min-height: 0;
+    }
+  }
+
+  &:not(.ant-menu-submenu-open) {
+    flex: 0 0 auto;
+  }
+}
+
+// Ensure proper nesting of flex containers
+.ant-menu-root {
+  display: flex !important;
+  flex-direction: column;
+  height: 100%;
+
+  > .ant-menu-item,
+  > .ant-menu-submenu > .ant-menu-submenu-title {
+    margin: 4px 0;
+    width: 100%;
+    flex: 0 0 auto;
+    .ant-menu-submenu-arrow {
+      color: #55595f;
+    }
+  }
+}
