@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "lib": ["DOM", "ES2020"],
+    "jsx": "react-jsx",
+    "target": "ES2020",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "useDefineForClassFields": true,
+
+    /* modules */
+    "module": "ESNext",
+    "verbatimModuleSyntax": false,
+    "resolveJsonModule": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+
+    /* type checking */
+    "strict": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    /* path */
+    "paths": {
+      "@/*": ["./src/*"],
+      "@refly-packages/ai-workspace-common/*": ["../../packages/ai-workspace-common/src/*"],
+      "@refly/utils/*": ["../../packages/utils/src/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["tailwind-colors.ts"],
+  "references": [
+    { "path": "../../packages/ai-workspace-common" },
+    { "path": "../../packages/utils" }
+  ]
+}

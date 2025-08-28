@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Type Checking */
+    "strict": true,
+    "lib": ["DOM", "WebWorker", "ESNext"],
+    "types": ["vitest-plugin-random-seed/types"],
+
+    /* Linting */
+    "noUnusedLocals": true,
+
+    /* Completeness */
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules", "src/virtual", "e2e/dist"]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@refly/ui-kit",
+  "private": true,
+  "version": "0.0.1",
+  "description": "UI Kit for Refly AI Workspace",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@ant-design/icons": "^5.5.2",
+    "@refly/common-types": "workspace:*",
+    "antd": "^5.21.5",
+    "clsx": "^2.1.0",
+    "deepmerge": "^4.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^15.6.0",
+    "react-use": "^17.5.0",
+    "zustand": "~4.5.1"
+  },
+  "devDependencies": {
+    "@refly/tsconfig": "workspace:*",
+    "@types/react": "^18.2.56",
+    "@types/react-dom": "^18.2.19"
+  }
+}

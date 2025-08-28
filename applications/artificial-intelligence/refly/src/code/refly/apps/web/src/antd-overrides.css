@@ -1,0 +1,123 @@
+/* Ant Design Component Overrides */
+
+/* Direct CSS overrides for default button */
+.ant-btn-default {
+  color: var(--refly-text-0);
+  background-color: var(--refly-bg-control-z0);
+  border: solid 0.5px var(--refly-Card-Border);
+  font-weight: 600;
+}
+
+.ant-btn-default:hover {
+  color: var(--refly-text-0) !important;
+  background-color: var(--refly-tertiary-hover) !important;
+  border-color: var(--refly-Card-Border) !important;
+}
+
+.ant-btn-default:disabled {
+  color: var(--refly-text-3) !important;
+  background-color: var(--refly-bg-control-z0) !important;
+  border-color: var(--refly-Card-Border) !important;
+}
+
+/* Global styles to remove Ant Design button shadows */
+.ant-btn,
+.ant-btn:hover,
+.ant-btn:focus,
+.ant-btn:active {
+  box-shadow: none !important;
+}
+
+/* Remove shadows from all Ant Design button variants */
+.ant-btn-primary,
+.ant-btn-default,
+.ant-btn-dashed,
+.ant-btn-link,
+.ant-btn-text {
+  box-shadow: none !important;
+}
+
+.ant-btn-variant-solid:disabled {
+  background: var(--refly-primary-disabled);
+}
+
+/* Dropdown menu styling */
+.ant-dropdown-menu-root {
+  padding: 8px !important;
+  border: 1px solid var(--refly-Card-Border) !important;
+}
+
+.ant-dropdown-menu-root .ant-dropdown-menu-item {
+  padding: 6px 8px !important;
+}
+
+.ant-dropdown-menu-root .ant-dropdown-menu-item:hover {
+  background-color: var(--refly-tertiary-hover) !important;
+}
+
+/* Modal component border radius override */
+.ant-modal .ant-modal-content {
+  border-radius: 20px;
+}
+
+.ant-modal .ant-modal-header {
+  border-radius: 20px 20px 0 0;
+}
+
+.ant-modal .ant-modal-footer {
+  border-radius: 0 0 20px 20px;
+}
+
+/* Segmented component styling */
+.ant-segmented {
+  padding: 4px;
+  border: 1px solid var(--refly-Card-Border);
+  background-color: var(--refly-bg-control-z0);
+}
+
+.ant-segmented-group {
+  gap: 2px;
+}
+
+.ant-segmented .ant-segmented-item {
+  border-radius: 16px;
+}
+
+.ant-segmented .ant-segmented-item:hover {
+  background-color: var(--refly-fill-hover);
+}
+
+.ant-segmented .ant-segmented-item-selected:hover {
+  background-color: var(--refly-bg-control-z1) !important;
+}
+
+.ant-segmented .ant-segmented-item-label {
+  color: var(--refly-text-0) !important;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 4px 8px;
+  line-height: 20px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ant-segmented-sm .ant-segmented-item-label {
+  font-size: 12px;
+  line-height: 16px;
+  padding: 2px 8px;
+}
+
+.ant-segmented .ant-segmented-item-selected {
+  background-color: var(--refly-bg-control-z1) !important;
+  border-radius: 16px !important;
+}
+
+.ant-segmented .ant-segmented-item-selected .ant-segmented-item-label {
+  color: var(--refly-text-0) !important;
+  text-align: center;
+  font-weight: 600;
+  border-radius: 16px;
+}

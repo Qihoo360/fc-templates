@@ -1,0 +1,152 @@
+.refly-floating-sphere-entry {
+  z-index: 2147483648;
+  position: fixed;
+
+  .refly-floating-sphere-entry-wrapper {
+    position: relative;
+
+    .refly-floating-sphere-entry-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      height: 40px;
+
+      padding: 0 8px;
+      gap: 6px;
+
+      box-shadow: 1px 10px 10px 0 rgba(0, 0, 0, 0.1);
+
+      border-top-left-radius: calc(25px + 0.5em);
+      border-bottom-left-radius: calc(25px + 0.5em);
+
+      background-color: #ffffff;
+
+      transition: transform 200ms linear;
+      transform: translateX(48px);
+      border: 1px solid rgba(0, 0, 0, 0.07);
+
+      img {
+        border-radius: 50%;
+      }
+
+      .refly-floating-sphere-entry-shortcut {
+        font-size: 12px;
+        font-weight: bold;
+        margin-right: 5px;
+      }
+
+      &.active,
+      &:hover {
+        transform: translateX(1px);
+        cursor: pointer;
+        background-color: #ffffff;
+      }
+
+      &.active,
+      &:hover span {
+        color: black;
+      }
+
+      .refly-floating-sphere-close-button {
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        opacity: 0;
+        transition:
+          opacity 0.3s ease,
+          background-color 0.3s ease;
+        background-color: rgba(0, 0, 0, 0.5);
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+        color: white;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.7);
+        }
+      }
+
+      &:hover .refly-floating-sphere-close-button {
+        opacity: 1;
+      }
+    }
+
+    &.active,
+    &:hover {
+      .refly-floating-sphere-entry-content {
+        transform: translateX(1px);
+        cursor: pointer;
+        background-color: #ffffff;
+      }
+    }
+
+    &.active,
+    &:hover span {
+      color: black;
+    }
+  }
+  .refly-floating-sphere-dropdown {
+    position: absolute;
+    right: 0;
+
+    &.top {
+      bottom: calc(100% + 8px);
+    }
+
+    &.bottom {
+      top: calc(100% + 8px);
+    }
+
+    .refly-floating-sphere-dropdown-connector {
+      position: absolute;
+      width: 100%;
+      height: 8px;
+      background: transparent;
+    }
+
+    &.top {
+      .refly-floating-sphere-dropdown-connector {
+        bottom: -8px;
+      }
+    }
+
+    &.bottom {
+      .refly-floating-sphere-dropdown-connector {
+        top: -8px;
+      }
+    }
+
+    .refly-floating-sphere-dropdown-menu {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      border-radius: 4px;
+      z-index: 1000;
+      width: 40px;
+      border-radius: 32px;
+      padding: 4px;
+      box-sizing: border-box;
+      backdrop-filter: blur(10px);
+      box-shadow: 1px 10px 10px 0 rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.07);
+    }
+
+    .refly-floating-sphere-dropdown-item {
+      font-size: 14px;
+    }
+  }
+
+  .assist-action-item {
+    color: rgba(0, 0, 0, 0.5);
+
+    &:hover,
+    &.active {
+      cursor: pointer;
+      background-color: #f1f1f0;
+      color: #0E9F77;
+    }
+  }
+}

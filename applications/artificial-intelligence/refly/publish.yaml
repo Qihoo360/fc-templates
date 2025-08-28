@@ -1,0 +1,500 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: mem0-v1
+Provider:
+  - fc
+Version: 0.0.3
+Description: 该示例通过 refly 快速搭建私有代理工作空​​间。
+HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/refly
+Organization: 函数计算（FC）
+Tags:
+  - AI
+  - Custom Runtime
+Category: Web框架
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - reflyApiFunctionName
+    - reflyApi2FunctionName
+    - reflyWebFunctionName
+
+    
+    - RedisDataBase
+    - REDIS_PASSWORD
+    - REDIS_HOST
+    - REDIS_PORT
+
+    - PGDataBase
+    - POSTGRES_HOST
+    - POSTGRES_PORT
+    - POSTGRES_USERNAME
+    - POSTGRES_PASSWORD
+    - POSTGRES_DATABASE
+    - POSTGRES_SCHEMA
+
+    - MINIODataBase
+    - MINIO_INTERAL_BUCKET
+    - MINIO_EXTERNAL_BUCKET
+    - MINIO_ENDPOINT
+    - MINIO_PORT
+    - MINIO_ACCESS_KEY
+    - MINIO_SECRET_KEY
+    - MINIO_USE_SSL
+
+    - QDRANTDataBase
+    - VECTOR_STORE_BACKEND
+    - QDRANT_HOST
+    - QDRANT_PORT
+    - QDRANT_API_KEY
+    - LANCEDB_URI
+
+    - SEARXNG
+    - SEARXNG_HOST
+    - SEARXNG_PORT
+
+    - ELASTICSEARCH
+    - ELASTICSEARCH_HOST
+    - ELASTICSEARCH_PORT
+    - ELASTICSEARCH_USERNAME
+    - ELASTICSEARCH_PASSWORD
+
+
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: beijing
+      description: 创建应用所在的地区
+      enum:
+        - beijing
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+    reflyApiFunctionName:
+      title: reflyApiFunctionName 函数名
+      type: string
+      default: refly-api-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder:  请输入reflyApi 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    reflyApiDescription:
+      title: reflyApi函数描述
+      type: string
+      default: "Serverless refly api"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入reflyApi函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    reflyApi2FunctionName:
+      title: reflyApi2FunctionName 函数名
+      type: string
+      default: refly-api-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder:  请输入reflyApi2 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    reflyApi2Description:
+      title: reflyApi2函数描述
+      type: string
+      default: "Serverless refly api2"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入reflyApi函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    
+    reflyWebFunctionName:
+      title: reflyWebFunctionName 函数名
+      type: string
+      default: refly-web-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder:  请输入reflyWeb 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    reflyWebDescription:
+      title: reflyWeb函数描述
+      type: string
+      default: "Serverless refly web"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入reflyWeb函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    RedisDataBase:
+      # title: 缓存配置
+      type: string
+      default: redis
+      description: ""
+      enum:
+        - redis
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请选择缓存系统
+      x-formitem:
+        type: select
+    REDIS_HOST:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入redis主机地址
+      x-formitem:
+        type: input
+    REDIS_PORT:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入redis主机端口
+      x-formitem:
+        type: input
+    REDIS_PASSWORD:
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入redis密码
+      x-formitem:
+        type: input
+    PGDataBase:
+      type: string
+      default: postgresql
+      description: ""
+      enum:
+        - postgresql
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
+    POSTGRES_HOST:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库主机地址
+      x-formitem:
+        type: input
+    POSTGRES_PORT:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库端口
+      x-formitem:
+        type: input
+    POSTGRES_USERNAME:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库用户名
+      x-formitem:
+        type: input
+    POSTGRES_PASSWORD:
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 输入数据库密码
+      x-formitem:
+        type: input
+    POSTGRES_DATABASE:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 输入数据库名称
+      x-formitem:
+        type: input
+    POSTGRES_SCHEMA:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 输入数据库schema名称
+      x-formitem:
+        type: input
+
+
+    MINIODataBase:
+      type: string
+      default: minio
+      description: ""
+      enum:
+        - minio
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: minio
+      x-placeholder: 请选择对象存储类型
+      x-formitem:
+        type: select
+    MINIO_ENDPOINT:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: minio
+      x-placeholder: 请输入对象存储服务地址
+      x-formitem:
+        type: input
+    MINIO_PORT:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: minio
+      x-placeholder: 请输入对象存储服务端口
+      x-formitem:
+        type: input
+    MINIO_ACCESS_KEY:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: minio
+      x-placeholder: 请输入对象存储服务访问密钥
+      x-formitem:
+        type: input
+    MINIO_SECRET_KEY:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: minio
+      x-placeholder: 请输入对象存储服务密钥
+      x-formitem:
+        type: input
+    MINIO_USE_SSL:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: minio
+      x-placeholder: 请输入对象存储服务是否使用SSL
+      x-formitem:
+        type: input
+    MINIO_INTERAL_BUCKET:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: minio
+      x-placeholder: 请输入对象存储服务内部桶名称
+      x-formitem:
+        type: input
+    MINIO_EXTERNAL_BUCKET:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: minio
+      x-placeholder: 请输入对象存储服务外部桶名称
+      x-formitem:
+        type: input
+    
+    QDRANTDataBase:
+      type: string
+      default: qdrant
+      description: ""
+      enum:
+        - qdrant
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: qdrant
+      x-placeholder: 请选择对象存储类型
+      x-formitem:
+        type: select
+    VECTOR_STORE_BACKEND:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-restype: qdrant
+      x-placeholder: 请输入向量数据库类型
+      x-formitem:
+        type: input
+    QDRANT_HOST:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-restype: qdrant
+      x-placeholder: 请输入向量数据库服务地址
+      x-formitem:
+        type: input
+    QDRANT_PORT:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-restype: qdrant
+      x-placeholder: 请输入向量数据库服务端口
+      x-formitem:
+        type: input
+    QDRANT_API_KEY:
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-restype: qdrant
+      x-placeholder: 请输入向量数据库服务密钥
+      x-formitem:
+        type: input
+    LANCEDB_URI:
+      type: string
+      default: "" 
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-restype: qdrant
+      x-placeholder: 请输入向量数据库服务地址
+      x-formitem:
+        type: input
+
+    SEARXNG:
+      type: string
+      default: searxng
+      description: ""
+      enum:
+        - searxng
+      x-cate: applicationCate
+      x-label: 搜索引擎配置
+      x-restype: searxng
+      x-placeholder: 请选择搜索引擎类型
+      x-formitem:
+        type: select
+    SEARXNG_HOST:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 搜索引擎配置
+      x-restype: searxng
+      x-placeholder: 请输入搜索引擎服务地址
+      x-formitem:
+        type: input
+    SEARXNG_PORT:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 搜索引擎配置
+      x-restype: searxng
+      x-placeholder: 请输入搜索引擎服务端口
+      x-formitem:
+        type: input
+
+    ELASTICSEARCH:
+      type: string
+      default: elasticsearch
+      description: ""
+      enum:
+        - elasticsearch
+      x-cate: applicationCate
+      x-label: 搜索引擎配置
+      x-restype: elasticsearch
+      x-placeholder: 请选择搜索引擎类型
+      x-formitem:
+        type: select
+    ELASTICSEARCH_HOST:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 搜索引擎配置
+      x-restype: elasticsearch
+      x-placeholder: 请输入搜索引擎服务地址
+      x-formitem:
+        type: input
+    ELASTICSEARCH_PORT:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 搜索引擎配置
+      x-restype: elasticsearch
+      x-placeholder: 请输入搜索引擎服务端口
+      x-formitem:
+        type: input
+    ELASTICSEARCH_USERNAME:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 搜索引擎配置
+      x-restype: elasticsearch
+      x-placeholder: 请输入搜索引擎服务用户名
+      x-formitem:
+        type: input
+    ELASTICSEARCH_PASSWORD:
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 搜索引擎配置
+      x-restype: elasticsearch 
+      x-placeholder: 请输入搜索引擎服务密码
+      x-formitem:
+        type: input
+
+    
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
+    

@@ -1,0 +1,631 @@
+/* Preview mode styles */
+.preview-modal .ant-modal-content {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  height: 100vh;
+}
+
+.preview-modal-wrap .ant-modal {
+  padding: 0;
+  max-width: 100vw;
+  height: 100vh;
+}
+
+.preview-slide {
+  opacity: 0;
+  transform: scale(1);
+  width: 100%;
+  height: 100vh; /* Changed to full screen height */
+}
+
+/* Preview mode minimap */
+.preview-minimap {
+  position: absolute;
+  left: -250px;
+  top: 0;
+  width: 250px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.preview-minimap::-webkit-scrollbar {
+  width: 5px;
+}
+
+.preview-minimap::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.preview-minimap::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.preview-minimap-show {
+  transform: translateX(250px);
+  animation: slideRightIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideRightIn {
+  from {
+    transform: translateX(0);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateX(250px);
+    opacity: 1;
+  }
+}
+
+.preview-minimap-header {
+  padding: 12px 16px;
+  color: #ffffff;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 8px;
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 2;
+  backdrop-filter: blur(5px);
+}
+
+.preview-minimap-content {
+  padding: 8px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.preview-minimap-slide {
+  position: relative;
+  margin-bottom: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+  padding: 4px;
+  border: 1px solid transparent;
+  transform-origin: center;
+}
+
+.preview-minimap-slide:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(3px) scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.preview-minimap-slide:active {
+  transform: translateX(2px) scale(0.99);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s;
+}
+
+.preview-minimap-slide.active {
+  background: rgba(0, 150, 143, 0.2);
+  border-color: rgba(0, 150, 143, 0.5);
+  transform: translateX(5px) scale(1.02);
+  box-shadow: 0 3px 10px rgba(0, 150, 143, 0.3);
+}
+
+.preview-minimap-number {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  z-index: 1;
+}
+
+.preview-minimap-thumbnail {
+  height: 140px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #fff;
+  transform: scale(0.98);
+  transform-origin: center top;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  pointer-events: none; /* Disable mouse events for inner elements */
+}
+
+/* Ensure all inner elements don't receive mouse events */
+.preview-minimap-thumbnail * {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.preview-minimap-slide:hover .preview-minimap-thumbnail {
+  transform: scale(1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.preview-minimap-slide.active .preview-minimap-thumbnail {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 150, 143, 0.5);
+}
+
+.preview-minimap-title {
+  padding: 6px 2px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  transition: color 0.2s ease;
+}
+
+.preview-minimap-slide:hover .preview-minimap-title {
+  color: rgba(255, 255, 255, 1);
+}
+
+.preview-minimap-slide.active .preview-minimap-title {
+  color: rgba(0, 150, 143, 0.9);
+  font-weight: 500;
+}
+
+/* Swipe hint */
+.side-hint {
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 8px 5px;
+  border-radius: 40px;
+  font-size: 20px;
+  animation: pulseHint 1.5s infinite;
+  opacity: 0.7;
+  transition: all 0.2s;
+  z-index: 5;
+  cursor: pointer;
+  width: 30px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.side-hint:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.6);
+  transform: translateY(-50%) translateX(2px);
+  color: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes pulseHint {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-50%) scale(1.05);
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+/* Mobile device adaptation */
+@media (max-width: 768px) {
+  .preview-modal .ant-modal-content {
+    border-radius: 0;
+  }
+
+  /* Optimize button size and spacing on small screens */
+  .preview-modal .ant-btn {
+    padding: 4px 8px;
+  }
+
+  /* Optimize navigation bar on small screens */
+  .preview-header {
+    padding: 10px 16px;
+  }
+
+  .preview-header-title {
+    font-size: 14px;
+  }
+
+  .preview-header-title .page-indicator {
+    font-size: 12px;
+    padding: 2px 8px;
+    margin-left: 4px;
+  }
+
+  .preview-control-button {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .preview-header-controls {
+    gap: 8px;
+  }
+
+  /* Bottom navigation dots are larger and easier to click on mobile devices */
+  .preview-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .preview-dot.active {
+    width: 12px;
+    height: 12px;
+  }
+
+  .dots-container {
+    gap: 10px;
+    padding: 8px 16px;
+  }
+
+  /* On mobile devices, light touch displays header and footer */
+  .preview-content-container:active .preview-header:not(:hover),
+  .preview-content-container:active .preview-footer:not(:hover) {
+    transform: translateY(0);
+  }
+
+  /* Extend display time on mobile devices */
+  .preview-header,
+  .preview-footer {
+    transition: transform 0.3s ease 0.1s;
+  }
+
+  /* Make swipe hint more obvious */
+  .swipe-hint {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: rgba(0, 0, 0, 0.4);
+    bottom: 60px;
+  }
+
+  /* Ensure full screen content on small screens */
+  .preview-slide {
+    height: 100vh;
+  }
+
+  /* Minimap style adjustments for small screens */
+  .preview-minimap {
+    width: 200px;
+    left: -200px;
+  }
+
+  .preview-minimap-show {
+    transform: translateX(200px);
+  }
+
+  .preview-minimap-thumbnail {
+    height: 100px;
+  }
+}
+
+/* Swipe hint fades out in default state */
+.swipe-hint {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  animation: fadeInOut 3s ease-in-out infinite;
+  z-index: 5;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+  text-align: center;
+  white-space: nowrap;
+}
+
+@keyframes fadeInOut {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Style adjustments for NodeRenderer in minimap */
+.preview-minimap-thumbnail > div {
+  height: 100% !important;
+  overflow: hidden;
+}
+
+.preview-minimap-thumbnail .h-\[400px\] {
+  height: 100% !important;
+}
+
+.preview-minimap-thumbnail .px-4,
+.preview-minimap-thumbnail .pb-4 {
+  padding: 0 !important;
+}
+
+.preview-minimap-thumbnail .rounded {
+  border-radius: 0 !important;
+}
+
+/* Reduce preview content area to prevent overflow */
+.preview-minimap-thumbnail .flex-1 {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
+/* Minimap node wrapper */
+.minimap-node-wrapper {
+  height: 100%;
+  overflow: hidden;
+  transform: scale(0.95);
+}
+
+/* Ensure minimap content is not interactive */
+.preview-minimap-thumbnail .ant-btn,
+.preview-minimap-thumbnail input,
+.preview-minimap-thumbnail select,
+.preview-minimap-thumbnail textarea,
+.preview-minimap-thumbnail a,
+.preview-minimap-thumbnail [role='button'],
+.preview-minimap-thumbnail [tabindex='0'] {
+  pointer-events: none !important;
+  user-select: none !important;
+  touch-action: none !important;
+  cursor: default !important;
+}
+
+/* Wide mode styles */
+.wide-mode-modal .ant-modal-content {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.wide-mode-modal .ant-modal-close {
+  top: 12px;
+  right: 12px;
+  z-index: 100;
+}
+
+.wide-mode-modal .ant-modal-close-x {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.wide-mode-modal .ant-modal-close-x:hover {
+  transform: scale(1.05);
+}
+
+/* Add entrance animation */
+.wide-mode-modal .ant-modal-content {
+  animation: wideModalEnter 0.3s ease forwards;
+}
+
+@keyframes wideModalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* New: Slideshow preview header and bottom navigation bar */
+.preview-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  transform: translateY(-100%); /* Initially hidden off-screen */
+  transition: transform 0.3s ease;
+  background: rgba(0, 0, 0, 0.4); /* More transparent background */
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.preview-header-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.preview-header-title .page-indicator {
+  opacity: 0.7;
+  font-size: 14px;
+  font-weight: normal;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-left: 8px;
+}
+
+.preview-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.preview-control-button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: none !important;
+  color: white !important;
+  border-radius: 50% !important;
+  width: 36px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.preview-control-button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.05) !important;
+}
+
+.preview-control-button:active {
+  transform: scale(0.95) !important;
+}
+
+.preview-control-button.close-button {
+  background: rgba(220, 38, 38, 0.1) !important;
+}
+
+.preview-control-button.close-button:hover {
+  background: rgba(220, 38, 38, 0.3) !important;
+}
+
+.preview-control-button.disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+.preview-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  transform: translateY(100%); /* Initially hidden off-screen */
+  transition: transform 0.3s ease;
+  background: transparent; /* Completely transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.dots-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+.preview-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.4);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.preview-dot:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+  transform: scale(1.2);
+}
+
+.preview-dot.active {
+  background-color: white;
+  width: 10px;
+  height: 10px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.preview-content-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden; /* Ensure overflow content is clipped */
+  background-color: #000;
+}
+
+/* When mouse hovers over container, show header and footer */
+.preview-content-container:hover .preview-header,
+.preview-header:hover {
+  transform: translateY(0);
+}
+
+.preview-content-container:hover .preview-footer,
+.preview-footer:hover {
+  transform: translateY(0);
+}
+
+/* Automatically hide navigation bar when mouse is not moving */
+.preview-content-container.idle .preview-header:not(:hover) {
+  transform: translateY(-100%);
+}
+
+.preview-content-container.idle .preview-footer:not(:hover) {
+  transform: translateY(100%);
+}
+
+/* Slideshow content area - full screen display */
+.preview-content {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}

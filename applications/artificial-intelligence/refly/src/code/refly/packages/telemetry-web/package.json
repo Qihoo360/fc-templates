@@ -1,0 +1,20 @@
+{
+  "name": "@refly/telemetry-web",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Telemetry utilities for Refly.AI Web App",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@refly/utils": "workspace:*",
+    "@statsig/js-client": "^3.19.0",
+    "@statsig/session-replay": "^3.19.0",
+    "@statsig/web-analytics": "^3.19.0",
+    "js-cookie": "^3.0.5"
+  },
+  "devDependencies": {
+    "@refly/tsconfig": "workspace:*",
+    "@types/js-cookie": "^3.0.6"
+  }
+}

@@ -1,0 +1,17 @@
+.translation-wrapper {
+  .translation-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    .original-text {
+      color: rgba(0, 0, 0, 0.45);
+    }
+
+    .anticon {
+      font-size: 12px;
+      color: var(--refly-primary-color);
+      margin-left: 4px;
+    }
+  }
+}

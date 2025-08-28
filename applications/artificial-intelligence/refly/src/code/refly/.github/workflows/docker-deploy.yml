@@ -1,0 +1,45 @@
+name: Docker Deployment Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-deployment:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deploy/docker
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create env file
+      run: cp .env.example .env
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Start Docker containers
+      run: |
+        docker-compose up -d
+        # Wait for containers to be healthy
+        sleep 30
+
+    - name: Test API server
+      run: |
+        # Test if the server is responding
+        response_code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5800/health || echo "failed")
+        if [ "$response_code" = "200" ]; then
+          echo "Server is running successfully"
+          exit 0
+        else
+          echo "Server is not running properly. Response code: $response_code"
+          # Print logs for debugging
+          docker-compose logs
+          exit 1
+        fi
+
+    - name: Cleanup
+      if: always()
+      run: docker-compose down -v

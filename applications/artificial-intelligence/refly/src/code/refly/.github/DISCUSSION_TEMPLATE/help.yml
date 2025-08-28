@@ -1,0 +1,44 @@
+title: "Help"
+body:
+  - type: checkboxes
+    attributes:
+      label: Self Checks
+      description: "To make sure we get to you in time, please check the following :)"
+      options:
+        - label: I have searched for existing issues [search for existing issues](https://github.com/refly-ai/refly/issues), including closed ones.
+          required: true
+        - label: I confirm that I am using English to submit this report (我已阅读并同意 [Language Policy](https://github.com/refly-ai/refly/discussions)).
+          required: true
+        - label: "Please do not modify this template :) and fill in all the required fields."
+          required: true
+  - type: dropdown
+    attributes:
+      label: Area Needing Help
+      description: Which area of Refly do you need help with?
+      options:
+        - Multi-threaded Dialogues
+        - AI-Powered Capabilities (Web Search, Knowledge Base Search)
+        - Context Memory & References
+        - Knowledge Base Integration & RAG
+        - Quotes & Citations
+        - AI Document Editing & WYSIWYG
+        - Free-form Canvas Interface
+        - Installation & Setup
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 1. What challenge are you experiencing?
+      placeholder: Please describe the specific scenario or problem you're facing as clearly as possible. For instance "I'm trying to use the multi-threaded dialogues feature but I'm not sure how to..."
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 2. Additional context or comments
+      placeholder: (Any other information, comments, documentations, links, or screenshots that would provide more clarity. This is the place to add anything else not covered above.)
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: Please limit one request per issue.

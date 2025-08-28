@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "composite": true,
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2021",
+    "sourceMap": false,
+    "inlineSourceMap": false,
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "types": ["jest", "node", "express", "multer"],
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*", "*.json"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../../packages/errors" },
+    { "path": "../../packages/i18n" },
+    { "path": "../../packages/telemetry-node" },
+    { "path": "../../packages/providers" },
+    { "path": "../../packages/openapi-schema" },
+    { "path": "../../packages/common-types" },
+    { "path": "../../packages/utils" },
+    { "path": "../../packages/canvas-common" },
+    { "path": "../../packages/skill-template" }
+  ]
+}

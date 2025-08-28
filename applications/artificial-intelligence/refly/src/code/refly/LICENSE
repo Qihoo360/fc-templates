@@ -1,0 +1,49 @@
+# Open Source License
+
+Refly is licensed under the Apache License 2.0, with the following additional conditions:
+
+1. Usage Terms:
+
+a. Personal Use: Refly is free for personal use, including commercial activities by individuals.
+
+b. Corporate/Organizational Commercial Use: Any commercial use of Refly by companies, organizations, or institutions requires obtaining a commercial license from the producer. This includes but is not limited to:
+   - Using Refly in a business/organizational environment
+   - Organizations using Refly to generate content for commercial purposes
+   - Companies integrating Refly into commercial products or services
+   - Organizations operating Refly as a service for others
+   - Any revenue-generating activities involving Refly by companies or organizations
+
+Please contact support@refly.ai by email to inquire about commercial licensing.
+
+2. Additional Restrictions:
+    
+a. LOGO and copyright information: In the process of using Refly's frontend, you may not remove or modify the LOGO or copyright information in the Refly console or applications. This restriction is inapplicable to uses of Refly that do not involve its frontend.
+    - Frontend Definition: For the purposes of this license, the "frontend" of Refly includes all components located in the `apps/web/` and `packages/ai-workspace-common` directory when running Refly from the raw source code, or the "web" image when running Refly with Docker, including the free-form canvas interface, knowledge base interface, and all AI-powered features.
+
+b. AI Model Integration: While Refly provides integration with various AI models and features (including but not limited to GPT-4o-mini, GPT-4o, and Claude-3.5-Sonnet), users must obtain their own API keys and comply with the respective model providers' terms of service.
+
+3. As a contributor, you should agree that:
+
+a. The producer can adjust the open-source agreement to be more strict or relaxed as deemed necessary.
+b. Your contributed code may be used for commercial purposes, including but not limited to its cloud business operations and AI-powered features.
+
+Apart from the specific conditions mentioned above, all other rights and restrictions follow the Apache License 2.0. Detailed information about the Apache License 2.0 can be found at http://www.apache.org/licenses/LICENSE-2.0.
+
+The interactive design of this product, including the free-form canvas interface and AI-powered features, is protected by appearance patent.
+
+© 2025 Powerformer, Inc.
+
+
+----------
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. 

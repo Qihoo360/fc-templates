@@ -1,0 +1,635 @@
+{
+  "replicate": {
+    "image": [
+      {
+        "config": {
+          "modelId": "black-forest-labs/flux-1.1-pro-ultra",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "FLUX.1.1 Pro Ultra是最先进的文本到图像生成模型，提供卓越的图像质量、细节和真实感。支持高分辨率输出，擅长生成复杂的视觉内容和艺术作品。",
+            "en": "FLUX.1.1 Pro Ultra is the most advanced text-to-image generation model, offering exceptional image quality, detail, and realism. Supports high-resolution output and excels at generating complex visual content and artwork."
+          }
+        },
+        "name": "FLUX.1.1 Pro Ultra"
+      },
+      {
+        "config": {
+          "modelId": "black-forest-labs/flux-1.1-pro",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "FLUX.1.1 Pro是高性能的文本到图像生成模型，在图像质量和生成速度之间取得完美平衡。适用于专业级图像创作和商业应用。",
+            "en": "FLUX.1.1 Pro is a high-performance text-to-image generation model that strikes the perfect balance between image quality and generation speed. Ideal for professional image creation and commercial applications."
+          }
+        },
+        "name": "FLUX.1.1 Pro"
+      },
+      {
+        "config": {
+          "modelId": "black-forest-labs/flux-dev",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "FLUX Dev是开发者友好的文本到图像生成模型，提供灵活的参数调整和高质量的图像输出。适合实验性创作和原型开发。",
+            "en": "FLUX Dev is a developer-friendly text-to-image generation model offering flexible parameter adjustments and high-quality image output. Perfect for experimental creation and prototype development."
+          }
+        },
+        "name": "FLUX Dev"
+      },
+      {
+        "config": {
+          "modelId": "black-forest-labs/flux-schnell",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "FLUX Schnell是快速文本到图像生成模型，优化了生成速度，能够在短时间内产生高质量的图像。适合需要快速迭代的创作场景。",
+            "en": "FLUX Schnell is a fast text-to-image generation model optimized for generation speed, capable of producing high-quality images in a short time. Ideal for creative scenarios requiring rapid iteration."
+          }
+        },
+        "name": "FLUX Schnell"
+      },
+      {
+        "config": {
+          "modelId": "stability-ai/stable-diffusion-3.5-large",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "Stable Diffusion 3.5 Large是大型文本到图像生成模型，具有强大的图像生成能力和出色的细节表现。支持多种艺术风格和复杂场景的生成。",
+            "en": "Stable Diffusion 3.5 Large is a large-scale text-to-image generation model with powerful image generation capabilities and excellent detail representation. Supports various artistic styles and complex scene generation."
+          }
+        },
+        "name": "Stable Diffusion 3.5 Large"
+      },
+      {
+        "config": {
+          "modelId": "stability-ai/stable-diffusion-3.5-medium",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "Stable Diffusion 3.5 Medium在性能和质量之间取得平衡，提供稳定的图像生成效果。适合一般用途的图像创作和内容生成。",
+            "en": "Stable Diffusion 3.5 Medium strikes a balance between performance and quality, providing stable image generation results. Suitable for general-purpose image creation and content generation."
+          }
+        },
+        "name": "Stable Diffusion 3.5 Medium"
+      },
+      {
+        "config": {
+          "modelId": "recraft-ai/recraft-v3",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "Recraft V3是专业级的文本到图像生成模型，擅长生成品牌风格的图像、矢量艺术和长文本内容。在文本渲染和风格一致性方面表现出色。",
+            "en": "Recraft V3 is a professional-grade text-to-image generation model that excels at generating brand-style images, vector art, and long text content. Outstanding performance in text rendering and style consistency."
+          }
+        },
+        "name": "Recraft V3"
+      },
+      {
+        "config": {
+          "modelId": "ideogram-ai/ideogram-v2",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "Ideogram V2是专注于文本渲染的图像生成模型，能够在图像中准确生成和嵌入文本内容。特别适合创建包含文字的设计作品和海报。",
+            "en": "Ideogram V2 is an image generation model focused on text rendering, capable of accurately generating and embedding text content in images. Particularly suitable for creating design works and posters containing text."
+          }
+        },
+        "name": "Ideogram V2"
+      }
+    ],
+    "audio": [
+      {
+        "config": {
+          "modelId": "meta/musicgen",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "Meta MusicGen是基于Transformer的音乐生成模型，能够根据文本描述生成各种风格的音乐。支持多种乐器和音乐类型，适合创作背景音乐和音效。",
+            "en": "Meta MusicGen is a Transformer-based music generation model that can generate music of various styles based on text descriptions. Supports multiple instruments and music types, suitable for creating background music and sound effects."
+          }
+        },
+        "name": "MusicGen"
+      },
+      {
+        "config": {
+          "modelId": "suno-ai/bark",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "Bark是多语言音频生成模型，能够生成语音、音乐和音效。支持多种语言和声音风格，具有出色的语音合成和音频生成能力。",
+            "en": "Bark is a multilingual audio generation model capable of generating speech, music, and sound effects. Supports multiple languages and voice styles with excellent speech synthesis and audio generation capabilities."
+          }
+        },
+        "name": "Bark"
+      },
+      {
+        "config": {
+          "modelId": "riffusion/riffusion",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "Riffusion是创新的音乐生成模型，通过频谱图生成技术创作音乐。能够生成各种风格的音乐片段，适合音乐创作和实验。",
+            "en": "Riffusion is an innovative music generation model that creates music through spectrogram generation technology. Capable of generating music segments of various styles, suitable for music creation and experimentation."
+          }
+        },
+        "name": "Riffusion"
+      },
+      {
+        "config": {
+          "modelId": "lucataco/ace-step",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "ACE-Step是基于ACE-Step架构的音频生成模型，支持中文说唱生成，具有LoRA微调功能。生成速度比LLM基线快15倍，特别适合中文音频内容创作。",
+            "en": "ACE-Step is an audio generation model based on ACE-Step architecture, supporting Chinese rap generation with LoRA fine-tuning capabilities. 15x faster than LLM baselines, particularly suitable for Chinese audio content creation."
+          }
+        },
+        "name": "ACE-Step"
+      },
+      {
+        "config": {
+          "modelId": "haoheliu/audio-ldm",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "AudioLDM是使用潜在扩散模型的文本到音频生成系统，支持多种音频类型的生成。能够根据文本描述生成高质量的音频内容，包括音效、环境音和音乐。",
+            "en": "AudioLDM is a text-to-audio generation system using latent diffusion models, supporting generation of various audio types. Capable of generating high-quality audio content based on text descriptions, including sound effects, ambient sounds, and music."
+          }
+        },
+        "name": "AudioLDM"
+      },
+      {
+        "config": {
+          "modelId": "minimax/music-01",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "MiniMax Music-01是专业的音乐生成模型，支持中文提示词，能够生成各种风格的音乐作品。作为中国公司开发的模型，对中文音乐创作有良好的支持。",
+            "en": "MiniMax Music-01 is a professional music generation model that supports Chinese prompts and can generate music works of various styles. As a model developed by a Chinese company, it has good support for Chinese music creation."
+          }
+        },
+        "name": "MiniMax Music-01"
+      },
+      {
+        "config": {
+          "modelId": "stackadoc/stable-audio-open-1.0",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "Stable Audio Open 1.0是开源音频生成模型，能够生成长达47秒的立体声音频，采样率为44.1kHz。基于Creative Commons数据训练，适合开源音频创作。",
+            "en": "Stable Audio Open 1.0 is an open-source audio generation model capable of generating up to 47 seconds of stereo audio at 44.1kHz sample rate. Trained on Creative Commons data, suitable for open-source audio creation."
+          }
+        },
+        "name": "Stable Audio Open 1.0"
+      },
+      {
+        "config": {
+          "modelId": "ardianfe/music-gen-fn-200e",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "Music Gen FN 200E是经过200轮训练的音乐生成模型，专注于特定风格的音乐生成。通过深度训练优化，能够生成高质量的音乐内容。",
+            "en": "Music Gen FN 200E is a music generation model trained for 200 epochs, focusing on specific style music generation. Through deep training optimization, it can generate high-quality music content."
+          }
+        },
+        "name": "Music Gen FN 200E"
+      }
+    ],
+    "video": [
+      {
+        "config": {
+          "modelId": "minimax/video-01",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "MiniMax Video-01是先进的文本到视频生成模型，能够创建高质量的视频内容。支持多种视频风格和场景，适合视频创作和内容生成。",
+            "en": "MiniMax Video-01 is an advanced text-to-video generation model capable of creating high-quality video content. Supports various video styles and scenarios, suitable for video creation and content generation."
+          }
+        },
+        "name": "MiniMax Video-01"
+      },
+      {
+        "config": {
+          "modelId": "runway-ml/gen3-alpha-turbo",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "Runway Gen-3 Alpha Turbo是快速视频生成模型，在保持高质量的同时提供更快的生成速度。适合需要快速视频原型制作和内容创作的场景。",
+            "en": "Runway Gen-3 Alpha Turbo is a fast video generation model that provides faster generation speed while maintaining high quality. Suitable for scenarios requiring rapid video prototyping and content creation."
+          }
+        },
+        "name": "Runway Gen-3 Alpha Turbo"
+      },
+      {
+        "config": {
+          "modelId": "stability-ai/stable-video-diffusion-img2vid-xt-1-1",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "Stable Video Diffusion是图像到视频的生成模型，能够将静态图像转换为动态视频。支持多种动画效果和视频风格，适合图像动画化处理。",
+            "en": "Stable Video Diffusion is an image-to-video generation model that can convert static images into dynamic videos. Supports various animation effects and video styles, suitable for image animation processing."
+          }
+        },
+        "name": "Stable Video Diffusion"
+      }
+    ]
+  },
+  "volces": {
+    "image": [
+      {
+        "config": {
+          "modelId": "doubao-seedream-3-0-t2i-250415",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "豆包Seedream 3.0是字节跳动开发的高性能中英双语图像生成模型，支持原生2K输出和3秒快速生成。在文本渲染、中文字符生成和视觉美学方面表现出色，特别适合海报设计和创意视觉创作。",
+            "en": "Doubao Seedream 3.0 is a high-performance Chinese-English bilingual image generation model developed by ByteDance, supporting native 2K output and 3-second rapid generation. Excels in text rendering, Chinese character generation, and visual aesthetics, particularly suitable for poster design and creative visual creation."
+          }
+        },
+        "name": "豆包Seedream 3.0"
+      }
+    ],
+    "video": [
+      {
+        "config": {
+          "modelId": "doubao-seedance-1-0-pro-250528",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "豆包Seedance 1.0 Pro是字节跳动的旗舰视频生成模型，支持多镜头视频生成，具有出色的语义理解和提示词遵循能力。能够创建1080p视频，动作流畅，细节丰富，具有电影级美学效果。",
+            "en": "Doubao Seedance 1.0 Pro is ByteDance's flagship video generation model, supporting multi-shot video generation with excellent semantic understanding and prompt following capabilities. Can create 1080p videos with smooth motion, rich details, and cinematic aesthetics."
+          }
+        },
+        "name": "豆包Seedance 1.0 Pro"
+      },
+      {
+        "config": {
+          "modelId": "doubao-seedance-1-0-lite-t2v-250428",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "豆包Seedance 1.0 Lite是轻量级的文本到视频生成模型，在保持高质量输出的同时提供更快的生成速度。适合快速视频原型制作和日常内容创作需求。",
+            "en": "Doubao Seedance 1.0 Lite is a lightweight text-to-video generation model that provides faster generation speed while maintaining high-quality output. Suitable for rapid video prototyping and daily content creation needs."
+          }
+        },
+        "name": "豆包Seedance 1.0 Lite"
+      },
+      {
+        "config": {
+          "modelId": "wan2-1-14b-t2v-250225",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "Wan2-1是140亿参数的大型文本到视频生成模型，具有强大的视频生成能力和出色的场景理解能力。支持复杂场景的视频生成，适合专业级视频创作。",
+            "en": "Wan2-1 is a large-scale text-to-video generation model with 14 billion parameters, featuring powerful video generation capabilities and excellent scene understanding. Supports complex scene video generation, suitable for professional video creation."
+          }
+        },
+        "name": "Wan2-1 14B"
+      },
+      {
+        "config": {
+          "modelId": "doubao-seaweed-241128",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "豆包Seaweed是专门的视频生成模型，具有独特的视频风格和生成特性。能够创建具有特定视觉风格的视频内容，适合艺术创作和风格化视频生成。",
+            "en": "Doubao Seaweed is a specialized video generation model with unique video styles and generation characteristics. Capable of creating video content with specific visual styles, suitable for artistic creation and stylized video generation."
+          }
+        },
+        "name": "豆包Seaweed"
+      }
+    ]
+  },
+  "fal": {
+    "image": [
+      {
+        "config": {
+          "modelId": "fal-ai/flux-pro/v1.1-ultra",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "FAL FLUX Pro v1.1 Ultra是最先进的图像生成模型，提供超高质量的图像输出。在细节表现、色彩准确性和视觉真实感方面达到业界领先水平，适合专业级图像创作。",
+            "en": "FAL FLUX Pro v1.1 Ultra is the most advanced image generation model, providing ultra-high quality image output. Achieves industry-leading performance in detail representation, color accuracy, and visual realism, suitable for professional image creation."
+          }
+        },
+        "name": "FLUX Pro v1.1 Ultra"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/imagen4/preview",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "FAL Imagen 4 Preview是Google最新的图像生成模型预览版，具有卓越的图像质量和强大的提示词理解能力。支持高分辨率输出和复杂场景生成，代表了当前图像生成技术的前沿水平。",
+            "en": "FAL Imagen 4 Preview is Google's latest image generation model preview version, featuring exceptional image quality and powerful prompt understanding capabilities. Supports high-resolution output and complex scene generation, representing the cutting-edge level of current image generation technology."
+          }
+        },
+        "name": "Imagen 4 Preview"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/recraft/v2/text-to-image",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "FAL Recraft v2是专业的文本到图像生成模型，擅长生成矢量艺术、品牌风格图像和长文本内容。在文本渲染和风格一致性方面表现出色，特别适合设计和品牌创作。",
+            "en": "FAL Recraft v2 is a professional text-to-image generation model that excels at generating vector art, brand-style images, and long text content. Outstanding performance in text rendering and style consistency, particularly suitable for design and brand creation."
+          }
+        },
+        "name": "Recraft v2"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/luma-photon/flash",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "FAL Luma Photon Flash是快速图像生成模型，在保持高质量输出的同时提供极快的生成速度。适合需要快速迭代和实时图像生成的应用场景。",
+            "en": "FAL Luma Photon Flash is a fast image generation model that provides extremely fast generation speed while maintaining high-quality output. Suitable for applications requiring rapid iteration and real-time image generation."
+          }
+        },
+        "name": "Luma Photon Flash"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/janus",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "FAL Janus是多模态图像生成模型，具有独特的双向生成能力。能够处理复杂的图像生成任务，支持多种输入格式和输出风格，适合多样化的创作需求。",
+            "en": "FAL Janus is a multimodal image generation model with unique bidirectional generation capabilities. Capable of handling complex image generation tasks, supporting multiple input formats and output styles, suitable for diverse creative needs."
+          }
+        },
+        "name": "Janus"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/lcm",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "FAL LCM（Latent Consistency Model）是基于潜在一致性模型的快速图像生成器，能够在少数推理步骤内生成高质量图像。特别适合实时应用和快速原型制作。",
+            "en": "FAL LCM (Latent Consistency Model) is a fast image generator based on latent consistency models, capable of generating high-quality images in few inference steps. Particularly suitable for real-time applications and rapid prototyping."
+          }
+        },
+        "name": "LCM"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/pixart-sigma",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "FAL PixArt-Sigma是高效的文本到图像生成模型，具有出色的图像质量和较低的计算成本。采用先进的架构设计，在性能和效率之间取得完美平衡。",
+            "en": "FAL PixArt-Sigma is an efficient text-to-image generation model with excellent image quality and low computational cost. Adopts advanced architectural design, achieving perfect balance between performance and efficiency."
+          }
+        },
+        "name": "PixArt-Sigma"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/omnigen-v1",
+          "capabilities": {
+            "image": true
+          },
+          "description": {
+            "zh": "FAL OmniGen v1是全能型图像生成模型，支持多种图像生成任务和风格。具有强大的适应性和灵活性，能够处理各种复杂的图像创作需求。",
+            "en": "FAL OmniGen v1 is a versatile image generation model that supports various image generation tasks and styles. Features strong adaptability and flexibility, capable of handling various complex image creation needs."
+          }
+        },
+        "name": "OmniGen v1"
+      }
+    ],
+    "video": [
+      {
+        "config": {
+          "modelId": "fal-ai/bytedance/seedance/v1/lite/text-to-video",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "FAL ByteDance Seedance v1 Lite是轻量级的文本到视频生成模型，提供快速高效的视频生成服务。在保持良好视频质量的同时，具有更快的生成速度和更低的计算成本。",
+            "en": "FAL ByteDance Seedance v1 Lite is a lightweight text-to-video generation model that provides fast and efficient video generation services. Maintains good video quality while offering faster generation speed and lower computational cost."
+          }
+        },
+        "name": "Seedance v1 Lite"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/bytedance/seedance/v1/pro/text-to-video",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "FAL ByteDance Seedance v1 Pro是专业级文本到视频生成模型，具有卓越的视频质量和强大的场景理解能力。支持复杂动作序列和多镜头叙事，适合专业视频创作。",
+            "en": "FAL ByteDance Seedance v1 Pro is a professional-grade text-to-video generation model with exceptional video quality and powerful scene understanding capabilities. Supports complex action sequences and multi-shot narratives, suitable for professional video creation."
+          }
+        },
+        "name": "Seedance v1 Pro"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/minimax/hailuo-02/pro/text-to-video",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "FAL MiniMax Hailuo 02 Pro是电影级视频生成模型，在Artificial Analysis基准测试中排名全球第二。具有超真实的物理模拟、电影级视觉效果和角色一致性，支持1080p高清输出。",
+            "en": "FAL MiniMax Hailuo 02 Pro is a cinematic video generation model ranked #2 globally on Artificial Analysis benchmark. Features ultra-realistic physics simulation, cinematic visual effects, and character consistency, supporting 1080p HD output."
+          }
+        },
+        "name": "Hailuo 02 Pro"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/minimax/hailuo-02/standard/text-to-video",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "FAL MiniMax Hailuo 02 Standard是标准版视频生成模型，提供平衡的性能和成本效益。保持高质量视频输出的同时，具有更快的生成速度和更低的使用成本。",
+            "en": "FAL MiniMax Hailuo 02 Standard is a standard video generation model that provides balanced performance and cost-effectiveness. Maintains high-quality video output while offering faster generation speed and lower usage costs."
+          }
+        },
+        "name": "Hailuo 02 Standard"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/veo3/fast",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "FAL Veo 3 Fast是Google最新的快速视频生成模型，具有原生音频生成能力和4K高分辨率输出。支持同步对话、音效和背景音乐生成，在视频质量和生成速度之间取得优异平衡。",
+            "en": "FAL Veo 3 Fast is Google's latest fast video generation model with native audio generation capabilities and 4K high-resolution output. Supports synchronized dialogue, sound effects, and background music generation, achieving excellent balance between video quality and generation speed."
+          }
+        },
+        "name": "Veo 3 Fast"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/veo3",
+          "capabilities": {
+            "video": true
+          },
+          "description": {
+            "zh": "FAL Veo 3是Google DeepMind开发的最先进视频生成模型，具有革命性的音视频同步生成能力。支持4K分辨率输出、复杂多场景叙事和电影级视觉效果，代表了当前视频生成技术的最高水平。",
+            "en": "FAL Veo 3 is the most advanced video generation model developed by Google DeepMind, featuring revolutionary audio-visual synchronized generation capabilities. Supports 4K resolution output, complex multi-scene narratives, and cinematic visual effects, representing the highest level of current video generation technology."
+          }
+        },
+        "name": "Veo 3"
+      }
+    ],
+    "audio": [
+      {
+        "config": {
+          "modelId": "fal-ai/playai/tts/v3",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "FAL PlayAI TTS v3是先进的文本到语音合成模型，具有出色的语音质量和自然度。支持多种语音风格和情感表达，特别适合对话系统、有声读物和语音助手应用。",
+            "en": "FAL PlayAI TTS v3 is an advanced text-to-speech synthesis model with excellent voice quality and naturalness. Supports various voice styles and emotional expressions, particularly suitable for dialogue systems, audiobooks, and voice assistant applications."
+          }
+        },
+        "name": "PlayAI TTS v3"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/elevenlabs/tts/turbo-v2.5",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "FAL ElevenLabs TTS Turbo v2.5是高性能的多语言文本到语音模型，支持32种语言，具有75毫秒的超低延迟。在保持高质量语音输出的同时，提供3倍速度提升，特别适合实时对话应用。",
+            "en": "FAL ElevenLabs TTS Turbo v2.5 is a high-performance multilingual text-to-speech model supporting 32 languages with ultra-low latency of 75ms. Provides 3x speed improvement while maintaining high-quality voice output, particularly suitable for real-time conversational applications."
+          }
+        },
+        "name": "ElevenLabs TTS Turbo v2.5"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/orpheus-tts",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "FAL Orpheus TTS是基于Llama架构的先进语音合成模型，专为高质量、富有同理心的文本到语音生成而设计。具有人类级别的语音合成能力，在清晰度、表现力和实时性能方面表现卓越。",
+            "en": "FAL Orpheus TTS is an advanced speech synthesis model based on Llama architecture, designed for high-quality, empathetic text-to-speech generation. Features human-level speech synthesis capabilities with exceptional clarity, expressiveness, and real-time performance."
+          }
+        },
+        "name": "Orpheus TTS"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/dia-tts",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "FAL Dia TTS是专业的对话式文本到语音模型，能够直接从转录文本生成真实的对话音频。支持音频条件控制情感表达，能够产生自然的非语言声音如笑声和清嗓声。",
+            "en": "FAL Dia TTS is a professional dialogue text-to-speech model that directly generates realistic dialogue audio from transcripts. Supports audio conditioning for emotion control and produces natural nonverbals like laughter and throat clearing."
+          }
+        },
+        "name": "Dia TTS"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/yue",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "FAL Yue是高质量的音频生成模型，专注于音乐和语音合成。具有出色的音频质量和多样化的生成能力，能够创建各种风格的音频内容，适合专业音频制作。",
+            "en": "FAL Yue is a high-quality audio generation model focused on music and speech synthesis. Features excellent audio quality and diverse generation capabilities, capable of creating various styles of audio content, suitable for professional audio production."
+          }
+        },
+        "name": "Yue"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/diffrhythm",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "FAL DiffRhythm是快速的歌词到歌曲生成模型，能够在30秒内将歌词转换为完整的歌曲。采用先进的扩散技术，在保持高质量音乐输出的同时提供极快的生成速度。",
+            "en": "FAL DiffRhythm is a blazing fast lyrics-to-song generation model capable of transforming lyrics into full songs in less than 30 seconds. Uses advanced diffusion technology to provide extremely fast generation speed while maintaining high-quality music output."
+          }
+        },
+        "name": "DiffRhythm"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/ace-step",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "FAL ACE-Step是基于ACE-Step架构的音乐生成模型，具有35亿参数，支持多种音乐风格和类型。能够生成高质量的原创音乐，支持文本提示控制，特别适合音乐创作和制作。",
+            "en": "FAL ACE-Step is a music generation model based on ACE-Step architecture with 3.5 billion parameters, supporting various music styles and genres. Capable of generating high-quality original music with text prompt control, particularly suitable for music creation and production."
+          }
+        },
+        "name": "ACE-Step"
+      },
+      {
+        "config": {
+          "modelId": "cassetteai/sound-effects-generator",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "CassetteAI音效生成器是专业的音效制作模型，能够根据文本描述生成各种音效和环境音。基于潜在扩散模型训练，支持数千种乐器和音效，适合游戏、影视和多媒体制作。",
+            "en": "CassetteAI Sound Effects Generator is a professional sound effects creation model that can generate various sound effects and ambient sounds based on text descriptions. Trained on latent diffusion models, supports thousands of instruments and sound effects, suitable for gaming, film, and multimedia production."
+          }
+        },
+        "name": "CassetteAI SFX Generator"
+      },
+      {
+        "config": {
+          "modelId": "fal-ai/elevenlabs/sound-effects",
+          "capabilities": {
+            "audio": true
+          },
+          "description": {
+            "zh": "FAL ElevenLabs音效生成器是先进的音效制作模型，能够根据文本描述或视频内容生成高质量的音效。支持多种音效类型和风格，特别适合视频制作、游戏开发和音频后期制作。",
+            "en": "FAL ElevenLabs Sound Effects Generator is an advanced sound effects creation model that can generate high-quality sound effects based on text descriptions or video content. Supports various sound effect types and styles, particularly suitable for video production, game development, and audio post-production."
+          }
+        },
+        "name": "ElevenLabs Sound Effects"
+      }
+    ]
+  }
+}

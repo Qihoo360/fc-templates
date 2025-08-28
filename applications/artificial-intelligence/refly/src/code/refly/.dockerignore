@@ -1,0 +1,23 @@
+# Versioning and metadata
+.git
+.gitignore
+.dockerignore
+.github
+.vscode
+
+*.log
+*.chunks.jsonl
+
+# Build dependencies
+node_modules
+coverage
+
+# Environment (contains sensitive data)
+.env
+
+# Files not required for production
+.editorconfig
+Dockerfile
+README.md
+.eslintrc.js
+nodemon.json

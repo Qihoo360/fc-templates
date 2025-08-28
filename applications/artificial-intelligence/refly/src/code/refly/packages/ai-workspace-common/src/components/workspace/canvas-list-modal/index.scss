@@ -1,0 +1,27 @@
+.canvas-list {
+  .ant-modal-content {
+    .ant-modal-body {
+      max-height: 60vh;
+      min-height: 60vh;
+      overflow: auto;
+    }
+
+    .ant-btn.ant-btn-icon-only {
+      width: 32px;
+      height: 32px;
+      padding-inline: 0;
+    }
+  }
+}
+
+.canvas-action-dropdown {
+  .ant-dropdown-menu {
+    padding: 8px;
+    .ant-dropdown-menu-item {
+      padding: 6px 8px;
+      &:hover {
+        background-color: var(--refly-tertiary-hover);
+      }
+    }
+  }
+}

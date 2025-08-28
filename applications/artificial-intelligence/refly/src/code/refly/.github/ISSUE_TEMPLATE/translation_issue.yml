@@ -1,0 +1,62 @@
+name: "🌐 Localization/Translation issue"
+description: Report incorrect translations. [please use English :）]
+labels:
+  - translation
+body:
+  - type: checkboxes
+    attributes:
+      label: Self Checks
+      description: "To make sure we get to you in time, please check the following :)"
+      options:
+        - label: I have searched for existing issues [search for existing issues](https://github.com/refly-ai/refly/issues), including closed ones.
+          required: true
+        - label: I confirm that I am using English to submit this report (我已阅读并同意 [Language Policy](https://github.com/refly-ai/refly/discussions)).
+          required: true
+        - label: "Please do not modify this template :) and fill in all the required fields."
+          required: true
+  - type: input
+    attributes:
+      label: Refly Version
+      description: Check the version in Settings or About section
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Feature Area
+      description: Which feature area contains the translation issue?
+      options:
+        - Multi-threaded Dialogues
+        - AI-Powered Capabilities
+        - Context Memory & References
+        - Knowledge Base Integration
+        - Quotes & Citations
+        - AI Document Editing
+        - Canvas Interface
+        - Documentation
+        - Other UI Elements
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: 🌐 Language affected
+      placeholder: "German"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: ❌ Current Translation
+      placeholder: What is the current translation? Please include a screenshot if possible.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: ✔️ Suggested Translation
+      placeholder: What should the translation be?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: ℹ Why is the current translation incorrect?
+      placeholder: Please explain why the current translation is incorrect or could be improved.
+    validations:
+      required: true

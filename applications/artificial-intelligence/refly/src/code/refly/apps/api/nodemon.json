@@ -1,0 +1,16 @@
+{
+  "watch": [
+    "src/modules",
+    "src/server",
+    "../../packages/canvas-common",
+    "../../packages/common-types",
+    "../../packages/errors",
+    "../../packages/openapi-schema",
+    "../../packages/providers",
+    "../../packages/skill-template",
+    "../../packages/utils"
+  ],
+  "ext": "ts",
+  "ignore": ["src/**/*.spec.ts"],
+  "exec": "ts-node -r tsconfig-paths/register src/main.ts"
+}

@@ -1,0 +1,27 @@
+/* Make WebKit media controls inherit text color and apply consistent rounding */
+.refly-audio {
+  border-radius: 8px;
+  overflow: hidden;
+  /* Try to propagate theme color to internal parts where supported */
+  color: var(--refly-primary-default);
+  accent-color: var(--refly-primary-default);
+}
+
+.refly-audio::-webkit-media-controls-enclosure {
+  border-radius: 8px;
+}
+
+.refly-audio::-webkit-media-controls-panel {
+  border-radius: 8px;
+}
+
+/* Inherit color from element (so Tailwind text color applies) */
+.refly-audio::-webkit-media-controls-current-time-display,
+.refly-audio::-webkit-media-controls-time-remaining-display {
+  color: var(--refly-primary-default);
+}
+
+/* Some Chromium builds honor this for the progress bar thumb */
+.refly-audio::-webkit-media-controls-timeline {
+  color: var(--refly-primary-default);
+}

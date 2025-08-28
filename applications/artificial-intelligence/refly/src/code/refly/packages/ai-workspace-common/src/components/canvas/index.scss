@@ -1,0 +1,163 @@
+.moveable-control-hidden {
+  .moveable-control {
+    background: transparent !important;
+    border-color: transparent !important;
+  }
+  .moveable-origin {
+    background: transparent !important;
+    border-color: transparent !important;
+  }
+}
+
+.moveable-control-show {
+  .moveable-control {
+    background: #0E9F77 !important;
+  }
+  .moveable-origin {
+    background: transparent !important;
+    border-color: transparent !important;
+  }
+}
+
+// Add embedded launchpad styles
+.embedded-launchpad {
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+
+  .embedded-chat-panel {
+    box-shadow: none;
+  }
+
+  .ai-copilot-operation-body {
+    padding: 0.5rem;
+  }
+}
+
+.react-flow__node-group {
+  padding: 0 !important;
+}
+
+.react-flow__attribution {
+  background: transparent !important;
+}
+
+// Custom NodeResizer styles - show only corner controls with dashed arc appearance
+.react-flow__resize-control {
+  // Hide all edge controls
+  &.line {
+    display: none;
+  }
+  &.handle {
+    // Base size that will be scaled by currentZoom
+    --base-size: 24px;
+    --base-inner-size: 20px;
+    --base-border-width: 2px;
+    --base-offset: 5px;
+    
+    // Calculate scaled sizes based on currentZoom
+    --scaled-size: calc(var(--base-size) * var(--current-zoom, 1));
+    --scaled-inner-size: calc(var(--base-inner-size) * var(--current-zoom, 1));
+    --scaled-border-width: calc(var(--base-border-width) * var(--current-zoom, 1));
+    --scaled-offset: calc(var(--base-offset) * var(--current-zoom, 1));
+    
+    width: var(--scaled-size);
+    height: var(--scaled-size);
+    background: transparent;
+    border: none;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      width: var(--scaled-inner-size);
+      height: var(--scaled-inner-size);
+      border: var(--scaled-border-width) solid var(--refly-text-3);
+      border-radius: 50%;
+      background: transparent;
+      transition: all 0.2s ease;
+    }
+    
+    &:hover {
+      &::before {
+        border-color: var(--refly-primary-default) !important;
+        transform: scale(1.1) !important;
+      }
+    }
+  }
+  
+  // Top-left corner - show only top-left arc
+  &.handle.top.left {
+    top: var(--scaled-offset);
+    left: var(--scaled-offset);
+    &::before {
+      clip-path: polygon(50% 50%, 0% 50%, 0% 0%, 50% 0%) !important;
+    }
+  }
+  
+  // Top-right corner - show only top-right arc
+  &.handle.top.right {
+    top: var(--scaled-offset);
+    left: calc(100% - var(--scaled-offset));
+    &::before {
+      clip-path: polygon(50% 50%, 100% 50%, 100% 0%, 50% 0%) !important;
+    }
+  }
+  
+  // Bottom-left corner - show only bottom-left arc
+  &.handle.bottom.left {
+    top: calc(100% - var(--scaled-offset));
+    left: var(--scaled-offset);
+    &::before {
+      clip-path: polygon(50% 50%, 0% 50%, 0% 100%, 50% 100%) !important;
+    }
+  }
+  
+  // Bottom-right corner - show only bottom-right arc
+  &.handle.bottom.right {
+    top: calc(100% - var(--scaled-offset));
+    left: calc(100% - var(--scaled-offset));
+    &::before {
+      clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 50% 100%) !important;
+    }
+  }
+}
+
+.resources-panel-popover {
+  .ant-popover-inner {
+    padding: 0;
+    border-radius: 12px 0 0 12px;
+    box-shadow: -4px 0px 8px 0px rgba(0, 0, 0, 0.08);
+    height: calc(100vh - 16px);
+    border: solid 1px var(--refly-Card-Border);
+    border-right: none;
+    .ant-popover-inner-content {
+      height: 100%;
+    }
+  }
+}
+
+.canvas-splitter {
+  .ant-splitter-bar {
+    width: 3px!important;
+  }
+
+  .ant-splitter-bar-dragger {
+    &::before {
+      background: transparent!important;
+    }
+    &::after {
+      display: none;
+    }
+    &:hover {
+      &::before {
+        background: var(--refly-primary-default)!important;
+      }
+    }
+  }
+
+  .ant-splitter-bar-dragger-active {
+      &::before {
+        background: var(--refly-primary-default) !important;
+      }
+  }
+}

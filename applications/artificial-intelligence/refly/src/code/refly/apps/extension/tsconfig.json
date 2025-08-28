@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "useDefineForClassFields": true,
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@refly-packages/ai-workspace-common/*": ["../../packages/ai-workspace-common/src/*"],
+      "@refly/utils/*": ["../../packages/utils/src/*"]
+    }
+  },
+  "include": [
+    "src",
+    "tailwind.config.ts",
+    "./node_modules/@refly-packages/ai-workspace-common/src/components/workspace/content-panel",
+    "../../packages/ai-workspace-common/src/components/workspace/knowledge-keyword-list",
+    "../../packages/ai-workspace-common/src/components/workspace/left-assist-panel"
+  ],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../../packages/ai-workspace-common/tsconfig.json" },
+    { "path": "../../packages/utils/tsconfig.json" }
+  ]
+}

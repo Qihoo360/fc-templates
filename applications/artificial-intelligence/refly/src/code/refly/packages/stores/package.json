@@ -1,0 +1,24 @@
+{
+  "name": "@refly/stores",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Stores for Refly AI Workspace",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@refly/common-types": "workspace:*",
+    "@refly/utils": "workspace:*",
+    "@refly/openapi-schema": "workspace:*",
+    "@refly/canvas-common": "workspace:*",
+    "zustand": "~4.5.1",
+    "immer": "^10.1.1",
+    "react": "^18.2.0",
+    "@xyflow/react": "^12.3.5"
+  },
+  "devDependencies": {
+    "@refly/tsconfig": "workspace:*",
+    "@types/react": "^18.2.66",
+    "typescript": "^5.4.5"
+  }
+}
