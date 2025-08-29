@@ -199,7 +199,7 @@ resources:
         QDRANT_HOST: ${vars.QDRANTHost}
         QDRANT_PORT: ${vars.QDRANTPort}
         QDRANT_API_KEY: ${vars.QDRANTApiKey}
-        LANCEDB_URI: ${vars.LANCEDBUri}
+        LANCEDB_URI: ""
         ELASTICSEARCH_URL: "http://${vars.ElasticsearchHost}:${vars.ElasticsearchPort}"
         ELASTICSEARCH_USERNAME: ${vars.ElasticsearchUsername}
         ELASTICSEARCH_PASSWORD: ${vars.ElasticsearchPassword}
