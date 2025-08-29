@@ -75,7 +75,7 @@ resources:
         REDIS_USERNAME: ""
         REDIS_PASSWORD: ${vars.RedisPassword}        
         DATABASE_URL: "postgresql://${vars.PGUser}:${vars.PGPassword}@${vars.PGHost}:${PGPort}/${vars.PGDbName}?schema=${vars.PGSchema}"
-        VECTOR_STORE_BACKEND: ${vars.VectorStoreBackend}
+        VECTOR_STORE_BACKEND: "qdrant"
         QDRANT_HOST: ${vars.QDRANTHost}
         QDRANT_PORT: ${vars.QDRANTPort}
         QDRANT_API_KEY: ${vars.QDRANTApiKey}
