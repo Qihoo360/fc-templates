@@ -1,6 +1,6 @@
 # Build stage
 # FROM node:22-alpine AS builder
-FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/node:22-alpine AS builder
+FROM wfwqjs-eventing-zevent-pub/node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -39,7 +39,7 @@ RUN rush build --to @coze-studio/app
 
 # Production image stage
 # FROM nginx:1.25-alpine
-FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/nginx:1.25-alpine
+FROM wfwqjs-eventing-zevent-pub/nginx:1.25-alpine
 
 
 # if you located in China, you can use aliyun mirror to speed up
