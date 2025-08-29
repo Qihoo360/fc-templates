@@ -333,7 +333,7 @@ Parameters:
       enum:
         - qdrant
       x-cate: applicationCate
-      x-label: 对象存储配置
+      x-label: 向量数据库配置
       x-restype: qdrant
       x-placeholder: 请输入向量数据库类型
       x-formitem:
