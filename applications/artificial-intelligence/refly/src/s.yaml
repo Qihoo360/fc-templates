@@ -299,9 +299,9 @@ resources:
       code:
         templated_files:
           - code/refly/deploy/docker/nginx.conf
-      port: 8080
+      port: 80
       functionName: ${vars.reflyWebFunctionName}
-      sourceSubDir: code/chatwiki
+      sourceSubDir: code/refly
       environmentVariables:
         testkey: "testvalue"
         TZ: "Asia/Shanghai"
