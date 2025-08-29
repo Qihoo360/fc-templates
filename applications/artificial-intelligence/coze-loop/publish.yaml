@@ -64,6 +64,7 @@ Parameters:
       description: 创建应用所在的地区
       enum:
       - beijing
+      - cn-north-cu-1
       x-cate: resourceCate
       x-reaction-properties:
       - functionPolefsVolumn
