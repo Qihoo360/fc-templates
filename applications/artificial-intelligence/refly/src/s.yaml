@@ -9,13 +9,10 @@ vars:
   reflyApi2Description : {{reflyApi2Description}}
   reflyWebFunctionName : {{reflyWebFunctionName}}
   reflyWebDescription : {{reflyWebDescription}}
-
-
   RedisDataBase: {{RedisDataBase}}
   RedisPassword: {{REDIS_PASSWORD}}
   RedisHost: {{REDIS_HOST}}
   RedisPort: {{REDIS_PORT}}
-
   PGDataBase: {{PGDataBase}}
   PGHost: {{POSTGRES_HOST}}
   PGPort: {{POSTGRES_PORT}}
@@ -23,7 +20,6 @@ vars:
   PGPassword: {{POSTGRES_PASSWORD}}
   PGDbName: {{POSTGRES_DATABASE}}
   PGSchema: {{POSTGRES_SCHEMA}}
-
   MINIODataBase: {{MINIODataBase}}
   MINIOInternalBucket: {{MINIO_INTERAL_BUCKET}}
   MINIOExteralBucket: {{MINIO_EXTERNAL_BUCKET}}
@@ -32,24 +28,19 @@ vars:
   MINIOAccessKey: {{MINIO_ACCESS_KEY}}
   MINIOSecretKey: {{MINIO_SECRET_KEY}}
   MINIOUseSSL: {{MINIO_USE_SSL}}
-
   QDRANTDataBase: {{QDRANTDataBase}}
   VectorStoreBackend: {{VECTOR_STORE_BACKEND}}
   QDRANTHost: {{QDRANT_HOST}}
   QDRANTPort: {{QDRANT_PORT}}
   QDRANTApiKey: {{QDRANT_API_KEY}}
-  LANCEDBUri: {{LANCEDB_URI}}
-
   SEARXNGDataBase: {{SEARXNGDataBase}}
   SEARXNGHost: {{SEARXNG_HOST}}
   SEARXNGPort: {{SEARXNG_PORT}}
-
   ElasticSearchDataBase: {{ELASTICSEARCHDataBase}}
   ElasticSearchHost: {{ELASTICSEARCH_HOST}}
   ElasticSearchPort: {{ELASTICSEARCH_PORT}}
   ElasticSearchUserName: {{ELASTICSEARCH_USERNAME}}
   ElasticSearchPassword: {{ELASTICSEARCH_PASSWORD}}
-
 resources:
   reflyApi:
     component: ${path('/utils/components/zfc')}
@@ -84,7 +75,7 @@ resources:
         REDIS_USERNAME: ""
         REDIS_PASSWORD: ${vars.RedisPassword}        
         DATABASE_URL: "postgresql://${vars.PGUser}:${vars.PGPassword}@${vars.PGHost}:${PGPort}/${vars.PGDbName}?schema=${vars.PGSchema}"
-        VECTOR_STORE_BACKEND: ${vars.VectorStoreBackend}
+        VECTOR_STORE_BACKEND: "qdrant"
         QDRANT_HOST: ${vars.QDRANTHost}
         QDRANT_PORT: ${vars.QDRANTPort}
         QDRANT_API_KEY: ${vars.QDRANTApiKey}
@@ -308,9 +299,9 @@ resources:
       code:
         templated_files:
           - code/refly/deploy/docker/nginx.conf
-      port: 8080
+      port: 80
       functionName: ${vars.reflyWebFunctionName}
-      sourceSubDir: code/chatwiki
+      sourceSubDir: code/refly
       environmentVariables:
         testkey: "testvalue"
         TZ: "Asia/Shanghai"
