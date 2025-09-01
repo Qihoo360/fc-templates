@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunk_refly_web=self.webpackChunk_refly_web||[]).push([["3955"],{6958:function(e,l,r){r.r(l),r.d(l,{default:()=>t});var a=r(31549),n=r(82949),s=r(7482);let t=()=>{let{shareId:e=""}=(0,n.UO)();return(0,a.jsx)(s.X,{canvasId:e,readonly:!0})}}}]);
+//# sourceMappingURL=3955.80c974a8.js.map

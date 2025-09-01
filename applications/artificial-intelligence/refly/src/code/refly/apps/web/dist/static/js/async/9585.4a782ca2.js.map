@@ -1,0 +1,1 @@
+{"version":3,"file":"static/js/async/9585.4a782ca2.js","sources":["webpack://@refly/web/../../packages/web-core/src/pages/debug.tsx"],"sourcesContent":["export function DebugPage() {\n  return <div>DebugPage</div>;\n}\n"],"names":["DebugPage"],"mappings":"gKAAO,SAASA,IACd,MAAO,UAAC,O,SAAI,W,EACd,C"}
