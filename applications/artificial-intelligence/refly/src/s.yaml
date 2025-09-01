@@ -94,7 +94,7 @@ resources:
         MINIO_EXTERNAL_ACCESS_KEY: ${vars.MINIOAccessKey}
         MINIO_EXTERNAL_SECRET_KEY: ${vars.MINIOSecretKey}
         MINIO_EXTERNAL_BUCKET: ${vars.MINIOExternalBucket}
-        SEARXNG_BASE_URL: "http://${vars.SearxngHost}:${vars.SearxngPort}"
+        SEARXNG_BASE_URL: "http://${vars.SEARXNGHost}:${vars.SEARXNGPort}"
         AUTH_SKIP_VERIFICATION: true
         REFLY_COOKIE_DOMAIN: ""
         REFLY_COOKIE_SECURE: ""
@@ -214,7 +214,7 @@ resources:
         MINIO_EXTERNAL_ACCESS_KEY: ${vars.MINIOAccessKey}
         MINIO_EXTERNAL_SECRET_KEY: ${vars.MINIOSecretKey}
         MINIO_EXTERNAL_BUCKET: ${vars.MINIOExternalBucket}
-        SEARXNG_BASE_URL: "http://${vars.SearxngHost}:${vars.SearxngPort}"
+        SEARXNG_BASE_URL: "http://${vars.SEARXNGHost}:${vars.SEARXNGPort}"
         AUTH_SKIP_VERIFICATION: true
         REFLY_COOKIE_DOMAIN: ""
         REFLY_COOKIE_SECURE: ""
