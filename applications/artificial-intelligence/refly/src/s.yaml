@@ -29,7 +29,6 @@ vars:
   MINIOSecretKey: {{MINIO_SECRET_KEY}}
   MINIOUseSSL: {{MINIO_USE_SSL}}
   QDRANTDataBase: {{QDRANTDataBase}}
-  VectorStoreBackend: {{VECTOR_STORE_BACKEND}}
   QDRANTHost: {{QDRANT_HOST}}
   QDRANTPort: {{QDRANT_PORT}}
   QDRANTApiKey: {{QDRANT_API_KEY}}
@@ -80,9 +79,9 @@ resources:
         QDRANT_PORT: ${vars.QDRANTPort}
         QDRANT_API_KEY: ${vars.QDRANTApiKey}
         LANCEDB_URI: ""
-        ELASTICSEARCH_URL: "http://${vars.ElasticsearchHost}:${vars.ElasticsearchPort}"
-        ELASTICSEARCH_USERNAME: ${vars.ElasticsearchUsername}
-        ELASTICSEARCH_PASSWORD: ${vars.ElasticsearchPassword}
+        ELASTICSEARCH_URL: "http://${vars.ElasticSearchHost}:${vars.ElasticSearchPort}"
+        ELASTICSEARCH_USERNAME: ${vars.ElasticSearchUserName}
+        ELASTICSEARCH_PASSWORD: ${vars.ElasticSearchPassword}
         MINIO_INTERNAL_ENDPOINT: ${vars.MINIOEndpoint}
         MINIO_INTERNAL_PORT: ${vars.MINIOPort}
         MINIO_INTERNAL_USE_SSL: ${vars.MINIOUseSSL}
@@ -195,7 +194,7 @@ resources:
         REDIS_USERNAME: ""
         REDIS_PASSWORD: ${vars.RedisPassword}
         DATABASE_URL: "postgresql://${vars.PGUser}:${vars.PGPassword}@${vars.PGHost}:${PGPort}/${vars.PGDbName}?schema=${vars.PGSchema}"
-        VECTOR_STORE_BACKEND: ${vars.VectorStoreBackend}
+        VECTOR_STORE_BACKEND: "qdrant"
         QDRANT_HOST: ${vars.QDRANTHost}
         QDRANT_PORT: ${vars.QDRANTPort}
         QDRANT_API_KEY: ${vars.QDRANTApiKey}
