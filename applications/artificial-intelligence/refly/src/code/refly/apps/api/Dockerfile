@@ -2,13 +2,18 @@
 FROM wfwqjs-eventing-zevent-pub/node:20.19.1-alpine3.20 AS builder
 WORKDIR /app
 
+## 安装 CA 根证书
+#RUN apk add --no-cache ca-certificates && update-ca-certificates
+
+RUN npm config set registry http://registry.npmjs.org/ --global
+RUN npm config set strict-ssl false -g
 # Install pnpm globally
 RUN npm install -g pnpm
 
 # Set environment variables to skip gyp-related installations
 ENV npm_config_gyp_ignore=true
 ENV CYPRESS_INSTALL_BINARY=0
-
+ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 # Set node options to increase memory limit
 ENV NODE_OPTIONS='--max_old_space_size=8192'
 
@@ -39,7 +44,9 @@ FROM wfwqjs-eventing-zevent-pub/node:20.19.1-alpine3.20 AS production
 WORKDIR /app
 
 # Install system dependencies in a single layer
-RUN apk add --no-cache \
+RUN sed -i 's/https/http/' /etc/apk/repositories \
+  && apk update \
+  && apk add --no-cache \
     curl \
     gcompat \
     libstdc++ \
@@ -65,7 +72,7 @@ COPY --from=wkhtmltopdf /bin/wkhtmltopdf /bin/wkhtmltopdf
 # Install pandoc based on architecture
 ARG TARGETARCH
 RUN if [ "$TARGETARCH" = "amd64" ]; then \
-        wget https://github.com/jgm/pandoc/releases/download/3.6.3/pandoc-3.6.3-linux-amd64.tar.gz \
+        wget --no-check-certificate https://github.com/jgm/pandoc/releases/download/3.6.3/pandoc-3.6.3-linux-amd64.tar.gz \
         && tar xvzf pandoc-3.6.3-linux-amd64.tar.gz --strip-components 1 -C /usr/local/ \
         && rm pandoc-3.6.3-linux-amd64.tar.gz; \
     elif [ "$TARGETARCH" = "arm64" ]; then \
