@@ -14,23 +14,23 @@ vars:
   FileStorageExecel: {{FileStorageExecel}}
   PolefsVolumeExecel: {{PolefsVolumeExecel}}
   MountDirExecel: {{MountDirExecel}}
-  PolefsVolumeCreateUseExecel: {{PolefsVolumeCreateUseExecel}}
+  PolefsVolumeCreateUserExecel: {{PolefsVolumeCreateUserExecel}}
   FileStorageFile: {{FileStorageFile}}
   PolefsVolumeFile: {{PolefsVolumeFile}}
   MountDirFile: {{MountDirFile}}
-  PolefsVolumeCreateUseFile: {{PolefsVolumeCreateUseFile}}
+  PolefsVolumeCreateUserFile: {{PolefsVolumeCreateUserFile}}
   FileStorageImages: {{FileStorageImages}}
   PolefsVolumeImages: {{PolefsVolumeImages}}
   MountDirImages: {{MountDirImages}}
-  PolefsVolCreateUseImages: {{PolefsVolCreateUseImages}}
+  PolefsVolCreateUserImages: {{PolefsVolCreateUserImages}}
   FileStorageLogs: {{FileStorageLogs}}
   PolefsVolumeLogs: {{PolefsVolumeLogs}}
   MountDirLogs: {{MountDirLogs}}
-  PolefsVolumeCreateUselogs: {{PolefsVolumeCreateUselogs}}
+  PolefsVolumeCreateUserlogs: {{PolefsVolumeCreateUserlogs}}
   FileStorageData: {{FileStorageData}}
   PolefsVolumeData: {{PolefsVolumeData}}
   MountDirData: {{MountDirData}}
-  PolefsVolumeCreateUseData: {{PolefsVolumeCreateUseData}}
+  PolefsVolumeCreateUserData: {{PolefsVolumeCreateUserData}}
 resources:
   SqlBot:
     component: ${path('/utils/components/zfc')}
@@ -88,16 +88,16 @@ resources:
       nasConfig:
         - volumeUniqueName: ${vars.PolefsVolumeExecel}
           mountDir: ${vars.MountDirExecel}
-          createUserName: ${vars.PolefsVolumeCreateUseExecel}
+          createUserName: ${vars.PolefsVolumeCreateUserExecel}
         - volumeUniqueName: ${vars.PolefsVolumeFile}
           mountDir: ${vars.MountDirFile}
-          createUserName: ${vars.PolefsVolumeCreateUseFile}
+          createUserName: ${vars.PolefsVolumeCreateUserFile}
         - volumeUniqueName: ${vars.PolefsVolumeImages}
           mountDir: ${vars.MountDirImages}
-          createUserName: ${vars.PolefsVolCreateUseImages}
+          createUserName: ${vars.PolefsVolCreateUserImages}
         - volumeUniqueName: ${vars.PolefsVolumeLogs}
           mountDir: ${vars.MountDirLogs}
-          createUserName: ${vars.PolefsVolumeCreateUselogs}
+          createUserName: ${vars.PolefsVolumeCreateUserlogs}
         - volumeUniqueName: ${vars.PolefsVolumeData}
           mountDir: ${vars.MountDirData}
-          createUserName: ${vars.PolefsVolumeCreateUseData}
+          createUserName: ${vars.PolefsVolumeCreateUserData}
