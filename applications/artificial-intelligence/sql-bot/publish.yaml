@@ -65,20 +65,20 @@ Parameters:
     SqlBotFunctionName:
       title: SqlBotFunctionName 函数名
       type: string
-      default: refly-api-${default-suffix}
+      default: sqlbot-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
-      x-placeholder:  请输入reflyApi 函数名
+      x-placeholder:  请输入SQLBot 函数名
       x-cate: resourceCate
       x-formitem:
         type: input
     SqlBotDescription:
-      title: reflyApi函数描述
+      title: sqlbot函数描述
       type: string
-      default: "Serverless refly api"
+      default: "Serverless sqlbot"
       pattern: ".{0,255}$"
       description: 最大长度为255个字符
-      x-placeholder: 请输入reflyApi函数描述
+      x-placeholder: 请输入sqlbot函数描述
       x-cate: resourceCate
       x-formitem:
         type: input
