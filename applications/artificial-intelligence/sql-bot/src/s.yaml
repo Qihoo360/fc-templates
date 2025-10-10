@@ -22,7 +22,7 @@ vars:
   FileStorageImages: {{FileStorageImages}}
   PolefsVolumeImages: {{PolefsVolumeImages}}
   MountDirImages: {{MountDirImages}}
-  PolefsVolumeCreateUserImages: {{PolefsVolumeCreateUserImages}}
+  PolefsVolCreateUserImages: {{PolefsVolCreateUserImages}}
   FileStorageLogs: {{FileStorageLogs}}
   PolefsVolumeLogs: {{PolefsVolumeLogs}}
   MountDirLogs: {{MountDirLogs}}
@@ -94,7 +94,7 @@ resources:
           createUserName: ${vars.PolefsVolumeCreateUseFile}
         - volumeUniqueName: ${vars.PolefsVolumeImages}
           mountDir: ${vars.MountDirImages}
-          createUserName: ${vars.PolefsVolumeCreateUserImages}
+          createUserName: ${vars.PolefsVolCreateUserImages}
         - volumeUniqueName: ${vars.PolefsVolumeLogs}
           mountDir: ${vars.MountDirLogs}
           createUserName: ${vars.PolefsVolumeCreateUserlogs}
