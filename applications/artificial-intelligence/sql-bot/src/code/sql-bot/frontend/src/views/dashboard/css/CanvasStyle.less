@@ -1,0 +1,115 @@
+.dragAndResize {
+  position: relative;
+  user-select: none;
+  width: 100%;
+  height: 100%;
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .itemCursorDefault {
+    cursor: default !important;
+  }
+
+  .itemActive {
+    outline: 1px solid #59c7f9;
+  }
+
+  .item {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background-color: #fff;
+    cursor: move;
+    border-radius: 12px;
+    .resizeHandle {
+      position: absolute;
+      background: #fff;
+      outline: 1px solid #59c7f9;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      z-index: 10;
+    }
+
+    .sq-component {
+      width: 100%;
+      height: 100%;
+    }
+
+    .sq-component-hidden {
+      overflow: hidden;
+    }
+  }
+
+  .moveAnimation {
+    transition: top 80ms ease;
+  }
+
+  .canNotDrag {
+    cursor: default !important;
+  }
+
+  .cloneNode {
+    z-index: 100;
+
+    transition: none;
+    border-radius: 12px;
+    opacity: .5;
+    overflow: hidden;
+  }
+
+  .movingItem {
+    position: absolute;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    &:before {
+      position: absolute;
+      z-index: 2;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      content: '';
+      background-color: #b8d3f9;
+    }
+
+    .resizeHandle {
+      display: none;
+    }
+
+    .slot-component {
+      opacity: 0;
+    }
+  }
+
+  .positionBox {
+    position: fixed;
+    top: 0;
+    right: 100px;
+
+    overflow: auto;
+
+    width: 500px;
+    height: 500px;
+
+    border: 1px solid;
+  }
+
+  .coords {
+    position: fixed;
+    right: 100px;
+    bottom: 200px;
+
+    overflow: auto;
+
+    width: 200px;
+    height: 200px;
+
+    border: 1px solid;
+  }
+}

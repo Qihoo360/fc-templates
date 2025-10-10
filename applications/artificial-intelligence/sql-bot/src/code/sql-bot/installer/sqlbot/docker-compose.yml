@@ -1,0 +1,22 @@
+services:
+  sqlbot:
+    image: registry.cn-qingdao.aliyuncs.com/dataease/sqlbot:SQLBOT_TAG
+    container_name: sqlbot
+    restart: always
+    privileged: true
+    networks:
+      - sqlbot-network
+    ports:
+      - ${SQLBOT_WEB_PORT}:8000
+      - ${SQLBOT_MCP_PORT}:8001
+    env_file:
+      - conf/sqlbot.conf
+    volumes:
+      - ./data/sqlbot/excel:/opt/sqlbot/data/excel
+      - ./data/sqlbot/file:/opt/sqlbot/data/file
+      - ./data/sqlbot/images:/opt/sqlbot/images
+      - ./data/sqlbot/logs:/opt/sqlbot/app/logs
+      - ./data/postgresql:/var/lib/postgresql/data
+
+networks:
+  sqlbot-network:

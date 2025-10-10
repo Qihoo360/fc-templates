@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>优购电商 - 您的一站式购物平台</title>
+    <style>
+      /* 全局样式 */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Arial", "Microsoft YaHei", sans-serif;
+      }
+
+      /* 滚动条样式 */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+        background-color: transparent;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 107, 107, 0.5);
+        border-radius: 4px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      :hover::-webkit-scrollbar-thumb,
+      :focus::-webkit-scrollbar-thumb,
+      :active::-webkit-scrollbar-thumb {
+        opacity: 1;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #ff6b6b;
+      }
+
+      body {
+        color: #333;
+        line-height: 1.6;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 107, 107, 0.5) transparent;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      /* 导航栏 */
+      header {
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #ff6b6b;
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+      }
+
+      .nav-links li {
+        margin-left: 30px;
+      }
+
+      .nav-links a:hover {
+        color: #ff6b6b;
+      }
+
+      .mobile-menu {
+        display: none;
+        font-size: 24px;
+        cursor: pointer;
+      }
+
+      /* 英雄区域 */
+      .hero {
+        background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+        color: white;
+        padding: 80px 0;
+        text-align: center;
+      }
+
+      .hero h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+      }
+
+      .hero p {
+        font-size: 20px;
+        max-width: 700px;
+        margin: 0 auto 30px;
+      }
+
+      .btn {
+        display: inline-block;
+        background-color: #ff6b6b;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 30px;
+        font-weight: bold;
+        transition: all 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #ff5252;
+        transform: translateY(-3px);
+      }
+
+      /* 特色服务 */
+      .features {
+        padding: 80px 0;
+      }
+
+      .section-title {
+        text-align: center;
+        margin-bottom: 50px;
+      }
+
+      .section-title h2 {
+        font-size: 36px;
+        color: #333;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .feature-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        transition: transform 0.3s;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+      }
+
+      .feature-icon {
+        font-size: 50px;
+        color: #ff6b6b;
+        margin-bottom: 20px;
+      }
+
+      .feature-card h3 {
+        margin-bottom: 15px;
+        font-size: 22px;
+      }
+
+      /* 热门产品 */
+      .products {
+        padding: 80px 0;
+        background-color: #f9f9f9;
+      }
+
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+      }
+
+      .product-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s;
+      }
+
+      .product-card:hover {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-img {
+        height: 200px;
+        overflow: hidden;
+      }
+
+      .product-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+      }
+
+      .product-card:hover .product-img img {
+        transform: scale(1.1);
+      }
+
+      .product-info {
+        padding: 20px;
+      }
+
+      .product-info h3 {
+        margin-bottom: 10px;
+      }
+
+      .price {
+        color: #ff6b6b;
+        font-weight: bold;
+        font-size: 18px;
+        margin: 15px 0;
+      }
+
+      /* 客户评价 */
+      .testimonials {
+        padding: 80px 0;
+      }
+
+      .testimonial-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .testimonial-card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      }
+
+      .testimonial-text {
+        font-style: italic;
+        margin-bottom: 20px;
+      }
+
+      .client-info {
+        display: flex;
+        align-items: center;
+      }
+
+      .client-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 15px;
+      }
+
+      .client-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* 页脚 */
+      footer {
+        background-color: #333;
+        color: white;
+        padding: 60px 0 20px;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 40px;
+        margin-bottom: 40px;
+      }
+
+      .footer-column h3 {
+        margin-bottom: 20px;
+        font-size: 18px;
+      }
+
+      .footer-links {
+        list-style: none;
+      }
+
+      .footer-links li {
+        margin-bottom: 10px;
+      }
+
+      .footer-links a:hover {
+        color: #ff6b6b;
+      }
+
+      .social-links {
+        display: flex;
+        gap: 15px;
+      }
+
+      .social-links a {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        text-align: center;
+        line-height: 40px;
+        transition: all 0.3s;
+      }
+
+      .social-links a:hover {
+        background-color: #ff6b6b;
+        transform: translateY(-5px);
+      }
+
+      .copyright {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 14px;
+      }
+
+      /* 响应式设计 */
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+
+        .mobile-menu {
+          display: block;
+        }
+
+        .hero h1 {
+          font-size: 36px;
+        }
+
+        .hero p {
+          font-size: 18px;
+        }
+      }
+    </style>
+    <script
+  async
+  defer
+  id="sqlbot-assistant-float-script-7356228649239973888"
+  src="https://sqlbot.fit2cloud.cn/assistant.js?id=7356228649239973888"></script>
+  </head>
+
+  <body>
+    <!-- 导航栏 -->
+    <header>
+      <div class="container">
+        <nav class="navbar">
+          <a href="#" class="logo">优购电商</a>
+          <ul class="nav-links">
+            <li><a href="#">首页</a></li>
+            <li><a href="#">商品分类</a></li>
+            <li><a href="#">热销商品</a></li>
+            <li><a href="#">关于我们</a></li>
+            <li><a href="#">联系我们</a></li>
+          </ul>
+          <div class="mobile-menu">☰</div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section class="hero">
+      <div class="container">
+        <h1>发现优质商品，享受便捷购物</h1>
+        <p>
+          优购电商为您提供海量正品商品，全场包邮，7天无理由退换货，让您购物无忧
+        </p>
+        <a href="#" class="btn">立即购物</a>
+      </div>
+    </section>
+
+    <!-- 特色服务 -->
+    <section class="features">
+      <div class="container">
+        <div class="section-title">
+          <h2>我们的优势</h2>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🚚</div>
+            <h3>快速配送</h3>
+            <p>全国300+城市次日达，部分地区可实现当日送达</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>正品保障</h3>
+            <p>所有商品100%正品，假一赔十，购物更放心</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">💯</div>
+            <h3>无忧售后</h3>
+            <p>7天无理由退换货，专业客服团队24小时在线服务</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 热门产品 -->
+    <section class="products">
+      <div class="container">
+        <div class="section-title">
+          <h2>热门商品</h2>
+        </div>
+        <div class="product-grid">
+          <div class="product-card">
+            <div class="product-img">
+              <img
+                src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                alt="智能手表"
+              />
+            </div>
+            <div class="product-info">
+              <h3>智能手表 Pro</h3>
+              <p>多功能健康监测，超长续航</p>
+              <div class="price">¥899</div>
+              <a href="#" class="btn">加入购物车</a>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-img">
+              <img
+                src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                alt="无线耳机"
+              />
+            </div>
+            <div class="product-info">
+              <h3>无线降噪耳机</h3>
+              <p>主动降噪，Hi-Fi音质</p>
+              <div class="price">¥599</div>
+              <a href="#" class="btn">加入购物车</a>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-img">
+              <img
+                src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                alt="投影仪"
+              />
+            </div>
+            <div class="product-info">
+              <h3>便携式投影仪</h3>
+              <p>1080P高清，内置电池</p>
+              <div class="price">¥1299</div>
+              <a href="#" class="btn">加入购物车</a>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-img">
+              <img
+                src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80"
+                alt="空气炸锅"
+              />
+            </div>
+            <div class="product-info">
+              <h3>智能空气炸锅</h3>
+              <p>无油健康烹饪，大容量</p>
+              <div class="price">¥399</div>
+              <a href="#" class="btn">加入购物车</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 客户评价 -->
+    <section class="testimonials">
+      <div class="container">
+        <div class="section-title">
+          <h2>客户评价</h2>
+        </div>
+        <div class="testimonial-grid">
+          <div class="testimonial-card">
+            <div class="testimonial-text">
+              "在优购电商购物体验非常好，商品质量有保障，物流速度也很快，客服态度也很专业，会继续支持！"
+            </div>
+            <div class="client-info">
+              <div class="client-img">
+                <img
+                  src="https://randomuser.me/api/portraits/women/44.jpg"
+                  alt="张女士"
+                />
+              </div>
+              <div>
+                <h4>张女士</h4>
+                <p>上海</p>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-text">
+              "第一次在优购买东西就爱上了这个平台，价格实惠，经常有活动，退换货也很方便，强烈推荐！"
+            </div>
+            <div class="client-info">
+              <div class="client-img">
+                <img
+                  src="https://randomuser.me/api/portraits/men/32.jpg"
+                  alt="李先生"
+                />
+              </div>
+              <div>
+                <h4>李先生</h4>
+                <p>北京</p>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-text">
+              "对比了好几个电商平台，最后还是选择优购，商品种类齐全，售后服务有保障，购物很放心。"
+            </div>
+            <div class="client-info">
+              <div class="client-img">
+                <img
+                  src="https://randomuser.me/api/portraits/women/65.jpg"
+                  alt="王小姐"
+                />
+              </div>
+              <div>
+                <h4>王小姐</h4>
+                <p>广州</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-column">
+            <h3>关于优购</h3>
+            <ul class="footer-links">
+              <li><a href="#">公司简介</a></li>
+              <li><a href="#">招贤纳士</a></li>
+              <li><a href="#">联系我们</a></li>
+              <li><a href="#">隐私政策</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>购物指南</h3>
+            <ul class="footer-links">
+              <li><a href="#">购物流程</a></li>
+              <li><a href="#">会员介绍</a></li>
+              <li><a href="#">常见问题</a></li>
+              <li><a href="#">联系客服</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>配送方式</h3>
+            <ul class="footer-links">
+              <li><a href="#">上门自提</a></li>
+              <li><a href="#">211限时达</a></li>
+              <li><a href="#">配送服务查询</a></li>
+              <li><a href="#">配送费收取标准</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h3>关注我们</h3>
+            <p>订阅我们的电子报，获取最新优惠信息</p>
+            <div class="social-links">
+              <a href="#">微</a>
+              <a href="#">微</a>
+              <a href="#">抖</a>
+              <a href="#">快</a>
+            </div>
+          </div>
+        </div>
+        <div class="copyright">
+          <p>© 2023 优购电商 版权所有 | ICP备案号：京ICP备XXXXXXXX号</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

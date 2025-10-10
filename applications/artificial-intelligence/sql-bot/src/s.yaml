@@ -1,0 +1,103 @@
+edition: 3.0.0
+name: sqlbot-app
+access: default
+vars:
+  region: {{region}}
+  SqlBotFunctionName : {{SqlBotFunctionName}}
+  SqlBotDescription : {{SqlBotDescription}}
+  PGDataBase: {{PGDataBase}}
+  PGHost: {{POSTGRES_HOST}}
+  PGPort: {{POSTGRES_PORT}}
+  PGUser: {{POSTGRES_USERNAME}}
+  PGPassword: {{POSTGRES_PASSWORD}}
+  PGDbName: {{POSTGRES_DATABASE}}
+  FileStorageExecel: {{FileStorageExecel}}
+  PolefsVolumeExecel: {{PolefsVolumeExecel}}
+  MountDirExecel: {{MountDirExecel}}
+  PolefsVolumeCreateUseExecel: {{PolefsVolumeCreateUseExecel}}
+  FileStorageFile: {{FileStorageFile}}
+  PolefsVolumeFile: {{PolefsVolumeFile}}
+  MountDirFile: {{MountDirFile}}
+  PolefsVolumeCreateUseFile: {{PolefsVolumeCreateUseFile}}
+  FileStorageImages: {{FileStorageImages}}
+  PolefsVolumeImages: {{PolefsVolumeImages}}
+  MountDirImages: {{MountDirImages}}
+  PolefsVolumeCreateUserImages: {{PolefsVolumeCreateUserImages}}
+  FileStorageLogs: {{FileStorageLogs}}
+  PolefsVolumeLogs: {{PolefsVolumeLogs}}
+  MountDirLogs: {{MountDirLogs}}
+  PolefsVolumeCreateUserlogs: {{PolefsVolumeCreateUserlogs}}
+  FileStorageData: {{FileStorageData}}
+  PolefsVolumeData: {{PolefsVolumeData}}
+  MountDirData: {{MountDirData}}
+  PolefsVolumeCreateUseData: {{PolefsVolumeCreateUseData}}
+resources:
+  SqlBot:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.SqlBotDescription}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 10240
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      port: 8080
+      functionName: ${vars.SqlBotFunctionName}
+      sourceSubDir: code/sql-bot
+      environmentVariables:
+        testkey: "testvalue"
+        TZ: "Asia/Shanghai"
+        POSTGRES_SERVER: ${vars.PGHost}
+        POSTGRES_PORT: ${vars.PGPort}
+        POSTGRES_USER: ${vars.PGUser}
+        POSTGRES_PASSWORD: ${vars.PGPassword}
+        POSTGRES_DB: ${vars.PGDbName}
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.PolefsVolumeExecel}
+          mountDir: ${vars.MountDirExecel}
+          createUserName: ${vars.VolCreateUserExecel}
+        - volumeUniqueName: ${vars.PolefsVolumeFile}
+          mountDir: ${vars.MountDirFile}
+          createUserName: ${vars.PolefsVolumeCreateUseFile}
+        - volumeUniqueName: ${vars.PolefsVolumeImages}
+          mountDir: ${vars.MountDirImages}
+          createUserName: ${vars.PolefsVolumeCreateUserImages}
+        - volumeUniqueName: ${vars.PolefsVolumeLogs}
+          mountDir: ${vars.MountDirLogs}
+          createUserName: ${vars.PolefsVolumeCreateUserlogs}
+        - volumeUniqueName: ${vars.PolefsVolumeData}
+          mountDir: ${vars.MountDirData}
+          createUserName: ${vars.PolefsVolumeCreateUseData}

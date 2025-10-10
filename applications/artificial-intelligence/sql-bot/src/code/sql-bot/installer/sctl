@@ -1,0 +1,206 @@
+#!/bin/bash
+action=$1
+target=$2
+
+SQLBOT_BASE=/opt
+SQLBOT_RUNNING_BASE=${SQLBOT_BASE}/sqlbot
+SQLBOT_LOG_PATH=${SQLBOT_RUNNING_BASE}/data/sqlbot/logs
+compose_files="-f docker-compose.yml"
+compose_cmd="docker-compose"
+current_version=""
+
+set -a
+source ${SQLBOT_RUNNING_BASE}/.env
+set +a
+export COMPOSE_HTTP_TIMEOUT=180
+
+docker-compose version >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+   docker compose version >/dev/null 2>&1
+   if [ $? -ne 0 ]; then
+      compose_cmd="docker compose"
+   fi
+fi
+
+function usage() {
+   echo "SQLBot 控制脚本"
+   echo
+   echo "Usage: "
+   echo "  ./sctl [COMMAND] [ARGS...]"
+   echo "  ./sctl --help"
+   echo
+   echo "Commands: "
+   echo "  status                查看 SQLBot 服务运行状态"
+   echo "  start                 启动 SQLBot 服务"
+   echo "  stop                  停止 SQLBot 服务"
+   echo "  restart               重启 SQLBot 服务"
+   echo "  reload                重载 SQLBot 服务"
+   echo "  clear-images          清理 SQLBot 旧版本的相关镜像"
+   echo "  clear-logs            清理 SQLBot 历史日志"
+   echo "  version               查看 SQLBot 版本"
+}
+
+function _healthcheck() {
+   echo
+   container_name=$(grep "container_name" $SQLBOT_RUNNING_BASE/docker-compose.yml | awk -F': ' '{print $2}')
+   sleep 1
+   if [ -z '$(docker ps --filter "name=^$container_name$" -q)' ];then
+      echo "未找到容器 $container_name。"
+      exit 1
+   fi
+
+   for b in {1..90}
+   do
+      sleep 1
+      read status healthy<<<$(docker inspect $container_name --format '{{.State.Status}} {{.State.Health.Status}}')
+      if [[ "$healthy" == "starting" ]];then
+         printf "\rSQLBot 服务状态 : 正在启动 ... %3ds" $b
+      elif [[ "$status" == "running" ]] && [[ "$healthy" == "healthy" ]];then
+         printf "\rSQLBot 服务状态 : 正常运行          "
+         echo
+         return;
+      else
+         echo
+         echo -e "SQLBot 服务状态 : \033[31m无法访问\033[0m"
+         exit 1
+      fi
+   done
+   echo
+   echo "【警告】服务在等待时间内未完全启动！请稍后使用 sctl status 检查服务运行状况。"
+   echo
+}
+function _get_current_version() {
+   sqlbot_current_version=$(grep "^    image:.*sqlbot:" ${SQLBOT_RUNNING_BASE}/docker-compose.yml | awk -F'sqlbot:' '{print $2}')
+   if test -z $sqlbot_current_version; then
+      echo "获取当前版本失败，请检查当前版本是否正确"
+      exit 1
+   fi
+   current_version=$sqlbot_current_version
+}
+
+function status() {
+   echo
+   echo "SQLBot 容器运行状态"
+   cd ${SQLBOT_RUNNING_BASE}
+   ${compose_cmd} ${compose_files} ps
+
+   echo
+   docker_root_dir=$(docker info | grep "Docker Root Dir"  | awk -F': ' '{print $2}')
+   echo "Docker 目录及文件大小 : "
+   du -sh $docker_root_dir
+   echo
+   echo "Docker 目录所在磁盘使用情况 : "
+   df -H $docker_root_dir
+
+   echo
+   echo "日志文件大小 : "
+   du -Sh ${SQLBOT_LOG_PATH}
+
+   echo
+   echo "SQLBot 运行目录及文件大小 : "
+   du -sh ${SQLBOT_BASE}
+   echo
+   echo "SQLBot 运行目录使用情况 : "
+   df -H ${SQLBOT_BASE}
+
+   _healthcheck
+}
+function start() {
+   echo
+   cd ${SQLBOT_RUNNING_BASE}
+   ${compose_cmd} ${compose_files} up -d
+   _healthcheck
+}
+function stop() {
+   echo
+   cd ${SQLBOT_RUNNING_BASE}
+   ${compose_cmd} ${compose_files} down -v ${target}
+}
+function restart() {
+   stop
+   start
+}
+function reload() {
+   start
+}
+function version() {
+   echo
+   _get_current_version
+   echo "current version is $current_version"
+}
+function clear_images() {
+   echo
+   for f in $SQLBOT_RUNNING_BASE/*.yml; do
+      [[ -e "$f" ]] || break
+      grep "^    image:.*:" "$f" | uniq | while read -r component_image_defined; do
+         component_version=$(echo ${component_image_defined} | awk -F":" '{print $3}' | uniq)
+         component_image=$(echo ${component_image_defined} | awk -F'image: ' '{print $2}' | awk -F':' '{print $1}')
+
+         if [[ $(docker images | grep "$component_image[[:space:]]" | grep -v " $component_version " | wc -l) == 0 ]]; then
+            echo "$component_image 不存在旧版本镜像"
+         else
+            echo "存在非当前版本镜像 : "
+            docker images | grep "$component_image[[:space:]]" | grep -v " $component_version "
+            echo "清理${component}镜像"
+            docker rmi $(docker images | grep "$component_image[[:space:]]" | grep -v " $component_version " | awk -F' ' '{print $1":"$2}')
+            echo "清理完毕"
+         fi
+      done
+   done
+
+   if [ $(docker images -f dangling=true -q | wc -l) -gt 0 ]; then
+      echo "清理虚悬镜像"
+      docker rmi $(docker images -f dangling=true -q)
+      echo "清理完毕"
+   fi
+}
+function clear_logs() {
+   echo "开始清理 SQLBot 历史日志"
+   rm -rf ${SQLBOT_LOG_PATH}/*.*.*
+   echo "" > ${SQLBOT_LOG_PATH}/info.log
+   echo "" > ${SQLBOT_LOG_PATH}/debug.log
+   echo "" > ${SQLBOT_LOG_PATH}/error.log
+   echo "清理完毕"
+}
+
+function main() {
+   case "${action}" in
+      status)
+         status
+         ;;
+      start)
+         start
+         ;;
+      stop)
+         stop
+         ;;
+      restart)
+         restart
+         ;;
+      reload)
+         reload
+         ;;
+      clear-images)
+         clear_images
+         ;;
+      clear-logs)
+         clear_logs
+         ;;
+      version)
+         version
+         ;;
+      help)
+         usage
+         ;;
+      --help)
+         usage
+         ;;
+      "")
+         usage
+         ;;
+      *)
+         echo "不支持的参数，请使用 help 或 --help 参数获取帮助"
+         ;;
+   esac
+}
+main

@@ -1,0 +1,30 @@
+FROM python:3.11-slim-bookworm AS python-builder
+FROM registry.cn-qingdao.aliyuncs.com/dataease/postgres:17.6
+
+# python environment
+COPY --from=python-builder /usr/local /usr/local
+
+RUN python --version && pip --version
+
+# Install uv tool
+COPY --from=ghcr.io/astral-sh/uv:0.7.8 /uv /uvx /bin/
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wait-for-it \
+    build-essential \
+    curl \
+    gnupg \
+    gcc \
+    g++ \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && curl -qL https://www.npmjs.com/install.sh | sh - \
+    && apt-get install -y nodejs \
+    && curl -L --connect-timeout 60 -m 1800 https://fit2cloud-support.oss-cn-beijing.aliyuncs.com/xpack-license/get-validator-linux | sh \
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod g+xr /usr/bin/ld.so \
+    && chmod g+x /usr/local/bin/python*
