@@ -22,7 +22,7 @@ resources:
       functionName: "{{ functionName }}"
       code: fc-zyun-php
       environmentVariables:
-        testkey: testvalue
+        PORT: 8080
       logConfig:
         isOpen: false
       scale:
@@ -36,8 +36,8 @@ resources:
       requestEntryDescribe: ""
       runtimeID: 50
       triggers:
-        - triggerName: httptrigger
-          triggerType: http
-          disableURLInternet: true
-          funcVersion: LATEST
-          triggerConfig: '{"auth_type":"None","methods":["GET","POST","PUT","DELETE","OPTIONS","HEAD","PATCH"],"disable_url_internet":true,"auth_config":""}'
+      - triggerName: httptrigger
+        triggerType: http
+        disableURLInternet: true
+        funcVersion: LATEST
+        triggerConfig: '{"auth_type":"None","methods":["GET","POST","PUT","DELETE","OPTIONS","HEAD","PATCH"],"disable_url_internet":true,"auth_config":""}'

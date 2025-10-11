@@ -1,0 +1,83 @@
+edition: 3.0.0
+name: mem0-app
+access: default
+vars:
+  region: {{region}}
+  mem0FunctionName : {{mem0FunctionName}}
+  mem0Description : {{mem0Description}}
+  Mem0RedisDataBase: {{Mem0RedisDataBase}}
+  Mem0RedisPassword: {{Mem0RedisPassword}}
+  Mem0RedisHost: {{Mem0RedisHost}}
+  Mem0RedisPort: {{Mem0RedisPort}}
+  Mem0Neo4jDataBase: {{Mem0Neo4jDataBase}}
+  Mem0Neo4jHost: {{Mem0Neo4jHost}}
+  Mem0Neo4jPort: {{Mem0Neo4jPort}}
+  Mem0Neo4jUser: {{Mem0Neo4jUser}}
+  Mem0Neo4jDbname: {{Mem0Neo4jDbname}}
+  Mem0Neo4jDbPassword: {{Mem0Neo4jDbPassword}}
+  OpenaiApiBaseUrl: {{OpenaiApiBaseUrl}}
+  OpenaiApiKey: {{OpenaiApiKey}}
+  OpenaiModel: {{OpenaiModel}}
+  OpenaiEmbeddingModel: {{OpenaiEmbeddingModel}}
+  OpenaiMaxTokens: {{OpenaiMaxTokens}}
+  OpenaiTemperature: {{OpenaiTemperature}}
+  OpenaiEmbeddingDims: {{OpenaiEmbeddingDims}}
+  PolefsVolume: {{PolefsVolume}}
+  MountDir: {{MountDir}}
+  VolCreateUser: {{PolefsVolumeCreateUser}}
+resources:
+  Mem0:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.mem0Description}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 10240
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      code:
+        templated_files:
+          - code/mem0/server_mem0/.env
+      port: 8080
+      functionName: ${vars.mem0FunctionName}
+      sourceSubDir: code/mem0/server_mem0
+      environmentVariables:
+        testkey: "testvalue"
+        TZ: "Asia/Shanghai"
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.PolefsVolume}
+          mountDir: ${vars.MountDir}
+          createUserName: ${vars.VolCreateUser}
