@@ -22,7 +22,7 @@ def parse_cors(v: Any) -> list[str] | str:
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         # Use top level .env file (one level above ./backend/)
-        env_file="../.env",
+        env_file=".env",
         env_ignore_empty=True,
         extra="ignore",
     )
@@ -44,11 +44,11 @@ class Settings(BaseSettings):
             self.FRONTEND_HOST
         ]
 
-    POSTGRES_SERVER: str = 'localhost'
-    POSTGRES_PORT: int = 5432
-    POSTGRES_USER: str = 'root'
-    POSTGRES_PASSWORD: str = "Password123@pg"
-    POSTGRES_DB: str = "sqlbot"
+    POSTGRES_SERVER: str
+    POSTGRES_PORT: int
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_DB: str
     SQLBOT_DB_URL: str = ''
     # SQLBOT_DB_URL: str = 'mysql+pymysql://root:Password123%40mysql@127.0.0.1:3306/sqlbot'
 
