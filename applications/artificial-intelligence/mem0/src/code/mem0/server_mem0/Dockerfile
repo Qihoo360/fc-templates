@@ -1,4 +1,4 @@
-FROM wfwqjs-eventing-zevent-pub/python:3.12-slim
+FROM wfwqjs-eventing-zevent-pub/python:3.12-slim-bookworm
 
 WORKDIR /app
 
