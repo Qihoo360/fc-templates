@@ -46,6 +46,10 @@ resources:
       requestType: http
       runtimeType: customize
       cloudBuildType: Dockerfile
+      code:
+        templated_files:
+          - code/sql-bot/backend/common/core/config.py
+          - code/sql-bot/.env
       port: 8000
       functionName: ${vars.SqlBotFunctionName}
       sourceSubDir: code/sql-bot

@@ -1,3 +1,4 @@
+
 # Build sqlbot
 # FROM ghcr.io/1panel-dev/maxkb-vector-model:v1.0.1 AS vector-model
 # FROM registry.cn-qingdao.aliyuncs.com/dataease/sqlbot-base:latest AS sqlbot-builder
@@ -32,13 +33,23 @@ RUN test -f "./uv.lock" && \
     uv sync --frozen --no-install-project || echo "uv.lock file not found, skipping intermediate-layers"
 
 COPY ./backend ${APP_HOME}
+COPY ./.env ${APP_HOME}
 
 # Final sync to ensure all dependencies are installed
+#RUN --mount=type=cache,target=/root/.cache/uv \
+#   uv sync --extra cpu
+
+# 安装并更新根证书
+RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
+# Final sync to ensure all dependencies are installed
 RUN --mount=type=cache,target=/root/.cache/uv \
-   uv sync --extra cpu
+    SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
+    REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
+    uv sync --extra cpu --native-tls --index-url https://pypi.org/simple
+
 
 # Build g2-ssr
-FROM registry.cn-qingdao.aliyuncs.com/dataease/sqlbot-base:latest AS ssr-builder
+FROM wfwqjs-eventing-zevent-pub/dataease/sqlbot-base:latest AS ssr-builder
 
 WORKDIR /app
 
