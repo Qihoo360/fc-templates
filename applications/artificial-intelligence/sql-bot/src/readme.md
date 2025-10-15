@@ -56,7 +56,7 @@ SQLBot 是一款基于 AI 的智能数据查询助手，能够让您通过自然
 系统将自动识别意图，生成 SQL 查询，并在页面中展示执行结果。
 如果是可视化查询，还会自动生成图表展示数据趋势。
 
-![image-20250523141529453](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/sql-bot/src/images/data.png?raw=true)
+![image-20250523141529453](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/sql-bot/src/images/data.png?raw=true)
 
 ---
 
