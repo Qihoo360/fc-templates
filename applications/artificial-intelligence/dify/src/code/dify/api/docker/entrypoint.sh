@@ -48,7 +48,7 @@ elif [[ "${MODE}" == "all" ]]; then
     exec celery -A app.celery worker -P ${CELERY_WORKER_CLASS:-gevent} $CONCURRENCY_OPTION --loglevel ${LOG_LEVEL} \
       -Q ${CELERY_QUEUES:-dataset,mail,ops_trace,app_deletion}
 
-    } 2>&1 | awk '{print "[dify-worker] " $0}' &
+    } 2>&1 | awk '{print "[dify-worker] " $0; fflush()}' &
     DIFY_WORKER_PID=$!
     { 
       if [[ "${DEBUG}" == "true" ]]; then
@@ -63,13 +63,15 @@ elif [[ "${MODE}" == "all" ]]; then
           app:app
       fi
 
-    } 2>&1 | awk '{print "[dify-api] " $0}' &
+    } 2>&1 | awk '{print "[dify-api] " $0; fflush()}' &
     DIFY_API_PID=$!
-    wait -n
 
+    trap 'kill -TERM $DIFY_WORKER_PID $DIFY_API_PID 2>/dev/null' TERM INT
+    wait -n
     EXIT_STATUS=$?
 
-    kill $CELERY_PID $SERVER_PID 2>/dev/null
+    echo "[supervisor] Cleaning up..."
+    kill $DIFY_WORKER_PID $DIFY_API_PID 2>/dev/null || true
 
     exit $EXIT_STATUS
 
