@@ -2,44 +2,44 @@ edition: 3.0.0
 name: cozestudio-app
 access: default
 vars:
-  region: {{region}}
-  cozestudioBackendFunctionName: {{cozestudioBackendFunctionName}}
-  cozestudioBackendDescription: {{cozestudioBackendDescription}}
-  cozestudioFrontendFunctionName: {{cozestudioFrontendFunctionName}}
-  cozestudioFrontendDescription: {{cozestudioFrontendDescription}}
-  logLevel: {{logLevel}}
-  pluginAesAuthSecret: {{pluginAesAuthSecret}}
-  pluginAesStateSecret: {{pluginAesStateSecret}}
-  pluginAesOauthTokenSecret: {{pluginAesOauthTokenSecret}}
-  ObjectStorage: {{ObjectStorage}}
-  s3Endpoint: {{s3Endpoint}}
-  s3AccessKey: {{s3AccessKey}}
-  s3SecretKey: {{s3SecretKey}}
-  s3Region: {{s3Region}}
-  s3Bucket: {{s3Bucket}}
-  redisAddr: {{redisAddr}}
-  redisPasswd: {{redisPasswd}}
-  mysqlHost: {{mysqlHost}}
-  mysqlPort: {{mysqlPort}}
-  mysqlDatabase: {{mysqlDatabase}}
-  mysqlUser: {{mysqlUser}}
-  mysqlPasswd: {{mysqlPasswd}}
-  MQ: {{MQ}}
-  mqNamesvrAddr: {{mqNamesvrAddr}}
-  VectorDB: {{VectorDB}}
-  milvusAddress: {{milvusAddress}}
-  milvusUser: {{milvusUser}}
-  milvusPasswd: {{milvusPasswd}}
-  elasticsearchUrl: {{elasticsearchUrl}}
-  elasticsearchUsername: {{elasticsearchUsername}}
-  elasticsearchPasswd: {{elasticsearchPasswd}}
-  elasticsearchVersion: {{elasticsearchVersion}}
-  embeddingType: {{embeddingType}}
-  embeddingMaxBatchSize: {{embeddingMaxBatchSize}}
-  openaiEmbeddingBaseUrl: {{openaiEmbeddingBaseUrl}}
-  openaiEmbeddingModel: {{openaiEmbeddingModel}}
-  openaiEmbeddingApiKey: {{openaiEmbeddingApiKey}}
-  openaiEmbeddingDims: {{openaiEmbeddingDims}}
+  region: { ? { region } }
+  cozestudioBackendFunctionName: { ? { cozestudioBackendFunctionName } }
+  cozestudioBackendDescription: { ? { cozestudioBackendDescription } }
+  cozestudioFrontendFunctionName: { ? { cozestudioFrontendFunctionName } }
+  cozestudioFrontendDescription: { ? { cozestudioFrontendDescription } }
+  logLevel: { ? { logLevel } }
+  pluginAesAuthSecret: { ? { pluginAesAuthSecret } }
+  pluginAesStateSecret: { ? { pluginAesStateSecret } }
+  pluginAesOauthTokenSecret: { ? { pluginAesOauthTokenSecret } }
+  ObjectStorage: { ? { ObjectStorage } }
+  s3Endpoint: { ? { s3Endpoint } }
+  s3AccessKey: { ? { s3AccessKey } }
+  s3SecretKey: { ? { s3SecretKey } }
+  s3Region: { ? { s3Region } }
+  s3Bucket: { ? { s3Bucket } }
+  redisAddr: { ? { redisAddr } }
+  redisPasswd: { ? { redisPasswd } }
+  mysqlHost: { ? { mysqlHost } }
+  mysqlPort: { ? { mysqlPort } }
+  mysqlDatabase: { ? { mysqlDatabase } }
+  mysqlUser: { ? { mysqlUser } }
+  mysqlPasswd: { ? { mysqlPasswd } }
+  MQ: { ? { MQ } }
+  mqNamesvrAddr: { ? { mqNamesvrAddr } }
+  VectorDB: { ? { VectorDB } }
+  milvusAddress: { ? { milvusAddress } }
+  milvusUser: { ? { milvusUser } }
+  milvusPasswd: { ? { milvusPasswd } }
+  elasticsearchUrl: { ? { elasticsearchUrl } }
+  elasticsearchUsername: { ? { elasticsearchUsername } }
+  elasticsearchPasswd: { ? { elasticsearchPasswd } }
+  elasticsearchVersion: { ? { elasticsearchVersion } }
+  embeddingType: { ? { embeddingType } }
+  embeddingMaxBatchSize: { ? { embeddingMaxBatchSize } }
+  openaiEmbeddingBaseUrl: { ? { openaiEmbeddingBaseUrl } }
+  openaiEmbeddingModel: { ? { openaiEmbeddingModel } }
+  openaiEmbeddingApiKey: { ? { openaiEmbeddingApiKey } }
+  openaiEmbeddingDims: { ? { openaiEmbeddingDims } }
 resources:
   cozestudioBackend:
     component: ${path('/utils/components/zfc')}
@@ -103,6 +103,7 @@ resources:
         OPENAI_EMBEDDING_MODEL: ${vars.openaiEmbeddingModel}
         OPENAI_EMBEDDING_API_KEY: ${vars.openaiEmbeddingApiKey}
         OPENAI_EMBEDDING_DIMS: ${vars.openaiEmbeddingDims}
+        OPENAI_EMBEDDING_BY_AZURE: "false"
         PLUGIN_AES_AUTH_SECRET: ${vars.pluginAesAuthSecret}
         PLUGIN_AES_STATE_SECRET: ${vars.pluginAesStateSecret}
         PLUGIN_AES_OAUTH_TOKEN_SECRET: ${vars.pluginAesOauthTokenSecret}
