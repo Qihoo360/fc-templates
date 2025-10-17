@@ -1,0 +1,174 @@
+edition: 3.0.0
+name: sqlbot-app
+access: default
+vars:
+  region: {{region}}
+  BackendFunctionName : {{BackendFunctionName}}
+  BackendDescription : {{BackendDescription}}
+  MetricsExporterFunctionName : {{MetricsExporterFunctionName}}
+  MetricsExporterDescription : {{MetricsExporterDescription}}
+  DTransformerFunctionName : {{DTransformerFunctionName}}
+  DTransformerDescription : {{DTransformerDescription}} 
+  PGDataBase: {{PGDataBase}}
+  PGHost: {{POSTGRES_HOST}}
+  PGPort: {{POSTGRES_PORT}}
+  PGUser: {{POSTGRES_USERNAME}}
+  PGPassword: {{POSTGRES_PASSWORD}}
+  PGDbName: {{POSTGRES_DATABASE}}
+  WORKSPACE_TOKEN: {{WORKSPACE_TOKEN}}
+resources:
+  MetricsExporter:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.MetricsExporterDescription}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 10240
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      port: 9102
+      functionName: ${vars.MetricsExporterFunctionName}
+      sourceSubDir: code/metrics-exporter
+      environmentVariables:
+        testkey: "testvalue"
+        TZ: "Asia/Shanghai"
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+  DTransformer:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.BackendDescription}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 10240
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      port: 9090
+      functionName: ${vars.DTransformerFunctionName}
+      sourceSubDir: code/d-transformer
+      environmentVariables:
+        testkey: "testvalue"
+        TZ: "Asia/Shanghai"
+        STATSD_SERVER_PORT: "9125"
+        CRAWLER_ENDPOINT: ${resources.MetricsExporter.output.http_trigger_url}
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+  Bakcend:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.BackendDescription}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 10240
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      port: 8000
+      functionName: ${vars.BackendFunctionName}
+      sourceSubDir: code/rudder-server
+      environmentVariables:
+        testkey: "testvalue"
+        TZ: "Asia/Shanghai"
+        JOBS_DB_HOST: ${vars.PGHost}
+        JOBS_DB_PORT: ${vars.PGPort}
+        JOBS_DB_USER: ${vars.PGUser}
+        JOBS_DB_PASSWORD: ${vars.PGPassword}
+        JOBS_DB_DB_NAME: ${vars.PGDbName}
+        DEST_TRANSFORM_URL: http://${resources.DTransformer.output.http_trigger_url}
+        CONFIG_BACKEND_URL: https://api.rudderstack.com
+        WORKSPACE_TOKEN: ${vars.WORKSPACE_TOKEN}
+        STATSD_SERVER_URL: ${resources.MetricsExporter.output.http_trigger_url}
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
