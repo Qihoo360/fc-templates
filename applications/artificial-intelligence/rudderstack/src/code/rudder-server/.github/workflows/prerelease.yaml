@@ -1,0 +1,96 @@
+on:
+  push:
+    branches:
+      - "prerelease/*"
+name: prerelease
+
+permissions:
+  contents: write # Required for creating releases
+  pull-requests: write # Required for release-please to create/update PRs
+jobs:
+  prerelease:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        with:
+          egress-policy: audit
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=$(echo "${GITHUB_REF#refs/heads/}")" >> $GITHUB_OUTPUT
+        id: extract_branch
+      - uses: google-github-actions/release-please-action@v3
+        id: release_action
+        with:
+          token: ${{ secrets.PAT }}
+          pull-request-title-pattern: "chore: prerelease ${version}"
+          release-type: go
+          package-name: rudder-server
+          default-branch: ${{ steps.extract_branch.outputs.branch }}
+          changelog-types: '
+            [
+            {
+            "type": "feat",
+            "section": "Features",
+            "hidden": false
+            },
+            {
+            "type": "fix",
+            "section": "Bug Fixes",
+            "hidden": false
+            },
+            {
+            "type": "chore",
+            "section":"Miscellaneous",
+            "hidden": false},
+            {
+            "type": "refactor",
+            "section": "Miscellaneous",
+            "hidden": false
+            },
+            {
+            "type": "test",
+            "section": "Miscellaneous",
+            "hidden": false
+            },
+            {
+            "type": "doc",
+            "section": "Documentation",
+            "hidden": false
+            }
+            ]'
+          prerelease: true
+          release-as: ${{ steps.extract_branch.outputs.branch }}
+      - name: Extract prerelease version
+        shell: bash
+        run: |
+          tag_name=$(echo "${{ steps.release_action.outputs.tag_name }}")
+          version=$(echo "${tag_name#v}")
+          echo "version=${version}" >> $GITHUB_OUTPUT
+        id: extract_version
+      - name: Trigger dispatch event
+        uses: peter-evans/repository-dispatch@v3
+        # release please run 2 times, first for creating the PR and second for creating the release
+        if: ${{ steps.release_action.outputs.releases_created == 'true' }}
+        with:
+          token: "${{ secrets.PAT }}"
+          repository: rudderlabs/rudder-devops
+          event-type: release-server-hosted
+          client-payload: |
+            {
+                "version": "${{ steps.extract_version.outputs.version }}"
+            }
+      - name: Trigger dispatch event - Staging
+        uses: peter-evans/repository-dispatch@v3
+        # release please run 2 times, first for creating the PR and second for creating the release
+        if: ${{ steps.release_action.outputs.releases_created == 'true' }}
+        with:
+          token: "${{ secrets.PAT }}"
+          repository: rudderlabs/rudderstack-operator
+          event-type: release-rudder-server
+          client-payload: |
+            {
+                "version": "${{ steps.extract_version.outputs.version }}",
+                "deployment": "staging"
+            }

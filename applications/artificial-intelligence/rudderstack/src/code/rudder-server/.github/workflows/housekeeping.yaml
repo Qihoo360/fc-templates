@@ -1,0 +1,54 @@
+name: Handle stale PRs
+
+on:
+  schedule:
+    - cron: '42 1 * * *'
+
+jobs:
+  prs:
+    name: Clean up stale prs
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          operations-per-run: 200
+          stale-pr-message: 'This PR is considered to be stale. It has been open 20 days with no further activity thus it is going to be closed in 7 days. To avoid such a case please consider removing the stale label manually or add a comment to the PR.'
+          days-before-pr-stale: 20
+          days-before-pr-close: 7
+          stale-pr-label: 'Stale'
+
+  branches:
+      name: Cleanup old branches
+      runs-on: ubuntu-latest
+      
+      permissions:
+        contents: write # Required for delete-old-branches-action
+        
+      steps:
+        - name: Harden the runner (Audit all outbound calls)
+          uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+          with:
+            egress-policy: audit
+
+        - name: Checkout repository
+          uses: actions/checkout@v4
+        - name: Run delete-old-branches-action
+          uses: beatlabs/delete-old-branches-action@4eeeb8740ff8b3cb310296ddd6b43c3387734588
+          with:
+            repo_token: ${{ github.token }}
+            date: '2 months ago'
+            dry_run: false
+            delete_tags: false
+            extra_protected_branch_regex: ^(main|master|release.*|rudder-saas)$
+            exclude_open_pr_branches: true
+

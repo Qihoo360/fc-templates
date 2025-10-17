@@ -1,0 +1,1 @@
+FROM wfwqjs-eventing-zevent-pub/rudderlabs/rudder-server:latest

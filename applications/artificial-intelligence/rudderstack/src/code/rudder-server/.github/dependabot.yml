@@ -1,0 +1,33 @@
+version: 2
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/" 
+    schedule:
+      interval: "daily"
+    groups:
+      frequent:
+        patterns:
+          - "github.com/aws/aws-sdk-go"
+          - "google.golang.org/api"
+          - "cloud.google.com/go/*"
+      go-deps:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+  - package-ecosystem: "github-actions"
+    directory: "/" 
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/" 
+    schedule:
+      interval: "daily"
+    groups:
+      docker-deps:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
