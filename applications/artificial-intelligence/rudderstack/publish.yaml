@@ -184,7 +184,7 @@ Parameters:
       type: string
       default: ""
       description: "工作空间访问 Token"
-      x-cate: workspaceToken
+      x-cate: applicationCate
       x-label: 工作空间 Token
       x-placeholder: 请输入工作空间 Token
       x-formitem:
@@ -196,7 +196,7 @@ PropertyDescription:
   applicationCate:
     title: "应用配置"
     description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
-  workspaceToken:
-    title: "访问令牌"
-    description: "工作空间访问 Token"
+  # workspaceToken:
+  #   title: "访问令牌"
+  #   description: "工作空间访问 Token"
     
