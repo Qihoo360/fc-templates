@@ -33,7 +33,6 @@ Parameters:
     - POSTGRES_USERNAME
     - POSTGRES_PASSWORD
     - POSTGRES_DATABASE
-    - POSTGRES_SCHEMA
 
     - WORKSPACE_TOKEN
 
@@ -168,16 +167,6 @@ Parameters:
       x-label: 数据库配置
       x-restype: postgresql
       x-placeholder: 输入数据库名称
-      x-formitem:
-        type: input
-    POSTGRES_SCHEMA:
-      type: string
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
-      x-placeholder: 输入数据库schema名称
       x-formitem:
         type: input
     WORKSPACE_TOKEN:

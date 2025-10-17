@@ -129,7 +129,7 @@ resources:
       requestType: http
       runtimeType: customize
       cloudBuildType: Dockerfile
-      port: 8000
+      port: 8080
       functionName: ${vars.BackendFunctionName}
       sourceSubDir: code/rudder-server
       environmentVariables:
