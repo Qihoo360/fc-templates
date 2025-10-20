@@ -44,6 +44,10 @@ Elasticsearch
 - 需安装 analysis-smartcn 插件（若使用hulk的Elasticsearch可联系运维安装）
 - 需手动创建索引 project_draft 和 coze_resource （若使用hulk的Elasticsearch可联系运维创建索引）
 
+### Mysql配置
+
+- 需手动创建数据库 opencoze, 并将 https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/coze-studio/src/code/coze-studio/docker/volumes/mysql 文件夹中的 schema.sql 和 sql_init.sql 导入到 opencoze 数据库
+
 ### Kafka配置
 
 - 需要手动创建3个topic： opencoze_knowledge 、 opencoze_search_app 、 opencoze_search_resource
