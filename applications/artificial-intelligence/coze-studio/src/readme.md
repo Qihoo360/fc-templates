@@ -48,6 +48,12 @@ Elasticsearch
 
 - 需要手动创建3个topic： opencoze_knowledge 、 opencoze_search_app 、 opencoze_search_resource
 
+### 模型配置
+
+- 经测试, apimkt 中可以使用的模型为：
+   baseurl：http://llm.api.zyuncs.com/v1/embeddings
+   modelname： Doubao-embedding-vision
+  如果其它模型不可用或不兼容，可以使用此模型
 
 ## 使用
 
