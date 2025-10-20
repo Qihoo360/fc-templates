@@ -7,7 +7,7 @@ Name: mem0-v1
 Provider:
   - fc
 Version: 0.0.3
-Description: 该示例通过 refly 快速搭建私有代理工作空​​间。
+Description: 该示例通过 rudderstack 快速搭建私有代理工作空​​间。
 HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/rudderstack
 Organization: 函数计算（FC）
 Tags:
