@@ -25,6 +25,7 @@ vars:
   DifyDBPort: {{POSTGRES_PORT}}
   DifyDBPluginDataBase: {{DifyDBPluginDataBase}}
   DifyDBDataBase: {{POSTGRES_DATABASE}}
+  DifyDBSslMode: {{POSTGRES_SSL_MODE}}
   DifyAwsS3Endpoint: {{DifyAwsS3Endpoint}}
   DifyAwsS3Bucket: {{DifyAwsS3Bucket}}
   DifyAwsS3Region: {{DifyAwsS3Region}}
@@ -126,6 +127,7 @@ resources:
         DB_HOST: "${vars.DifyDBHost}"
         DB_PORT: "${vars.DifyDBPort}"
         DB_DATABASE: "${vars.DifyDBPluginDataBase}"
+        DB_SSL_MODE: "${vars.DifyDBSslMode}"
         PLUGIN_STORAGE_TYPE: "local"
         PLUGIN_STORAGE_LOCAL_ROOT: "${vars.MountDir}"
         PLUGIN_INSTALLED_PATH: "plugin"
@@ -203,6 +205,8 @@ resources:
         DB_HOST: "${vars.DifyDBHost}"
         DB_PORT: "${vars.DifyDBPort}"
         DB_DATABASE: "${vars.DifyDBDataBase}"
+        DB_CHARSET: ""
+        DB_EXTRAS: "sslmode=${vars.DifyDBSslMode}"
         STORAGE_TYPE: "s3"
         S3_ENDPOINT: "${vars.DifyAwsS3Endpoint}"
         S3_BUCKET_NAME: "${vars.DifyAwsS3Bucket}"
