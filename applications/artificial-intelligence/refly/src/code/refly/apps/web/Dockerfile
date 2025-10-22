@@ -5,7 +5,7 @@ FROM wfwqjs-eventing-zevent-pub/nginx:1.27.3-alpine
 RUN apk add --no-cache bash
 
 # Copy nginx configuration
-COPY deploy/docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY deploy/docker/nginx.conf /etc/nginx/conf.d/default.conf.template
 
 # Copy static files
 WORKDIR /usr/share/nginx/html
@@ -19,9 +19,18 @@ RUN echo 'window.ENV = { \
 };' > /usr/share/nginx/html/config.template.js
 
 # Create entrypoint script
-RUN printf '#!/bin/bash\n\
+# RUN printf '#!/bin/bash\n\
+# envsubst < /usr/share/nginx/html/config.template.js > /usr/share/nginx/html/config.js\n\
+# exec nginx -g "daemon off;"\n' > /docker-entrypoint.sh
+RUN printf '#!/bin/sh\n\
+set -e\n\
+echo "🔧 替换前端 config.js..."\n\
 envsubst < /usr/share/nginx/html/config.template.js > /usr/share/nginx/html/config.js\n\
-exec nginx -g "daemon off;"\n' > /docker-entrypoint.sh
+echo "🔧 替换 Nginx 配置..."\n\
+envsubst < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf\n\
+echo "✅ 替换完成，启动 Nginx..."\n\
+exec nginx -g "daemon off;"\n' > /docker-entrypoint.sh \
+&& chmod +x /docker-entrypoint.sh
 
 RUN chmod +x /docker-entrypoint.sh
 
