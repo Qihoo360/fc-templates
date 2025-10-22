@@ -9,8 +9,8 @@ vars:
   bishengBackendDescription: {{bishengBackendDescription}}
   bishengFrontendFunctionName: {{bishengFrontendFunctionName}}
   bishengFrontendDescription: {{bishengFrontendDescription}}
-  elasticsearchUrl: {{elasticsearchUrl}}
-  elasticsearchSslVerify: {{elasticsearchSslVerify}}
+  elasticsearchUrl: {{ELASTICSEARCH_URL}}
+  elasticsearchSslVerify: {{ELASTICSEARCH_SSL_VERIFY}}
   MILVUS_HOST: {{MILVUS_HOST}}
   MILVUS_PORT: {{MILVUS_PORT}}
   MILVUS_USERNAME: {{MILVUS_USERNAME}}
