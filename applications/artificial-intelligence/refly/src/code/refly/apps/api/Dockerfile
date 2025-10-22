@@ -88,13 +88,36 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api/prisma ./apps/api/prisma
 COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=builder /app/packages/ ./packages/
+# 在生产阶段拷贝 preload.js
+COPY --from=builder /app/apps/api/scripts/preload.js ./scripts/preload.js
+
+RUN printf 'const Module = (() => {
+  try {
+    return require("module");
+  } catch (err) {
+    console.error("无法加载 Node 内置模块 \\"module\\":", err);
+    process.exit(1);
+  }
+})();
+if (!Module.prototype || !Module.prototype.require) {
+  console.error("Module.prototype.require 未定义，请检查 Node 版本或 preload 执行方式");
+  process.exit(1);
+}
+const originalRequire = Module.prototype.require;
+Module.prototype.require = function (id) {
+  return originalRequire.apply(this, arguments);
+};
+' > /app/apps/api/scripts/preload.js
 
 # Set environment variables
 ENV NODE_ENV=production
 
 # Set working directory to the dist directory
-WORKDIR /app/apps/api/dist
+# WORKDIR /app/apps/api/dist
 
 EXPOSE 3000
 
-CMD ["node", "-r", "./scripts/preload.js", "main.js"]
+# CMD ["node", "-r", "./scripts/preload.js", "main.js"]
+WORKDIR /app/apps/api
+
+CMD ["node", "-r", "./scripts/preload.js", "dist/main.js"]
