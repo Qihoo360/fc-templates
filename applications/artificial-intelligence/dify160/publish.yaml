@@ -43,11 +43,11 @@ Parameters:
   - POSTGRES_DATABASE
   - POSTGRES_SSL_MODE
   - ObjectStorage
-  - DifyAwsS3Endpoint
-  - DifyAwsS3Bucket
-  - DifyAwsS3Region
-  - DifyAwsS3Ak
-  - DifyAwsS3Sk
+  - S3_ENDPOINT
+  - S3_BUCKET
+  - S3_REGION
+  - S3_AK
+  - S3_SK
   - FileStorage
   - POLEFS_VOLUME
   - POLEFS_MOUNT_PATH
@@ -340,7 +340,7 @@ Parameters:
       x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
-    DifyAwsS3Endpoint:
+    S3_ENDPOINT:
       # title: DifyAwsS3Endpoint
       type: string
       default: ""
@@ -351,7 +351,7 @@ Parameters:
       x-placeholder: 请输入OBS端点/Endpoint
       x-formitem:
         type: input
-    DifyAwsS3Bucket:
+    S3_BUCKET:
       # title: DifyAwsS3Bucket
       type: string
       default: bucket-dify-test
@@ -362,7 +362,7 @@ Parameters:
       x-placeholder: 请输入OBS存储桶名
       x-formitem:
         type: input
-    DifyAwsS3Region:
+    S3_REGION:
       # title: DifyAwsS3Region
       type: string
       default: beijing2
@@ -373,7 +373,7 @@ Parameters:
       x-placeholder: 请输入OBS区域
       x-formitem:
         type: input
-    DifyAwsS3Ak:
+    S3_AK:
       # title: DifyAwsS3Ak
       type: secret
       default: "AKIAIOSFODNN7EXAMPLE"
@@ -384,7 +384,7 @@ Parameters:
       x-placeholder: 请输入OBS AK
       x-formitem:
         type: input
-    DifyAwsS3Sk:
+    S3_SK:
       # title: DifyAwsS3Sk
       type: secret
       default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
@@ -470,11 +470,10 @@ Parameters:
       x-label: 文件存储配置
       x-restype: polefs
       x-placeholder: 函数挂载 PoleFS卷
-      x-api-uri: /resources/polefs/volumes
       x-extends-value:
         create_username: PolefsVolumeCreateUser
       x-formitem:
-        type: select
+        type: input
         name: volume_unique_name
     POLEFS_MOUNT_PATH:
       # title: 函数挂载路径

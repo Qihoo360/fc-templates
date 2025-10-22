@@ -26,11 +26,11 @@ vars:
   DifyDBPluginDataBase: {{DifyDBPluginDataBase}}
   DifyDBDataBase: {{POSTGRES_DATABASE}}
   DifyDBSslMode: {{POSTGRES_SSL_MODE}}
-  DifyAwsS3Endpoint: {{DifyAwsS3Endpoint}}
-  DifyAwsS3Bucket: {{DifyAwsS3Bucket}}
-  DifyAwsS3Region: {{DifyAwsS3Region}}
-  DifyAwsS3Ak: {{DifyAwsS3Ak}}
-  DifyAwsS3Sk: {{DifyAwsS3Sk}}
+  DifyAwsS3Endpoint: {{S3_ENDPOINT}}
+  DifyAwsS3Bucket: {{S3_BUCKET}}
+  DifyAwsS3Region: {{S3_REGION}}
+  DifyAwsS3Ak: {{S3_AK}}
+  DifyAwsS3Sk: {{S3_SK}}
   DifyWeaviateEndpoint: {{WEAVIATE_URL}}
   DifyWeaviateApiKey: {{WEAVIATE_API_KEY}}
   DifyMilvusUri: {{MILVUS_URL}}
