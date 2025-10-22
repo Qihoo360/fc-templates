@@ -29,8 +29,8 @@ Parameters:
     - bishengBackendDescription
     - bishengFrontendFunctionName
     - bishengFrontendDescription
-    - elasticsearchUrl
-    - elasticsearchSslVerify
+    - ELASTICSEARCH_URL
+    - ELASTICSEARCH_SSL_VERIFY
     - VectorDB
     - MILVUS_HOST
     - MILVUS_PORT
@@ -127,7 +127,7 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
-    elasticsearchUrl:
+    ELASTICSEARCH_URL:
       type: string
       default: ""
       description: ""
@@ -137,7 +137,7 @@ Parameters:
       x-placeholder: 请输入Elasticsearch url
       x-formitem:
         type: input
-    elasticsearchSslVerify:
+    ELASTICSEARCH_SSL_VERIFY:
       type: string
       default: "{}"
       description: ""
