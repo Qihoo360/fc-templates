@@ -279,21 +279,21 @@ Parameters:
     MINIO_ACCESS_KEY:
       type: string
       default: ""
-      description: ""
+      description: "对象存储服务访问凭证，用于标识客户端身份，通常称为 Access Key (AK)"
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: minio
-      x-placeholder: 请输入对象存储服务访问密钥
+      x-placeholder: 请输入对象存储服务访问凭证（Access Key）
       x-formitem:
         type: input
     MINIO_SECRET_KEY:
       type: string
       default: ""
-      description: ""
+      description: "对象存储服务访问密钥，用于验证客户端身份的机密凭证，通常称为 Secret Key (SK)"
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: minio
-      x-placeholder: 请输入对象存储服务密钥
+      x-placeholder: 请输入对象存储服务访问密钥（Secret Key）
       x-formitem:
         type: input
     MINIO_USE_SSL:

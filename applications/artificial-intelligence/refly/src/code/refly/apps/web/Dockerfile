@@ -5,7 +5,8 @@ FROM wfwqjs-eventing-zevent-pub/nginx:1.27.3-alpine
 RUN apk add --no-cache bash
 
 # Copy nginx configuration
-COPY deploy/docker/nginx.conf /etc/nginx/conf.d/default.conf.template
+RUN mkdir -p /etc/nginx/templates
+COPY deploy/docker/nginx.conf /etc/nginx/templates/default.conf.template
 
 # Copy static files
 WORKDIR /usr/share/nginx/html
