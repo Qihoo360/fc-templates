@@ -41,6 +41,7 @@ Parameters:
   - POSTGRES_PORT
   - DifyDBPluginDataBase
   - POSTGRES_DATABASE
+  - POSTGRES_SSL_MODE
   - ObjectStorage
   - DifyAwsS3Endpoint
   - DifyAwsS3Bucket
@@ -308,6 +309,17 @@ Parameters:
       x-label: 数据库配置
       x-restype: postgresql
       x-placeholder: 请输入数据库
+      x-formitem:
+        type: input
+    POSTGRES_SSL_MODE:
+      # title: POSTGRES_SSL_MODE
+      type: string
+      default: "disable"
+      description: "ssl_mode取值: disable/require"
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入ssl_mode
       x-formitem:
         type: input
     ObjectStorage:
