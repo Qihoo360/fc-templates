@@ -92,7 +92,7 @@ Parameters:
     reflyApi2FunctionName:
       title: reflyApi2FunctionName 函数名
       type: string
-      default: refly-api-${default-suffix}
+      default: refly-api2-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
       x-placeholder:  请输入reflyApi2 函数名

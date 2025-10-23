@@ -88,14 +88,14 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api/prisma ./apps/api/prisma
 COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=builder /app/packages/ ./packages/
-# 在生产阶段拷贝 preload.js
-COPY --from=builder /app/apps/api/scripts/preload.js ./scripts/preload.js
 
-RUN printf 'const Module = (() => {
+# 直接在生产阶段创建 preload.js（不依赖 builder）
+RUN mkdir -p /app/apps/api/scripts && cat <<'EOF' > /app/apps/api/scripts/preload.js
+const Module = (() => {
   try {
     return require("module");
   } catch (err) {
-    console.error("无法加载 Node 内置模块 \\"module\\":", err);
+    console.error('无法加载 Node 内置模块 "module":', err);
     process.exit(1);
   }
 })();
@@ -107,7 +107,7 @@ const originalRequire = Module.prototype.require;
 Module.prototype.require = function (id) {
   return originalRequire.apply(this, arguments);
 };
-' > /app/apps/api/scripts/preload.js
+EOF
 
 # Set environment variables
 ENV NODE_ENV=production
