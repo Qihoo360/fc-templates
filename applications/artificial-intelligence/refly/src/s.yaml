@@ -62,7 +62,7 @@ resources:
         testkey: testvalue
         TZ: "Asia/Shanghai"
         GIN_MODE: "debug"
-        NODE_ENV: "production"
+        NODE_ENV: "development"
         PORT: 5800
         WS_PORT: 5801
         ORIGIN: "http://127.0.0.1:5700,http://127.0.0.1:5173,http://127.0.0.1"
@@ -79,9 +79,12 @@ resources:
         QDRANT_PORT: ${vars.QDRANTPort}
         QDRANT_API_KEY: ${vars.QDRANTApiKey}
         LANCEDB_URI: ""
-        ELASTICSEARCH_URL: "http://${vars.ElasticSearchHost}:${vars.ElasticSearchPort}"
-        ELASTICSEARCH_USERNAME: ${vars.ElasticSearchUserName}
-        ELASTICSEARCH_PASSWORD: ${vars.ElasticSearchPassword}
+        # ELASTICSEARCH_URL: "http://${vars.ElasticSearchHost}:${vars.ElasticSearchPort}"
+        # ELASTICSEARCH_USERNAME: ${vars.ElasticSearchUserName}
+        # ELASTICSEARCH_PASSWORD: ${vars.ElasticSearchPassword}
+        ELASTICSEARCH_URL: ""
+        ELASTICSEARCH_USERNAME: ""
+        ELASTICSEARCH_PASSWORD: ""
         MINIO_INTERNAL_ENDPOINT: ${vars.MINIOEndpoint}
         MINIO_INTERNAL_PORT: ${vars.MINIOPort}
         MINIO_INTERNAL_USE_SSL: ${vars.MINIOUseSSL}
@@ -105,10 +108,10 @@ resources:
         JWT_REFRESH_EXPIRATION_TIME: ""
         ENCRYPTION_KEY: ""
         COLLAB_TOKEN_EXPIRY: ""
-        EMAIL_AUTH_ENABLED: false
+        EMAIL_AUTH_ENABLED: true
         EMAIL_SENDER: ""
         RESEND_API_KEY: "re_123"
-        GITHUB_AUTH_ENABLED: "manager/include/grpc++/impl/codegen/config_protobuf.h"
+        GITHUB_AUTH_ENABLED: false
         GITHUB_CLIENT_ID: ""
         GITHUB_CLIENT_SECRET: ""
         GITHUB_CALLBACK_URL: ""
@@ -140,7 +143,7 @@ resources:
         min: 1
         max: 1
       buildProgramEntry: ""
-      dockerfilePath: "apps/api/Dockerfile"
+      dockerfilePath: "apps/api/Dockerfile-api"
       requestEntry: ""
       startCmd: ""
       requestEntryDescribe: ""
@@ -182,7 +185,7 @@ resources:
         testkey: testvalue
         TZ: "Asia/Shanghai"
         GIN_MODE: "debug"
-        NODE_ENV: "production"
+        NODE_ENV: "development"
         PORT: 5800
         WS_PORT: 5801
         ORIGIN: "http://127.0.0.1:5700,http://127.0.0.1:5173,http://127.0.0.1"
@@ -199,9 +202,12 @@ resources:
         QDRANT_PORT: ${vars.QDRANTPort}
         QDRANT_API_KEY: ${vars.QDRANTApiKey}
         LANCEDB_URI: ""
-        ELASTICSEARCH_URL: "http://${vars.ElasticSearchHost}:${vars.ElasticSearchPort}"
-        ELASTICSEARCH_USERNAME: ${vars.ElasticSearchUserName}
-        ELASTICSEARCH_PASSWORD: ${vars.ElasticSearchPassword}
+        # ELASTICSEARCH_URL: "http://${vars.ElasticSearchHost}:${vars.ElasticSearchPort}"
+        # ELASTICSEARCH_USERNAME: ${vars.ElasticSearchUserName}
+        # ELASTICSEARCH_PASSWORD: ${vars.ElasticSearchPassword}
+        ELASTICSEARCH_URL: ""
+        ELASTICSEARCH_USERNAME: ""
+        ELASTICSEARCH_PASSWORD: ""
         MINIO_INTERNAL_ENDPOINT: ${vars.MINIOEndpoint}
         MINIO_INTERNAL_PORT: ${vars.MINIOPort}
         MINIO_INTERNAL_USE_SSL: ${vars.MINIOUseSSL}
@@ -225,10 +231,10 @@ resources:
         JWT_REFRESH_EXPIRATION_TIME: ""
         ENCRYPTION_KEY: ""
         COLLAB_TOKEN_EXPIRY: ""
-        EMAIL_AUTH_ENABLED: false
+        EMAIL_AUTH_ENABLED: true
         EMAIL_SENDER: ""
         RESEND_API_KEY: "re_123"
-        GITHUB_AUTH_ENABLED: "manager/include/grpc++/impl/codegen/config_protobuf.h"
+        GITHUB_AUTH_ENABLED: false
         GITHUB_CLIENT_ID: ""
         GITHUB_CLIENT_SECRET: ""
         GITHUB_CALLBACK_URL: ""
@@ -260,7 +266,7 @@ resources:
         min: 1
         max: 1
       buildProgramEntry: ""
-      dockerfilePath: "apps/api/Dockerfile"
+      dockerfilePath: "apps/api/Dockerfile-api2"
       requestEntry: ""
       startCmd: ""
       requestEntryDescribe: ""
@@ -298,7 +304,7 @@ resources:
       code:
         templated_files:
           - code/refly/deploy/docker/nginx.conf
-      port: 80
+      port: 5700
       functionName: ${vars.reflyWebFunctionName}
       sourceSubDir: code/refly
       environmentVariables:
@@ -325,7 +331,7 @@ resources:
         min: 1
         max: 1
       buildProgramEntry: ""
-      dockerfilePath: "apps/web/Dockerfile"
+      dockerfilePath: "apps/web/Dockerfile-web"
       requestEntry: ""
       startCmd: ""
       requestEntryDescribe: ""
