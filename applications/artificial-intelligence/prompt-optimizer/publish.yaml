@@ -79,73 +79,73 @@ Parameters:
       x-formitem:
         type: input
 
-    MCP_DEFAULT_MODEL_PROVIDER:
-      title: MCP 使用的模型
-      type: string
-      default: "openai"
-      pattern: ".{0,255}$"
-      description: MCP 服务使用的大模型，最大长度为 255 个字符
-      x-cate: applicationCate
-      x-label: 控制台设置
-      enum:
-      - openai
-      - gemini
-      - deepseek
-      - siliconflow
-      - zhipu
-      x-formitem:
-        type: select
+    # MCP_DEFAULT_MODEL_PROVIDER:
+    #   title: MCP 使用的模型
+    #   type: string
+    #   default: "openai"
+    #   pattern: ".{0,255}$"
+    #   description: MCP 服务使用的大模型，最大长度为 255 个字符
+    #   x-cate: applicationCate
+    #   x-label: 控制台设置
+    #   enum:
+    #   - openai
+    #   - gemini
+    #   - deepseek
+    #   - siliconflow
+    #   - zhipu
+    #   x-formitem:
+    #     type: select
 
-    OPENAI_API_KEY:
-      title: OpenAI API KEY
-      type: secret
-      default: ""
-      pattern: ".{0,255}$"
-      description: OpenAI API KEY
-      x-cate: applicationCate
-      x-label: 大模型 APIKEY
-      x-formitem:
-        type: input
-    GEMINI_API_KEY:
-      title: Gemini API KEY
-      type: secret
-      default: ""
-      pattern: ".{0,255}$"
-      description: Gemini API KEY
-      x-cate: applicationCate
-      x-label: 大模型 APIKEY
-      x-formitem:
-        type: input
-    DEEPSEEK_API_KEY:
-      title: DeepSeek API KEY
-      type: secret
-      default: ""
-      pattern: ".{0,255}$"
-      description: DeepSeek API KEY
-      x-cate: applicationCate
-      x-label: 大模型 APIKEY
-      x-formitem:
-        type: input
-    ZHIPU_API_KEY:
-      title: Zhipu API KEY
-      type: secret
-      default: ""
-      pattern: ".{0,255}$"
-      description: Zhipu API KEY
-      x-cate: applicationCate
-      x-label: 大模型 APIKEY
-      x-formitem:
-        type: input
-    SILICONFLOW_API_KEY:
-      title: SiliconFlow API KEY
-      type: secret
-      default: ""
-      pattern: ".{0,255}$"
-      description: SiliconFlow API KEY
-      x-cate: applicationCate
-      x-label: 大模型 APIKEY
-      x-formitem:
-        type: input
+    # OPENAI_API_KEY:
+    #   title: OpenAI API KEY
+    #   type: secret
+    #   default: ""
+    #   pattern: ".{0,255}$"
+    #   description: OpenAI API KEY
+    #   x-cate: applicationCate
+    #   x-label: 大模型 APIKEY
+    #   x-formitem:
+    #     type: input
+    # GEMINI_API_KEY:
+    #   title: Gemini API KEY
+    #   type: secret
+    #   default: ""
+    #   pattern: ".{0,255}$"
+    #   description: Gemini API KEY
+    #   x-cate: applicationCate
+    #   x-label: 大模型 APIKEY
+    #   x-formitem:
+    #     type: input
+    # DEEPSEEK_API_KEY:
+    #   title: DeepSeek API KEY
+    #   type: secret
+    #   default: ""
+    #   pattern: ".{0,255}$"
+    #   description: DeepSeek API KEY
+    #   x-cate: applicationCate
+    #   x-label: 大模型 APIKEY
+    #   x-formitem:
+    #     type: input
+    # ZHIPU_API_KEY:
+    #   title: Zhipu API KEY
+    #   type: secret
+    #   default: ""
+    #   pattern: ".{0,255}$"
+    #   description: Zhipu API KEY
+    #   x-cate: applicationCate
+    #   x-label: 大模型 APIKEY
+    #   x-formitem:
+    #     type: input
+    # SILICONFLOW_API_KEY:
+    #   title: SiliconFlow API KEY
+    #   type: secret
+    #   default: ""
+    #   pattern: ".{0,255}$"
+    #   description: SiliconFlow API KEY
+    #   x-cate: applicationCate
+    #   x-label: 大模型 APIKEY
+    #   x-formitem:
+    #     type: input
 
 PropertyDescription:
   resourceCate:
