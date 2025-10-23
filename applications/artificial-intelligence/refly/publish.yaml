@@ -36,7 +36,7 @@ Parameters:
     - POSTGRES_USERNAME
     - POSTGRES_PASSWORD
     - POSTGRES_DATABASE
-    - POSTGRES_SCHEMA
+    # - POSTGRES_SCHEMA
 
     - MINIODataBase
     - MINIO_INTERAL_BUCKET
@@ -53,11 +53,11 @@ Parameters:
     - SEARXNG
     - SEARXNG_HOST
     - SEARXNG_PORT
-    - ELASTICSEARCH
-    - ELASTICSEARCH_HOST
-    - ELASTICSEARCH_PORT
-    - ELASTICSEARCH_USERNAME
-    - ELASTICSEARCH_PASSWORD
+    # - ELASTICSEARCH
+    # - ELASTICSEARCH_HOST
+    # - ELASTICSEARCH_PORT
+    # - ELASTICSEARCH_USERNAME
+    # - ELASTICSEARCH_PASSWORD
   properties:
     region:
       title: 地域
@@ -234,16 +234,16 @@ Parameters:
       x-placeholder: 输入数据库名称
       x-formitem:
         type: input
-    POSTGRES_SCHEMA:
-      type: string
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
-      x-placeholder: 输入数据库schema名称
-      x-formitem:
-        type: input
+    # POSTGRES_SCHEMA:
+    #   type: string
+    #   default: ""
+    #   description: ""
+    #   x-cate: applicationCate
+    #   x-label: 数据库配置
+    #   x-restype: postgresql
+    #   x-placeholder: 输入数据库schema名称
+    #   x-formitem:
+    #     type: input
     MINIODataBase:
       type: string
       default: minio
@@ -401,58 +401,58 @@ Parameters:
       x-formitem:
         type: input
 
-    ELASTICSEARCH:
-      type: string
-      default: elasticsearch
-      description: ""
-      enum:
-        - elasticsearch
-      x-cate: applicationCate
-      x-label: 搜索引擎配置
-      x-restype: elasticsearch
-      x-placeholder: 请选择搜索引擎类型
-      x-formitem:
-        type: select
-    ELASTICSEARCH_HOST:
-      type: string
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 搜索引擎配置
-      x-restype: elasticsearch
-      x-placeholder: 请输入搜索引擎服务地址
-      x-formitem:
-        type: input
-    ELASTICSEARCH_PORT:
-      type: string
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 搜索引擎配置
-      x-restype: elasticsearch
-      x-placeholder: 请输入搜索引擎服务端口
-      x-formitem:
-        type: input
-    ELASTICSEARCH_USERNAME:
-      type: string
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 搜索引擎配置
-      x-restype: elasticsearch
-      x-placeholder: 请输入搜索引擎服务用户名
-      x-formitem:
-        type: input
-    ELASTICSEARCH_PASSWORD:
-      type: secret
-      default: ""
-      description: ""
-      x-cate: applicationCate
-      x-label: 搜索引擎配置
-      x-restype: elasticsearch 
-      x-placeholder: 请输入搜索引擎服务密码
-      x-formitem:
-        type: input
+    # ELASTICSEARCH:
+    #   type: string
+    #   default: elasticsearch
+    #   description: ""
+    #   enum:
+    #     - elasticsearch
+    #   x-cate: applicationCate
+    #   x-label: 搜索引擎配置
+    #   x-restype: elasticsearch
+    #   x-placeholder: 请选择搜索引擎类型
+    #   x-formitem:
+    #     type: select
+    # ELASTICSEARCH_HOST:
+    #   type: string
+    #   default: ""
+    #   description: ""
+    #   x-cate: applicationCate
+    #   x-label: 搜索引擎配置
+    #   x-restype: elasticsearch
+    #   x-placeholder: 请输入搜索引擎服务地址
+    #   x-formitem:
+    #     type: input
+    # ELASTICSEARCH_PORT:
+    #   type: string
+    #   default: ""
+    #   description: ""
+    #   x-cate: applicationCate
+    #   x-label: 搜索引擎配置
+    #   x-restype: elasticsearch
+    #   x-placeholder: 请输入搜索引擎服务端口
+    #   x-formitem:
+    #     type: input
+    # ELASTICSEARCH_USERNAME:
+    #   type: string
+    #   default: ""
+    #   description: ""
+    #   x-cate: applicationCate
+    #   x-label: 搜索引擎配置
+    #   x-restype: elasticsearch
+    #   x-placeholder: 请输入搜索引擎服务用户名
+    #   x-formitem:
+    #     type: input
+    # ELASTICSEARCH_PASSWORD:
+    #   type: secret
+    #   default: ""
+    #   description: ""
+    #   x-cate: applicationCate
+    #   x-label: 搜索引擎配置
+    #   x-restype: elasticsearch 
+    #   x-placeholder: 请输入搜索引擎服务密码
+    #   x-formitem:
+    #     type: input
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"

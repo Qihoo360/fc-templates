@@ -19,7 +19,7 @@ vars:
   PGUser: {{POSTGRES_USERNAME}}
   PGPassword: {{POSTGRES_PASSWORD}}
   PGDbName: {{POSTGRES_DATABASE}}
-  PGSchema: {{POSTGRES_SCHEMA}}
+  # PGSchema: {{POSTGRES_SCHEMA}}
   MINIODataBase: {{MINIODataBase}}
   MINIOInternalBucket: {{MINIO_INTERAL_BUCKET}}
   MINIOExternalBucket: {{MINIO_EXTERNAL_BUCKET}}
@@ -35,11 +35,11 @@ vars:
   SEARXNGDataBase: {{SEARXNGDataBase}}
   SEARXNGHost: {{SEARXNG_HOST}}
   SEARXNGPort: {{SEARXNG_PORT}}
-  ElasticSearchDataBase: {{ELASTICSEARCHDataBase}}
-  ElasticSearchHost: {{ELASTICSEARCH_HOST}}
-  ElasticSearchPort: {{ELASTICSEARCH_PORT}}
-  ElasticSearchUserName: {{ELASTICSEARCH_USERNAME}}
-  ElasticSearchPassword: {{ELASTICSEARCH_PASSWORD}}
+  # ElasticSearchDataBase: {{ELASTICSEARCHDataBase}}
+  # ElasticSearchHost: {{ELASTICSEARCH_HOST}}
+  # ElasticSearchPort: {{ELASTICSEARCH_PORT}}
+  # ElasticSearchUserName: {{ELASTICSEARCH_USERNAME}}
+  # ElasticSearchPassword: {{ELASTICSEARCH_PASSWORD}}
 resources:
   reflyApi:
     component: ${path('/utils/components/zfc')}
@@ -73,7 +73,8 @@ resources:
         REDIS_PORT: ${vars.RedisPort}
         REDIS_USERNAME: ""
         REDIS_PASSWORD: ${vars.RedisPassword}        
-        DATABASE_URL: "postgresql://${vars.PGUser}:${vars.PGPassword}@${vars.PGHost}:${vars.PGPort}/${vars.PGDbName}?schema=${vars.PGSchema}"
+        # DATABASE_URL: "postgresql://${vars.PGUser}:${vars.PGPassword}@${vars.PGHost}:${vars.PGPort}/${vars.PGDbName}?schema=${vars.PGSchema}"
+        DATABASE_URL: "postgresql://${vars.PGUser}:${vars.PGPassword}@${vars.PGHost}:${vars.PGPort}/${vars.PGDbName}"
         VECTOR_STORE_BACKEND: "qdrant"
         QDRANT_HOST: ${vars.QDRANTHost}
         QDRANT_PORT: ${vars.QDRANTPort}
