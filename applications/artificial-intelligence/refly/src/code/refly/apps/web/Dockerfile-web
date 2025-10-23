@@ -1,0 +1,17 @@
+FROM wfwqjs-eventing-zevent-pub/reflyai/refly-web:latest
+
+RUN mkdir -p /etc/nginx/templates
+COPY deploy/docker/nginx.conf /etc/nginx/templates/default.conf.template
+
+RUN printf '#!/bin/sh\n\
+set -e\n\
+echo "🔧 替换前端 config.js..."\n\
+envsubst < /usr/share/nginx/html/config.template.js > /usr/share/nginx/html/config.js\n\
+echo "🔧 替换 Nginx 配置..."\n\
+envsubst < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf\n\
+echo "✅ 替换完成，启动 Nginx..."\n\
+exec nginx -g "daemon off;"\n' > /docker-entrypoint.sh \
+&& chmod +x /docker-entrypoint.sh
+
+# Start Nginx with our entrypoint script
+ENTRYPOINT ["/docker-entrypoint.sh"]
