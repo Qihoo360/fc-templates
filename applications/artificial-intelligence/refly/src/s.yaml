@@ -55,7 +55,7 @@ resources:
       requestType: http
       runtimeType: customize
       cloudBuildType: Dockerfile
-      port: 5800
+      port: 5802
       functionName: ${vars.reflyApiFunctionName}
       sourceSubDir: code/refly
       environmentVariables:
@@ -63,7 +63,7 @@ resources:
         TZ: "Asia/Shanghai"
         GIN_MODE: "debug"
         NODE_ENV: "development"
-        PORT: 5800
+        PORT: 5802
         WS_PORT: 5801
         ORIGIN: "http://127.0.0.1:5700,http://127.0.0.1:5173,http://127.0.0.1"
         AUTO_MIGRATE_DB_SCHEMA: 1
@@ -186,7 +186,7 @@ resources:
         TZ: "Asia/Shanghai"
         GIN_MODE: "debug"
         NODE_ENV: "development"
-        PORT: 5800
+        PORT: 5802
         WS_PORT: 5801
         ORIGIN: "http://127.0.0.1:5700,http://127.0.0.1:5173,http://127.0.0.1"
         AUTO_MIGRATE_DB_SCHEMA: 1
