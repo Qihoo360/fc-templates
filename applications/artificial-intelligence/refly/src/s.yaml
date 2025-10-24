@@ -198,7 +198,7 @@ resources:
         REDIS_USERNAME: ""
         REDIS_PASSWORD: ${vars.RedisPassword}
         # DATABASE_URL: "postgresql://${vars.PGUser}:${vars.PGPassword}@${vars.PGHost}:${vars.PGPort}/${vars.PGDbName}?schema=${vars.PGSchema}"
-        DATABASE_URL: "postgresql://${vars.PGUser}:${vars.PGPassword}@${vars.PGHost}:${vars.PGPort}/${vars.PGDbName}"
+        DATABASE_URL: "postgresql://${vars.PGUser}:${vars.PGPassword}@${vars.PGHost}:${vars.PGPort}/${vars.PGDbName}?schema=refly"
         VECTOR_STORE_BACKEND: "qdrant"
         QDRANT_HOST: ${vars.QDRANTHost}
         QDRANT_PORT: ${vars.QDRANTPort}
