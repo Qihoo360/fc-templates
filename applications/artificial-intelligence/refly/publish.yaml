@@ -36,7 +36,7 @@ Parameters:
     - POSTGRES_USERNAME
     - POSTGRES_PASSWORD
     - POSTGRES_DATABASE
-    # - POSTGRES_SCHEMA
+    - POSTGRES_SCHEMA
 
     - MINIODataBase
     - MINIO_INTERAL_BUCKET
@@ -234,16 +234,16 @@ Parameters:
       x-placeholder: 输入数据库名称
       x-formitem:
         type: input
-    # POSTGRES_SCHEMA:
-    #   type: string
-    #   default: ""
-    #   description: ""
-    #   x-cate: applicationCate
-    #   x-label: 数据库配置
-    #   x-restype: postgresql
-    #   x-placeholder: 输入数据库schema名称
-    #   x-formitem:
-    #     type: input
+    POSTGRES_SCHEMA:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 输入数据库schema名称
+      x-formitem:
+        type: input
     MINIODataBase:
       type: string
       default: minio
