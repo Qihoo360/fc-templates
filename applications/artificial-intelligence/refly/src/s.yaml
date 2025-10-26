@@ -77,7 +77,8 @@ resources:
         VECTOR_STORE_BACKEND: "qdrant"
         QDRANT_HOST: ${vars.QDRANTHost}
         QDRANT_PORT: ${vars.QDRANTPort}
-        QDRANT_API_KEY: ${vars.QDRANTApiKey}
+        # QDRANT_API_KEY: ${vars.QDRANTApiKey}
+        QDRANT_API_KEY: ""
         LANCEDB_URI: ""
         # ELASTICSEARCH_URL: "http://${vars.ElasticSearchHost}:${vars.ElasticSearchPort}"
         # ELASTICSEARCH_USERNAME: ${vars.ElasticSearchUserName}
@@ -200,7 +201,8 @@ resources:
         VECTOR_STORE_BACKEND: "qdrant"
         QDRANT_HOST: ${vars.QDRANTHost}
         QDRANT_PORT: ${vars.QDRANTPort}
-        QDRANT_API_KEY: ${vars.QDRANTApiKey}
+        # QDRANT_API_KEY: ${vars.QDRANTApiKey}
+        QDRANT_API_KEY: ""
         LANCEDB_URI: ""
         # ELASTICSEARCH_URL: "http://${vars.ElasticSearchHost}:${vars.ElasticSearchPort}"
         # ELASTICSEARCH_USERNAME: ${vars.ElasticSearchUserName}
