@@ -9,8 +9,8 @@ echo "🔧 替换前端 config.js..."\n\
 envsubst < /usr/share/nginx/html/config.template.js > /usr/share/nginx/html/config.js\n\
 echo "🔧 替换 Nginx 配置..."\n\
 envsubst '\''$API_ENDPOINT $API_2_ENDPOINT'\'' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf\n\
-echo "⏳ 等待 300 秒以确保域名生效..."\n\
-sleep 300\n\
+echo "⏳ 等待 180 秒以确保域名生效..."\n\
+sleep 180\n\
 echo "✅ 替换完成，启动 Nginx..."\n\
 exec nginx -g "daemon off;"\n' > /docker-entrypoint.sh \
 && chmod +x /docker-entrypoint.sh
