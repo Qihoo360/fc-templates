@@ -31,7 +31,7 @@ envsubst < /usr/share/nginx/html/config.template.js > /usr/share/nginx/html/conf
 echo "🔧 替换 Nginx 配置..."\n\
 envsubst < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf\n\
 echo "⏳ 等待 60 秒以确保域名生效..."\n\
-sleep 120\n\
+sleep 300\n\
 echo "✅ 替换完成，启动 Nginx..."\n\
 exec nginx -g "daemon off;"\n' > /docker-entrypoint.sh \
 && chmod +x /docker-entrypoint.sh
