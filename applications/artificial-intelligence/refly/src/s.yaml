@@ -116,7 +116,7 @@ resources:
         GITHUB_CLIENT_ID: ""
         GITHUB_CLIENT_SECRET: ""
         GITHUB_CALLBACK_URL: ""
-        GOOGLE_AUTH_ENABLED: false
+        GOOGLE_AUTH_ENABLED: true
         GOOGLE_CLIENT_ID: ""
         GOOGLE_CLIENT_SECRET: ""
         GOOGLE_CALLBACK_URL: ""
@@ -240,7 +240,7 @@ resources:
         GITHUB_CLIENT_ID: ""
         GITHUB_CLIENT_SECRET: ""
         GITHUB_CALLBACK_URL: ""
-        GOOGLE_AUTH_ENABLED: false
+        GOOGLE_AUTH_ENABLED: true
         GOOGLE_CLIENT_ID: ""
         GOOGLE_CLIENT_SECRET: ""
         GOOGLE_CALLBACK_URL: ""
