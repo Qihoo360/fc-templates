@@ -141,6 +141,10 @@ resources:
         JOBS_DB_USER: ${vars.PGUser}
         JOBS_DB_PASSWORD: ${vars.PGPassword}
         JOBS_DB_DB_NAME: ${vars.PGDbName}
+        JOBS_DB_SSL_MODE: disable
+        POSTGRES_PASSWORD: ${vars.PGPassword}
+        POSTGRES_USER: ${vars.PGUser}
+        POSTGRES_DB: ${vars.PGDbName}
         DEST_TRANSFORM_URL: http://${resources.DTransformer.output.http_trigger_url}
         CONFIG_BACKEND_URL: https://api.rudderstack.com
         WORKSPACE_TOKEN: ${vars.WORKSPACE_TOKEN}
