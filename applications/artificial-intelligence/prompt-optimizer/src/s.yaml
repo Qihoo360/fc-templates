@@ -2,11 +2,11 @@ edition: 3.0.0
 name: prompt-optimizer
 access: default
 vars:
-  region: {{ region }}
-  functionName: {{functionName}}
-  description: {{description}}
-  ACCESS_USERNAME: {{ACCESS_USERNAME}}
-  ACCESS_PASSWORD: {{ACCESS_PASSWORD}}
+  region: "{{ region }}"
+  functionName: "{{functionName}}"
+  description: "{{description}}"
+  ACCESS_USERNAME: "{{ACCESS_USERNAME}}"
+  ACCESS_PASSWORD: "{{ACCESS_PASSWORD}}"
   # VITE_OPENAI_API_KEY: {{OPENAI_API_KEY}}
   # VITE_GEMINI_API_KEY: {{GEMINI_API_KEY}}
   # VITE_DEEPSEEK_API_KEY: {{DEEPSEEK_API_KEY}}
