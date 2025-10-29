@@ -33,6 +33,10 @@ Parameters:
   - supabaseServiceKey
   - supabaseRealtimeServiceKey
   - supabaseGotrueJWTExpire
+  - KAFKA_BROKERS
+  - KAFKA_TOPIC
+  - PULSAR_URL
+  - PULSAR_TOPIC
   properties:
     region:
       title: 地域
@@ -219,6 +223,131 @@ Parameters:
       x-hidden: true
       x-formitem:
         type: input
+
+    KAFKA_BROKERS:
+      type: string
+      description: "Kafka Broker 地址，逗号分隔"
+      example: "127.0.0.1:9092,127.0.0.1:9093"
+      x-cate: applicationCate
+      x-label: KAFKA 设置
+      x-restype: kafka
+      x-placeholder: 请输入 KAFKA_BROKERS
+      x-formitem:
+        type: input
+    KAFKA_USERNAME:
+      type: string
+      description: "Kafka 用户名"
+      example: "kafka_user"
+      x-cate: applicationCate
+      x-label: KAFKA 设置
+      x-restype: kafka
+      x-placeholder: 请输入 KAFKA_USERNAME
+      x-formitem:
+        type: input
+    KAFKA_PASSWORD:
+      type: string
+      description: "Kafka 密码"
+      example: "kafka_pass"
+      x-cate: applicationCate
+      x-label: KAFKA 设置
+      x-restype: kafka
+      x-placeholder: 请输入 KAFKA_PASSWORD
+      x-formitem:
+        type: input
+    KAFKA_SECURITY_PROTOCOL:
+      type: string
+      description: "Kafka 安全协议类型"
+      enum: ["PLAINTEXT", "SASL_PLAINTEXT", "SASL_SSL", "SSL"]
+      example: "PLAINTEXT"
+      x-cate: applicationCate
+      x-label: KAFKA 设置
+      x-restype: kafka
+      x-placeholder: 请输入 KAFKA_SECURITY_PROTOCOL
+      x-formitem:
+        type: input
+    KAFKA_SASL_MECHANISM:
+      type: string
+      description: "Kafka SASL 机制"
+      enum: ["PLAIN", "SCRAM-SHA-256", "SCRAM-SHA-512", "OAUTHBEARER"]
+      example: "PLAIN"
+      x-cate: applicationCate
+      x-label: KAFKA 设置
+      x-restype: kafka
+      x-placeholder: 请输入 KAFKA_SASL_MECHANISM
+      x-formitem:
+        type: input
+    KAFKA_TOPIC:
+      type: string
+      description: "Kafka Topic 名称"
+      example: "test-topic"
+      x-cate: applicationCate
+      x-label: KAFKA 设置
+      x-restype: kafka
+      x-placeholder: 请输入 KAFKA_TOPIC
+      x-formitem:
+        type: input
+    KAFKA_GROUP_ID:
+      type: string
+      description: "Kafka 消费组 ID"
+      example: "consumer-group-1"
+      x-cate: applicationCate
+      x-label: KAFKA 设置
+      x-restype: kafka
+      x-placeholder: 请输入 KAFKA_GROUP_ID
+      x-formitem:
+        type: input
+
+    PULSAR_URL:
+      type: string
+      description: "Pulsar Broker 地址，逗号分隔"
+      example: "pulsar://127.0.0.1:6650,127.0.0.1:6651"
+      x-cate: applicationCate
+      x-label: PULSAR 设置
+      x-placeholder: 请输入 PULSAR_URL
+      x-restype: pulsar
+      x-formitem:
+        type: input
+    PULSAR_TOKEN:
+      type: string
+      description: "Pulsar 认证 Token"
+      example: "pulsar-token-xxxx"
+      x-cate: applicationCate
+      x-label: PULSAR 设置
+      x-placeholder: 请输入 PULSAR_TOKEN
+      x-restype: pulsar
+      x-formitem:
+        type: input
+    PULSAR_TENANT:
+      type: string
+      description: "Pulsar 租户名称"
+      example: "public"
+      x-cate: applicationCate
+      x-label: PULSAR 设置
+      x-placeholder: 请输入 PULSAR_TENANT
+      x-restype: pulsar
+      x-formitem:
+        type: input
+    PULSAR_NAMESPACE:
+      type: string
+      description: "Pulsar 命名空间"
+      example: "default"
+      x-cate: applicationCate
+      x-label: PULSAR 设置
+      x-placeholder: 请输入 PULSAR_NAMESPACE
+      x-restype: pulsar
+      x-formitem:
+        type: input
+    PULSAR_TOPIC:
+      type: string
+      description: "Pulsar Topic 名称，完整路径"
+      example: "persistent://public/default/test-topic"
+      x-cate: applicationCate
+      x-label: PULSAR 设置
+      x-placeholder: 请输入 PULSAR_TOPIC
+      x-restype: pulsar
+      x-formitem:
+        type: input
+
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"

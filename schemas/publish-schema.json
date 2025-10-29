@@ -54,7 +54,9 @@
                     "polefs",
                     "s3",
                     "elasticsearch",
-                    "weaviate"
+                    "weaviate",
+                    "kafka",
+                    "pulsar"
                   ],
                   "examples": ["redis", "mysql"]
                 },
