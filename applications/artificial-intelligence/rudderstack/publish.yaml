@@ -24,7 +24,7 @@ Parameters:
   required: # 必填项
     - region
     - BackendFunctionName
-    - MetricsExporterFunctionName
+    # - MetricsExporterFunctionName
     - DTransformerFunctionName
 
     - PGDataBase
@@ -33,6 +33,9 @@ Parameters:
     - POSTGRES_USERNAME
     - POSTGRES_PASSWORD
     - POSTGRES_DATABASE
+
+    - MetricsExporterHOST
+    - MetricsExporterPORT
 
     - WORKSPACE_TOKEN
 
@@ -67,26 +70,26 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
-    MetricsExporterFunctionName:
-      title: MetricsExporterFunctionName 函数名
-      type: string
-      default: metrics-exporter-${default-suffix}
-      pattern: "^[a-z][a-z0-9-]{3,40}$"
-      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
-      x-placeholder:  请输入 metrics-exporter 函数名
-      x-cate: resourceCate
-      x-formitem:
-        type: input
-    MetricsExporterDescription:
-      title: metrics-exporter函数描述
-      type: string
-      default: "Serverless metrics-exporter"
-      pattern: ".{0,255}$"
-      description: 最大长度为255个字符
-      x-placeholder: 请输入metrics-exporter函数描述
-      x-cate: resourceCate
-      x-formitem:
-        type: input  
+    # MetricsExporterFunctionName:
+    #   title: MetricsExporterFunctionName 函数名
+    #   type: string
+    #   default: metrics-exporter-${default-suffix}
+    #   pattern: "^[a-z][a-z0-9-]{3,40}$"
+    #   description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+    #   x-placeholder:  请输入 metrics-exporter 函数名
+    #   x-cate: resourceCate
+    #   x-formitem:
+    #     type: input
+    # MetricsExporterDescription:
+    #   title: metrics-exporter函数描述
+    #   type: string
+    #   default: "Serverless metrics-exporter"
+    #   pattern: ".{0,255}$"
+    #   description: 最大长度为255个字符
+    #   x-placeholder: 请输入metrics-exporter函数描述
+    #   x-cate: resourceCate
+    #   x-formitem:
+    #     type: input
     DTransformerFunctionName:
       title: DTransformerFunctionName 函数名
       type: string
@@ -169,6 +172,26 @@ Parameters:
       x-placeholder: 输入数据库名称
       x-formitem:
         type: input
+
+    MetricsExporterHOST:
+      type: string
+      default: ""
+      description: "metrics-exporter 主机地址"
+      x-cate: applicationCate
+      x-label: metrics-exporter
+      x-placeholder: 请输入 metrics-exporter 主机地址
+      x-formitem:
+        type: input
+    MetricsExporterPORT:
+      type: string
+      default: ""
+      description: "metrics-exporter 端口"
+      x-cate: applicationCate
+      x-label: metrics-exporter
+      x-placeholder: 请输入 metrcs-exiporter 端口
+      x-formitem:
+        type: input
+
     WORKSPACE_TOKEN:
       type: string
       default: ""

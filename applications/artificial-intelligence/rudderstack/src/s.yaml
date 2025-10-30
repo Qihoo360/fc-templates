@@ -5,8 +5,8 @@ vars:
   region: {{region}}
   BackendFunctionName : {{BackendFunctionName}}
   BackendDescription : {{BackendDescription}}
-  MetricsExporterFunctionName : {{MetricsExporterFunctionName}}
-  MetricsExporterDescription : {{MetricsExporterDescription}}
+  # MetricsExporterFunctionName : {{MetricsExporterFunctionName}}
+  # MetricsExporterDescription : {{MetricsExporterDescription}}
   DTransformerFunctionName : {{DTransformerFunctionName}}
   DTransformerDescription : {{DTransformerDescription}} 
   PGDataBase: {{PGDataBase}}
@@ -15,56 +15,58 @@ vars:
   PGUser: {{POSTGRES_USERNAME}}
   PGPassword: {{POSTGRES_PASSWORD}}
   PGDbName: {{POSTGRES_DATABASE}}
+  MetricsExporterHOST: {{MetricsExporterHOST}}
+  MetricsExporterPORT: {{MetricsExporterPORT}}
   WORKSPACE_TOKEN: {{WORKSPACE_TOKEN}}
 resources:
-  MetricsExporter:
-    component: ${path('/utils/components/zfc')}
-    props:
-      region: ${vars.region}
-      description: ${vars.MetricsExporterDescription}
-      runtime: custom
-      memorySize: 10240
-      cpu: 8
-      diskSize: 10240
-      timeout: 100
-      instanceConcurrency: 100
-      requestType: http
-      runtimeType: customize
-      cloudBuildType: Dockerfile
-      port: 9125
-      functionName: ${vars.MetricsExporterFunctionName}
-      sourceSubDir: code/metrics-exporter
-      environmentVariables:
-        testkey: "testvalue"
-        TZ: "Asia/Shanghai"
-      logConfig:
-        isOpen: true
-      scale:
-        scale_config: 1
-        min: 1
-        max: 1
-      buildProgramEntry: ""
-      dockerfilePath: "Dockerfile"
-      requestEntry: ""
-      startCmd: ""
-      requestEntryDescribe: ""
-      triggers:
-        - triggerName: httptrigger
-          triggerType: http
-          disableURLInternet: true
-          funcVersion: LATEST
-          triggerConfig:
-            auth_type: None
-            methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-              - HEAD
-              - PATCH
-            disable_url_internet: true
-            auth_config: ""
+  # MetricsExporter:
+  #   component: ${path('/utils/components/zfc')}
+  #   props:
+  #     region: ${vars.region}
+  #     description: ${vars.MetricsExporterDescription}
+  #     runtime: custom
+  #     memorySize: 10240
+  #     cpu: 8
+  #     diskSize: 10240
+  #     timeout: 100
+  #     instanceConcurrency: 100
+  #     requestType: http
+  #     runtimeType: customize
+  #     cloudBuildType: Dockerfile
+  #     port: 9125
+  #     functionName: ${vars.MetricsExporterFunctionName}
+  #     sourceSubDir: code/metrics-exporter
+  #     environmentVariables:
+  #       testkey: "testvalue"
+  #       TZ: "Asia/Shanghai"
+  #     logConfig:
+  #       isOpen: true
+  #     scale:
+  #       scale_config: 1
+  #       min: 1
+  #       max: 1
+  #     buildProgramEntry: ""
+  #     dockerfilePath: "Dockerfile"
+  #     requestEntry: ""
+  #     startCmd: ""
+  #     requestEntryDescribe: ""
+  #     triggers:
+  #       - triggerName: httptrigger
+  #         triggerType: http
+  #         disableURLInternet: true
+  #         funcVersion: LATEST
+  #         triggerConfig:
+  #           auth_type: None
+  #           methods:
+  #             - GET
+  #             - POST
+  #             - PUT
+  #             - DELETE
+  #             - OPTIONS
+  #             - HEAD
+  #             - PATCH
+  #           disable_url_internet: true
+  #           auth_config: ""
   DTransformer:
     component: ${path('/utils/components/zfc')}
     props:
@@ -86,8 +88,8 @@ resources:
         testkey: "testvalue"
         TZ: "Asia/Shanghai"
         PORT: 9099
-        STATSD_SERVER_PORT: "80"
-        STATSD_SERVER_HOST: ${resources.MetricsExporter.output.http_trigger_url}
+        STATSD_SERVER_PORT: ${var.MetricsExporterPORT}
+        STATSD_SERVER_HOST: ${var.MetricsExporterHOST}
       logConfig:
         isOpen: true
       scale:
@@ -148,7 +150,8 @@ resources:
         DEST_TRANSFORM_URL: http://${resources.DTransformer.output.http_trigger_url}
         CONFIG_BACKEND_URL: https://api.rudderstack.com
         WORKSPACE_TOKEN: ${vars.WORKSPACE_TOKEN}
-        STATSD_SERVER_URL: ${resources.MetricsExporter.output.http_trigger_url}
+        STATSD_SERVER_URL: ${var.MetricsExporterHOST}:${var.MetricsExporterPORT}
+        RSERVER_GATEWAY_WEBHOOK_SOURCE_LIST_FOR_PARSING_PARAMS: Shopify
       logConfig:
         isOpen: true
       scale:
