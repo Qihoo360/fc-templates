@@ -88,8 +88,8 @@ resources:
         testkey: "testvalue"
         TZ: "Asia/Shanghai"
         PORT: 9099
-        STATSD_SERVER_PORT: ${var.MetricsExporterPORT}
-        STATSD_SERVER_HOST: ${var.MetricsExporterHOST}
+        STATSD_SERVER_PORT: ${vars.MetricsExporterPORT}
+        STATSD_SERVER_HOST: ${vars.MetricsExporterHOST}
       logConfig:
         isOpen: true
       scale:
@@ -150,7 +150,7 @@ resources:
         DEST_TRANSFORM_URL: http://${resources.DTransformer.output.http_trigger_url}
         CONFIG_BACKEND_URL: https://api.rudderstack.com
         WORKSPACE_TOKEN: ${vars.WORKSPACE_TOKEN}
-        STATSD_SERVER_URL: ${var.MetricsExporterHOST}:${var.MetricsExporterPORT}
+        STATSD_SERVER_URL: ${vars.MetricsExporterHOST}:${vars.MetricsExporterPORT}
         RSERVER_GATEWAY_WEBHOOK_SOURCE_LIST_FOR_PARSING_PARAMS: Shopify
       logConfig:
         isOpen: true
