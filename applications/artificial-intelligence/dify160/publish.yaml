@@ -465,10 +465,11 @@ Parameters:
       x-label: 文件存储配置
       x-restype: polefs
       x-placeholder: 函数挂载 PoleFS卷
+      x-api-uri: /resources/polefs/volumes
       x-extends-value:
         create_username: PolefsVolumeCreateUser
       x-formitem:
-        type: input
+        type: select
         name: volume_unique_name
     POLEFS_MOUNT_PATH:
       # title: 函数挂载路径
