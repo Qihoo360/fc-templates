@@ -1,0 +1,110 @@
+version: '3.8'
+services:
+    minio:
+        image: coollabsio/minio:latest
+        ports:
+            - '9000:9000'
+            - '9001:9001' # for minio console
+        volumes:
+            - ./docker/init-minio.sh:/init-minio.sh
+        entrypoint: '/init-minio.sh'
+        environment:
+            - MINIO_ROOT_USER=minioadmin
+            - MINIO_ROOT_PASSWORD=minioadmin
+            - MINIO_DEFAULT_BUCKETS=default
+    lightdash:
+        platform: linux/amd64
+        image: lightdash/lightdash:latest
+        depends_on:
+            - db
+            - minio
+        environment:
+            - PGHOST=${PGHOST:-db}
+            - PGPORT=${PGPORT:-5432}
+            - PGUSER=${PGUSER:-postgres}
+            - PGPASSWORD=${PGPASSWORD}
+            - PGDATABASE=${PGDATABASE:-postgres}
+            - SECURE_COOKIES=${SECURE_COOKIES:-false}
+            - TRUST_PROXY=${TRUST_PROXY:-false}
+            - LIGHTDASH_SECRET=${LIGHTDASH_SECRET}
+            - PORT=${PORT:-8080}
+            - LIGHTDASH_LOG_LEVEL=${LIGHTDASH_LOG_LEVEL}
+            - LIGHTDASH_INSTALL_ID=${LIGHTDASH_INSTALL_ID}
+            - LIGHTDASH_INSTALL_TYPE=${LIGHTDASH_INSTALL_TYPE:-docker_image}
+            - LIGHTDASH_LICENSE_KEY=${LIGHTDASH_LICENSE_KEY}
+            - AUTH_DISABLE_PASSWORD_AUTHENTICATION=${AUTH_DISABLE_PASSWORD_AUTHENTICATION}
+            - AUTH_ENABLE_GROUP_SYNC=${AUTH_ENABLE_GROUP_SYNC}
+            - AUTH_GOOGLE_ENABLED=${AUTH_GOOGLE_ENABLED}
+            - AUTH_GOOGLE_OAUTH2_CLIENT_ID=${AUTH_GOOGLE_OAUTH2_CLIENT_ID}
+            - AUTH_GOOGLE_OAUTH2_CLIENT_SECRET=${AUTH_GOOGLE_OAUTH2_CLIENT_SECRET}
+            - SITE_URL=${SITE_URL}
+            - EMAIL_SMTP_HOST=${EMAIL_SMTP_HOST}
+            - EMAIL_SMTP_PORT=${EMAIL_SMTP_PORT}
+            - EMAIL_SMTP_SECURE=${EMAIL_SMTP_SECURE}
+            - EMAIL_SMTP_USE_AUTH=${EMAIL_SMTP_USE_AUTH}
+            - EMAIL_SMTP_USER=${EMAIL_SMTP_USER}
+            - EMAIL_SMTP_PASSWORD=${EMAIL_SMTP_PASSWORD}
+            - EMAIL_SMTP_ALLOW_INVALID_CERT=${EMAIL_SMTP_ALLOW_INVALID_CERT}
+            - EMAIL_SMTP_SENDER_NAME=${EMAIL_SMTP_SENDER_NAME}
+            - EMAIL_SMTP_SENDER_EMAIL=${EMAIL_SMTP_SENDER_EMAIL}
+            - ALLOW_MULTIPLE_ORGS=${ALLOW_MULTIPLE_ORGS:-false}
+            - LIGHTDASH_QUERY_MAX_LIMIT=${LIGHTDASH_QUERY_MAX_LIMIT}
+            - LIGHTDASH_MAX_PAYLOAD=${LIGHTDASH_MAX_PAYLOAD:-5mb}
+            - HEADLESS_BROWSER_HOST=headless-browser
+            - HEADLESS_BROWSER_PORT=3000
+            - USE_SECURE_BROWSER=${USE_SECURE_BROWSER}
+            - RUDDERSTACK_WRITE_KEY=${RUDDERSTACK_WRITE_KEY}
+            - RUDDERSTACK_DATA_PLANE_URL=${RUDDERSTACK_DATA_PLANE_URL}
+            - SCHEDULER_ENABLED=true
+            - GROUPS_ENABLED=${GROUPS_ENABLED:-false}
+            - POSTHOG_PROJECT_API_KEY=${POSTHOG_PROJECT_API_KEY}
+            - POSTHOG_FE_API_HOST=${POSTHOG_FE_API_HOST}
+            - POSTHOG_BE_API_HOST=${POSTHOG_BE_API_HOST}
+            - OPENAI_API_KEY=${OPENAI_API_KEY}
+            - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+            - AI_COPILOT_ENABLED=${AI_COPILOT_ENABLED}
+            - GOOGLE_DRIVE_API_KEY=${GOOGLE_DRIVE_API_KEY}
+            - SLACK_SIGNING_SECRET=${SLACK_SIGNING_SECRET}
+            - SLACK_CLIENT_ID=${SLACK_CLIENT_ID}
+            - SLACK_CLIENT_SECRET=${SLACK_CLIENT_SECRET}
+            - SLACK_STATE_SECRET=${SLACK_STATE_SECRET}
+            - GITHUB_PRIVATE_KEY=${GITHUB_PRIVATE_KEY}
+            - GITHUB_APP_ID=${GITHUB_APP_ID}
+            - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+            - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+            - GITHUB_APP_NAME=${GITHUB_APP_NAME}
+            - GITHUB_REDIRECT_DOMAIN=${GITHUB_REDIRECT_DOMAIN}
+            - S3_ENDPOINT=${S3_ENDPOINT:-http://minio:9000}
+            - S3_REGION=${S3_REGION:-us-east-1}
+            - S3_BUCKET=${S3_BUCKET:-default}
+            - S3_ACCESS_KEY=${S3_ACCESS_KEY:-minioadmin}
+            - S3_SECRET_KEY=${S3_SECRET_KEY:-minioadmin}
+            - S3_FORCE_PATH_STYLE=${S3_FORCE_PATH_STYLE:-true}
+            - S3_EXPIRATION_TIME=${S3_EXPIRATION_TIME}
+            - RESULTS_S3_REGION=${RESULTS_S3_REGION:-${RESULTS_CACHE_S3_REGION}}
+            - RESULTS_S3_BUCKET=${RESULTS_S3_BUCKET:-${RESULTS_CACHE_S3_BUCKET}}
+            - RESULTS_S3_SECRET_KEY=${RESULTS_S3_SECRET_KEY:-${RESULTS_CACHE_S3_SECRET_KEY}}
+            - RESULTS_S3_ACCESS_KEY=${RESULTS_S3_ACCESS_KEY:-${RESULTS_CACHE_S3_ACCESS_KEY}}
+        volumes:
+            - '${DBT_PROJECT_DIR}:/usr/app/dbt'
+        ports:
+            - ${PORT:-8080}:${PORT:-8080}
+
+    db:
+        image: postgres:15.4
+        restart: always
+        environment:
+            POSTGRES_PASSWORD: ${PGPASSWORD}
+            POSTGRES_USER: ${PGUSER:-postgres}
+            POSTGRES_DB: ${PGDATABASE:-postgres}
+        volumes:
+            - db-data:/var/lib/postgresql/data
+
+    headless-browser:
+        image: ghcr.io/browserless/chromium:v2.24.3
+        restart: always
+        ports:
+            - '3001:3000'
+
+volumes:
+    db-data:

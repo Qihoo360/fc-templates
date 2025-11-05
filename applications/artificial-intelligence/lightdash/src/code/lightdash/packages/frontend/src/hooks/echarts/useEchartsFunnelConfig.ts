@@ -1,0 +1,214 @@
+import {
+    formatItemValue,
+    FunnelChartLabelPosition,
+    FunnelChartLegendPosition,
+    getLegendStyle,
+    type Metric,
+    type ResultRow,
+    type ResultValue,
+    type TableCalculation,
+} from '@lightdash/common';
+import { useMantineTheme } from '@mantine/core';
+import { type EChartsOption, type FunnelSeriesOption } from 'echarts';
+import round from 'lodash/round';
+import { useMemo } from 'react';
+import { isFunnelVisualizationConfig } from '../../components/LightdashVisualization/types';
+import { useVisualizationContext } from '../../components/LightdashVisualization/useVisualizationContext';
+import { useLegendDoubleClickTooltip } from './useLegendDoubleClickTooltip';
+
+export type FunnelSeriesDataPoint = NonNullable<
+    FunnelSeriesOption['data']
+>[number] & {
+    name: string;
+    value: number;
+    meta: {
+        value: ResultValue;
+        rows: ResultRow[];
+    };
+};
+
+const getValueAndPercentage = ({
+    field,
+    value,
+    maxValue,
+    parameters,
+}: {
+    field?: TableCalculation | Metric;
+    value: any;
+    maxValue: number;
+    parameters?: Record<string, unknown>;
+}) => {
+    const formattedValue = formatItemValue(field, value, false, parameters);
+
+    const percentOfMax = round((Number(value) / maxValue) * 100, 2);
+    return { formattedValue, percentOfMax };
+};
+
+const useEchartsFunnelConfig = (
+    selectedLegends?: Record<string, boolean>,
+    isInDashboard?: boolean,
+) => {
+    const { visualizationConfig, itemsMap, colorPalette, parameters } =
+        useVisualizationContext();
+
+    const theme = useMantineTheme();
+
+    const chartConfig = useMemo(() => {
+        if (!isFunnelVisualizationConfig(visualizationConfig)) return;
+        return visualizationConfig.chartConfig;
+    }, [visualizationConfig]);
+
+    const seriesData = useMemo(() => {
+        if (!chartConfig) return;
+
+        const {
+            data,
+            validConfig: {},
+        } = chartConfig;
+
+        return data.length > 0 ? data : undefined;
+    }, [chartConfig]);
+
+    const funnelSeriesOptions: FunnelSeriesOption | undefined = useMemo(() => {
+        if (!chartConfig || !seriesData) return;
+
+        const {
+            validConfig: {
+                labelOverrides,
+                colorOverrides,
+                showLegend,
+                legendPosition,
+            },
+            selectedField,
+            labels,
+            colorDefaults,
+        } = chartConfig;
+
+        return {
+            type: 'funnel',
+            data: seriesData.map(({ name, value, meta }) => {
+                return {
+                    name: labelOverrides?.[name] ?? name,
+                    value,
+                    meta,
+                    itemStyle: {
+                        color: colorOverrides?.[name] ?? colorDefaults[name],
+                    },
+                };
+            }),
+            color: colorPalette,
+            tooltip: {
+                trigger: 'item',
+                formatter: ({ marker, name, value }) => {
+                    const { formattedValue, percentOfMax } =
+                        getValueAndPercentage({
+                            field: selectedField,
+                            value,
+                            maxValue: chartConfig.maxValue,
+                            parameters,
+                        });
+
+                    return `${marker}<b>${name}</b><br /> Value: ${formattedValue} <br/> Percent: ${percentOfMax}%`;
+                },
+            },
+            top:
+                legendPosition === FunnelChartLegendPosition.HORIZONTAL &&
+                showLegend
+                    ? 50
+                    : 20,
+            label: {
+                show: labels?.position !== FunnelChartLabelPosition.HIDDEN,
+                position:
+                    labels?.position &&
+                    labels.position !== FunnelChartLabelPosition.HIDDEN
+                        ? labels.position
+                        : FunnelChartLabelPosition.INSIDE,
+                color:
+                    labels?.position !== FunnelChartLabelPosition.INSIDE
+                        ? 'black'
+                        : undefined,
+                formatter: ({ name, value }) => {
+                    const { formattedValue, percentOfMax } =
+                        getValueAndPercentage({
+                            field: selectedField,
+                            value,
+                            maxValue: chartConfig.maxValue,
+                            parameters,
+                        });
+
+                    const percentString = labels?.showPercentage
+                        ? `${percentOfMax}%`
+                        : '';
+                    const valueString = labels?.showValue ? formattedValue : '';
+                    const numbersString = `${
+                        valueString || percentString ? ':' : ''
+                    } ${[percentString, valueString]
+                        .filter(Boolean)
+                        .join(' - ')}`;
+
+                    return `${name}${numbersString}`;
+                },
+            },
+            emphasis: {
+                label: {
+                    fontSize: 18,
+                },
+            },
+        };
+    }, [chartConfig, colorPalette, seriesData, parameters]);
+
+    const { tooltip: legendDoubleClickTooltip } = useLegendDoubleClickTooltip();
+
+    const eChartsOptions: EChartsOption | undefined = useMemo(() => {
+        if (!chartConfig || !funnelSeriesOptions || !seriesData) return;
+
+        const {
+            validConfig: { showLegend, legendPosition },
+        } = chartConfig;
+
+        return {
+            textStyle: {
+                fontFamily: theme?.other.chartFont as string | undefined,
+            },
+            tooltip: {
+                trigger: 'item',
+            },
+            series: [funnelSeriesOptions],
+            animation: !isInDashboard,
+            legend: {
+                show: showLegend,
+                orient: legendPosition,
+                type: 'scroll',
+                ...getLegendStyle('square'),
+                ...(legendPosition === FunnelChartLegendPosition.VERTICAL
+                    ? {
+                          left: 'left',
+                          top: 'middle',
+                          align: 'left',
+                      }
+                    : {
+                          left: 'center',
+                          top: 'top',
+                          align: 'auto',
+                      }),
+                selected: selectedLegends,
+                tooltip: legendDoubleClickTooltip,
+            },
+        };
+    }, [
+        chartConfig,
+        funnelSeriesOptions,
+        seriesData,
+        isInDashboard,
+        theme,
+        legendDoubleClickTooltip,
+        selectedLegends,
+    ]);
+
+    if (!itemsMap) return;
+    if (!eChartsOptions) return;
+
+    return eChartsOptions;
+};
+
+export default useEchartsFunnelConfig;

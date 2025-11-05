@@ -1,0 +1,190 @@
+version: 2
+models:
+  - name: events
+    config:
+      tags: ['ai']
+    meta:
+
+      primary_key: event_id
+      group_details:
+        events:
+          label: Events
+          description: Events that happened in the Jaffle Shop
+        nested_group:
+          label: nested group
+        another_nested_group:
+          label: another nested group
+      ai_hint:
+        - This is an events table
+        - Contains user activity and engagement data
+    columns:
+      - name: timestamp_tz
+        description: ""
+        meta:
+          dimension:
+            label: 'Timestamp (with timezone)'
+            ai_hint:
+              - Timestamp with timezone
+              - Includes timezone information
+            type: timestamp
+            time_intervals:
+              - RAW
+              - MILLISECOND
+              - SECOND
+              - MINUTE
+              - HOUR
+              - DAY
+              - DAY_OF_WEEK_INDEX
+              - DAY_OF_WEEK_NAME
+              - DAY_OF_MONTH_NUM
+              - DAY_OF_YEAR_NUM
+              - WEEK
+              - WEEK_NUM
+              - MONTH
+              - MONTH_NUM
+              - MONTH_NAME
+              - QUARTER
+              - QUARTER_NUM
+              - QUARTER_NAME
+              - YEAR
+              - YEAR_NUM
+              - HOUR_OF_DAY_NUM
+              - MINUTE_OF_HOUR_NUM
+      - name: timestamp_ntz
+        description: ""
+        meta:
+          dimension:
+            type: timestamp
+      - name: timestamp_ltz
+        description: ""
+        meta:
+          dimension:
+            type: timestamp
+      - name: date
+        description: ""
+        meta:
+          dimension:
+            type: date
+            format: "dd mmmm yyyy"
+            urls:
+              - label: Open in Google Calendar
+                url: 'https://calendar.google.com/calendar/u/0/r/day/${ value.formatted |split:
+                  "-" |join: "/"}'
+      - name: event
+        description: ""
+        meta:
+          dimension:
+            type: string
+            groups: [ 'events' ]
+          metrics:
+            count:
+              type: count
+      - name: event_id
+        description: ""
+        meta:
+          dimension:
+            type: number
+            groups: [ 'events', 'nested_group', 'another_nested_group' ]
+          additional_dimensions:
+            event_tier:
+              type: string
+              description: Ratio of event_id to event
+              sql: |
+                case 
+                  when ${event_id} < 100 then 'Low' 
+                  when ${event_id} < 1000 then 'High'
+                  else 'Very high' end
+          metrics:
+           
+            with_currency_parameter: 
+              type: sum 
+              format: '${ld.parameters.currency=="usd"?"$":""}${ld.parameters.currency=="eur"?"€":""}${ld.parameters.currency=="gbp"?"£":""}0,0.00'
+              sql: |
+                CASE 
+                  WHEN ${ld.parameters.currency} = 'usd' THEN ${event_id} * 1
+                  ELSE ${event_id} * 0.86
+                END
+            with_multiple_parameters: 
+              type: sum 
+              # only shows $ currency
+              format: '${ld.parameters.currency=="usd"?"$":""}0,0${ld.parameters.decimals=="true"?".00":""}'
+            with_decimals_format: 
+              type: sum 
+              format: '0,0${ld.parameters.decimals=="true"?".00":""}'
+            with_mixed_parameter: 
+              type: sum 
+              # Invalid parameter, using the wrong value for decimals
+              format: '${ld.parameters.decimals=="usd"?"$":"-"}0,0.00'
+            in_gbp:
+              type: sum
+              format: 'gbp'
+            in_gbp_with_format_expression:
+              type: sum
+              format: '[$£]#,##0.00'
+            in_jpy:
+              type: sum
+              format: 'jpy'
+            in_dkk:
+              type: sum
+              format: 'dkk'
+            in_eur:
+              type: sum
+              format: 'eur'
+            in_eur_with_round_2:
+              type: sum
+              format: 'eur'
+              round: 2
+            in_eur_with_round_0:
+              type: sum
+              format: 'eur'
+              round: 0
+            with_round_2:
+              type: sum
+              round: 2
+            in_thousands_of_eur:
+              type: sum
+              format: 'eur'
+              compact: thousands
+            in_thousands_of_eur_with_round_0:
+              type: sum
+              format: 'eur'
+              round: 0
+              compact: thousands
+            in_mi:
+              type: sum
+              format: 'mi'
+            in_km:
+              type: sum
+              format: 'km'
+            in_percent:
+              type: sum
+              format: 'percent'
+            in_thousands:
+              type: sum
+              compact: thousands
+            in_millions:
+              type: sum
+              compact: millions
+            in_billions:
+              type: sum
+              compact: billions
+            in_trillions:
+              type: sum
+              compact: trillions
+            percentile_25:
+              type: percentile
+              percentile: 25
+            percentile_50:
+              type: percentile
+              percentile: 50
+            percentile_75:
+              type: percentile
+              percentile: 75
+            median:
+              type: median
+            with_filters:
+              type: sum
+              filters:
+                - event_id: "!null"
+                - event_id: ">5"
+                - event: "song_played"

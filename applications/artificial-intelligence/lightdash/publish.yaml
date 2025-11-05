@@ -1,0 +1,274 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: lightdash-v1
+Provider:
+  - fc
+Version: 0.0.3
+Description: 该示例通过 rudderstack 快速搭建私有代理工作空​​间。
+HomePage: https://github.com/Qihoo360/fc-templates/applications/artificial-intelligence/lightdash
+Organization: 函数计算（FC）
+Tags:
+  - AI
+  - Custom Runtime
+Category: Web框架
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - LightdashFunctionName
+    - HeadlessBrowserFunctionName
+
+    - PGDataBase
+    - POSTGRES_HOST
+    - POSTGRES_PORT
+    - POSTGRES_USERNAME
+    - POSTGRES_PASSWORD
+    - POSTGRES_DATABASE
+
+    - S3_ENDPOINT
+    - S3_REGION
+    - S3_BUCKET
+    - S3_ACCESS_KEY
+    - S3_SECRET_KEY
+    - S3_FORCE_PATH_STYLE
+    - S3_EXPIRATION_TIME
+
+    - RUDDERSTACK_WRITE_KEY
+    - RUDDERSTACK_DATA_PLANE_URL
+
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: beijing
+      description: 创建应用所在的地区
+      enum:
+        - beijing
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+    LightdashFunctionName:
+      title: LightdashFunctionName 函数名
+      type: string
+      default: lightdash-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder:  请输入 lightdash 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    LightdashDescription:
+      title: lightdash 函数描述
+      type: string
+      default: "Serverless lightdash"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入 lightdash 函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    HeadlessBrowserFunctionName:
+      title: HeadlessBrowserFunctionName 函数名
+      type: string
+      default: headlessbrowser-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder:  请输入 headlessbrowser 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    HeadlessBrowserDescription:
+      title: HeadlessBrowser 函数描述
+      type: string
+      default: "Serverless headlessbrowser"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入 headlessbrowser 函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+
+    PGDataBase:
+      type: string
+      default: postgresql
+      description: ""
+      enum:
+        - postgresql
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
+    POSTGRES_HOST:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库主机地址
+      x-formitem:
+        type: input
+    POSTGRES_PORT:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库端口
+      x-formitem:
+        type: input
+    POSTGRES_USERNAME:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库用户名
+      x-formitem:
+        type: input
+    POSTGRES_PASSWORD:
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 输入数据库密码
+      x-formitem:
+        type: input
+    POSTGRES_DATABASE:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 输入数据库名称
+      x-formitem:
+        type: input
+
+    S3DataBase:
+      type: string
+      default: s3
+      description: ""
+      enum:
+        - s3
+      x-cate: applicationCate
+      x-label: S3 配置
+      x-restype: s3
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
+    S3_ENDPOINT:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: S3 配置
+      x-restype: s3
+      x-placeholder: 请输入 S3 Endpoint
+      x-formitem:
+        type: input
+    S3_REGION:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: S3 配置
+      x-restype: s3
+      x-placeholder: 请输入 S3 Region
+      x-formitem:
+        type: input
+    S3_BUCKET:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: S3 配置
+      x-restype: s3
+      x-placeholder: 请输入 S3 Bucket
+      x-formitem:
+        type: input
+    S3_ACCESS_KEY:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: S3 配置
+      x-restype: s3
+      x-placeholder: 请输入 S3 Access Key
+      x-formitem:
+        type: secret
+    S3_SECRET_KEY:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: S3 配置
+      x-restype: s3
+      x-placeholder: 请输入 S3 Secret Key
+      x-formitem:
+        type: secret
+    S3_FORCE_PATH_STYLE:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: s3
+      x-placeholder: 请输入 S3 Force Path Style
+      x-formitem:
+        type: secret
+    S3_EXPIRATION_TIME:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: S3 配置
+      x-restype: s3
+      x-placeholder: 请输入 S3 Expiration Time
+      x-formitem:
+        type: secret
+
+    RUDDERSTACK_WRITE_KEY:
+      type: string
+      default: ""
+      description: "rudderstack 写入密钥 "
+      x-cate: applicationCate
+      x-label: metrics-exporter
+      x-placeholder: 请输入 rudderstack 写入密钥
+      x-formitem:
+        type: input
+    RUDDERSTACK_DATA_PLANE_URL:
+      type: string
+      default: ""
+      description: "rudderstack 数据平面 URL"
+      x-cate: applicationCate
+      x-label: metrics-exporter
+      x-placeholder: 请输入 rudderstack 数据平面 URL
+      x-formitem:
+        type: input
+
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
+  # workspaceToken:
+  #   title: "访问令牌"
+  #   description: "工作空间访问 Token"
+    

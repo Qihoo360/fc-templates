@@ -1,0 +1,23 @@
+{
+    "name": "@lightdash/sdk",
+    "version": "0.2131.2",
+    "private": false,
+    "files": [
+        "dist"
+    ],
+    "exports": {
+        ".": {
+            "types": "./dist/sdk.d.ts",
+            "require": "./dist/sdk.cjs.js",
+            "import": "./dist/sdk.es.js",
+            "default": "./dist/sdk.cjs.js"
+        },
+        "./sdk.css": {
+            "default": "./dist/sdk.css"
+        }
+    },
+    "peerDependencies": {
+        "react": "^18.x || ^19.x",
+        "react-dom": "^18.x || ^19.x"
+    }
+}

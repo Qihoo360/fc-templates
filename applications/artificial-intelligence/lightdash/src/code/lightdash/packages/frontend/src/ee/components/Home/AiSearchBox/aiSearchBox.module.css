@@ -1,0 +1,74 @@
+.askAiSection {
+    --saturation-mix: 0%;
+
+    background: linear-gradient(
+        90deg,
+        color-mix(
+                in oklch,
+                var(--mantine-color-grape-0),
+                var(--mantine-color-grape-1) var(--saturation-mix)
+            )
+            0%,
+        color-mix(
+                in oklch,
+                var(--mantine-color-violet-0),
+                var(--mantine-color-violet-1) var(--saturation-mix)
+            )
+            40%,
+        color-mix(
+                in oklch,
+                var(--mantine-color-indigo-0),
+                var(--mantine-color-indigo-1) var(--saturation-mix)
+            )
+            100%
+    );
+
+    width: 100%;
+    cursor: pointer;
+}
+
+[data-combobox-selected='true'] .askAiSection {
+    --saturation-mix: 30%;
+}
+
+.askAiSectionArrow {
+    visibility: hidden;
+    background-color: var(--mantine-color-white);
+    border-radius: var(--mantine-radius-sm);
+    border: 1px solid var(--mantine-color-gray-2);
+    flex-shrink: 0;
+}
+
+[data-combobox-selected='true'] .askAiSectionArrow {
+    visibility: visible;
+}
+
+.actionIcon {
+    background-color: var(--mantine-color-dark-5);
+    box-sizing: content-box;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--mantine-radius-xl);
+    &:where([data-disabled]) {
+        background-color: #9e9e9e;
+    }
+}
+
+.actionIconIcon {
+    color: white;
+}
+
+.paperRoot {
+    overflow: hidden;
+    border-color: var(--mantine-color-gray-3) !important;
+}
+
+.adminSettingsButtonLabel {
+    color: var(--mantine-color-gray-7);
+}
+
+.adminSettingsButtonSection {
+    &:where([data-position='left']) {
+        margin-right: 4px !important;
+    }
+}

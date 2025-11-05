@@ -1,0 +1,165 @@
+{
+    "name": "lightdash",
+    "version": "0.2131.2",
+    "main": "index.js",
+    "license": "MIT",
+    "private": true,
+    "workspaces": [
+        "packages/*",
+        "packages/frontend/sdk"
+    ],
+    "resolutions": {
+        "react-is": "19.2.0",
+        "@types/react": "19.2.2",
+        "@types/react-dom": "19.2.2",
+        "typescript": "5.5.4"
+    },
+    "overrides": {
+        "@mantine/core@8.0.0>@mantine/hooks": "$@mantine-8/hooks"
+    },
+    "pnpm": {
+        "overrides": {
+            "hono": "^4.9.6",
+            "linkifyjs": "^4.3.2",
+            "axios": "^1.12.0",
+            "form-data@2.5.3": "2.5.5",
+            "form-data@3.0.1": "3.0.4",
+            "form-data@4.0.0": "4.0.4",
+            "form-data@4.0.2": "4.0.4"
+        }
+    },
+    "dependencies": {
+        "tslib": "^2.8.1"
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.5",
+        "@types/node": "^22.13.1",
+        "@types/pegjs": "^0.10.3",
+        "@typescript-eslint/eslint-plugin": "^5.45.0",
+        "@typescript-eslint/parser": "^5.45.0",
+        "confusing-browser-globals": "^1.0.11",
+        "dotenv": "^16.0.2",
+        "dotenv-cli": "^6.0.0",
+        "eslint": "^8.40.0",
+        "eslint-config-airbnb": "^19.0.4",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-config-airbnb-typescript": "^17.0.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-import": "^2.26.0",
+        "eslint-plugin-jest": "^27.4.2",
+        "eslint-plugin-json": "^3.1.0",
+        "eslint-plugin-jsx-a11y": "^6.6.1",
+        "eslint-plugin-prettier": "^4.2.1",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-testing-library": "^5.6.3",
+        "husky": "^9.0.0",
+        "jest": "^29.7.0",
+        "jest-watch-typeahead": "^2.2.2",
+        "lint-staged": "^12.1.2",
+        "prettier": "2.8.1",
+        "prettier-plugin-organize-imports": "^3.1.1",
+        "ts-jest": "^29.1.1",
+        "tsx": "^4.19.2",
+        "typescript": "5.5.4"
+    },
+    "scripts": {
+        "common-dev": "pnpm -F common dev",
+        "common-build": "pnpm -F common build",
+        "common-lint": "pnpm -F common lint",
+        "common-format": "pnpm -F common format",
+        "common-fix-lint": "pnpm -F common fix-lint",
+        "common-fix-format": "pnpm -F common fix-format",
+        "common-test": "pnpm -F common test",
+        "common-typecheck": "pnpm -F common typecheck",
+        "backend-dev": "pnpm -F backend dev",
+        "backend-build": "pnpm -F backend build",
+        "backend-start": "pnpm -F backend start",
+        "backend-lint": "pnpm -F backend lint",
+        "backend-format": "pnpm -F backend format",
+        "backend-fix-lint": "pnpm -F backend fix-lint",
+        "backend-fix-format": "pnpm -F backend fix-format",
+        "backend-test": "pnpm -F backend test",
+        "backend-test-integration": "pnpm -F backend test:integration",
+        "backend-test-sequential": "pnpm -F backend test-sequential",
+        "backend-typecheck": "pnpm -F backend typecheck",
+        "frontend-dev": "pnpm -F frontend dev",
+        "frontend-build": "pnpm -F frontend build",
+        "frontend-build-sdk": "pnpm -F frontend build-sdk",
+        "frontend-lint": "pnpm -F frontend lint",
+        "frontend-format": "pnpm -F frontend format",
+        "frontend-fix-lint": "pnpm -F frontend fix-lint",
+        "frontend-fix-format": "pnpm -F frontend fix-format",
+        "frontend-test": "pnpm -F frontend test",
+        "frontend-typecheck": "pnpm -F frontend typecheck",
+        "sdk-typecheck": "pnpm -F frontend typecheck-sdk",
+        "sdk-build": "pnpm common-build && pnpm frontend-build-sdk",
+        "e2e-open": "pnpm -F e2e cypress:open",
+        "e2e-open-native": "pnpm -F e2e cypress:open:native",
+        "e2e-run": "pnpm -F e2e cypress:run",
+        "e2e-lint": "pnpm -F e2e lint",
+        "e2e-format": "pnpm -F e2e format",
+        "e2e-fix-lint": "pnpm -F e2e fix-lint",
+        "e2e-fix-format": "pnpm -F e2e fix-format",
+        "cli-test": "pnpm -F cli test",
+        "cli-lint": "pnpm -F cli lint",
+        "cli-format": "pnpm -F cli format",
+        "cli-fix-lint": "pnpm -F cli fix-lint",
+        "cli-fix-format": "pnpm -F cli fix-format",
+        "cli-build": "pnpm -F cli build",
+        "cli-typecheck": "pnpm -F cli typecheck",
+        "warehouses-dev": "pnpm -F warehouses dev",
+        "warehouses-lint": "pnpm -F warehouses lint",
+        "warehouses-format": "pnpm -F warehouses format",
+        "warehouses-fix-lint": "pnpm -F warehouses fix-lint",
+        "warehouses-fix-format": "pnpm -F warehouses fix-format",
+        "warehouses-test": "pnpm -F warehouses test",
+        "warehouses-build": "pnpm -F warehouses build",
+        "warehouses-typecheck": "pnpm -F warehouses typecheck",
+        "typecheck": "pnpm -r --stream --sequential -F common -F warehouses -F cli -F backend -F frontend typecheck",
+        "lint": "pnpm -r --stream --sequential -F common -F warehouses -F backend -F frontend -F e2e -F cli lint",
+        "format": "pnpm -r --stream --sequential -F common -F warehouses -F backend -F frontend -F e2e -F cli format",
+        "fix-lint": "pnpm -r --stream --sequential -F common -F warehouses -F backend -F frontend -F e2e -F cli fix-lint",
+        "fix-format": "pnpm -r --stream --sequential -F common -F warehouses -F backend -F frontend -F e2e -F cli fix-format",
+        "test": "pnpm -r --stream --sequential -F common -F warehouses -F backend -F frontend -F e2e -F cli test",
+        "dev": "pnpm -r --stream --parallel -F common -F warehouses -F backend -F frontend run dev",
+        "build": "pnpm -r --stream --sequential -F common -F warehouses -F backend -F frontend build",
+        "build-published-packages": "pnpm -r --stream --sequential -F common -F warehouses -F cli build && pnpm frontend-build-sdk",
+        "release-packages": "pnpm -r --stream --sequential -F common -F warehouses -F cli -F frontend release",
+        "start": "pnpm run backend-start",
+        "prepare": "husky || true",
+        "load:env": "dotenv -c -e .env.development.local",
+        "generate-api": "pnpm run common-build && pnpm -F backend generate-api && pnpm -F backend formatter --write ./src/generated",
+        "generate-api-dev": "pnpm run common-build && pnpm -F backend generate-api-dev",
+        "clean-node-modules": "./scripts/clean-node-modules.sh && pnpm install",
+        "clean-build-cache": "./scripts/clean-build-cache.sh",
+        "clean": "pnpm clean-build-cache && pnpm clean-node-modules",
+        "clean-and-build": "pnpm clean && pnpm build"
+    },
+    "lint-staged": {
+        "packages/frontend/src/**/*.(ts|tsx|json|css)": [
+            "pnpm -F frontend run linter --fix",
+            "pnpm -F frontend run formatter --write"
+        ],
+        "packages/backend/src/**/*.(ts|tsx|json)": [
+            "pnpm -F backend run linter --fix",
+            "pnpm -F backend run formatter --write"
+        ],
+        "packages/common/src/**/*.(ts|tsx|json)": [
+            "pnpm -F common run linter --fix",
+            "pnpm -F common run formatter --write"
+        ],
+        "packages/e2e/cypress/**/*.(ts|json)": [
+            "pnpm -F e2e run linter --fix",
+            "pnpm -F e2e run formatter --write"
+        ],
+        "packages/cli/src/**/*.(ts|tsx|json)": [
+            "pnpm -F cli run linter --fix",
+            "pnpm -F cli run formatter --write"
+        ],
+        "packages/warehouses/src/**/*.(ts|tsx|json)": [
+            "pnpm -F warehouses run linter --fix",
+            "pnpm -F warehouses run formatter --write"
+        ]
+    },
+    "packageManager": "pnpm@9.15.5+sha512.845196026aab1cc3f098a0474b64dfbab2afe7a1b4e91dd86895d8e4aa32a7a6d03049e2d0ad770bbe4de023a7122fb68c1a1d6e0d033c7076085f9d5d4800d4"
+}

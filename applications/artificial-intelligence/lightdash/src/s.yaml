@@ -1,0 +1,190 @@
+edition: 3.0.0
+name: rudderstack-app
+access: default
+vars:
+  region: {{region}}
+  LightdashFunctionName : {{LightdashFunctionName}}
+  LightdashDescription : {{LightdashDescription}}
+  HeadlessBrowserFunctionName : {{HeadlessBrowserFunctionName}}
+  HeadlessBrowserDescription : {{HeadlessBrowserDescription}} 
+  PGDataBase: {{PGDataBase}}
+  PGHost: {{POSTGRES_HOST}}
+  PGPort: {{POSTGRES_PORT}}
+  PGUser: {{POSTGRES_USERNAME}}
+  PGPassword: {{POSTGRES_PASSWORD}}
+  PGDbName: {{POSTGRES_DATABASE}}
+  S3_ENDPOINT: {{S3_ENDPOINT}}
+  S3_REGION: {{S3_REGION}}
+  S3_BUCKET: {{S3_BUCKET}}
+  S3_ACCESS_KEY: {{S3_ACCESS_KEY}}
+  S3_SECRET_KEY: {{S3_SECRET_KEY}}
+  S3_FORCE_PATH_STYLE: {{S3_FORCE_PATH_STYLE}}
+  S3_EXPIRATION_TIME: {{S3_EXPIRATION_TIME}}
+  RUDDERSTACK_WRITE_KEY: {{RUDDERSTACK_WRITE_KEY}}
+  RUDDERSTACK_DATA_PLANE_URL: {{RUDDERSTACK_DATA_PLANE_URL}}
+resources:
+  HeadlessBrowser:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.HeadlessBrowserDescription}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 10240
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      port: 3000
+      functionName: ${vars.HeadlessBrowserFunctionName}
+      sourceSubDir: code/headless-browser
+      environmentVariables:
+        testkey: "testvalue"
+        TZ: "Asia/Shanghai"
+        PORT: 3000
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+  Lightdash:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.LightdashDescription}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 10240
+      timeout: 100
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      port: 8080
+      functionName: ${vars.LightdashFunctionName}
+      sourceSubDir: code/lightdash
+      environmentVariables:
+        testkey: "testvalue"
+        TZ: "Asia/Shanghai"
+        PGHOST: ${vars.PGHost}
+        PGPORT: ${vars.PGPort}
+        PGUSER: ${vars.PGUser}
+        PGPASSWORD: ${vars.PGPassword}
+        PGDATABASE: ${vars.PGDataBase}
+        SECURE_COOKIES: "false"
+        TRUST_PROXY: "false"
+        LIGHTDASH_SECRET: "not very secret"
+        PORT: 8080
+        LIGHTDASH_LOG_LEVEL: "debug"
+        LIGHTDASH_INSTALL_ID: ""
+        LIGHTDASH_INSTALL_TYPE: "docker_image"
+        LIGHTDASH_LICENSE_KEY: ""
+        AUTH_DISABLE_PASSWORD_AUTHENTICATION: ""
+        AUTH_ENABLE_GROUP_SYNC: ""
+        AUTH_GOOGLE_ENABLED: ""
+        AUTH_GOOGLE_OAUTH2_CLIENT_ID: ""
+        AUTH_GOOGLE_OAUTH2_CLIENT_SECRET: ""
+        SITE_URL: ""
+        EMAIL_SMTP_HOST: ""
+        EMAIL_SMTP_PORT: ""
+        EMAIL_SMTP_SECURE: ""
+        EMAIL_SMTP_USE_AUTH: ""
+        EMAIL_SMTP_USER: ""
+        EMAIL_SMTP_PASSWORD: ""
+        EMAIL_SMTP_ALLOW_INVALID_CERT: ""
+        EMAIL_SMTP_SENDER_NAME: ""
+        EMAIL_SMTP_SENDER_EMAIL: ""
+        ALLOW_MULTIPLE_ORGS: ""
+        LIGHTDASH_QUERY_MAX_LIMIT: 5000
+        LIGHTDASH_MAX_PAYLOAD: "5mb"
+        DBT_PROJECT_DIR: "."
+        HEADLESS_BROWSER_HOST: ${resources.HeadlessBrowser.output.http_trigger_url}
+        HEADLESS_BROWSER_PORT: 80
+        USE_SECURE_BROWSER: ""
+        RUDDERSTACK_WRITE_KEY: ${vars.RUDDERSTACK_WRITE_KEY}
+        RUDDERSTACK_DATA_PLANE_URL: ${vars.RUDDERSTACK_DATA_PLANE
+        SCHEDULER_ENABLED: "true"
+        GROUPS_ENABLED: "false"
+        POSTHOG_PROJECT_API_KEY: ""
+        POSTHOG_FE_API_HOST: ""
+        POSTHOG_BE_API_HOST: ""
+        OPENAI_API_KEY: ""
+        ANTHROPIC_API_KEY: ""
+        AI_COPILOT_ENABLED: ""
+        GOOGLE_DRIVE_API_KEY: ""
+        SLACK_SIGNING_SECRET: ""
+        SLACK_CLIENT_ID: ""
+        SLACK_CLIENT_SECRET: ""
+        SLACK_STATE_SECRET: ""
+        GITHUB_PRIVATE_KEY: ""
+        GITHUB_APP_ID: ""
+        GITHUB_CLIENT_ID: ""
+        GITHUB_CLIENT_SECRET: ""
+        GITHUB_APP_NAME: ""
+        GITHUB_REDIRECT_DOMAIN: ""
+        S3_ENDPOINT: ${vars.S3_ENDPOINT}
+        S3_REGION: ${vars.S3_REGION}
+        S3_BUCKET: ${vars.S3_BUCKET}
+        S3_ACCESS_KEY: ${vars.S3_ACCESS_KEY}
+        S3_SECRET_KEY: ${vars.S3_SECRET_KEY}
+        S3_FORCE_PATH_STYLE: ${vars.S3_FORCE_PATH_STYLE}
+        S3_EXPIRATION_TIME: ${vars.S3_EXPIRATION_TIME}
+        RESULTS_S3_REGION: ${vars.S3_REGION}
+        RESULTS_S3_BUCKET: ${vars.S3_BUCKET}
+        RESULTS_S3_SECRET_KEY: ${vars.S3_SECRET_KEY}
+        RESULTS_S3_ACCESS_KEY: ${vars.S3_ACCESS_KEY}
+        RSERVER_GATEWAY_WEBHOOK_SOURCE_LIST_FOR_PARSING_PARAMS: Shopify
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      dockerfilePath: "Dockerfile"
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""

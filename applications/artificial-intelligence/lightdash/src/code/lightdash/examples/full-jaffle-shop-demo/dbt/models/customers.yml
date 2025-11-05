@@ -1,0 +1,182 @@
+version: 2
+models:
+  - name: customers
+    config:
+      tags: ["ai"]
+      meta:
+        parameters:
+          customer_name:
+            label: "Customer name"
+            description: "Filter subscriptions by customer name"
+            options_from_dimension:
+              dimension: "first_name"
+              model: "customers"
+        primary_key: customer_id
+        spotlight:
+          categories: ["experimental"]
+        joins:
+          - join: membership
+            hidden: true
+            sql_on: ${customers.customer_id} = ${membership.customer_id}
+            relationship: one-to-one
+          - join: plan
+            sql_on: ${membership.plan_id} = ${plan.id}
+            relationship: many-to-one
+            label: Subscription Plan
+            description: The subscription plan associated with this customer's membership
+        ai_hint:
+          - This is a customers table.
+          - Contains customer information and demographics.
+    description: |
+      # Customers
+
+      This table has basic information about a customer, as well as some derived
+      facts based on a customer's orders
+    columns:
+      - name: customer_id
+        description: This is a unique identifier for a customer
+        tests:
+          - unique
+          - not_null
+        config:
+          meta:
+            metrics:
+              unique_customer_count:
+                tags: ["ai"]
+                type: count_distinct
+                label: Unique customer count
+                description: Total number of customers
+                spotlight:
+                  categories: ["core"]
+                ai_hint: Unique customer count.
+        meta:
+          dimension:
+            type: number
+      - name: first_name
+        description: |
+          # First name
+          ---
+          Customer's first name. PII.
+          ---
+          Supports URLs
+        config:
+          meta:
+            dimension:
+              type: string
+              urls:
+                - label: "URL from value"
+                  url: "https://example.com/company/${value.formatted | url_encode }"
+                - label: "URL from row value"
+                  url:
+                    "https://example.com/company/${row.customers.customer_id.raw | url_encode
+                    }"
+                - label: "Invalid URL with bad reference"
+                  url: "https://example.com/company/${row.customer_id.raw | url_encode }"
+        meta:
+          dimension:
+            type: string
+      - name: last_name
+        description: Customer's last name. PII.
+        config:
+          meta:
+            dimension:
+              ai_hint:
+                - Last name of the customer
+                - Contains PII data
+        meta:
+          dimension:
+            type: string
+      - name: age
+        description: Customer's age
+        config:
+          meta:
+            dimension:
+              type: number
+              required_attributes:
+                is_admin: "true"
+            metrics:
+              average_age:
+                type: average
+                description: Average age of customers
+        meta:
+          dimension:
+            type: number
+      - name: created
+        description: Timestamp (UTC) when customer was created
+        config:
+          meta:
+            metrics:
+              date_of_first_created_customer:
+                tags: ["ai"]
+                type: min
+              date_of_most_recent_created_customer:
+                tags: ["ai"]
+                spotlight:
+                  visibility: hide
+                type: max
+        meta:
+          dimension:
+            tags: ["ai"]
+            type: timestamp
+      - name: first_order
+        description: Date of the customers first order
+        config:
+          meta:
+            dimension:
+              tags: ["ai"]
+              hidden: true
+        meta:
+          dimension:
+            type: date
+      - name: most_recent_order
+        description: Date of the customers most recent order
+        config:
+          meta:
+            tags: ["ai"]
+            dimension:
+              hidden: true
+        meta:
+          dimension:
+            type: date
+      - name: days_since_last_order
+        description: Number of days since the customers last order
+        config:
+          meta:
+            tags: ["ai"]
+            dimension:
+              hidden: true
+        meta:
+          dimension:
+            type: number
+      - name: days_between_created_and_first_order
+        description: >-
+          Number of days between the customer being created and making their
+          first order
+        config:
+          meta:
+            tags: ["ai"]
+            dimension:
+              hidden: true
+        meta:
+          dimension:
+            type: number
+      - name: number_of_orders
+        description: ""
+        config:
+          meta:
+            tags: ["ai"]
+            dimension:
+              hidden: true
+        meta:
+          dimension:
+            type: number
+      - name: customer_lifetime_value
+        description: ""
+        config:
+          meta:
+            tags: ["ai"]
+            dimension:
+              hidden: true
+        meta:
+          dimension:
+            type: number

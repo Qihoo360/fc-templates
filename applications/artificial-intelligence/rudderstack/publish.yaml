@@ -3,7 +3,7 @@
 Edition: 3.0.0
 Type: Project
 Effective: Public
-Name: mem0-v1
+Name: rudderstack-v1
 Provider:
   - fc
 Version: 0.0.3

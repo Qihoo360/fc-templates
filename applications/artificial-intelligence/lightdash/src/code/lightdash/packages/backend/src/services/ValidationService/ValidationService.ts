@@ -1,0 +1,1036 @@
+import { subject } from '@casl/ability';
+import {
+    assertUnreachable,
+    CompiledField,
+    convertFieldRefToFieldId,
+    CreateChartValidation,
+    CreateDashboardValidation,
+    CreateTableValidation,
+    CreateValidation,
+    DashboardTileTarget,
+    Explore,
+    ExploreError,
+    ExploreType,
+    ForbiddenError,
+    getFilterRules,
+    getItemId,
+    InlineErrorType,
+    isChartValidationError,
+    isDashboardFieldTarget,
+    isDashboardValidationError,
+    isExploreError,
+    isSqlTableCalculation,
+    isTemplateTableCalculation,
+    isValidationTargetValid,
+    OrganizationMemberRole,
+    RequestMethod,
+    SessionUser,
+    TableCalculation,
+    TableSelectionType,
+    ValidationErrorType,
+    ValidationResponse,
+    ValidationSourceType,
+    ValidationTarget,
+} from '@lightdash/common';
+import { LightdashAnalytics } from '../../analytics/LightdashAnalytics';
+import { LightdashConfig } from '../../config/parseConfig';
+import { DashboardModel } from '../../models/DashboardModel/DashboardModel';
+import { ProjectModel } from '../../models/ProjectModel/ProjectModel';
+import { SavedChartModel } from '../../models/SavedChartModel';
+import { SpaceModel } from '../../models/SpaceModel';
+import { ValidationModel } from '../../models/ValidationModel/ValidationModel';
+import { SchedulerClient } from '../../scheduler/SchedulerClient';
+import { BaseService } from '../BaseService';
+import { hasViewAccessToSpace } from '../SpaceService/SpaceService';
+
+type ValidationServiceArguments = {
+    lightdashConfig: LightdashConfig;
+    analytics: LightdashAnalytics;
+    validationModel: ValidationModel;
+    projectModel: ProjectModel;
+    savedChartModel: SavedChartModel;
+    dashboardModel: DashboardModel;
+    spaceModel: SpaceModel;
+    schedulerClient: SchedulerClient;
+};
+
+export class ValidationService extends BaseService {
+    lightdashConfig: LightdashConfig;
+
+    analytics: LightdashAnalytics;
+
+    validationModel: ValidationModel;
+
+    projectModel: ProjectModel;
+
+    savedChartModel: SavedChartModel;
+
+    dashboardModel: DashboardModel;
+
+    spaceModel: SpaceModel;
+
+    schedulerClient: SchedulerClient;
+
+    constructor({
+        lightdashConfig,
+        analytics,
+        validationModel,
+        projectModel,
+        savedChartModel,
+        dashboardModel,
+        spaceModel,
+        schedulerClient,
+    }: ValidationServiceArguments) {
+        super();
+        this.lightdashConfig = lightdashConfig;
+        this.analytics = analytics;
+        this.projectModel = projectModel;
+        this.savedChartModel = savedChartModel;
+        this.validationModel = validationModel;
+        this.dashboardModel = dashboardModel;
+        this.spaceModel = spaceModel;
+        this.schedulerClient = schedulerClient;
+    }
+
+    static getTableCalculationFieldIds(
+        tableCalculations: TableCalculation[],
+    ): string[] {
+        const parseTableField = (field: string) =>
+            // Transform ${table.field} references on table calculation to table_field
+            field.replace('${', '').replace('}', '').replace('.', '_');
+
+        const tableCalculationFieldsInSql: string[] = tableCalculations.reduce<
+            string[]
+        >((acc, tc) => {
+            const regex = /\$\{([^}]+)\}/g;
+
+            if (isSqlTableCalculation(tc)) {
+                const fieldsInSql = tc.sql.match(regex);
+                if (fieldsInSql != null) {
+                    return [...acc, ...fieldsInSql.map(parseTableField)];
+                }
+            }
+
+            if (isTemplateTableCalculation(tc)) {
+                const fieldIdPart =
+                    'fieldId' in tc.template && tc.template.fieldId !== null
+                        ? [tc.template.fieldId]
+                        : [];
+                const orderByPart =
+                    'orderBy' in tc.template
+                        ? tc.template.orderBy.map((o) => o.fieldId)
+                        : [];
+                const partitionByPart =
+                    'partitionBy' in tc.template && tc.template.partitionBy
+                        ? tc.template.partitionBy
+                        : [];
+                const fieldsInTemplate = [
+                    ...fieldIdPart,
+                    ...orderByPart,
+                    ...partitionByPart,
+                ];
+                return [...acc, ...fieldsInTemplate];
+            }
+
+            return acc;
+        }, []);
+        return tableCalculationFieldsInSql;
+    }
+
+    private async validateTables(
+        projectUuid: string,
+        explores: (Explore | ExploreError)[] | undefined,
+    ): Promise<CreateTableValidation[]> {
+        const tablesConfiguration =
+            await this.projectModel.getTablesConfiguration(projectUuid);
+
+        // Get existing errors from ExploreError and convert to ValidationInsert
+        if (explores === undefined) {
+            return [];
+        }
+
+        const isTableEnabled = (explore: Explore | ExploreError) => {
+            switch (tablesConfiguration.tableSelection.type) {
+                case TableSelectionType.ALL:
+                    return true;
+                case TableSelectionType.WITH_TAGS:
+                    const hasSelectedJoinedExploredWithTags = explores.some(
+                        (e) =>
+                            (e.joinedTables?.some(
+                                (jt) => jt.table === explore.name,
+                            ) &&
+                                e.tags?.some((tag) =>
+                                    tablesConfiguration.tableSelection.value?.includes(
+                                        tag,
+                                    ),
+                                )) ||
+                            explore.type === ExploreType.VIRTUAL, // Custom explores/Virtual views are included by default
+                    );
+                    const exploreIsSelectedWithTags = explore.tags?.some(
+                        (tag) =>
+                            tablesConfiguration.tableSelection.value?.includes(
+                                tag,
+                            ) || explore.type === ExploreType.VIRTUAL, // Custom explores/Virtual views are included by default
+                    );
+                    return (
+                        hasSelectedJoinedExploredWithTags ||
+                        exploreIsSelectedWithTags
+                    );
+
+                case TableSelectionType.WITH_NAMES:
+                    const hasSelectedJoinedExplored = explores.some(
+                        (e) =>
+                            (e.joinedTables?.some(
+                                (jt) => jt.table === explore.name,
+                            ) &&
+                                tablesConfiguration.tableSelection.value?.includes(
+                                    e.name,
+                                )) ||
+                            explore.type === ExploreType.VIRTUAL, // Custom explores/Virtual views are included by default
+                    );
+                    const exploreIsSelected =
+                        tablesConfiguration.tableSelection.value?.includes(
+                            explore.name,
+                        ) || explore.type === ExploreType.VIRTUAL; // Custom explores/Virtual views are included by default
+
+                    return hasSelectedJoinedExplored || exploreIsSelected;
+                default:
+                    return assertUnreachable(
+                        tablesConfiguration.tableSelection.type,
+                        'Invalid table selection type',
+                    );
+            }
+        };
+
+        const errors = explores.reduce<CreateTableValidation[]>(
+            (acc, explore) => {
+                if (!isTableEnabled(explore)) {
+                    this.logger.debug(
+                        `Table ${explore.name} is disabled, skipping validation`,
+                    );
+                    return acc;
+                }
+                if (isExploreError(explore)) {
+                    const exploreErrors = explore.errors
+                        .filter(
+                            (error) =>
+                                error.type !==
+                                InlineErrorType.NO_DIMENSIONS_FOUND,
+                        )
+                        .map((ee) => ({
+                            name: explore.name,
+                            error: ee.message,
+                            errorType: ValidationErrorType.Model,
+                            modelName: explore.name,
+                            projectUuid,
+                            source: ValidationSourceType.Table,
+                        }));
+                    return [...acc, ...exploreErrors];
+                }
+                return acc;
+            },
+            [],
+        );
+        return errors;
+    }
+
+    private async validateCharts(
+        projectUuid: string,
+        exploreFields: Record<
+            string,
+            { dimensionIds: string[]; metricIds: string[] }
+        >,
+        selectedExplores?: (Explore | ExploreError)[],
+    ): Promise<CreateChartValidation[]> {
+        const charts = await this.savedChartModel.findChartsForValidation(
+            projectUuid,
+        );
+
+        // Only validate charts that are using selected explores
+        const results = charts
+            .filter((c) => {
+                if (selectedExplores === undefined) return true;
+                return selectedExplores.some((explore) => {
+                    if (isExploreError(explore)) return false;
+                    // Match by baseTable or explore name (for additional explores)
+                    return (
+                        explore.baseTable === c.tableName ||
+                        explore.name === c.tableName
+                    );
+                });
+            })
+            .flatMap(
+                ({
+                    uuid,
+                    name,
+                    tableName,
+                    sorts,
+                    filters,
+                    dimensions,
+                    metrics,
+                    customBinDimensions,
+                    customSqlDimensions,
+                    customMetrics,
+                    customMetricsBaseDimensions,
+                    customMetricsFilters,
+                    tableCalculations,
+                }) => {
+                    const availableDimensionIds =
+                        exploreFields[tableName]?.dimensionIds || [];
+                    const availableCustomDimensionIds = [
+                        ...customBinDimensions,
+                        ...customSqlDimensions,
+                    ];
+                    const availableMetricIds =
+                        exploreFields[tableName]?.metricIds || [];
+
+                    const allItemIdsAvailableInChart = [
+                        ...availableDimensionIds,
+                        ...availableMetricIds,
+                        ...tableCalculations,
+                        ...customMetrics,
+                        ...availableCustomDimensionIds,
+                    ];
+
+                    const commonValidation = {
+                        chartUuid: uuid,
+                        name,
+                        projectUuid,
+                        source: ValidationSourceType.Chart,
+                        chartName: name,
+                    };
+                    const containsFieldId = ({
+                        acc,
+                        fieldIds,
+                        fieldId,
+                        error,
+                        errorType,
+                        fieldName,
+                    }: {
+                        acc: CreateChartValidation[];
+                        fieldIds: string[];
+                        fieldId: string;
+                    } & Pick<
+                        CreateChartValidation,
+                        'error' | 'errorType' | 'fieldName'
+                    >) => {
+                        if (!fieldIds?.includes(fieldId)) {
+                            return [
+                                ...acc,
+                                {
+                                    ...commonValidation,
+                                    errorType,
+                                    error,
+                                    fieldName,
+                                },
+                            ];
+                        }
+                        return acc;
+                    };
+
+                    const dimensionErrors = dimensions.reduce<
+                        CreateChartValidation[]
+                    >(
+                        (acc, field) =>
+                            containsFieldId({
+                                acc,
+                                fieldIds: [
+                                    ...availableDimensionIds,
+                                    ...availableCustomDimensionIds,
+                                ],
+                                fieldId: field,
+                                error: `Dimension error: the field '${field}' no longer exists`,
+                                errorType: ValidationErrorType.Dimension,
+                                fieldName: field,
+                            }),
+                        [],
+                    );
+                    const metricErrors = metrics.reduce<
+                        CreateChartValidation[]
+                    >(
+                        (acc, field) =>
+                            containsFieldId({
+                                acc,
+                                fieldIds: [
+                                    ...availableMetricIds,
+                                    ...customMetrics,
+                                ],
+                                fieldId: field,
+                                error: `Metric error: the field '${field}' no longer exists`,
+                                errorType: ValidationErrorType.Metric,
+                                fieldName: field,
+                            }),
+                        [],
+                    );
+                    const customMetricsErrors =
+                        customMetricsBaseDimensions.reduce<
+                            CreateChartValidation[]
+                        >(
+                            (acc, field) =>
+                                containsFieldId({
+                                    acc,
+                                    fieldIds: [
+                                        ...availableDimensionIds,
+                                        ...availableCustomDimensionIds, // Custom dimensions can be used as base dimensions for custom metrics
+                                    ],
+                                    fieldId: field,
+                                    error: `Custom metric error: the base dimension '${field}' no longer exists`,
+                                    errorType: ValidationErrorType.CustomMetric,
+                                    fieldName: field,
+                                }),
+
+                            [],
+                        );
+
+                    const filterErrors = getFilterRules(filters).reduce<
+                        CreateChartValidation[]
+                    >((acc, field) => {
+                        try {
+                            return containsFieldId({
+                                acc,
+                                fieldIds: allItemIdsAvailableInChart,
+                                fieldId: field.target?.fieldId,
+                                error: `Filter error: the field '${field.target?.fieldId}' no longer exists`,
+                                errorType: ValidationErrorType.Filter,
+                                fieldName: field.target?.fieldId,
+                            });
+                        } catch (e) {
+                            console.error(
+                                'Unexpected validation error on filterErrors with filter',
+                                field,
+                                e,
+                            );
+                            return acc;
+                        }
+                    }, []);
+
+                    const customMetricFilterErrors = customMetricsFilters
+                        .filter((f) => !!f)
+                        .reduce<CreateChartValidation[]>((acc, filter) => {
+                            try {
+                                const fieldId = convertFieldRefToFieldId(
+                                    filter.target.fieldRef,
+                                );
+                                return containsFieldId({
+                                    acc,
+                                    fieldIds: allItemIdsAvailableInChart,
+                                    fieldId,
+                                    error: `Custom metric filter error: the field '${fieldId}' no longer exists`,
+                                    errorType: ValidationErrorType.CustomMetric,
+                                    fieldName: fieldId,
+                                });
+                            } catch (e) {
+                                console.error(
+                                    'Unexpected validation error on customMetricFilterErrors with filter',
+                                    filter,
+                                    e,
+                                );
+                                return acc;
+                            }
+                        }, []);
+
+                    const sortErrors = sorts.reduce<CreateChartValidation[]>(
+                        (acc, field) =>
+                            containsFieldId({
+                                acc,
+                                fieldIds: allItemIdsAvailableInChart,
+                                fieldId: field,
+                                error: `Sorting error: the field '${field}' no longer exists`,
+                                errorType: ValidationErrorType.Sorting,
+                                fieldName: field,
+                            }),
+                        [],
+                    );
+
+                    return [
+                        ...dimensionErrors,
+                        ...metricErrors,
+                        ...filterErrors,
+                        ...sortErrors,
+                        ...customMetricsErrors,
+                        ...customMetricFilterErrors,
+                    ];
+                },
+            );
+
+        return results;
+    }
+
+    private async validateDashboards(
+        projectUuid: string,
+        exploreFields: Record<
+            string,
+            { dimensionIds: string[]; metricIds: string[] }
+        >,
+        brokenCharts: Pick<CreateChartValidation, 'chartUuid' | 'name'>[],
+        allCharts: Array<{ uuid: string; tableName: string }>,
+    ): Promise<CreateDashboardValidation[]> {
+        const dashboardsToValidate =
+            await this.dashboardModel.findDashboardsForValidation(projectUuid);
+        const results: CreateDashboardValidation[] =
+            dashboardsToValidate.flatMap(
+                ({ name, dashboardUuid, filters, chartUuids }) => {
+                    // Get unique explore names used by charts on this dashboard
+                    const dashboardExplores = new Set(
+                        chartUuids
+                            .map((chartUuid) => {
+                                const chart = allCharts.find(
+                                    (c) => c.uuid === chartUuid,
+                                );
+                                return chart?.tableName;
+                            })
+                            .filter((tableName): tableName is string =>
+                                Boolean(tableName),
+                            ),
+                    );
+
+                    // Build field list from only the explores used by this dashboard's charts
+                    const dashboardFieldIds = Array.from(
+                        dashboardExplores,
+                    ).flatMap((exploreName) => {
+                        const fields = exploreFields[exploreName];
+                        if (!fields) return [];
+                        return [...fields.dimensionIds, ...fields.metricIds];
+                    });
+                    const commonValidation = {
+                        name,
+                        dashboardUuid,
+                        projectUuid,
+                        source: ValidationSourceType.Dashboard,
+                    };
+
+                    const containsFieldId = ({
+                        acc,
+                        fieldIds,
+                        fieldId,
+                        error,
+                        errorType,
+                        fieldName,
+                    }: {
+                        acc: CreateDashboardValidation[];
+                        fieldIds: string[];
+                        fieldId: string;
+                    } & Pick<
+                        CreateDashboardValidation,
+                        'error' | 'errorType' | 'fieldName'
+                    >) => {
+                        if (!fieldIds?.includes(fieldId)) {
+                            return [
+                                ...acc,
+                                {
+                                    ...commonValidation,
+                                    errorType,
+                                    error,
+                                    fieldName,
+                                },
+                            ];
+                        }
+                        return acc;
+                    };
+
+                    const dashboardFilterRules = [
+                        ...filters.dimensions,
+                        ...filters.metrics,
+                    ];
+                    const filterErrors = dashboardFilterRules.reduce<
+                        CreateDashboardValidation[]
+                    >((acc, filter) => {
+                        try {
+                            if (
+                                isDashboardFieldTarget(filter.target) &&
+                                filter.target.isSqlColumn
+                            ) {
+                                // Skip SQL column targets
+                                return acc;
+                            }
+
+                            // Check if the filter's table is used by any chart on this dashboard
+                            const filterTableName = isDashboardFieldTarget(
+                                filter.target,
+                            )
+                                ? filter.target.tableName
+                                : undefined;
+
+                            if (
+                                filterTableName &&
+                                !dashboardExplores.has(filterTableName)
+                            ) {
+                                // Filter references an explore not used by any chart on this dashboard
+                                return [
+                                    ...acc,
+                                    {
+                                        ...commonValidation,
+                                        errorType: ValidationErrorType.Filter,
+                                        error: `Filter error: the field '${filter.target.fieldId}' references table '${filterTableName}' which is not used by any chart on this dashboard`,
+                                        fieldName: filter.target.fieldId,
+                                    },
+                                ];
+                            }
+
+                            return containsFieldId({
+                                acc,
+                                fieldIds: dashboardFieldIds,
+                                fieldId: filter.target.fieldId,
+                                error: `Filter error: the field '${filter.target.fieldId}' no longer exists`,
+                                errorType: ValidationErrorType.Filter,
+                                fieldName: filter.target.fieldId,
+                            });
+                        } catch (e) {
+                            console.error(
+                                'Unexpected validation error on dashboard filterErrors with filter',
+                                filter,
+                                e,
+                            );
+                            return acc;
+                        }
+                    }, []);
+
+                    const dashboardTileTargets = dashboardFilterRules.reduce<
+                        DashboardTileTarget[]
+                    >((acc, t) => {
+                        if (t.tileTargets) {
+                            const targets = Object.values(t.tileTargets);
+                            return [...acc, ...targets];
+                        }
+                        return acc;
+                    }, []);
+                    const tileTargetErrors = dashboardTileTargets.reduce<
+                        CreateDashboardValidation[]
+                    >(
+                        (acc, tileTarget) => {
+                            if (
+                                tileTarget &&
+                                isDashboardFieldTarget(tileTarget) &&
+                                !tileTarget.isSqlColumn // Skip SQL column targets
+                            ) {
+                                // Check if the tile target's table is used by any chart on this dashboard
+                                const tileTargetTableName =
+                                    tileTarget.tableName;
+
+                                if (
+                                    tileTargetTableName &&
+                                    !dashboardExplores.has(tileTargetTableName)
+                                ) {
+                                    // Tile target references an explore not used by any chart on this dashboard
+                                    return [
+                                        ...acc,
+                                        {
+                                            ...commonValidation,
+                                            errorType:
+                                                ValidationErrorType.Filter,
+                                            error: `Filter error: the field '${tileTarget.fieldId}' references table '${tileTargetTableName}' which is not used by any chart on this dashboard`,
+                                            fieldName: tileTarget.fieldId,
+                                        },
+                                    ];
+                                }
+
+                                return containsFieldId({
+                                    acc,
+                                    fieldIds: dashboardFieldIds,
+                                    fieldId: tileTarget.fieldId,
+                                    error: `Filter error: the field '${tileTarget.fieldId}' no longer exists`,
+                                    errorType: ValidationErrorType.Filter,
+                                    fieldName: tileTarget.fieldId,
+                                });
+                            }
+                            return acc;
+                        },
+
+                        [],
+                    );
+
+                    const chartErrors = chartUuids.reduce<
+                        CreateDashboardValidation[]
+                    >((acc, savedChartUuid) => {
+                        const brokenChart = brokenCharts.find(
+                            (c) => c.chartUuid === savedChartUuid,
+                        );
+                        if (brokenChart !== undefined) {
+                            return [
+                                ...acc,
+                                {
+                                    ...commonValidation,
+                                    error: `The chart '${brokenChart.name}' is broken on this dashboard.`,
+                                    errorType: ValidationErrorType.Chart,
+                                    chartName: brokenChart.name,
+                                },
+                            ];
+                        }
+                        return acc;
+                    }, []);
+
+                    return [
+                        ...filterErrors,
+                        ...tileTargetErrors,
+                        ...chartErrors,
+                    ];
+                },
+            );
+
+        return results;
+    }
+
+    async generateValidation(
+        projectUuid: string,
+        compiledExplores?: (Explore | ExploreError)[],
+        validationTargets?: Set<ValidationTarget>,
+        onlyValidateExploresInArgs?: boolean,
+    ): Promise<CreateValidation[]> {
+        const hasValidationTargets =
+            validationTargets && validationTargets.size > 0;
+
+        const invalidValidationTargets = hasValidationTargets
+            ? Array.from(validationTargets).filter(
+                  (target) => !isValidationTargetValid(target),
+              )
+            : [];
+
+        if (hasValidationTargets && invalidValidationTargets?.length > 0) {
+            throw new Error(
+                `Invalid validation targets: ${invalidValidationTargets.join(
+                    ', ',
+                )}`,
+            );
+        }
+
+        const targetsString = hasValidationTargets
+            ? `${Array.from(validationTargets).join(', ')}`
+            : 'every target';
+
+        this.logger.debug(
+            `Generating validation of ${targetsString} for project ${projectUuid} with explores ${
+                compiledExplores ? 'from CLI' : 'from cache'
+            }`,
+        );
+
+        let explores: (Explore | ExploreError)[];
+        if (compiledExplores !== undefined) {
+            // For CLI validation, when compiled Explores are provided, merge them with virtual views from cache
+            const virtualViews =
+                await this.projectModel.findVirtualViewsFromCache(projectUuid);
+
+            explores = compiledExplores.concat(Object.values(virtualViews));
+            this.logger.debug(
+                `Merged ${compiledExplores.length} compiled explores with ${
+                    Object.values(virtualViews).length
+                } virtual views for validation`,
+            );
+        } else {
+            explores = Object.values(
+                await this.projectModel.findExploresFromCache(
+                    projectUuid,
+                    'name',
+                ),
+            );
+        }
+
+        const exploreFields =
+            explores?.reduce<
+                Record<string, { dimensionIds: string[]; metricIds: string[] }>
+            >((acc, explore) => {
+                if (isExploreError(explore) || explore?.tables === undefined)
+                    return acc;
+                const dimensions = Object.values(explore.tables).flatMap(
+                    (table) => Object.values(table.dimensions),
+                );
+                const metrics = Object.values(explore.tables).flatMap((table) =>
+                    Object.values(table.metrics),
+                );
+                const fieldData = {
+                    dimensionIds: dimensions.map(getItemId),
+                    metricIds: metrics.map(getItemId),
+                };
+                return {
+                    ...acc,
+                    // Index by baseTable for base explores and charts using baseTable
+                    [explore.baseTable]: fieldData,
+                    // Also index by explore name for additional explores
+                    // https://docs.lightdash.com/guides/explores
+                    ...(explore.name !== explore.baseTable
+                        ? { [explore.name]: fieldData }
+                        : {}),
+                };
+            }, {}) || {};
+
+        const existingFields = explores?.reduce<CompiledField[]>(
+            (acc, explore) => {
+                if (!explore.tables) return acc;
+
+                const fields = Object.values(explore.tables).flatMap(
+                    (table) => [
+                        ...Object.values(table.dimensions),
+                        ...Object.values(table.metrics),
+                    ],
+                );
+
+                return [...acc, ...fields];
+            },
+            [],
+        );
+
+        if (!existingFields) {
+            this.logger.warn(
+                `No fields found for project validation ${projectUuid}`,
+            );
+            return [];
+        }
+
+        const tableErrors =
+            !hasValidationTargets ||
+            validationTargets.has(ValidationTarget.TABLES)
+                ? await this.validateTables(projectUuid, explores)
+                : [];
+
+        const chartErrors =
+            !hasValidationTargets ||
+            validationTargets.has(ValidationTarget.CHARTS) ||
+            validationTargets.has(ValidationTarget.DASHBOARDS) // chartErrors are reused for dashboard validation
+                ? await this.validateCharts(
+                      projectUuid,
+                      exploreFields,
+                      onlyValidateExploresInArgs ? compiledExplores : undefined,
+                  )
+                : [];
+
+        // Get all charts for dashboard validation (need chart->explore mapping)
+        const allCharts =
+            !hasValidationTargets ||
+            validationTargets.has(ValidationTarget.DASHBOARDS)
+                ? await this.savedChartModel.findChartsForValidation(
+                      projectUuid,
+                  )
+                : [];
+
+        const dashboardErrors =
+            !hasValidationTargets ||
+            validationTargets.has(ValidationTarget.DASHBOARDS)
+                ? await this.validateDashboards(
+                      projectUuid,
+                      exploreFields,
+                      chartErrors,
+                      allCharts.map((c) => ({
+                          uuid: c.uuid,
+                          tableName: c.tableName,
+                      })),
+                  )
+                : [];
+
+        return [...tableErrors, ...chartErrors, ...dashboardErrors];
+    }
+
+    async validate(
+        user: SessionUser,
+        projectUuid: string,
+        context?: RequestMethod,
+        explores?: (Explore | ExploreError)[],
+        validationTargets?: ValidationTarget[],
+        onlyValidateExploresInArgs?: boolean,
+    ): Promise<string> {
+        const { organizationUuid } = await this.projectModel.getSummary(
+            projectUuid,
+        );
+
+        if (
+            user.ability.cannot(
+                'manage',
+                subject('Validation', {
+                    organizationUuid,
+                    projectUuid,
+                }),
+            )
+        ) {
+            throw new ForbiddenError();
+        }
+
+        const fromCLI =
+            context === RequestMethod.CLI_CI || context === RequestMethod.CLI;
+        const jobId = await this.schedulerClient.generateValidation({
+            userUuid: user.userUuid,
+            projectUuid,
+            context: fromCLI ? 'cli' : 'lightdash_app',
+            organizationUuid,
+            explores,
+            validationTargets,
+            onlyValidateExploresInArgs,
+        });
+        return jobId;
+    }
+
+    async storeValidation(
+        projectUuid: string,
+        validationErrors: CreateValidation[],
+        jobId?: string,
+    ) {
+        // If not storing for an specific CLI validation, delete previous validations
+        if (jobId === undefined) await this.validationModel.delete(projectUuid);
+
+        if (validationErrors.length > 0)
+            await this.validationModel.create(validationErrors, jobId);
+    }
+
+    async hidePrivateContent(
+        user: SessionUser,
+        projectUuid: string,
+        validations: ValidationResponse[],
+    ): Promise<ValidationResponse[]> {
+        if (user.role === OrganizationMemberRole.ADMIN) return validations;
+
+        const spaces = await this.spaceModel.find({ projectUuid });
+        const spacesAccess = await this.spaceModel.getUserSpacesAccess(
+            user.userUuid,
+            spaces.map((s) => s.uuid),
+        );
+
+        const allowedSpaceUuids = spaces
+            .filter((space, index) =>
+                hasViewAccessToSpace(
+                    user,
+                    space,
+                    spacesAccess[space.uuid] ?? [],
+                ),
+            )
+            .map((s) => s.uuid);
+
+        // Filter private content to developers
+        return Promise.all(
+            validations.map(async (validation) => {
+                const isDeleted =
+                    (isDashboardValidationError(validation) &&
+                        !validation.dashboardUuid) ||
+                    (isChartValidationError(validation) &&
+                        !validation.chartUuid);
+
+                if (isDeleted) {
+                    return {
+                        ...validation,
+                        chartUuid: undefined,
+                        dashboardUuid: undefined,
+                        name: 'Deleted content',
+                    };
+                }
+
+                const space = spaces.find(
+                    (s) => s.uuid === validation.spaceUuid,
+                );
+                const hasAccess =
+                    space && allowedSpaceUuids.includes(space.uuid);
+                if (hasAccess) return validation;
+
+                return {
+                    ...validation,
+                    chartUuid: undefined,
+                    dashboardUuid: undefined,
+                    name: 'Private content',
+                };
+            }),
+        );
+    }
+
+    async get(
+        user: SessionUser,
+        projectUuid: string,
+        fromSettings = false,
+        jobId?: string,
+    ): Promise<ValidationResponse[]> {
+        const { organizationUuid } = user;
+
+        if (
+            user.ability.cannot(
+                'manage',
+                subject('Validation', {
+                    organizationUuid,
+                    projectUuid,
+                }),
+            )
+        ) {
+            throw new ForbiddenError();
+        }
+        const allValidations = await this.validationModel.get(
+            projectUuid,
+            jobId,
+        );
+
+        // Filter out orphaned validations (content was deleted)
+        const validations = allValidations.filter((validation) => {
+            // Keep table validations (they don't reference charts/dashboards)
+            if (
+                !isDashboardValidationError(validation) &&
+                !isChartValidationError(validation)
+            ) {
+                return true;
+            }
+
+            // Filter out chart/dashboard validations where content no longer exists
+            const hasChartUuid =
+                isChartValidationError(validation) && validation.chartUuid;
+            const hasDashboardUuid =
+                isDashboardValidationError(validation) &&
+                validation.dashboardUuid;
+
+            return hasChartUuid || hasDashboardUuid;
+        });
+
+        if (fromSettings) {
+            const contentIds = validations.map(
+                (validation) =>
+                    // NOTE: chart and dashboard uuids might be undefined for private content, so default to name if not present
+                    ('chartUuid' in validation && validation.chartUuid) ||
+                    ('dashboardUuid' in validation &&
+                        validation.dashboardUuid) ||
+                    validation.name,
+            );
+
+            this.analytics.track({
+                event: 'validation.page_viewed',
+                userId: user.userUuid,
+                properties: {
+                    organizationId: organizationUuid,
+                    projectId: projectUuid,
+                    numErrorsDetected: validations.length,
+                    numContentAffected: new Set(contentIds).size,
+                },
+            });
+        }
+
+        return this.hidePrivateContent(user, projectUuid, validations);
+    }
+
+    async getJob(
+        user: SessionUser,
+        projectUuid: string,
+    ): Promise<ValidationResponse[]> {
+        const validations = await this.validationModel.get(projectUuid);
+        return this.hidePrivateContent(user, projectUuid, validations);
+    }
+
+    async delete(user: SessionUser, validationId: number): Promise<void> {
+        const validation = await this.validationModel.getByValidationId(
+            validationId,
+        );
+        const projectSummary = await this.projectModel.getSummary(
+            validation.projectUuid,
+        );
+        if (
+            user.ability.cannot(
+                'manage',
+                subject('Validation', {
+                    organizationUuid: projectSummary.organizationUuid,
+                    projectUuid: validation.projectUuid,
+                }),
+            )
+        ) {
+            throw new ForbiddenError();
+        }
+
+        this.analytics.track({
+            event: 'validation.error_dismissed',
+            userId: user.userUuid,
+            properties: {
+                organizationId: user.organizationUuid,
+                projectId: validation.projectUuid,
+            },
+        });
+
+        await this.validationModel.deleteValidation(validationId);
+    }
+}

@@ -1,0 +1,6 @@
+deploy:
+  commands:
+    - name: Generating postgres password...
+      command: echo "PGPASSWORD=$(openssl rand -hex 16)" >> "$OKTETO_ENV"
+    - name: Deploying compose...
+      command: okteto deploy -f docker/docker-compose.preview.yml
