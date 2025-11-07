@@ -210,7 +210,7 @@ Parameters:
       x-restype: s3
       x-placeholder: 请输入 S3 Access Key
       x-formitem:
-        type: secret
+        type: input
     S3_SECRET_KEY:
       type: string
       default: ""
@@ -220,7 +220,7 @@ Parameters:
       x-restype: s3
       x-placeholder: 请输入 S3 Secret Key
       x-formitem:
-        type: secret
+        type: input
     S3_FORCE_PATH_STYLE:
       type: string
       default: ""
@@ -230,7 +230,7 @@ Parameters:
       x-restype: s3
       x-placeholder: 请输入 S3 Force Path Style
       x-formitem:
-        type: secret
+        type: input
     S3_EXPIRATION_TIME:
       type: string
       default: ""
@@ -240,7 +240,7 @@ Parameters:
       x-restype: s3
       x-placeholder: 请输入 S3 Expiration Time
       x-formitem:
-        type: secret
+        type: input
 
     RUDDERSTACK_WRITE_KEY:
       type: string
