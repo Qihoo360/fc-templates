@@ -226,7 +226,7 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
+      x-label: S3 配置
       x-restype: s3
       x-placeholder: 请输入 S3 Force Path Style
       x-formitem:
