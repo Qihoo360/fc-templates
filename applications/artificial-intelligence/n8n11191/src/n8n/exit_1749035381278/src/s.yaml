@@ -1,0 +1,27 @@
+edition: 1.0.0          #  命令行YAML规范版本，遵循语义化版本（Semantic Versioning）规范
+name: functionApp       #  项目名称
+access: "{{ access }}"  #  秘钥别名
+
+services:
+  function-test: #  服务名称
+    component: devscomp/scf  # 组件名称
+    props:
+      src:
+        src: ./
+        exclude:
+          - .env
+      # 此处注释部分将自动使用默认值
+      # region: ap-guangzhou
+      # runtime: Nodejs10.15
+      # handler: index.main_handler
+      events:
+        - apigw:
+            parameters:
+              name: defaultGateway
+              protocols:
+                - http
+                - https
+              environment: release
+              endpoints:
+                - path: /
+                  method: GET
