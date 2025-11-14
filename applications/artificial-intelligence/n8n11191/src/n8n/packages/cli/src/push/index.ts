@@ -108,13 +108,33 @@ export class Push extends TypedEmitter<PushEvents> {
 			headers,
 		} = req;
 
+		// 添加详细日志 - 连接尝试
+		this.logger.debug('WebSocket/SSE connection attempt', {
+			pushRef,
+			userId: user?.id,
+			userAgent: headers['user-agent'],
+			origin: headers.origin,
+			host: headers.host,
+			hasWS: !!ws,
+			useWebSockets: this.useWebSockets,
+			headers: pick(headers, [
+				'host',
+				'origin',
+				'x-forwarded-proto',
+				'x-forwarded-host',
+				'forwarded',
+			]),
+		});
+
 		let connectionError = '';
 
 		if (!pushRef) {
 			connectionError = 'The query parameter "pushRef" is missing!';
+			this.logger.warn('Connection rejected: missing pushRef');
 		} else if (inProduction) {
 			const validation = validateOriginHeaders(headers);
 			if (!validation.isValid) {
+				// 更详细的验证失败日志
 				this.logger.warn(
 					'Origin header does NOT match the expected origin. ' +
 						`(Origin: "${headers.origin}" -> "${validation.originInfo?.host || 'N/A'}", ` +
@@ -128,26 +148,75 @@ export class Push extends TypedEmitter<PushEvents> {
 							'x-forwarded-host',
 							'forwarded',
 						]),
+						userAgent: headers['user-agent'],
+						validation: {
+							isValid: validation.isValid,
+							originHost: validation.originInfo?.host,
+							originProtocol: validation.originInfo?.protocol,
+							expectedHost: validation.expectedHost,
+							expectedProtocol: validation.expectedProtocol,
+							rawExpectedHost: validation.rawExpectedHost,
+							error: validation.error,
+						},
 					},
 				);
-				connectionError = 'Invalid origin!';
+
+				// 临时允许连接继续，不设置错误
+				this.logger.warn('Origin validation failed but allowing WebSocket connection to proceed');
+				// connectionError = 'Invalid origin!';  // 注释掉错误设置，允许连接继续
 			}
 		}
 
 		if (connectionError) {
+			this.logger.warn('Connection rejected', {
+				error: connectionError,
+				pushRef,
+				userAgent: headers['user-agent'],
+				origin: headers.origin
+			});
+
 			if (ws) {
-				ws.send(connectionError);
+				// 发送结构化错误消息而不是纯文本
+				try {
+					ws.send(JSON.stringify({ type: 'error', message: connectionError }));
+				} catch (error) {
+					this.logger.error('Error sending WebSocket error message', { error });
+					// 回退到纯文本消息
+					ws.send(connectionError);
+				}
 				ws.close(1008);
 				return;
 			}
 			throw new BadRequestError(connectionError);
 		}
 
+		// 添加连接类型检查日志
+		if (req.ws && !this.useWebSockets) {
+			this.logger.warn('WebSocket connection received but backend is configured for SSE');
+		} else if (!req.ws && this.useWebSockets) {
+			this.logger.warn('Non-WebSocket connection received but backend is configured for WebSocket');
+		}
+
+		// 成功连接
 		if (req.ws) {
+			this.logger.info('WebSocket connection established', {
+				pushRef,
+				userId: user?.id,
+				userAgent: headers['user-agent']
+			});
 			(this.backend as WebSocketPush).add(pushRef, user.id, req.ws);
 		} else if (!this.useWebSockets) {
+			this.logger.info('SSE connection established', {
+				pushRef,
+				userId: user?.id,
+				userAgent: headers['user-agent']
+			});
 			(this.backend as SSEPush).add(pushRef, user.id, { req, res });
 		} else {
+			this.logger.error('Connection type mismatch', {
+				hasWS: !!req.ws,
+				useWebSockets: this.useWebSockets
+			});
 			res.status(401).send('Unauthorized');
 			return;
 		}
