@@ -158,10 +158,9 @@ Parameters:
       x-placeholder: 请选择日志存储类型
       x-formitem:
         type: select
-    elasticHost:
+    ELASTICSEARCH_HOST:
       # title: Elasticsearch Host
       type: string
-      default: http(s)://127.0.0.1
       description: ""
       x-cate: applicationCate
       x-label: 日志配置
