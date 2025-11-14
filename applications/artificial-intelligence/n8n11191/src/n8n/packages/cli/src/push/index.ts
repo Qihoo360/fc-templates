@@ -10,6 +10,7 @@ import pick from 'lodash/pick';
 import { InstanceSettings } from 'n8n-core';
 import { parse as parseUrl } from 'url';
 import { Server as WSServer } from 'ws';
+import * as crypto from 'crypto'; // 添加 crypto 模块导入
 
 import { AuthService } from '@/auth/auth.service';
 import { BadRequestError } from '@/errors/response-errors/bad-request.error';
@@ -101,6 +102,13 @@ export class Push extends TypedEmitter<PushEvents> {
 	}
 
 	handleRequest(req: SSEPushRequest | WebSocketPushRequest, res: PushResponse) {
+		// Chrome 特殊处理：生成缺失的 WebSocket 密钥
+		if (!req.headers['sec-websocket-key'] && req.headers['user-agent']?.includes('Chrome')) {
+			const key = crypto.randomBytes(16).toString('base64');
+			req.headers['sec-websocket-key'] = key;
+			this.logger.debug('Generated missing Sec-WebSocket-Key for Chrome');
+		}
+
 		// 确保请求头包含必要的WebSocket升级头
 		if (!req.headers.upgrade) {
 			req.headers.upgrade = 'websocket';
@@ -115,12 +123,33 @@ export class Push extends TypedEmitter<PushEvents> {
 			this.logger.debug('Set X-Forwarded-Proto to https');
 		}
 
+		// 移除可能干扰 WebSocket 握手的头
+		const headersToRemove = ['accept-encoding', 'accept-language', 'cache-control'];
+		headersToRemove.forEach(header => {
+			if (req.headers[header]) {
+				this.logger.debug(`Removing potentially interfering header: ${header}`);
+				delete req.headers[header];
+			}
+		});
+
+		// 处理长 cookie (超过 1KB)
+		if (req.headers.cookie && req.headers.cookie.length > 1024) {
+			this.logger.warn('Truncating long cookie for Chrome compatibility', {
+				originalLength: req.headers.cookie.length
+			});
+			// 只保留关键 cookie
+			req.headers.cookie = req.headers.cookie
+				.split(';')
+				.filter((cookie: string) => cookie.includes('n8n-auth') || cookie.includes('rl_session'))
+				.join('; ');
+		}
+
 		// 添加queue-proxy验证头日志
 		this.logger.debug('Headers for queue-proxy validation', {
 			upgrade: req.headers.upgrade,
 			connection: req.headers.connection,
 			'x-forwarded-proto': req.headers['x-forwarded-proto'],
-			forwarded: req.headers.forwarded
+			forwarded: req.headers.forwarded,
 		});
 
 		const {
@@ -194,7 +223,7 @@ export class Push extends TypedEmitter<PushEvents> {
 				error: connectionError,
 				pushRef,
 				userAgent: headers['user-agent'],
-				origin: headers.origin
+				origin: headers.origin,
 			});
 
 			if (ws) {
@@ -224,20 +253,20 @@ export class Push extends TypedEmitter<PushEvents> {
 			this.logger.info('WebSocket connection established', {
 				pushRef,
 				userId: user?.id,
-				userAgent: headers['user-agent']
+				userAgent: headers['user-agent'],
 			});
 			(this.backend as WebSocketPush).add(pushRef, user.id, req.ws);
 		} else if (!this.useWebSockets) {
 			this.logger.info('SSE connection established', {
 				pushRef,
 				userId: user?.id,
-				userAgent: headers['user-agent']
+				userAgent: headers['user-agent'],
 			});
 			(this.backend as SSEPush).add(pushRef, user.id, { req, res });
 		} else {
 			this.logger.error('Connection type mismatch', {
 				hasWS: !!req.ws,
-				useWebSockets: this.useWebSockets
+				useWebSockets: this.useWebSockets,
 			});
 			res.status(401).send('Unauthorized');
 			return;
