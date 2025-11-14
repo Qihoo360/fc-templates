@@ -101,6 +101,29 @@ export class Push extends TypedEmitter<PushEvents> {
 	}
 
 	handleRequest(req: SSEPushRequest | WebSocketPushRequest, res: PushResponse) {
+		// 确保请求头包含必要的WebSocket升级头
+		if (!req.headers.upgrade) {
+			req.headers.upgrade = 'websocket';
+			this.logger.debug('Added missing Upgrade header');
+		}
+		if (!req.headers.connection) {
+			req.headers.connection = 'upgrade';
+			this.logger.debug('Added missing Connection header');
+		}
+		if (req.headers['x-forwarded-proto'] === 'https') {
+			req.headers['X-Forwarded-Proto'] = 'https';
+			req.protocol = 'https'; // 确保express使用正确协议
+			this.logger.debug('Set protocol to https based on X-Forwarded-Proto');
+		}
+
+		// 添加queue-proxy验证头日志
+		this.logger.debug('Headers for queue-proxy validation', {
+			upgrade: req.headers.upgrade,
+			connection: req.headers.connection,
+			'x-forwarded-proto': req.headers['x-forwarded-proto'],
+			forwarded: req.headers.forwarded
+		});
+
 		const {
 			ws,
 			query: { pushRef },
