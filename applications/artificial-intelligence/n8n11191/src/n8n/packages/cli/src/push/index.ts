@@ -112,8 +112,7 @@ export class Push extends TypedEmitter<PushEvents> {
 		}
 		if (req.headers['x-forwarded-proto'] === 'https') {
 			req.headers['X-Forwarded-Proto'] = 'https';
-			req.protocol = 'https'; // 确保express使用正确协议
-			this.logger.debug('Set protocol to https based on X-Forwarded-Proto');
+			this.logger.debug('Set X-Forwarded-Proto to https');
 		}
 
 		// 添加queue-proxy验证头日志
