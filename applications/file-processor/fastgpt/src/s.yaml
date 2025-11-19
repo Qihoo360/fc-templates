@@ -9,9 +9,9 @@ vars:
   functionName: {{functionName}}
   oneapiUrl: {{oneapiUrl}}
   chatApiKey: {{chatApiKey}}
-  mongodbUrl: {{MONGO_URL}}
-  milvusAddress: {{MILVUS_URL}}
-  milvusToken: {{MILVUS_TOKEN}}
+  MONGO_URL: {{MONGO_URL}}
+  MILVUS_URL: {{MILVUS_URL}}
+  MILVUS_TOKEN: {{MILVUS_TOKEN}}
 resources:
   sandbox:
     component: ${path('/utils/components/zfc')}
@@ -83,9 +83,9 @@ resources:
       environmentVariables:
         ONEAPI_URL: ${vars.oneapiUrl}
         CHAT_API_KEY: ${vars.chatApiKey}
-        MONGODB_URI: ${vars.mongodbUrl}
-        MILVUS_ADDRESS: ${vars.milvusAddress}
-        MILVUS_TOKEN: ${vars.milvusToken}
+        MONGODB_URI: ${vars.MONGO_URL}
+        MILVUS_ADDRESS: ${vars.MILVUS_URL}
+        MILVUS_TOKEN: ${vars.MILVUS_TOKEN}
         SANDBOX_URL: "http://${resources.sandbox.output.http_trigger_url}"
         DB_MAX_LINK: 5
         DEFAULT_ROOT_PSW: 123456

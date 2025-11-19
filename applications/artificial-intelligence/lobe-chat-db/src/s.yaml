@@ -6,7 +6,7 @@ vars:
   FunctionName: {{FunctionName}}
   Describe: {{Description}}
   NEXT_PUBLIC_SERVICE_MODE: {{NEXT_PUBLIC_SERVICE_MODE}}
-  DATABASE_URL: {{MYSQL_URL}}
+  MYSQL_URL: {{MYSQL_URL}}
   AUTH_CASDOOR_ISSUER: {{AUTH_CASDOOR_ISSUER}}
   AUTH_CASDOOR_ID: {{AUTH_CASDOOR_ID}}
   AUTH_CASDOOR_SECRET: {{AUTH_CASDOOR_SECRET}}
@@ -38,7 +38,7 @@ resources:
       environmentVariables:
         testkey: "testvalue"
         NEXT_PUBLIC_SERVICE_MODE: "${vars.NEXT_PUBLIC_SERVICE_MODE}"
-        DATABASE_URL: "${vars.DATABASE_URL}"
+        DATABASE_URL: "${vars.MYSQL_URL}"
         AUTH_CASDOOR_ISSUER: "${vars.AUTH_CASDOOR_ISSUER}"
         AUTH_CASDOOR_ID: "${vars.AUTH_CASDOOR_ID}"
         AUTH_CASDOOR_SECRET: "${vars.AUTH_CASDOOR_SECRET}"
