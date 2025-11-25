@@ -9,8 +9,10 @@ vars:
   bishengBackendDescription: {{bishengBackendDescription}}
   bishengFrontendFunctionName: {{bishengFrontendFunctionName}}
   bishengFrontendDescription: {{bishengFrontendDescription}}
-  elasticsearchUrl: {{ELASTICSEARCH_URL}}
-  elasticsearchSslVerify: {{ELASTICSEARCH_SSL_VERIFY}}
+  ELASTICSEARCH_HOST: {{ELASTICSEARCH_HOST}}
+  ELASTICSEARCH_PORT: {{ELASTICSEARCH_PORT}}
+  ELASTICSEARCH_USERNAME: {{ELASTICSEARCH_USERNAME}}
+  ELASTICSEARCH_PASSWORD: {{ELASTICSEARCH_PASSWORD}}
   MILVUS_HOST: {{MILVUS_HOST}}
   MILVUS_PORT: {{MILVUS_PORT}}
   MILVUS_USERNAME: {{MILVUS_USERNAME}}
@@ -95,8 +97,8 @@ resources:
         min: 1
         max: 300
       environmentVariables:
-        BS_ELASTICSEARCH_SSL_VERIFY: '${vars.elasticsearchSslVerify}'
-        BS_ELASTICSEARCH_URL: ${vars.elasticsearchUrl}
+        BS_ELASTICSEARCH_SSL_VERIFY: '{"basic_auth": ("${vars.ELASTICSEARCH_USERNAME}", "${vars.ELASTICSEARCH_PASSWORD}")}'
+        BS_ELASTICSEARCH_URL: http://${vars.ELASTICSEARCH_HOST}:${vars.ELASTICSEARCH_PORT}/
         BS_MILVUS_CONNECTION_ARGS: '{"host":"${vars.MILVUS_HOST}","port":"${vars.MILVUS_PORT}","user":"${vars.MILVUS_USERNAME}","password":"${vars.MILVUS_PASSWORD}","secure":${vars.milvusSecure}}'
         BS_MILVUS_IS_PARTITION: ${vars.milvusIsPartition}
         BS_MILVUS_PARTITION_SUFFIX: ${vars.milvusPartitionSuffiix}
