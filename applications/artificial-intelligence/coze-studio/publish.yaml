@@ -31,28 +31,33 @@ Parameters:
   - pluginAesStateSecret
   - pluginAesOauthTokenSecret
   - ObjectStorage
-  - s3Endpoint
-  - s3AccessKey
-  - s3SecretKey
-  - s3Region
-  - s3Bucket
+  - S3_ENDPOINT
+  - S3_AK
+  - S3_SK
+  - S3_REGION
+  - S3_BUCKET
   - CacheDB
-  - redisAddr
-  - redisPasswd
+  - REDIS_HOST
+  - REDIS_PORT
+  - REDIS_PASSWORD
   - DataBase
-  - mysqlHost
-  - mysqlPort
-  - mysqlDatabase
-  - mysqlUser
-  - mysqlPasswd
+  - MYSQL_HOST
+  - MYSQL_PORT
+  - MYSQL_DATABASE
+  - MYSQL_USERNAME
+  - MYSQL_PASSWORD
   - MQ
   - mqNamesvrAddr
   - VectorDB
-  - milvusAddress
-  - milvusUser
-  - milvusPasswd
-  - elasticsearchUrl
-  - elasticsearchVersion
+  - MILVUS_HOST
+  - MILVUS_PORT
+  - MILVUS_USERNAME
+  - MILVUS_PASSWORD
+  - ELASTICSEARCH_HOST
+  - ELASTICSEARCH_PORT
+  - ELASTICSEARCH_USERNAME
+  - ELASTICSEARCH_PASSWORD
+  - ELASTICSEARCH_VERSION
   - embeddingType
   - embeddingMaxBatchSize
   - openaiEmbeddingBaseUrl
@@ -216,7 +221,7 @@ Parameters:
     #   x-placeholder: 请输入 minio Region
     #   x-formitem:
     #     type: input
-    s3AccessKey:
+    S3_AK:
       type: secret
       default: ""
       description: ""
@@ -226,7 +231,7 @@ Parameters:
       x-placeholder: 请输入 s3 Accesskey
       x-formitem:
         type: input
-    s3SecretKey:
+    S3_SK:
       type: secret
       default: ""
       description: ""
@@ -236,7 +241,7 @@ Parameters:
       x-placeholder: 请输入 s3SecretKey
       x-formitem:
         type: input
-    s3Endpoint:
+    S3_ENDPOINT:
       type: string
       default: ""
       description: ""
@@ -247,7 +252,7 @@ Parameters:
       x-placeholder: 请输入 s3 endpoint
       x-formitem:
         type: input
-    s3Region:
+    S3_REGION:
       type: string
       default: ""
       description: ""
@@ -257,7 +262,7 @@ Parameters:
       x-placeholder: 请输入 s3 region
       x-formitem:
         type: input
-    s3Bucket:
+    S3_BUCKET:
       type: string
       default: ""
       description: ""
@@ -280,26 +285,48 @@ Parameters:
       x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
-    redisAddr:
-      # title: DifyRedisUserName
+    REDIS_PASSWORD:
+      # title: DifyRedisPassword
+      type: secret
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入Redis密码
+      x-formitem:
+        type: input
+    REDIS_HOST:
+      # title: REDIS_HOST
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
-      x-placeholder: 请输入 redis host:port
+      x-placeholder: 请输入Redis主机地址
       x-formitem:
         type: input
-    redisPasswd:
-      # title: DifyRedisUserName
-      type: secret
+    REDIS_PORT:
+      # title: REDIS_PORT
+      type: string
       default: ""
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
-      x-placeholder: 请输入 redis password
+      x-placeholder: 请输入Redisd主机端口
+      x-formitem:
+        type: input
+    REDIS_DATABASE:
+      # title: REDIS_DATABASE
+      type: string
+      default: "0"
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入Redis数据库
       x-formitem:
         type: input
     DataBase:
@@ -315,7 +342,7 @@ Parameters:
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
-    mysqlHost:
+    MYSQL_HOST:
       # title: 数据库名 Host
       type: string
       default: ""
@@ -326,7 +353,7 @@ Parameters:
       x-placeholder: 请输入 mysql host
       x-formitem:
         type: input
-    mysqlPort:
+    MYSQL_PORT:
       # title: 数据库名 Host
       type: string
       default: ""
@@ -337,7 +364,7 @@ Parameters:
       x-placeholder: 请输入 mysql port
       x-formitem:
         type: input
-    mysqlDatabase:
+    MYSQL_DATABASE:
       # title: 数据库名 Host
       type: string
       default: "opencoze"
@@ -348,7 +375,7 @@ Parameters:
       x-placeholder: 请输入 mysql database
       x-formitem:
         type: input
-    mysqlUser:
+    MYSQL_USERNAME:
       # title: 数据库名 Host
       type: string
       default: ""
@@ -359,7 +386,7 @@ Parameters:
       x-placeholder: 请输入 mysql user
       x-formitem:
         type: input
-    mysqlPasswd:
+    MYSQL_PASSWORD:
       # title: 数据库名 Host
       type: secret
       default: ""
@@ -425,7 +452,7 @@ Parameters:
       x-placeholder: 请选择向量数据库类型
       x-formitem:
         type: select
-    milvusAddress:
+    MILVUS_HOST:
       # title: milvus 向量库连接参数
       type: string
       default: ""
@@ -434,10 +461,22 @@ Parameters:
       x-cate: applicationCate
       x-label: 向量数据库配置
       x-restype: milvus
-      x-placeholder: milvus host:port
+      x-placeholder: milvus 实例地址
       x-formitem:
         type: input
-    milvusUser:
+    MILVUS_PORT:
+      # title: milvus 向量库连接参数
+      type: string
+      default: ""
+      pattern: ".*"
+      description: ""
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-restype: milvus
+      x-placeholder: milvus 实例端口
+      x-formitem:
+        type: input
+    MILVUS_USERNAME:
       # title: milvus token
       type: string
       default: ""
@@ -448,7 +487,7 @@ Parameters:
       x-placeholder: milvus user
       x-formitem:
         type: input
-    milvusPasswd:
+    MILVUS_PASSWORD:
       # title: milvus token
       type: secret
       default: ""
@@ -459,17 +498,27 @@ Parameters:
       x-placeholder: milvus password
       x-formitem:
         type: input
-    elasticsearchUrl:
+    ELASTICSEARCH_HOST:
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
       x-label: Elasticsearch配置
       x-restype: elasticsearch
-      x-placeholder: 请输入Elasticsearch url
+      x-placeholder: 请输入Elasticsearch 实例地址
       x-formitem:
         type: input
-    elasticsearchUsername:
+    ELASTICSEARCH_PORT:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: Elasticsearch配置
+      x-restype: elasticsearch
+      x-placeholder: 请输入Elasticsearch 实例地址
+      x-formitem:
+        type: input
+    ELASTICSEARCH_USERNAME:
       type: string
       default: ""
       description: ""
@@ -479,7 +528,7 @@ Parameters:
       x-placeholder: 请输入Elasticsearch username
       x-formitem:
         type: input
-    elasticsearchPasswd:
+    ELASTICSEARCH_PASSWORD:
       type: secret
       default: ""
       description: ""
@@ -489,7 +538,7 @@ Parameters:
       x-placeholder: 请输入Elasticsearch passwd
       x-formitem:
         type: input
-    elasticsearchVersion:
+    ELASTICSEARCH_VERSION:
       type: string
       default: "v8"
       description: ""
@@ -518,7 +567,7 @@ Parameters:
       pattern: "https?.*$"
       x-cate: applicationCate
       x-label: embedding配置
-      x-restype: llm-apikey
+      # x-restype: llm-apikey
       x-placeholder: 请输入 openai Embedding BaseUrl
       x-formitem:
         type: input
@@ -529,7 +578,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      x-restype: llm-apikey
+      # x-restype: llm-apikey
       x-placeholder: 请输入 openai Embedding Model
       x-formitem:
         type: input
@@ -540,7 +589,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      x-restype: llm-apikey
+      # x-restype: llm-apikey
       x-placeholder: 请输入 openai Embedding ApiKey
       x-formitem:
         type: input
@@ -551,7 +600,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      x-restype: llm-apikey
+      # x-restype: llm-apikey
       x-placeholder: 请输入 openai embedding dimensions
       x-formitem:
         type: input
@@ -562,7 +611,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      x-restype: llm-apikey
+      # x-restype: llm-apikey
       x-placeholder: 请输入 embedding max batch size
       x-formitem:
         type: input
