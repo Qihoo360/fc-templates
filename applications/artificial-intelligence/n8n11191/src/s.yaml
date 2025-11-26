@@ -5,6 +5,9 @@ vars:
   region: {{ region }}
   functionName: {{functionName}}
   description: {{description}}
+  PolefsVolume: {{POLEFS_VOLUME}}
+  MountDir: {{POLEFS_MOUNT_PATH}}
+  VolCreateUser: {{PolefsVolumeCreateUser}}
 resources:
   n8n-service:
     component: ${path('/utils/components/zfc')}
@@ -28,7 +31,7 @@ resources:
       startCmd: ""
       requestEntryDescribe: ""
       environmentVariables:
-        testkey: testvalue
+        N8N_PROTOCOL: https
       logConfig:
         isOpen: false
       scale:
@@ -52,3 +55,7 @@ resources:
               - PATCH
             disable_url_internet: true
             auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.PolefsVolume}
+          mountDir: ${vars.MountDir}
+          createUserName: ${vars.VolCreateUser}

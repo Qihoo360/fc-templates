@@ -16,7 +16,7 @@ n8n 是一个工作流自动化平台，为技术团队提供了代码的灵活�
 
 ## 部署 & 体验
 
-- 通过 智汇云官网 -> 产品列表 -> Serverless开发 -> 函数计算 FC，部署该应用。
+- 通过 智汇云官网 -> 产品列表 -> Serverless 开发 -> 函数计算 FC，部署该应用。
 
 ## 案例介绍
 
@@ -24,8 +24,16 @@ n8n 是一个工作流自动化平台，为技术团队提供了代码的灵活�
 
 ![image-202408061552222](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/n8n11191/src/n8n/assets/n8n-screenshot.png?raw=true)
 
-
 ## 使用流程
+
+### 📌 配置
+
+> 请在开始使用之前进行如下设置。否则，请先备份 **n8n** 内的相关配置，再进行变量更新。
+
+- 应用启动成功以后，跳转到 **函数计算** 页面修改环境变量，主要涉及添加如下环境变量：
+
+  - `N8N_EDITOR_BASE_URL`: n8n 应用在函数计算实例的 `https` 触发器地址
+  - `N8N_HOST`: n8n 应用在函数计算实例的 host
 
 ### 📖 文档
 
