@@ -5,9 +5,12 @@ vars:
   region: {{ region }}
   functionName: {{functionName}}
   description: {{description}}
-  PolefsVolume: {{POLEFS_VOLUME}}
-  MountDir: {{POLEFS_MOUNT_PATH}}
-  VolCreateUser: {{PolefsVolumeCreateUser}}
+  DBSCHEME: {{DBSCHEME}}
+  DBUserName: {{POSTGRES_USERNAME}}
+  DBPassword: {{POSTGRES_PASSWORD}}
+  DBHost: {{POSTGRES_HOST}}
+  DBPort: {{POSTGRES_PORT}}
+  DBDataBase: {{POSTGRES_DATABASE}}
 resources:
   n8n-service:
     component: ${path('/utils/components/zfc')}
@@ -32,6 +35,12 @@ resources:
       requestEntryDescribe: ""
       environmentVariables:
         N8N_PROTOCOL: https
+        DB_TYPE: ${vars.DBSCHEME}
+        DB_POSTGRESDB_HOST: ${vars.DBHost}
+        DB_POSTGRESDB_PORT: ${vars.DBPort}
+        DB_POSTGRESDB_DATABASE: ${vars.DBDataBase}
+        DB_POSTGRESDB_USER: ${vars.DBUserName}
+        DB_POSTGRESDB_PASSWORD: ${vars.DBPassword}
       logConfig:
         isOpen: false
       scale:
