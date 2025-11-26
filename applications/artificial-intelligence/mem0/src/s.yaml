@@ -5,25 +5,26 @@ vars:
   region: {{region}}
   mem0FunctionName : {{mem0FunctionName}}
   mem0Description : {{mem0Description}}
-  Mem0RedisDataBase: {{Mem0RedisDataBase}}
-  Mem0RedisPassword: {{Mem0RedisPassword}}
-  Mem0RedisHost: {{Mem0RedisHost}}
-  Mem0RedisPort: {{Mem0RedisPort}}
+
+  REDIS_PASSWORD: {{REDIS_PASSWORD}}
+  REDIS_HOST: {{REDIS_HOST}}
+  REDIS_PORT: {{REDIS_PORT}}
+
   Mem0Neo4jDataBase: {{Mem0Neo4jDataBase}}
   Mem0Neo4jHost: {{Mem0Neo4jHost}}
   Mem0Neo4jPort: {{Mem0Neo4jPort}}
   Mem0Neo4jUser: {{Mem0Neo4jUser}}
   Mem0Neo4jDbname: {{Mem0Neo4jDbname}}
   Mem0Neo4jDbPassword: {{Mem0Neo4jDbPassword}}
-  OpenaiApiBaseUrl: {{OpenaiApiBaseUrl}}
-  OpenaiApiKey: {{OpenaiApiKey}}
-  OpenaiModel: {{OpenaiModel}}
+  OPENAI_URL: {{OPENAI_URL}}
+  OPENAI_API_KEY: {{OPENAI_API_KEY}}
+  OPENAI_MODELNAME: {{OPENAI_MODELNAME}}
   OpenaiEmbeddingModel: {{OpenaiEmbeddingModel}}
   OpenaiMaxTokens: {{OpenaiMaxTokens}}
   OpenaiTemperature: {{OpenaiTemperature}}
   OpenaiEmbeddingDims: {{OpenaiEmbeddingDims}}
-  PolefsVolume: {{PolefsVolume}}
-  MountDir: {{MountDir}}
+  POLEFS_VOLUME: {{POLEFS_VOLUME}}
+  POLEFS_MOUNT_PATH: {{POLEFS_MOUNT_PATH}}
   VolCreateUser: {{PolefsVolumeCreateUser}}
 resources:
   Mem0:
@@ -78,6 +79,6 @@ resources:
             disable_url_internet: true
             auth_config: ""
       nasConfig:
-        - volumeUniqueName: ${vars.PolefsVolume}
-          mountDir: ${vars.MountDir}
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
+          mountDir: ${vars.POLEFS_MOUNT_PATH}
           createUserName: ${vars.VolCreateUser}

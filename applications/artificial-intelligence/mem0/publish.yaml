@@ -25,25 +25,25 @@ Parameters:
   - region
   - mem0FunctionName
   - Mem0RedisDataBase
-  - Mem0RedisPassword
-  - Mem0RedisHost
-  - Mem0RedisPort
+  - REDIS_PASSWORD
+  - REDIS_HOST
+  - REDIS_PORT
   - Mem0Neo4jDataBase
   - Mem0Neo4jHost
   - Mem0Neo4jPort
   - Mem0Neo4jUser
   - Mem0Neo4jDbPassword
   - Mem0Neo4jDbname
-  - OpenaiApiBaseUrl
-  - OpenaiApiKey
-  - OpenaiModel
+  - OPENAI_URL
+  - OPENAI_API_KEY
+  - OPENAI_MODELNAME
   - OpenaiEmbeddingModel
   - OpenaiMaxTokens
   - OpenaiTemperature
   - OpenaiEmbeddingDims
   - FileStorage
-  - PolefsVolume
-  - MountDir
+  - POLEFS_VOLUME
+  - POLEFS_MOUNT_PATH
   - PolefsVolumeCreateUse
   properties:
     region:
@@ -89,7 +89,7 @@ Parameters:
       x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
-    Mem0RedisHost:
+    REDIS_HOST:
       type: string
       default: ""
       description: ""
@@ -99,7 +99,7 @@ Parameters:
       x-placeholder: 请输入redis主机地址
       x-formitem:
         type: input
-    Mem0RedisPort:
+    REDIS_PORT:
       type: string
       default: ""
       description: ""
@@ -109,7 +109,7 @@ Parameters:
       x-placeholder: 请输入redis主机端口
       x-formitem:
         type: input
-    Mem0RedisPassword:
+    REDIS_PASSWORD:
       type: secret
       default: "123456"
       description: ""
@@ -181,7 +181,7 @@ Parameters:
       x-placeholder: 请输入数据库名称
       x-formitem:
         type: input
-    OpenaiApiBaseUrl:
+    OPENAI_URL:
       # title: OpenaiApiBaseUrl
       type: string
       default: ""
@@ -192,7 +192,7 @@ Parameters:
       x-placeholder: 请输入OpenaiApiBaseUrl
       x-formitem:
         type: input
-    OpenaiApiKey:
+    OPENAI_API_KEY:
       # title: OpenaiApiKey
       type: secret
       default: "123456"
@@ -203,7 +203,7 @@ Parameters:
       x-placeholder: 请输入OpenaiApiKey
       x-formitem:
         type: input
-    OpenaiModel:
+    OPENAI_MODELNAME:
       # title: OpenaiModel
       type: string
       default: "360-deepseek-v3"
@@ -271,7 +271,7 @@ Parameters:
       x-placeholder: 请选择文件存储类型
       x-formitem:
         type: select
-    PolefsVolume:
+    POLEFS_VOLUME:
       # title: 函数挂载 PoleFS 卷名称
       type: string
       default: ""
@@ -286,7 +286,7 @@ Parameters:
       x-formitem:
         type: select
         name: volume_unique_name
-    MountDir:
+    POLEFS_MOUNT_PATH:
       # title: 函数挂载路径
       type: string
       description: ""
