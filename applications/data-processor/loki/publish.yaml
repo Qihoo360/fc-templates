@@ -5,34 +5,35 @@ Type: Project
 Effective: Public
 Name: loki-v3
 Provider:
-  - fc
+- fc
 Version: 0.0.3
 Description: 这是通过Loki创建的水平可扩展、高可用给、多租户日志聚合系统的示例
 HomePage: https://github.com/Qihoo360/fc-templates/applications/data-processor/loki
 Organization: 函数计算（FC）
 Tags:
-  - AI
-  - Custom Runtime
+- AI
+- Custom Runtime
 Category: Web框架
 Service:
   FC:
     Authorities:
-      - 创建函数
+    - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required: # 必填项
-    - region
-    - lokiFunctionName
-    - grafanaFunctionName
-    - ObjectStorage
-    - LokiAwsEndpoint
-    - LokiAwsRegion
-    - LokiAwsBucket
-    - LokiAwsAK
-    - LokiAwsSK
-    - DataBase
-    - MYSQL_URL
+  required:
+  # 必填项
+  - region
+  - lokiFunctionName
+  - grafanaFunctionName
+  - ObjectStorage
+  - S3_ENDPOINT
+  - S3_REGION
+  - S3_BUCKET
+  - S3_AK
+  - S3_SK
+  - DataBase
+  - MYSQL_URL
   properties:
     region:
       title: 地域
@@ -95,59 +96,65 @@ Parameters:
       default: OBS
       description: ""
       enum:
-        - OBS
+      - OBS
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
-    LokiAwsEndpoint:
+    S3_ENDPOINT:
       title: LokiAwsEndpoint
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS端点
       x-formitem:
         type: input
-    LokiAwsRegion:
+    S3_REGION:
       # title: LokiAwsRegion
       type: string
       default: beijing2
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS区域
       x-formitem:
         type: input
-    LokiAwsBucket:
+    S3_BUCKET:
       # title: LokiAwsBucket
       type: string
       default: bucket-loki-test
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS存储桶名
       x-formitem:
         type: input
-    LokiAwsAK:
+    S3_AK:
       # title: LokiAwsAK
       type: secret
       default: "AKIAIOSFODNN7EXAMPLE"
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS AK
       x-formitem:
         type: input
-    LokiAwsSK:
+    S3_SK:
       # title: LokiAwsSK
       type: secret
       default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-restype: s3
       x-placeholder: 请输入OBS SK
       x-formitem:
         type: input
@@ -157,7 +164,7 @@ Parameters:
       default: mysql
       description: ""
       enum:
-        - mysql
+      - mysql
       x-cate: applicationCate
       x-label: Grafana数据库配置
       x-restype: mysql
@@ -166,7 +173,7 @@ Parameters:
         type: select
     MYSQL_URL:
       # title: Mysql数据库地址
-      type: string
+      type: secret
       default: ""
       description: "例如：mysql://user:secret@host:port/database"
       x-cate: applicationCate
