@@ -19,6 +19,7 @@ Parameters:
   # 必填项
   - region
   - functionName
+  - FileStorage
   - POLEFS_VOLUME
   - POLEFS_MOUNT_PATH
   - polefsVolumeCreateUser
