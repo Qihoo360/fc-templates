@@ -109,3 +109,6 @@ PropertyDescription:
   resourceCate:
     title: "资源创建配置"
     description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
