@@ -64,7 +64,3 @@ resources:
               - PATCH
             disable_url_internet: true
             auth_config: ""
-      nasConfig:
-        - volumeUniqueName: ${vars.PolefsVolume}
-          mountDir: ${vars.MountDir}
-          createUserName: ${vars.VolCreateUser}
