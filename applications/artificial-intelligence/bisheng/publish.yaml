@@ -386,7 +386,7 @@ Parameters:
     MYSQL_URL:
       # title: 数据库名 Host
       type: string
-      default: 127.0.0.1
+      default: "mysql://root:password123@127.0.0.1:3306/test_db"
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置

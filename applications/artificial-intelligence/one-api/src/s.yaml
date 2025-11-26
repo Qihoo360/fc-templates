@@ -5,8 +5,8 @@ vars:
   region: {{region}}
   FunctionName: {{FunctionName}}
   Describe: {{Description}}
-  SQL_DSN: {{MYSQL_DSN}}
-  REDIS_CONN_STRING: {{REDIS_URL}}
+  MYSQL_DSN: {{MYSQL_DSN}}
+  REDIS_URL: {{REDIS_URL}}
   SYNC_FREQUENCY: {{SYNC_FREQUENCY}}
   SESSION_SECRET: {{SESSION_SECRET}}
 resources:
@@ -29,8 +29,8 @@ resources:
       sourceSubDir: code/one-api
       environmentVariables:
         testkey: "testvalue"
-        SQL_DSN: "${vars.SQL_DSN}"
-        REDIS_CONN_STRING: "${vars.REDIS_CONN_STRING}"
+        SQL_DSN: "${vars.MYSQL_DSN}"
+        REDIS_CONN_STRING: "${vars.REDIS_URL}"
         SYNC_FREQUENCY: "${vars.SYNC_FREQUENCY}"
         SESSION_SECRET: "${vars.SESSION_SECRET}"
         TIKTOKEN_CACHE_DIR: "/mnt/tiktoken"
