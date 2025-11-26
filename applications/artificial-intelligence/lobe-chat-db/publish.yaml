@@ -26,8 +26,14 @@ Parameters:
   - region
   - FunctionName
   - DataBase
+  - MYSQL_URL
   - NEXT_PUBLIC_SERVICE_MODE
   - ObjectStorage
+  - S3_ENDPOINT
+  - S3_REGION
+  - S3_BUCKET
+  - S3_AK
+  - S3_SK
   properties:
     region:
       title: 地域
@@ -79,7 +85,8 @@ Parameters:
       x-placeholder: 请输入自定义域名
       x-formitem:
         type: input
-    DataBase:
+    DataBase
+    - MYSQL_URL:
       # title: 数据库配置
       type: string
       default: mysql
@@ -179,18 +186,17 @@ Parameters:
       x-placeholder: 请输入存储桶名
       x-formitem:
         type: input
-    S3_ACCESS_KEY_ID:
-      # title: S3_ACCESS_KEY_ID
+    S3_AK:
       type: secret
       default: "AKIAIOSFODNN7EXAMPLE"
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
-      x-placeholder: S3_ACCESS_KEY_ID
+      x-placeholder: S3_ACCESS_KEY
       x-formitem:
         type: input
-    S3_SECRET_ACCESS_KEY:
+    S3_SK:
       # title: S3_SECRET_ACCESS_KEY
       type: secret
       default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
