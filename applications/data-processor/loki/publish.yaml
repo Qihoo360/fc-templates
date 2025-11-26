@@ -27,11 +27,11 @@ Parameters:
   - lokiFunctionName
   - grafanaFunctionName
   - ObjectStorage
-  - LokiAwsEndpoint
-  - LokiAwsRegion
-  - LokiAwsBucket
-  - LokiAwsAK
-  - LokiAwsSK
+  - S3_ENDPOINT
+  - S3_REGION
+  - S3_BUCKET
+  - S3_AK
+  - S3_SK
   - DataBase
   - MYSQL_URL
   properties:
@@ -98,7 +98,7 @@ Parameters:
       x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
-    LokiAwsEndpoint:
+    S3_ENDPOINT:
       title: LokiAwsEndpoint
       type: string
       default: ""
@@ -109,7 +109,7 @@ Parameters:
       x-placeholder: 请输入OBS端点
       x-formitem:
         type: input
-    LokiAwsRegion:
+    S3_REGION:
       # title: LokiAwsRegion
       type: string
       default: beijing2
@@ -120,7 +120,7 @@ Parameters:
       x-placeholder: 请输入OBS区域
       x-formitem:
         type: input
-    LokiAwsBucket:
+    S3_BUCKET:
       # title: LokiAwsBucket
       type: string
       default: bucket-loki-test
@@ -131,7 +131,7 @@ Parameters:
       x-placeholder: 请输入OBS存储桶名
       x-formitem:
         type: input
-    LokiAwsAK:
+    S3_AK:
       # title: LokiAwsAK
       type: secret
       default: "AKIAIOSFODNN7EXAMPLE"
@@ -142,7 +142,7 @@ Parameters:
       x-placeholder: 请输入OBS AK
       x-formitem:
         type: input
-    LokiAwsSK:
+    S3_SK:
       # title: LokiAwsSK
       type: secret
       default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"

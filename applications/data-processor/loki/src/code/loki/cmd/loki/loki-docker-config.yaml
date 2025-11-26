@@ -18,12 +18,12 @@ common:
 
 storage_config:
   aws:
-    endpoint: {{.LokiAwsEndpoint}}
+    endpoint: {{.S3_ENDPOINT}}
     insecure: true
-    region: {{.LokiAwsRegion}}
-    bucketnames: {{.LokiAwsBucket}}
-    access_key_id: {{.LokiAwsAK}}
-    secret_access_key: {{.LokiAwsSK}}
+    region: {{.S3_REGION}}
+    bucketnames: {{.S3_BUCKET}}
+    access_key_id: {{.S3_AK}}
+    secret_access_key: {{.S3_SK}}
     s3forcepathstyle: true
 
 schema_config:
