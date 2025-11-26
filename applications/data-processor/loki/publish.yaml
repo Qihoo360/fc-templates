@@ -168,7 +168,7 @@ Parameters:
         type: select
     MYSQL_URL:
       # title: Mysql数据库地址
-      type: string
+      type: secret
       default: ""
       description: "例如：mysql://user:secret@host:port/database"
       x-cate: applicationCate
