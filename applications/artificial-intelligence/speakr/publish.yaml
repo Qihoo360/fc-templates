@@ -105,7 +105,7 @@ Parameters:
       default: ""
       pattern: "http.*"
       description: ""
-      x-restype: llm-apikey
+      x-restype: openai
       x-cate: applicationCate
       x-label: LLM api配置
       x-placeholder: LLM BaseUrl
@@ -117,7 +117,7 @@ Parameters:
       default: "123456"
       pattern: ".*"
       description: ""
-      x-restype: llm-apikey
+      x-restype: openai
       x-cate: applicationCate
       x-label: LLM api配置
       x-placeholder: LLM ApiKey
@@ -130,7 +130,7 @@ Parameters:
       pattern: ".*"
       description: ""
       x-cate: applicationCate
-      x-restype: llm-apikey
+      x-restype: openai
       x-label: LLM api配置
       x-placeholder: LLM 模型名称
       x-formitem:
@@ -142,7 +142,7 @@ Parameters:
       pattern: ".*"
       description: ""
       x-cate: applicationCate
-      x-restype: llm-apikey
+      x-restype: openai
       x-label: 语音识别大模型 api配置
       x-placeholder: 语音识别大模型 BaseUrl
       x-formitem:
@@ -153,7 +153,7 @@ Parameters:
       default: "123456"
       pattern: ".*"
       description: ""
-      x-restype: llm-apikey
+      x-restype: openai
       x-cate: applicationCate
       x-label: 语音识别大模型 api配置
       x-placeholder: 语音识别大模型 ApiKey
@@ -165,7 +165,7 @@ Parameters:
       default: ""
       pattern: ".*"
       description: ""
-      x-restype: llm-apikey
+      x-restype: openai
       x-cate: applicationCate
       x-label: 语音识别大模型 api配置
       x-placeholder: 语音识别大模型 模型名称

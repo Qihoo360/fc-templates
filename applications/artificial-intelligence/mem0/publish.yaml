@@ -187,7 +187,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: Openai
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: 请输入OpenaiApiBaseUrl
       x-formitem:
         type: input
@@ -198,7 +198,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: Openai
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: 请输入OpenaiApiKey
       x-formitem:
         type: input
@@ -209,7 +209,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: Openai
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: 请输入OpenaiModel
       x-formitem:
         type: input
@@ -220,7 +220,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: Openai
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: 请输入OpenaiEmbeddingModel
       x-formitem:
         type: input
@@ -231,7 +231,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: Openai
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: 请输入OpenaiMaxTokens
       x-formitem:
         type: input
@@ -242,7 +242,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: Openai
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: 请输入OpenaiTemperature
       x-formitem:
         type: input
@@ -253,7 +253,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: Openai
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: 请输入OpenaiEmbeddingDims
       x-formitem:
         type: input

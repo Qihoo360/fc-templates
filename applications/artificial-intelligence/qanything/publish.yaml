@@ -70,7 +70,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: OpenApi配置
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: OPENAI_URL
       x-formitem:
         type: input
@@ -81,7 +81,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: OpenApi配置
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: OPENAI_API_KEY
       x-formitem:
         type: input
@@ -92,7 +92,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: OpenApi配置
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: OPENAI_MODELNAME
       x-formitem:
         type: input
