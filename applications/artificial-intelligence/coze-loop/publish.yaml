@@ -364,7 +364,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: LLM配置
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: 请输入 base url
       x-formitem:
         type: input
@@ -375,7 +375,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: LLM配置
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: 请输入 model id
       x-formitem:
         type: input
@@ -386,7 +386,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: LLM配置
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: 请输入 apikey
       x-formitem:
         type: input

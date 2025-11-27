@@ -45,9 +45,9 @@
                   "type": "string",
                   "description": "资源类型；",
                   "enum": [
-                    "llm-apikey",
+                    "oneapi",
                     "mysql",
-                    "mongodb",
+                    "mongo",
                     "postgresql",
                     "milvus",
                     "redis",

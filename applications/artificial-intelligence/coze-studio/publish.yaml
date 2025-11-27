@@ -567,7 +567,7 @@ Parameters:
       pattern: "https?.*$"
       x-cate: applicationCate
       x-label: embedding配置
-      # x-restype: llm-apikey
+      # x-restype: openai
       x-placeholder: 请输入 openai Embedding BaseUrl
       x-formitem:
         type: input
@@ -578,7 +578,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      # x-restype: llm-apikey
+      # x-restype: openai
       x-placeholder: 请输入 openai Embedding Model
       x-formitem:
         type: input
@@ -589,7 +589,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      # x-restype: llm-apikey
+      # x-restype: openai
       x-placeholder: 请输入 openai Embedding ApiKey
       x-formitem:
         type: input
@@ -600,7 +600,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      # x-restype: llm-apikey
+      # x-restype: openai
       x-placeholder: 请输入 openai embedding dimensions
       x-formitem:
         type: input
@@ -611,7 +611,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      # x-restype: llm-apikey
+      # x-restype: openai
       x-placeholder: 请输入 embedding max batch size
       x-formitem:
         type: input

@@ -60,7 +60,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: oneapi配置
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: oneapi 地址
       x-formitem:
         type: input
@@ -72,7 +72,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: oneapi配置
-      x-restype: llm-apikey
+      x-restype: openai
       x-placeholder: api key
       x-formitem:
         type: input
