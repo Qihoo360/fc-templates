@@ -45,7 +45,7 @@
                   "type": "string",
                   "description": "资源类型；",
                   "enum": [
-                    "oneapi",
+                    "openai",
                     "mysql",
                     "mongo",
                     "postgresql",

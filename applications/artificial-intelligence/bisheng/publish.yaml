@@ -271,7 +271,7 @@ Parameters:
       - MinIO
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
+      # x-restype: s3
       x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
@@ -281,7 +281,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
+      # x-restype: s3
       x-placeholder: 请输入MinIO Endpoint
       x-formitem:
         type: input
@@ -291,7 +291,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
+      # x-restype: s3
       x-placeholder: 请输入MinIO AccessKey
       x-formitem:
         type: input
@@ -301,7 +301,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
+      # x-restype: s3
       x-placeholder: 请输入MinIO SecretKey
       x-formitem:
         type: input
@@ -311,7 +311,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
+      # x-restype: s3
       x-placeholder: 请输入MinIO 是否验证证书
       x-formitem:
         type: input
@@ -321,7 +321,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
+      # x-restype: s3
       x-placeholder: 请输入MinIO Schema
       x-formitem:
         type: input
@@ -331,7 +331,7 @@ Parameters:
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
-      x-restype: s3
+      # x-restype: s3
       x-placeholder: 请输入MinIO SharePoin
       x-formitem:
         type: input
