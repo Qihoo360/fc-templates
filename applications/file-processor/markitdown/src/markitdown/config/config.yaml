@@ -1,6 +1,6 @@
 obs:
-  ak: {{.accessKey}}
-  sk: {{.secretKey}}
-  bucket_name: {{.bucketName}}
-  region: {{.bucketRegion}}
-  endpoint: {{.bucketEndpoint}}
+  ak: {{.S3_AK}}
+  sk: {{.S3_SK}}
+  bucket_name: {{.S3_BUCKET}}
+  region: {{.S3_REGION}}
+  endpoint: {{.S3_ENDPOINT}}
