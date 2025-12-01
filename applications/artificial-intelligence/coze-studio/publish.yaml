@@ -60,9 +60,9 @@ Parameters:
   - ELASTICSEARCH_VERSION
   - embeddingType
   - embeddingMaxBatchSize
-  - openaiEmbeddingBaseUrl
-  - openaiEmbeddingModel
-  - openaiEmbeddingApiKey
+  - OPENAI_URL
+  - OPENAI_MODELNAME
+  - OPENAI_API_KEY
   - openaiEmbeddingDims
   properties:
     region:
@@ -560,36 +560,36 @@ Parameters:
       x-placeholder: 请选择 embedding 类型
       x-formitem:
         type: select
-    openaiEmbeddingBaseUrl:
+    OPENAI_URL:
       type: string
       default: ""
       description: ""
       pattern: "https?.*$"
       x-cate: applicationCate
       x-label: embedding配置
-      # x-restype: openai
+      x-restype: openai
       x-placeholder: 请输入 openai Embedding BaseUrl
       x-formitem:
         type: input
-    openaiEmbeddingModel:
+    OPENAI_MODELNAME:
       # title: DifyRedisUserName
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      # x-restype: openai
+      x-restype: openai
       x-placeholder: 请输入 openai Embedding Model
       x-formitem:
         type: input
-    openaiEmbeddingApiKey:
+    OPENAI_API_KEY:
       # title: DifyRedisUserName
       type: secret
       default: ""
       description: ""
       x-cate: applicationCate
       x-label: embedding配置
-      # x-restype: openai
+      x-restype: openai
       x-placeholder: 请输入 openai Embedding ApiKey
       x-formitem:
         type: input

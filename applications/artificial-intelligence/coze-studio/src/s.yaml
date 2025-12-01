@@ -46,9 +46,9 @@ vars:
 
   embeddingType: { { embeddingType } }
   embeddingMaxBatchSize: { { embeddingMaxBatchSize } }
-  openaiEmbeddingBaseUrl: { { openaiEmbeddingBaseUrl } }
-  openaiEmbeddingModel: { { openaiEmbeddingModel } }
-  openaiEmbeddingApiKey: { { openaiEmbeddingApiKey } }
+  OPENAI_URL: { { OPENAI_URL } }
+  OPENAI_MODELNAME: { { OPENAI_MODELNAME } }
+  OPENAI_API_KEY: { { OPENAI_API_KEY } }
   openaiEmbeddingDims: { { openaiEmbeddingDims } }
 resources:
   cozestudioBackend:
@@ -110,9 +110,9 @@ resources:
         MILVUS_PASSWD: ${vars.MILVUS_PASSWORD}
         EMBEDDING_TYPE: ${vars.embeddingType}
         EMBEDDING_MAX_BATCH_SIZE: ${vars.embeddingMaxBatchSize}
-        OPENAI_EMBEDDING_BASE_URL: ${vars.openaiEmbeddingBaseUrl}
-        OPENAI_EMBEDDING_MODEL: ${vars.openaiEmbeddingModel}
-        OPENAI_EMBEDDING_API_KEY: ${vars.openaiEmbeddingApiKey}
+        OPENAI_EMBEDDING_BASE_URL: ${vars.OPENAI_URL}
+        OPENAI_EMBEDDING_MODEL: ${vars.OPENAI_MODELNAME}
+        OPENAI_EMBEDDING_API_KEY: ${vars.OPENAI_API_KEY}
         OPENAI_EMBEDDING_DIMS: ${vars.openaiEmbeddingDims}
         OPENAI_EMBEDDING_BY_AZURE: "false"
         PLUGIN_AES_AUTH_SECRET: ${vars.pluginAesAuthSecret}
