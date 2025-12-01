@@ -5,7 +5,7 @@ vars:
   region: {{region}}
   FunctionName: {{FunctionName}}
   Describe: {{Description}}
-  driverName: {{driverName}}
+  driverName: {{DataBase}}
   MYSQL_DSN: {{MYSQL_DSN}}
   MYSQL_DATABASE: {{MYSQL_DATABASE}}
 resources:
