@@ -21,14 +21,16 @@ Service:
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
-  required:
-  # 必填项
-  - region
-  - FunctionName
-  - driverName
-  - MYSQL_DSN
-  - DataBase
-  - MYSQL_DATABASE
+  required: # 必填项
+    - region
+    - FunctionName
+    - driverName
+    - DataBase
+    - MYSQL_HOST
+    - MYSQL_PORT
+    - MYSQL_USERNAME
+    - MYSQL_PASSWORD
+    - MYSQL_DATABASE
   properties:
     region:
       title: 地域
@@ -73,15 +75,44 @@ Parameters:
       x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
-    MYSQL_DSN:
-      # title: dataSourceName
+    MYSQL_HOST:
       type: string
       default: ""
-      description: "例如：root:123456@tcp(localhost:3306)/"
+      description: 实例地址或者域名
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: mysql
-      x-placeholder: 请输入数据库地址
+      x-placeholder: 请输入实例地址或者域名
+      x-formitem:
+        type: input
+    MYSQL_PORT:
+      type: string
+      default: "3306"
+      description: 数据库实例端口号
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入实例端口号
+      x-formitem:
+        type: input
+    MYSQL_USERNAME:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入数据库账号
+      x-formitem:
+        type: input
+    MYSQL_PASSWORD:
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入数据库密码
       x-formitem:
         type: input
     MYSQL_DATABASE:

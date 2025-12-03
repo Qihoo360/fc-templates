@@ -6,7 +6,10 @@ vars:
   FunctionName: {{FunctionName}}
   Describe: {{Description}}
   driverName: {{DataBase}}
-  MYSQL_DSN: {{MYSQL_DSN}}
+  MYSQL_HOST: {{MYSQL_HOST}}
+  MYSQL_PORT: {{MYSQL_PORT}}
+  MYSQL_USERNAME: {{MYSQL_USERNAME}}
+  MYSQL_PASSWORD: {{MYSQL_PASSWORD}}
   MYSQL_DATABASE: {{MYSQL_DATABASE}}
 resources:
   casdoor:
@@ -29,7 +32,8 @@ resources:
       environmentVariables:
         testkey: "testvalue"
         driverName: "${vars.driverName}"
-        dataSourceName: "${vars.MYSQL_DSN}"
+        # root:password123@tcp(127.0.0.1:3306)/
+        dataSourceName: "${vars.MYSQL_USERNAME}:${vars.MYSQL_PASSWORD}@tcp(${vars.MYSQL_HOST}:${vars.MYSQL_PORT})/"
         dbName: "${vars.MYSQL_DATABASE}"
         RUNNING_IN_DOCKER: "true"
         runmode: "dev"
