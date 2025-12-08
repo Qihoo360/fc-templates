@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+.github
+
+# 文档
+*.md
+docs/
+
+# 前端
+frontend/node_modules
+frontend/.vscode
+frontend/.idea
+frontend/dist
+frontend/builtin-providers.json
+
+# 后端
+backend/__pycache__
+backend/*.pyc
+backend/.pytest_cache
+backend/venv
+backend/env
+backend/.venv
+backend/data
+backend/logs
+
+# 数据和日志
+data/
+logs/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.log
+*.tmp
+*.bak

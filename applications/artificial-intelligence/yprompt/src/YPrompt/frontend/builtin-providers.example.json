@@ -1,0 +1,108 @@
+[
+  {
+    "type": "openai",
+    "name": "内置 OpenAI",
+    "apiKey": "sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "enabled": true,
+    "models": [
+      {
+        "id": "gpt-4o",
+        "name": "GPT-4o",
+        "enabled": true
+      },
+      {
+        "id": "gpt-4o-mini",
+        "name": "GPT-4o Mini",
+        "enabled": true
+      },
+      {
+        "id": "o1-preview",
+        "name": "o1-preview",
+        "enabled": true
+      },
+      {
+        "id": "o1-mini", 
+        "name": "o1-mini",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "type": "anthropic",
+    "name": "内置 Anthropic",
+    "apiKey": "sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "enabled": true,
+    "models": [
+      {
+        "id": "claude-opus-4-1-20250805",
+        "name": "Claude Opus 4.1",
+        "enabled": false
+      },
+      {
+        "id": "claude-sonnet-4-20250514",
+        "name": "Claude Sonnet 4.0",
+        "enabled": true
+      },
+      {
+        "id": "claude-3-5-sonnet-20241022",
+        "name": "Claude 3.5 Sonnet",
+        "enabled": true
+      },
+      {
+        "id": "claude-3-5-haiku-20241022", 
+        "name": "Claude 3.5 Haiku",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "type": "google",
+    "name": "内置 Google Gemini",
+    "apiKey": "AIzaSyxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "enabled": true,
+    "models": [
+      {
+        "id": "gemini-2.0-flash-lite",
+        "name": "Gemini 2.0 Flash Lite",
+        "enabled": true
+      },
+      {
+        "id": "gemini-1.5-pro",
+        "name": "Gemini 1.5 Pro",
+        "enabled": true
+      },
+      {
+        "id": "gemini-1.5-flash",
+        "name": "Gemini 1.5 Flash",
+        "enabled": true
+      }
+    ]
+  },
+  {
+    "type": "custom",
+    "name": "混合API服务商",
+    "apiKey": "your-unified-api-key",
+    "baseUrl": "https://api.your-provider.com/v1",
+    "enabled": true,
+    "models": [
+      {
+        "id": "custom-gpt-4-turbo",
+        "name": "自定义 GPT-4 Turbo",
+        "enabled": true,
+        "apiType": "openai"
+      },
+      {
+        "id": "custom-claude-3-opus",
+        "name": "自定义 Claude-3 Opus",
+        "enabled": true,
+        "apiType": "anthropic"
+      },
+      {
+        "id": "custom-gemini-pro",
+        "name": "自定义 Gemini Pro",
+        "enabled": true,
+        "apiType": "google"
+      }
+    ]
+  }
+]
