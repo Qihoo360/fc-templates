@@ -1,0 +1,193 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: "3.0.0"
+Type: Project
+Name: YPrompt
+Provider:
+- fc
+Version: 0.0.1
+Description: "快速部署 YPrompt 应用示例"
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/yprompt
+Organization: 函数计算 (FC)
+Effective: Public
+Tags:
+- AI
+- Custom Runtime
+Category: 开发平台
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required:
+  # 函数设置
+  - region
+  - FunctionName
+  - description
+
+  # 控制台设置 (studio)
+  - DOMAIN            # 回调访问域名
+  - ADMIN_USERNAME
+  - ADMIN_PASSWORD
+
+  # 密钥设置
+  - SECRET_KEY
+
+  # 数据库设置
+  - DATABASE_TYPE
+  - MYSQL_HOST
+  - MYSQL_PORT
+  - MYSQL_USERNAME
+  - MYSQL_PASSWORD
+  - MYSQL_DATABASE
+
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: beijing
+      description: 选择应用所在的区域
+      enum:
+      - beijing
+      - test-2
+      - test-3
+      - test-4
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+    FunctionName:
+      title: YPrompt 函数名称
+      type: string
+      default: yprompt-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 最大长度为 3-40 个字符，只能包含小写字母、数字中划线，不能以数字、中划线开头，过滤空格。
+      x-cate: resourceCate
+      x-placeholder: 请输入函数名称
+      x-formitem:
+        type: input
+    description:
+      title: 函数描述信息
+      type: string
+      default: "快速部署 YPrompt 应用示例"
+      pattern: ".{0,255}$"
+      description: 请输入函数描述，最大长度为 255 个字符
+      x-cate: resourceCate
+      x-placeholder: 请输入函数描述
+      x-formitem:
+        type: input
+
+    DOMAIN:
+      type: string
+      default: ""
+      pattern: ".{0,255}$"
+      description: 用于生成链接、回调等，请使用生产级域名（注：需修改解析指向函数）
+      x-cate: applicationCate
+      x-label: 域名设置
+      x-placeholder: 请输入域名
+      x-formitem:
+        type: input
+
+    ADMIN_USERNAME:
+      type: string
+      default: yprompt
+      pattern: ".{0,255}$"
+      description: 控制台登录账号名称，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: 控制台设置
+      x-placeholder: 请输入账号名称
+      x-formitem:
+        type: input
+
+    ADMIN_PASSWORD:
+      type: secret
+      default: yprompt-${default-suffix}
+      pattern: ".{0,255}$"
+      description: 控制台登录密码，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: 控制台设置
+      x-formitem:
+        type: input
+
+    SECRET_KEY:
+      type: secret
+      default: ""
+      pattern: ".{0,255}$"
+      description: 用于生成 API 的 JWT 密钥，最大长度为 255 个字符
+      x-cate: applicationCate
+      x-label: 密钥设置
+      x-placeholder: 请输入 JWT 密钥
+      x-formitem:
+        type: input
+
+    DATABASE_TYPE:
+      title: 数据库类型
+      type: string
+      default: mysql
+      description: "数据库类型"
+      enum:
+      - mysql
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
+    MYSQL_HOST:
+      type: string
+      default: "127.0.0.1"
+      pattern: ".{0,255}$"
+      description: 实例地址
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-formitem:
+        type: input
+    MYSQL_PORT:
+      type: string
+      default: "3306"
+      pattern: ".{0,255}$"
+      description: 实例端口号
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-formitem:
+        type: input
+    MYSQL_USERNAME:
+      type: string
+      default: "yprompt_admin"
+      pattern: ".{0,255}$"
+      description: 数据库账号
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入数据库账号
+      x-formitem:
+        type: input
+    MYSQL_PASSWORD:
+      type: secret
+      default: "yprompt_admin_${default-suffix}"
+      pattern: ".{0,255}$"
+      description: 数据库密码
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: postgresql
+      x-placeholder: 请输入数据库密码
+      x-formitem:
+        type: input
+    MYSQL_DATABASE:
+      type: string
+      default: "yprompt"
+      pattern: ".{0,32}$"
+      description: 数据库名称
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入数据库名称
+      x-formitem:
+        type: input
+
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: ""

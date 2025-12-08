@@ -1,0 +1,8 @@
+.DS_Store
+.claude
+docs/
+./data
+node_modules
+dist
+pnpm-lock.yaml
+#builtin-providers.json

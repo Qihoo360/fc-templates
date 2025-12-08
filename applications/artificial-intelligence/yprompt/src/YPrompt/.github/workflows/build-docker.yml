@@ -1,0 +1,125 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    - name: Install frontend dependencies
+      working-directory: frontend
+      run: npm ci
+
+    - name: Check for builtin providers config
+      id: check_builtin
+      working-directory: frontend
+      run: |
+        echo "🔍 检查内置AI提供商配置文件..."
+        if [ -f "builtin-providers.json" ]; then
+          echo "found=true" >> $GITHUB_OUTPUT
+          echo "✅ 发现 builtin-providers.json，将编译到镜像中"
+          echo "📋 配置预览:"
+          cat builtin-providers.json | head -n 20
+        else
+          echo "found=false" >> $GITHUB_OUTPUT
+          echo "ℹ️  未找到 builtin-providers.json (可选配置)"
+          echo "📦 将构建不包含内置AI提供商的镜像"
+          echo "💡 提示: 如需内置AI提供商，请在 frontend/ 目录创建 builtin-providers.json"
+        fi
+
+    - name: Build frontend
+      working-directory: frontend
+      run: |
+        if [ "${{ steps.check_builtin.outputs.found }}" == "true" ]; then
+          echo "🔧 构建前端 (包含内置AI提供商配置)..."
+        else
+          echo "🔧 构建前端 (不包含内置AI提供商配置)..."
+        fi
+        npm run build
+        echo "✅ 前端构建完成"
+        ls -la dist/
+
+    - name: Prepare build context
+      run: |
+        mkdir -p build-context
+        # 复制前端构建产物
+        cp -r frontend/dist build-context/frontend-dist
+        # 复制后端代码
+        cp -r backend build-context/
+        # 复制Docker相关文件
+        cp Dockerfile build-context/
+        cp start.sh build-context/
+        chmod +x build-context/start.sh
+        
+        # 显示构建摘要
+        if [ "${{ steps.check_builtin.outputs.found }}" == "true" ]; then
+          echo "📦 构建包含内置AI提供商配置"
+        else
+          echo "📦 构建不包含内置AI提供商配置"
+        fi
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      if: github.event_name != 'pull_request'
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.DOCKER }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          # 分支标签
+          type=ref,event=branch
+          # PR标签
+          type=ref,event=pr
+          # 语义化版本标签
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+          # latest标签 - 仅在main分支推送时生成
+          type=raw,value=latest,enable={{is_default_branch}}
+          # commit hash标签
+          type=sha,prefix=sha-
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: build-context
+        platforms: linux/amd64,linux/arm64
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+          VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+          REVISION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}

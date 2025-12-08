@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  yprompt:
+    image: ghcr.io/fish2018/yprompt:latest  
+    container_name: yprompt
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./data:/app/data                        # 持久化数据库与上传文件
+    environment:
+      # 后端服务监听配置（容器内部）
+      - YPROMPT_PORT=8888
+      - YPROMPT_HOST=0.0.0.0                  
+
+      # 对外域名（用于生成链接、OAuth 回调等）
+      - DOMAIN=localhost                        # 生产环境请改为真实域名，如 yprompt.example.com
+
+      # 数据库配置
+      - DB_TYPE=sqlite
+      - SQLITE_DB_PATH=/app/data/yprompt.db     # 容器内的绝对路径（推荐）
+
+      # JWT 密钥（生产环境必须修改为强随机值！）
+      - SECRET_KEY=your-very-secure-secret-key-change-it-in-production!!
+
+      # Linux.do OAuth（可选，如不需要可留空）
+      - LINUX_DO_CLIENT_ID=
+      - LINUX_DO_CLIENT_SECRET=
+      - LINUX_DO_REDIRECT_URI=http://localhost/auth/callback
+
+      # 默认管理员账号（首次启动后建议立即修改）
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=admin123
+
+      # 健康检查间隔（单位：秒）
+      - HEALTH_CHECK_INTERVAL=30
+      - HEALTH_CHECK_TIMEOUT=10
+      - HEALTH_CHECK_RETRIES=3
+    healthcheck:
+      test: ["/app/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    networks:
+      - yprompt-network
+
+networks:
+  yprompt-network:
+    driver: bridge

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="54" height="54" viewBox="0 0 54 54" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#6366f1"/>
+            <stop offset="100%" stop-color="#8b5cf6"/>
+        </linearGradient>
+        
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#4f46e5" flood-opacity="0.3"/>
+        </filter>
+    </defs>
+    
+    <!-- 圆角背景 -->
+    <rect width="54" height="54" rx="12" fill="url(#mainGradient)" filter="url(#shadow)"/>
+    
+    <!-- 主要图标 -->
+    <g transform="translate(27, 27) scale(0.9)">
+        <!-- 对话气泡 -->
+        <path d="M-15,-8 Q-8,-15 0,-15 Q8,-15 15,-8 Q16,-5 16,0 Q16,5 15,8 Q8,15 0,15 Q-8,15 -15,8 Q-16,5 -16,0 Q-16,-5 -15,-8 Z" 
+              fill="white" stroke="#4f46e5" stroke-width="1.2"/>
+        
+        <!-- 思维节点 -->
+        <circle cx="-12" cy="-4" r="2.5" fill="#3b82f6"/>
+        <circle cx="12" cy="-4" r="2.5" fill="#3b82f6"/>
+        <circle cx="0" cy="6" r="2.5" fill="#3b82f6"/>
+        
+        <!-- 连接线 -->
+        <path d="M-7,-3 L-4.5,-1" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M7,-3 L4.5,-1" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M0,-1 L0,4" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/>
+        
+        <!-- 中心AI齿轮 -->
+        <g>
+            <circle cx="0" cy="0" r="3" fill="white" stroke="#8b5cf6" stroke-width="1"/>
+            <path d="M0,-5 L0.5,-4 L-0.5,-4 Z" fill="#8b5cf6" transform="rotate(0)"/>
+            <path d="M0,-5 L0.5,-4 L-0.5,-4 Z" fill="#8b5cf6" transform="rotate(45)"/>
+            <path d="M0,-5 L0.5,-4 L-0.5,-4 Z" fill="#8b5cf6" transform="rotate(90)"/>
+            <path d="M0,-5 L0.5,-4 L-0.5,-4 Z" fill="#8b5cf6" transform="rotate(135)"/>
+        </g>
+    </g>
+</svg>
