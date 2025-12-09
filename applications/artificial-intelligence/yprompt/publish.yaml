@@ -32,12 +32,17 @@ Parameters:
   - SECRET_KEY
 
   # 数据库设置
-  - DATABASE_TYPE
-  - MYSQL_HOST
-  - MYSQL_PORT
-  - MYSQL_USERNAME
-  - MYSQL_PASSWORD
-  - MYSQL_DATABASE
+  # - DATABASE_TYPE
+  # - MYSQL_HOST
+  # - MYSQL_PORT
+  # - MYSQL_USERNAME
+  # - MYSQL_PASSWORD
+  # - MYSQL_DATABASE
+
+  # 持久存储
+  - POLEFS_VOLUME
+  - POLEFS_MOUNT_PATH
+  - POLEFS_VOLUME_CREATE_USER
 
   properties:
     region:
@@ -117,72 +122,116 @@ Parameters:
       x-formitem:
         type: input
 
-    DATABASE_TYPE:
-      title: 数据库类型
+    # DATABASE_TYPE:
+    #   title: 数据库类型
+    #   type: string
+    #   default: mysql
+    #   description: "数据库类型"
+    #   enum:
+    #   - mysql
+    #   x-cate: applicationCate
+    #   x-label: 数据库配置
+    #   x-restype: mysql
+    #   x-placeholder: 请选择数据库类型
+    #   x-formitem:
+    #     type: select
+    # MYSQL_HOST:
+    #   type: string
+    #   default: "127.0.0.1"
+    #   pattern: ".{0,255}$"
+    #   description: 实例地址
+    #   x-cate: applicationCate
+    #   x-label: 数据库配置
+    #   x-restype: mysql
+    #   x-formitem:
+    #     type: input
+    # MYSQL_PORT:
+    #   type: string
+    #   default: "3306"
+    #   pattern: ".{0,255}$"
+    #   description: 实例端口号
+    #   x-cate: applicationCate
+    #   x-label: 数据库配置
+    #   x-restype: mysql
+    #   x-formitem:
+    #     type: input
+    # MYSQL_USERNAME:
+    #   type: string
+    #   default: "yprompt_admin"
+    #   pattern: ".{0,255}$"
+    #   description: 数据库账号
+    #   x-cate: applicationCate
+    #   x-label: 数据库配置
+    #   x-restype: mysql
+    #   x-placeholder: 请输入数据库账号
+    #   x-formitem:
+    #     type: input
+    # MYSQL_PASSWORD:
+    #   type: secret
+    #   default: "yprompt_admin_${default-suffix}"
+    #   pattern: ".{0,255}$"
+    #   description: 数据库密码
+    #   x-cate: applicationCate
+    #   x-label: 数据库配置
+    #   x-restype: postgresql
+    #   x-placeholder: 请输入数据库密码
+    #   x-formitem:
+    #     type: input
+    # MYSQL_DATABASE:
+    #   type: string
+    #   default: "yprompt"
+    #   pattern: ".{0,32}$"
+    #   description: 数据库名称
+    #   x-cate: applicationCate
+    #   x-label: 数据库配置
+    #   x-restype: mysql
+    #   x-placeholder: 请输入数据库名称
+    #   x-formitem:
+    #     type: input
+    FileStorage:
       type: string
-      default: mysql
-      description: "数据库类型"
+      default: Polefs
       enum:
-      - mysql
+      - Polefs
       x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: mysql
-      x-placeholder: 请选择数据库类型
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 请选择文件存储类型
       x-formitem:
         type: select
-    MYSQL_HOST:
+    POLEFS_VOLUME:
       type: string
-      default: "127.0.0.1"
-      pattern: ".{0,255}$"
-      description: 实例地址
+      default: ""
+      description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: mysql
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 函数挂载 PoleFS 卷名称
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: POLEFS_VOLUME_CREATE_USER
       x-formitem:
-        type: input
-    MYSQL_PORT:
+        type: select
+        name: volume_unique_name
+    POLEFS_MOUNT_PATH:
       type: string
-      default: "3306"
-      pattern: ".{0,255}$"
-      description: 实例端口号
+      description: ""
+      default: "/app/data"
       x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: mysql
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 函数挂载路径
       x-formitem:
         type: input
-    MYSQL_USERNAME:
+    POLEFS_VOLUME_CREATE_USER:
       type: string
-      default: "yprompt_admin"
-      pattern: ".{0,255}$"
-      description: 数据库账号
+      default: ""
+      description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: mysql
-      x-placeholder: 请输入数据库账号
-      x-formitem:
-        type: input
-    MYSQL_PASSWORD:
-      type: secret
-      default: "yprompt_admin_${default-suffix}"
-      pattern: ".{0,255}$"
-      description: 数据库密码
-      x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: postgresql
-      x-placeholder: 请输入数据库密码
-      x-formitem:
-        type: input
-    MYSQL_DATABASE:
-      type: string
-      default: "yprompt"
-      pattern: ".{0,32}$"
-      description: 数据库名称
-      x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: mysql
-      x-placeholder: 请输入数据库名称
-      x-formitem:
-        type: input
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 函数挂载的创建用户
+      x-hidden: true
 
 PropertyDescription:
   resourceCate:
