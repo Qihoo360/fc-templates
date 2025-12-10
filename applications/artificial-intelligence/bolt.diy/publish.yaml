@@ -20,6 +20,9 @@ Parameters:
   required: # 必填项
     - region
     - functionName
+    - OPENAI_URL
+    - OPENAI_API_KEY
+    - OPENAI_MODELNAME
   properties:
     region:
       title: 地域
@@ -55,32 +58,28 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
-    apiBaseUrl:
-      # title: api 地址
+    OPENAI_URL:
       type: string
-      default: ""
-      pattern: "http.*"
-      description: ""
+      default: "http://your_api_url:port/v1/"
+      pattern: "^https?://"
+      description: "OPENAI 接口规范: http://your_api_url:port/v1/"
       x-cate: applicationCate
-      x-label: api配置
+      x-label: 大模型配置
       x-restype: openai
-      x-placeholder: 类openai Api地址
+      x-placeholder: OPENAI_URL
       x-formitem:
         type: input
-    chatApiKey:
-      # title: api key
-      type: secret
-      default: "123456"
-      pattern: ".*"
-      description: ""
+    OPENAI_API_KEY:
+      type: string
+      default: ""
+      description: "接口密钥"
       x-cate: applicationCate
-      x-label: api配置
+      x-label: 大模型配置
       x-restype: openai
-      x-placeholder: 类openai ApiKey
+      x-placeholder: OPENAI_API_KEY
       x-formitem:
         type: input
 PropertyDescription:
-  PropertyDescription:
   resourceCate:
     title: "资源创建配置"
     description: ""

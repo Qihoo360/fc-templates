@@ -5,8 +5,8 @@ vars:
   region: {{region}}
   describe: {{description}}
   functionName: {{functionName}}
-  apiBaseUrl: {{apiBaseUrl}}
-  chatApiKey: {{chatApiKey}}
+  OPENAI_URL: {{OPENAI_URL}}
+  OPENAI_API_KEY: {{OPENAI_API_KEY}}
 resources:
   framework:
     component: ${path('/utils/components/zfc')}
@@ -34,8 +34,8 @@ resources:
       environmentVariables:
         NODE_ENV: development
         CHOKIDAR_USEPOLLING: true
-        OPENAI_LIKE_API_BASE_URL: ${vars.apiBaseUrl}
-        OPENAI_LIKE_API_KEY: ${vars.chatApiKey}
+        OPENAI_LIKE_API_BASE_URL: ${vars.OPENAI_URL}
+        OPENAI_LIKE_API_KEY: ${vars.OPENAI_API_KEY}
         VITE_HMR_HOST: localhost
         VITE_HMR_PORT: 5173
         VITE_HMR_PROTOCOL: ws

@@ -8,9 +8,9 @@ vars:
   adminEmail: {{adminEmail}}
   adminUsername: {{adminUsername}}
   adminPassword: {{adminPassword}}
-  llmBaseUrl: {{llmBaseUrl}}
-  llmApiKey: {{llmApiKey}}
-  llmModel: {{llmModel}}
+  OPENAI_URL: {{OPENAI_URL}}
+  OPENAI_API_KEY: {{OPENAI_API_KEY}}
+  OPENAI_MODELNAME: {{OPENAI_MODELNAME}}
   transciptionBaseUrl: {{transciptionBaseUrl}}
   transciptionApiKey: {{transciptionApiKey}}
   whisperModel: {{whisperModel}}
@@ -45,9 +45,9 @@ resources:
         ADMIN_EMAIL: ${vars.adminEmail}
         ADMIN_PASSWORD: ${vars.adminPassword}
         ADMIN_USERNAME: ${vars.adminUsername}
-        TEXT_MODEL_BASE_URL: ${vars.llmBaseUrl}
-        TEXT_MODEL_API_KEY: ${vars.llmApiKey}
-        TEXT_MODEL_NAME: ${vars.llmModel}
+        TEXT_MODEL_BASE_URL: ${vars.OPENAI_URL}
+        TEXT_MODEL_API_KEY: ${vars.OPENAI_API_KEY}
+        TEXT_MODEL_NAME: ${vars.OPENAI_MODELNAME}
         TRANSCRIPTION_BASE_URL: ${vars.transciptionBaseUrl}
         TRANSCRIPTION_API_KEY: ${vars.transciptionApiKey}
         WHISPER_MODEL: ${vars.whisperModel}

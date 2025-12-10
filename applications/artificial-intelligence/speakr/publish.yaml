@@ -23,9 +23,11 @@ Parameters:
   - adminEmail
   - adminUsername
   - adminPassword
-  - llmBaseUrl
-  - llmApiKey
-  - llmModel
+
+  - OPENAI_URL
+  - OPENAI_API_KEY
+  - OPENAI_MODELNAME
+
   - transciptionBaseUrl
   - transciptionApiKey
   - whisperModel
@@ -99,40 +101,35 @@ Parameters:
       x-placeholder: admin密码
       x-formitem:
         type: input
-    llmBaseUrl:
-      # title: api 地址
+    OPENAI_URL:
       type: string
-      default: ""
-      pattern: "http.*"
-      description: ""
-      x-restype: openai
+      default: "http://your_api_url:port/v1/"
+      pattern: "^https?://"
+      description: "OPENAI 接口规范: http://your_api_url:port/v1/"
       x-cate: applicationCate
-      x-label: LLM api配置
-      x-placeholder: LLM BaseUrl
+      x-label: 大模型配置
+      x-restype: openai
+      x-placeholder: OPENAI_URL
       x-formitem:
         type: input
-    llmApiKey:
-      # title: api key
-      type: secret
-      default: "123456"
-      pattern: ".*"
-      description: ""
-      x-restype: openai
-      x-cate: applicationCate
-      x-label: LLM api配置
-      x-placeholder: LLM ApiKey
-      x-formitem:
-        type: input
-    llmModel:
-      # title: 模型名称
+    OPENAI_API_KEY:
       type: string
       default: ""
-      pattern: ".*"
-      description: ""
+      description: "接口密钥"
       x-cate: applicationCate
+      x-label: 大模型配置
       x-restype: openai
-      x-label: LLM api配置
-      x-placeholder: LLM 模型名称
+      x-placeholder: OPENAI_API_KEY
+      x-formitem:
+        type: input
+    OPENAI_MODELNAME:
+      type: string
+      default: ""
+      description: "模型名称"
+      x-cate: applicationCate
+      x-label: 大模型配置
+      x-restype: openai
+      x-placeholder: OPENAI_MODELNAME
       x-formitem:
         type: input
     transciptionBaseUrl:
@@ -142,7 +139,6 @@ Parameters:
       pattern: ".*"
       description: ""
       x-cate: applicationCate
-      x-restype: openai
       x-label: 语音识别大模型 api配置
       x-placeholder: 语音识别大模型 BaseUrl
       x-formitem:
@@ -153,7 +149,6 @@ Parameters:
       default: "123456"
       pattern: ".*"
       description: ""
-      x-restype: openai
       x-cate: applicationCate
       x-label: 语音识别大模型 api配置
       x-placeholder: 语音识别大模型 ApiKey
@@ -165,7 +160,6 @@ Parameters:
       default: ""
       pattern: ".*"
       description: ""
-      x-restype: openai
       x-cate: applicationCate
       x-label: 语音识别大模型 api配置
       x-placeholder: 语音识别大模型 模型名称
