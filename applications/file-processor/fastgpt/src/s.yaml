@@ -7,8 +7,8 @@ vars:
   sandboxDescription: {{sandboxDescription}}
   describe: {{description}}
   functionName: {{functionName}}
-  oneapiUrl: {{oneapiUrl}}
-  chatApiKey: {{chatApiKey}}
+  OPENAI_URL: {{OPENAI_URL}}
+  OPENAI_API_KEY: {{OPENAI_API_KEY}}
   MONGO_URL: {{MONGO_URL}}
   MILVUS_URL: {{MILVUS_URL}}
   MILVUS_TOKEN: {{MILVUS_TOKEN}}
@@ -81,8 +81,8 @@ resources:
         min: 1
         max: 300
       environmentVariables:
-        ONEAPI_URL: ${vars.oneapiUrl}
-        CHAT_API_KEY: ${vars.chatApiKey}
+        OPENAI_BASE_URL: ${vars.OPENAI_URL}
+        CHAT_API_KEY: ${vars.OPENAI_API_KEY}
         MONGODB_URI: ${vars.MONGO_URL}
         MILVUS_ADDRESS: ${vars.MILVUS_URL}
         MILVUS_TOKEN: ${vars.MILVUS_TOKEN}
