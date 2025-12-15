@@ -2,17 +2,17 @@ edition: 3.0.0
 name: cozestudio-app
 access: default
 vars:
-  region: { { region } }
-  cozestudioBackendFunctionName: { { cozestudioBackendFunctionName } }
-  cozestudioBackendDescription: { { cozestudioBackendDescription } }
-  cozestudioFrontendFunctionName: { { cozestudioFrontendFunctionName } }
-  cozestudioFrontendDescription: { { cozestudioFrontendDescription } }
-  logLevel: { { logLevel } }
-  pluginAesAuthSecret: { { pluginAesAuthSecret } }
-  pluginAesStateSecret: { { pluginAesStateSecret } }
-  pluginAesOauthTokenSecret: { { pluginAesOauthTokenSecret } }
+  region: {{region}}
+  cozestudioBackendFunctionName: {{cozestudioBackendFunctionName}}
+  cozestudioBackendDescription: {{cozestudioBackendDescription}}
+  cozestudioFrontendFunctionName: {{cozestudioFrontendFunctionName}}
+  cozestudioFrontendDescription: {{cozestudioFrontendDescription}}
+  logLevel: {{logLevel}}
+  pluginAesAuthSecret: {{pluginAesAuthSecret}}
+  pluginAesStateSecret: {{pluginAesStateSecret}}
+  pluginAesOauthTokenSecret: {{pluginAesOauthTokenSecret}}
 
-  ObjectStorage: { { ObjectStorage } }
+  ObjectStorage: {{ObjectStorage}}
   S3_ENDPOINT: {{S3_ENDPOINT}}
   S3_AK: {{S3_AK}}
   S3_SK: {{S3_SK}}
@@ -23,16 +23,15 @@ vars:
   REDIS_PORT: {{REDIS_PORT}}
   REDIS_PASSWORD: {{REDIS_PASSWORD}}
 
-  MYSQL_HOST: { { MYSQL_HOST } }
-  MYSQL_PORT: { { MYSQL_PORT } }
-  MYSQL_DATABASE: { { MYSQL_DATABASE } }
-  MYSQL_USERNAME: { { MYSQL_USERNAME } }
-  MYSQL_PASSWORD: { { MYSQL_PASSWORD } }
+  MYSQL_HOST: {{MYSQL_HOST}}
+  MYSQL_PORT: {{MYSQL_PORT}}
+  MYSQL_DATABASE: {{MYSQL_DATABASE}}
+  MYSQL_USERNAME: {{MYSQL_USERNAME}}
+  MYSQL_PASSWORD: {{MYSQL_PASSWORD}}
 
-  MQ: { { MQ } }
-  mqNamesvrAddr: { { mqNamesvrAddr } }
+  KAFKA_BROKERS: {{KAFKA_BROKERS}}
 
-  VectorDB: { { VectorDB } }
+  VectorDB: {{VectorDB}}
   MILVUS_HOST: {{MILVUS_HOST}}
   MILVUS_PORT: {{MILVUS_PORT}}
   MILVUS_USERNAME: {{MILVUS_USERNAME}}
@@ -44,12 +43,12 @@ vars:
   ELASTICSEARCH_PASSWORD: {{ELASTICSEARCH_PASSWORD}}
   ELASTICSEARCH_VERSION: {{ELASTICSEARCH_VERSION}}
 
-  embeddingType: { { embeddingType } }
-  embeddingMaxBatchSize: { { embeddingMaxBatchSize } }
-  OPENAI_URL: { { OPENAI_URL } }
-  OPENAI_MODELNAME: { { OPENAI_MODELNAME } }
-  OPENAI_API_KEY: { { OPENAI_API_KEY } }
-  openaiEmbeddingDims: { { openaiEmbeddingDims } }
+  embeddingType: {{embeddingType}}
+  embeddingMaxBatchSize: {{embeddingMaxBatchSize}}
+  OPENAI_URL: {{OPENAI_URL}}
+  OPENAI_MODELNAME: {{OPENAI_MODELNAME}}
+  OPENAI_API_KEY: {{OPENAI_API_KEY}}
+  openaiEmbeddingDims: {{openaiEmbeddingDims}}
 resources:
   cozestudioBackend:
     component: ${path('/utils/components/zfc')}
@@ -102,8 +101,8 @@ resources:
         ES_USERNAME: ${vars.ELASTICSEARCH_USERNAME}
         ES_PASSWORD: ${vars.ELASTICSEARCH_PASSWORD}
         ES_VERSION: ${vars.ELASTICSEARCH_VERSION}
-        COZE_MQ_TYPE: ${vars.MQ}
-        MQ_NAME_SERVER: ${vars.mqNamesvrAddr}
+        COZE_MQ_TYPE: kafka
+        MQ_NAME_SERVER: ${vars.KAFKA_BROKERS}
         VECTOR_STORE_TYPE: ${vars.VectorDB}
         MILVUS_ADDR: ${vars.MILVUS_HOST}:${vars.MILVUS_PORT}
         MILVUS_USER: ${vars.MILVUS_USERNAME}

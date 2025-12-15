@@ -46,8 +46,8 @@ Parameters:
   - MYSQL_DATABASE
   - MYSQL_USERNAME
   - MYSQL_PASSWORD
-  - MQ
-  - mqNamesvrAddr
+
+  - KAFKA_BROKERS
   - VectorDB
   - MILVUS_HOST
   - MILVUS_PORT
@@ -158,70 +158,6 @@ Parameters:
       x-placeholder: must be 16, 24 or 32 bytes
       x-formitem:
         type: input
-    ObjectStorage:
-      # title: 对象存储配置
-      type: string
-      default: s3
-      description: ""
-      enum:
-      - s3
-      - minio
-      - tos
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      x-placeholder: 请选择对象存储类型
-      x-formitem:
-        type: select
-    # minioEndpoint:
-    #   type: string
-    #   default: "minio-beijing.functions:9000"
-    #   description: ""
-    #   x-cate: applicationCate
-    #   x-label: 对象存储配置
-    #   x-restype: minio
-    #   x-placeholder: 请输入 minio Endpoint
-    #   x-formitem:
-    #     type: input
-    # minioAccessKey:
-    #   type: secret
-    #   default: "minioadmin"
-    #   description: ""
-    #   x-cate: applicationCate
-    #   x-label: 对象存储配置
-    #   x-restype: minio
-    #   x-placeholder: 请输入 minio AccessKey
-    #   x-formitem:
-    #     type: input
-    # minioSecretKey:
-    #   type: secret
-    #   default: "minioadmin"
-    #   description: ""
-    #   x-cate: applicationCate
-    #   x-label: 对象存储配置
-    #   x-restype: minio
-    #   x-placeholder: 请输入 minio SecretKey
-    #   x-formitem:
-    #     type: input
-    # minioApiHost:
-    #   type: string
-    #   default: "http://minio-beijing.functions:9000"
-    #   description: ""
-    #   x-cate: applicationCate
-    #   x-label: 对象存储配置
-    #   x-restype: minio
-    #   x-placeholder: 请输入 minio Bucket
-    #   x-formitem:
-    #     type: input
-    # miniodefaultBucket:
-    #   type: string
-    #   default: "milvus"
-    #   description: ""
-    #   x-cate: applicationCate
-    #   x-label: 对象存储配置
-    #   x-restype: minio
-    #   x-placeholder: 请输入 minio Region
-    #   x-formitem:
-    #     type: input
     S3_AK:
       type: secret
       default: ""
@@ -398,26 +334,14 @@ Parameters:
       x-placeholder: 请输入 mysql password
       x-formitem:
         type: input
-    MQ:
-      type: string
-      default: kafka
-      description: ""
-      enum:
-      - kafka
-      - nsq
-      x-cate: applicationCate
-      x-label: MQ配置
-      x-placeholder: 请选择MQ类型
-      x-formitem:
-        type: select
-    mqNamesvrAddr:
+    KAFKA_BROKERS:
       type: string
       default: ""
-      description: "需包含topic: opencoze_knowledge, opencoze_search_app, opencoze_search_resource"
+      description: "需实现创建 topic: opencoze_knowledge, opencoze_search_app, opencoze_search_resource"
       x-cate: applicationCate
-      x-label: MQ配置
+      x-label: 消息队列配置
       x-restype: kafka
-      x-placeholder: kafka host:port
+      x-placeholder: kafka 集群地址
       x-formitem:
         type: input
     # rmqAccessKey:
