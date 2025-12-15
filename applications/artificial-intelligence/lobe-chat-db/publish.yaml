@@ -24,9 +24,17 @@ Parameters:
   required: # 必填项
     - region
     - FunctionName
-    - DataBase
-    - NEXT_PUBLIC_SERVICE_MODE
-    - ObjectStorage
+    - APP_URL
+    - MYSQL_URL
+    - S3_REGION
+    - S3_ENDPOINT
+    - S3_BUCKET
+    - S3_AK
+    - S3_SK
+    - AUTH_CASDOOR_ISSUER
+    - AUTH_CASDOOR_ID
+    - AUTH_CASDOOR_SECRET
+    - S3_PUBLIC_DOMAIN
   properties:
     region:
       title: 地域
@@ -63,65 +71,42 @@ Parameters:
       x-placeholder: 请输入函数描述
       x-formitem:
         type: input
-    NEXT_PUBLIC_SERVICE_MODE:
-      # title: NEXT_PUBLIC_SERVICE_MODE
-      type: string
-      default: "server"
-      description: "针对服务端数据库部署场景，需要设置为 server"
-      x-cate: applicationCate
-      x-label: 客户端/服务端
-      x-placeholder: NEXT_PUBLIC_SERVICE_MODE
-      x-formitem:
-        type: input
-    CustomDomain:
+    APP_URL:
       # title: CustomDomain
       type: string
       default: ""
-      description: ""
+      example: http://lobe-chat-db.example.com
+      description: "应用公网调用访问地址；需要修改解析指向该应用函数"
       x-cate: applicationCate
       x-label: 自定义域名
-      x-placeholder: 请输入自定义域名
+      x-placeholder: 请输入自定义域名 http://lobe-chat-db.example.com
       x-formitem:
         type: input
-    DataBase:
-      # title: 数据库配置
-      type: string
-      default: mysql
-      description: ""
-      enum:
-        - mysql
-      x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: mysql
-      x-placeholder: 请选择数据库类型
-      x-formitem:
-        type: select
-    MYSQL_URL:
-      # title: MYSQL_URL
+    POSTGRES_URL:
       type: string
       default: ""
-      description: "例如：mysql://user:secret@host:port/database"
+      description: "PG 数据库 URL: postgres://username:password@host:port/database"
       x-cate: applicationCate
       x-label: 数据库配置
-      x-restype: mysql
-      x-placeholder: 请输入数据库地址
+      x-restype: postgresql
+      x-placeholder: 请输入数据库 URL
       x-formitem:
         type: input
     AUTH_CASDOOR_ISSUER:
       # title: AUTH_CASDOOR_ISSUER
       type: string
       default: ""
-      description: ""
+      description: Casdoor 应用提供的 OpenID Connect 签发者
       x-cate: applicationCate
       x-label: AUTH_CASDOOR配置
-      x-placeholder: AUTH_CASDOOR_ISSUER
+      x-placeholder: Casdoor 地址 https://cassdor-auth-api.example.com/
       x-formitem:
         type: input
     AUTH_CASDOOR_ID:
       # title: AUTH_CASDOOR_ID
       type: string
       default: ""
-      description: ""
+      description: Casdoor 应用详情页的客户端 ID
       x-cate: applicationCate
       x-label: AUTH_CASDOOR配置
       x-placeholder: AUTH_CASDOOR_ID
@@ -131,29 +116,16 @@ Parameters:
       # title: AUTH_CASDOOR_SECRET
       type: string
       default: ""
-      description: ""
+      description: Casdoor 应用详情页的客户端密钥
       x-cate: applicationCate
       x-label: AUTH_CASDOOR配置
       x-placeholder: AUTH_CASDOOR_SECRET
       x-formitem:
         type: input
-    ObjectStorage:
-      # title: 对象存储配置
-      type: string
-      default: OBS
-      description: ""
-      enum:
-        - OBS
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: s3
-      x-placeholder: 请选择对象存储类型
-      x-formitem:
-        type: select
     S3_ENDPOINT:
       # title: S3_ENDPOINT
       type: string
-      default: ""
+      default: https://lobe-s3-api.example.com
       description: ""
       x-cate: applicationCate
       x-label: 对象存储配置
@@ -183,22 +155,22 @@ Parameters:
       x-placeholder: 请输入存储桶名
       x-formitem:
         type: input
-    S3_ACCESS_KEY_ID:
+    S3_AK:
       # title: S3_ACCESS_KEY_ID
       type: secret
       default: "AKIAIOSFODNN7EXAMPLE"
-      description: ""
+      description: S3 存储 ACCESS_KEY
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
       x-placeholder: S3_ACCESS_KEY_ID
       x-formitem:
         type: input
-    S3_SECRET_ACCESS_KEY:
+    S3_SK:
       # title: S3_SECRET_ACCESS_KEY
       type: secret
       default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-      description: ""
+      description: S3 存储 SECRET_KEY
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
@@ -209,9 +181,10 @@ Parameters:
       # title: S3_PUBLIC_DOMAIN
       type: string
       default: ""
-      description: "公网域名"
+      description: "存储桶对外的访问域名，用于访问存储桶中的文件"
       x-cate: applicationCate
       x-label: 对象存储配置
+      x-placeholder: https://lobe-s3-api.example.com
       x-restype: s3
       x-formitem:
         type: input
