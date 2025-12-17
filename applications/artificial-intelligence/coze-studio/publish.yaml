@@ -30,7 +30,6 @@ Parameters:
   - pluginAesAuthSecret
   - pluginAesStateSecret
   - pluginAesOauthTokenSecret
-  - ObjectStorage
   - S3_ENDPOINT
   - S3_AK
   - S3_SK

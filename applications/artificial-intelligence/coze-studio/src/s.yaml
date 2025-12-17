@@ -90,7 +90,7 @@ resources:
         REDIS_ADDR: "${vars.REDIS_HOST}:${vars.REDIS_PORT}"
         REDIS_PASSWORD: ${vars.REDIS_PASSWORD}
         FILE_UPLOAD_COMPONENT_TYPE: "storage"
-        STORAGE_TYPE: ${vars.ObjectStorage}
+        STORAGE_TYPE: "s3"
         STORAGE_UPLOAD_HTTP_SCHEME: "http"
         S3_REGION: ${vars.S3_REGION}
         S3_ENDPOINT: ${vars.S3_ENDPOINT}
@@ -160,7 +160,7 @@ resources:
         max: 300
       environmentVariables:
         COZESTUDIO_BACKEND_URL: "http://${resources.cozestudioBackend.output.http_trigger_url}"
-        MINIO_ENDPOINT: ${vars.s3Endpoint}
+        MINIO_ENDPOINT: ${vars.S3_ENDPOINT}
       triggers:
       - triggerName: httptrigger
         triggerType: http
