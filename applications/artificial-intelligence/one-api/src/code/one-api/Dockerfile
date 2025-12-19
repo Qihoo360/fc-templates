@@ -38,9 +38,9 @@ RUN go build -trimpath -ldflags "-s -w -X 'github.com/songquanpeng/one-api/commo
 
 FROM wfwqjs-eventing-zevent-pub/alpine:latest
 
-RUN echo "https://mirrors.tuna.tsinghua.edu.cn/alpine/latest-stable/main/" > /etc/apk/repositories && \
-    echo "https://mirrors.tuna.tsinghua.edu.cn/alpine/latest-stable/community/" >> /etc/apk/repositories && \
-    apk add --no-cache ca-certificates tzdata
+# RUN echo "https://mirrors.tuna.tsinghua.edu.cn/alpine/latest-stable/main/" > /etc/apk/repositories && \
+#     echo "https://mirrors.tuna.tsinghua.edu.cn/alpine/latest-stable/community/" >> /etc/apk/repositories && \
+#     apk add --no-cache ca-certificates tzdata
 
 COPY --from=builder2 /build/one-api /
 COPY --from=builder2 /build/tiktoken/openai /mnt/tiktoken
