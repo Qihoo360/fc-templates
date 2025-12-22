@@ -24,13 +24,13 @@ Parameters:
   - sandboxDescription
   - functionName
   - description
-  - oneapiUrl
-  - chatApiKey
+  - OPENAI_URL
+  - OPENAI_API_KEY
   - DataBase
   - MONGO_URL
   - VectorDB
-  - milvusAddress
-  - milvusToken
+  - MILVUS_URL
+  - MILVUS_TOKEN
   properties:
     region:
       title: 地域
@@ -83,43 +83,27 @@ Parameters:
       x-placeholder: 请输入AwsS3存储桶名
       x-formitem:
         type: input
-    oneapiUrl:
-      # title: oneapi 地址
+    OPENAI_URL:
+      type: string
+      default: "http://your_api_url:port/v1/"
+      pattern: "^https?://"
+      description: "OPENAI 接口规范: http://your_api_url:port/v1/"
+      x-cate: applicationCate
+      x-label: 大模型配置
+      x-restype: openai
+      x-placeholder: OPENAI_URL
+      x-formitem:
+        type: input
+    OPENAI_API_KEY:
       type: string
       default: ""
-      pattern: "http.*"
-      description: ""
+      description: "接口密钥"
       x-cate: applicationCate
-      x-label: oneapi配置
+      x-label: 大模型配置
       x-restype: openai
-      x-placeholder: oneapi 地址
+      x-placeholder: OPENAI_API_KEY
       x-formitem:
         type: input
-    chatApiKey:
-      # title: api key
-      type: secret
-      default: "123456"
-      pattern: ".*"
-      description: ""
-      x-cate: applicationCate
-      x-label: oneapi配置
-      x-restype: openai
-      x-placeholder: api key
-      x-formitem:
-        type: input
-    DataBase:
-      # title: 数据库配置
-      type: string
-      default: mongodb
-      description: ""
-      enum:
-      - mongodb
-      x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: mongo
-      x-placeholder: 请选择数据库类型
-      x-formitem:
-        type: select
     MONGO_URL:
       # title: mongo 数据库连接参数
       type: string
@@ -132,19 +116,6 @@ Parameters:
       x-placeholder: mongo 数据库连接参数
       x-formitem:
         type: input
-    VectorDB:
-      # title: 向量数据库配置
-      type: string
-      default: milvus
-      description: ""
-      enum:
-      - milvus
-      x-cate: applicationCate
-      x-label: 向量数据库配置
-      x-restype: milvus
-      x-placeholder: 请选择向量数据库类型
-      x-formitem:
-        type: select
     MILVUS_URL:
       # title: milvus 向量库连接参数
       type: string

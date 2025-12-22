@@ -1,10 +1,10 @@
 # --------- install dependence -----------
-FROM python:3.11-alpine AS python_base
+FROM wfwqjs-eventing-zevent-pub/python:3.11-alpine AS python_base
 
 # 安装make和g++
 RUN apk add --no-cache make g++
 
-FROM node:20.14.0-alpine AS install
+FROM wfwqjs-eventing-zevent-pub/node:20.14.0-alpine AS install
 
 WORKDIR /app
 
@@ -26,7 +26,7 @@ RUN [ -f pnpm-lock.yaml ] || (echo "Lockfile not found." && exit 1)
 RUN pnpm i
 
 # --------- builder -----------
-FROM node:20.14.0-alpine AS builder
+FROM wfwqjs-eventing-zevent-pub/node:20.14.0-alpine AS builder
 
 WORKDIR /app
 
@@ -39,7 +39,7 @@ RUN npm install -g pnpm@9.4.0
 RUN pnpm --filter=sandbox build
 
 # --------- runner -----------
-FROM node:20.14.0-alpine AS runner
+FROM wfwqjs-eventing-zevent-pub/node:20.14.0-alpine AS runner
 WORKDIR /app
 
 COPY --from=builder /app/node_modules /app/node_modules

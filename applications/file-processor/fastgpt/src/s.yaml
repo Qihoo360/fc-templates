@@ -7,12 +7,74 @@ vars:
   sandboxDescription: {{sandboxDescription}}
   describe: {{description}}
   functionName: {{functionName}}
-  oneapiUrl: {{oneapiUrl}}
-  chatApiKey: {{chatApiKey}}
-  mongodbUrl: {{MONGO_URL}}
-  milvusAddress: {{MILVUS_URL}}
-  milvusToken: {{MILVUS_TOKEN}}
+  OPENAI_URL: {{OPENAI_URL}}
+  OPENAI_API_KEY: {{OPENAI_API_KEY}}
+  MONGO_URL: {{MONGO_URL}}
+  MILVUS_URL: {{MILVUS_URL}}
+  MILVUS_TOKEN: {{MILVUS_TOKEN}}
 resources:
+  framework:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.describe}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 5120
+      timeout: 100
+      instanceConcurrency: 100
+      port: 3000
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      dockerfilePath: projects/app/Dockerfile
+      functionName: ${vars.functionName}
+      sourceSubDir: code/FastGPT
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        OPENAI_BASE_URL: ${vars.OPENAI_URL}
+        CHAT_API_KEY: ${vars.OPENAI_API_KEY}
+        MONGODB_URI: ${vars.MONGO_URL}
+        MILVUS_ADDRESS: ${vars.MILVUS_URL}
+        MILVUS_TOKEN: ${vars.MILVUS_TOKEN}
+        SANDBOX_URL: "http://${resources.sandbox.output.http_trigger_url}"
+        DB_MAX_LINK: 5
+        DEFAULT_ROOT_PSW: 123456
+        FE_DOMAIN: http://localhost:3000
+        FILE_TOKEN_KEY: FILE_TOKEN_KEY
+        HOSTNAME: 0.0.0.0
+        LOG_DEPTH: 3
+        LOG_LEVEL: debug
+        MULTIPLE_DATA_TO_BASE64: false
+        ROOT_KEY: fdafasd
+        STORE_LOG_LEVEL: warn
+        TOKEN_KEY: dfdasfdas
+        WORKFLOW_MAX_LOOP_TIMES: 50
+        WORKFLOW_MAX_RUN_TIMES: 500
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+
   sandbox:
     component: ${path('/utils/components/zfc')}
     props:
@@ -39,67 +101,6 @@ resources:
         max: 300
       environmentVariables:
         TZ: Asia/Shanghai
-      triggers:
-        - triggerName: httptrigger
-          triggerType: http
-          disableURLInternet: true
-          funcVersion: LATEST
-          triggerConfig:
-            auth_type: None
-            methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-              - HEAD
-              - PATCH
-            disable_url_internet: true
-            auth_config: ""
-  framework:
-    component: ${path('/utils/components/zfc')}
-    props:
-      region: ${vars.region}
-      description: ${vars.describe}
-      runtime: custom
-      memorySize: 10240
-      cpu: 8
-      diskSize: 5120
-      timeout: 100
-      instanceConcurrency: 100
-      port: 3000
-      requestType: http
-      runtimeType: customize
-      cloudBuildType: Dockerfile
-      dockerfilePath: projects/app/Dockerfile
-      functionName: ${vars.functionName}
-      sourceSubDir: code/FastGPT
-      logConfig:
-        isOpen: false
-      scale:
-        scale_config: 2
-        min: 1
-        max: 300
-      environmentVariables:
-        ONEAPI_URL: ${vars.oneapiUrl}
-        CHAT_API_KEY: ${vars.chatApiKey}
-        MONGODB_URI: ${vars.mongodbUrl}
-        MILVUS_ADDRESS: ${vars.milvusAddress}
-        MILVUS_TOKEN: ${vars.milvusToken}
-        SANDBOX_URL: "http://${resources.sandbox.output.http_trigger_url}"
-        DB_MAX_LINK: 5
-        DEFAULT_ROOT_PSW: 123456
-        FE_DOMAIN: http://localhost:3000
-        FILE_TOKEN_KEY: FILE_TOKEN_KEY
-        HOSTNAME: 0.0.0.0
-        LOG_DEPTH: 3
-        LOG_LEVEL: debug
-        MULTIPLE_DATA_TO_BASE64: false
-        ROOT_KEY: fdafasd
-        STORE_LOG_LEVEL: warn
-        TOKEN_KEY: dfdasfdas
-        WORKFLOW_MAX_LOOP_TIMES: 50
-        WORKFLOW_MAX_RUN_TIMES: 500
       triggers:
         - triggerName: httptrigger
           triggerType: http
