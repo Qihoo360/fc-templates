@@ -415,7 +415,8 @@ def encrypt_token(token: str):
 
 
 def decrypt_token(token: str):
-    return Fernet(secret_key).decrypt(token).decode()
+    # return Fernet(secret_key).decrypt(token).decode()
+    return token
 
 
 config_file = os.getenv('config', 'config.yaml')
