@@ -29,15 +29,14 @@ Parameters:
   - bishengBackendDescription
   - bishengFrontendFunctionName
   - bishengFrontendDescription
-  - ELASTICSEARCH_HOST
-  - ELASTICSEARCH_PORT
-  - ELASTICSEARCH_USERNAME
-  - ELASTICSEARCH_PASSWORD
-  - VectorDB
-  - MILVUS_HOST
-  - MILVUS_PORT
-  - MILVUS_USERNAME
-  - MILVUS_PASSWORD
+  # - ELASTICSEARCH_HOST
+  # - ELASTICSEARCH_PORT
+  # - ELASTICSEARCH_USERNAME
+  # - ELASTICSEARCH_PASSWORD
+  # - MILVUS_HOST
+  # - MILVUS_PORT
+  # - MILVUS_USERNAME
+  # - MILVUS_PASSWORD
   - milvusSecure
   - milvusIsPartition
   - milvusPartitionSuffiix
@@ -48,11 +47,9 @@ Parameters:
   - minioCertCheck
   - minioSchema
   - minioSharePoin
-  - CacheDB
-  - REDIS_URL
-  - CELERY_REDIS_URL
-  - DataBase
-  - MYSQL_URL
+  # - REDIS_URL
+  # - CELERY_REDIS_URL
+  # - MYSQL_URL
   properties:
     region:
       title: 地域
@@ -171,19 +168,6 @@ Parameters:
       x-placeholder: 请输入 ES 密码
       x-formitem:
         type: input
-    VectorDB:
-      # title: 向量数据库配置
-      type: string
-      default: milvus
-      description: ""
-      enum:
-      - milvus
-      x-cate: applicationCate
-      x-label: 向量数据库配置
-      x-restype: milvus
-      x-placeholder: 请选择向量数据库类型
-      x-formitem:
-        type: select
     MILVUS_HOST:
       # title: milvus 向量库连接参数
       type: string
@@ -335,19 +319,6 @@ Parameters:
       x-placeholder: 请输入MinIO SharePoin
       x-formitem:
         type: input
-    CacheDB:
-      # title: 缓存配置
-      type: string
-      default: Redis
-      description: ""
-      enum:
-      - Redis
-      x-cate: applicationCate
-      x-label: 缓存配置
-      x-restype: redis
-      x-placeholder: 请选择缓存系统
-      x-formitem:
-        type: select
     REDIS_URL:
       # title: DifyRedisUserName
       type: string
@@ -370,19 +341,6 @@ Parameters:
       x-placeholder: 请输入 celery redis url
       x-formitem:
         type: input
-    DataBase:
-      # title: 数据库配置
-      type: string
-      default: mysql
-      description: ""
-      enum:
-      - mysql
-      x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: mysql
-      x-placeholder: 请选择数据库类型
-      x-formitem:
-        type: select
     MYSQL_URL:
       # title: 数据库名 Host
       type: string
