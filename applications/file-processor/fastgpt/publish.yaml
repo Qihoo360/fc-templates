@@ -26,9 +26,7 @@ Parameters:
   - description
   - OPENAI_URL
   - OPENAI_API_KEY
-  - DataBase
   - MONGO_URL
-  - VectorDB
   - MILVUS_URL
   - MILVUS_TOKEN
   properties:
@@ -39,7 +37,7 @@ Parameters:
       description: 创建应用所在的地区
       enum:
       - beijing
-      - cn-north-cu-1
+      - test-3
       x-cate: resourceCate
       x-formitem:
         type: select
