@@ -26,10 +26,10 @@ Parameters:
   - region
   - FunctionName
   - DataBase
-  - MYSQL_DSN
+  # - MYSQL_DSN
   - SYNC_FREQUENCY
   - CacheDB
-  - SESSION_SECRET
+  # - SESSION_SECRET
   properties:
     region:
       title: 地域
@@ -38,6 +38,7 @@ Parameters:
       description: 创建应用所在的地区
       enum:
       - beijing
+      - test-3
       x-cate: resourceCate
       x-formitem:
         type: select
