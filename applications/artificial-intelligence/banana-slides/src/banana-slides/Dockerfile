@@ -1,7 +1,6 @@
 # 构建阶段
 # 如果指定了 DOCKER_REGISTRY，使用镜像源；否则使用官方源
-# FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/node:18-alpine AS builder
-FROM node:18-alpine AS builder
+FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -26,8 +25,7 @@ RUN npm run build
 
 # 使用 Python 3.10 作为基础镜像
 # 如果指定了 DOCKER_REGISTRY，使用镜像源；否则使用官方源
-# FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/python:3.10-slim
-FROM python:3.10-slim
+FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/python:3.10-slim
 
 # 设置工作目录
 WORKDIR /app
