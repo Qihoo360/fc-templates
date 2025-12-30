@@ -171,7 +171,7 @@ Parameters:
       x-extends-value:
         create_username: PolefsVolumeCreateUserExecel
       x-formitem:
-        type: select
+        type: input
         name: volume_unique_name
     MountDirExecel:
       # title: 函数挂载路径
@@ -220,7 +220,7 @@ Parameters:
       x-extends-value:
         create_username: PolefsVolumeCreateUserFile
       x-formitem:
-        type: select
+        type: input
         name: volume_unique_name
     MountDirFile:
       # title: 函数挂载路径
@@ -269,7 +269,7 @@ Parameters:
       x-extends-value:
         create_username: PolefsVolCreateUserImages
       x-formitem:
-        type: select
+        type: input
         name: volume_unique_name
     MountDirImages:
       # title: 函数挂载路径
@@ -318,7 +318,7 @@ Parameters:
       x-extends-value:
         create_username: PolefsVolumeCreateUserlogs
       x-formitem:
-        type: select
+        type: input
         name: volume_unique_name
     MountDirLogs:
       # title: 函数挂载路径
@@ -367,7 +367,7 @@ Parameters:
       x-extends-value:
         create_username: PolefsVolumeCreateUserData
       x-formitem:
-        type: select
+        type: input
         name: volume_unique_name
     MountDirData:
       # title: 函数挂载路径

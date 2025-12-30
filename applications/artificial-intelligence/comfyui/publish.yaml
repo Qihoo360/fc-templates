@@ -87,7 +87,7 @@ Parameters:
       x-extends-value:
         create_username: afunctionVolCreateUser
       x-formitem:
-        type: select
+        type: input
         name: volume_unique_name
     afunctionVolCreateUser:
       # title: 函数挂载的创建用户

@@ -23,8 +23,8 @@ Parameters:
   required:
   # 函数设置
   - region
-  - functionName
-  - description
+  - FunctionName
+  - Description
 
   # 持久存储
   - FileStorage
@@ -47,7 +47,7 @@ Parameters:
       x-formitem:
         type: select
 
-    functionName:
+    FunctionName:
       title: 前端函数名
       type: string
       default: banana-slides-frontend-${default-suffix}
@@ -58,7 +58,7 @@ Parameters:
       x-formitem:
         type: input
 
-    description:
+    Description:
       title: 前端函数描述
       type: string
       default: "banana-slides frontend 函数"
@@ -94,7 +94,7 @@ Parameters:
       x-extends-value:
         create_username: POLEFS_VOLUME_CREATE_USER
       x-formitem:
-        type: select
+        type: input
         name: volume_unique_name
     POLEFS_MOUNT_PATH:
       type: string
