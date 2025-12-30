@@ -26,10 +26,10 @@ Parameters:
   - region
   - FunctionName
   - DataBase
-  # - MYSQL_DSN
+  - MYSQL_DSN
   - SYNC_FREQUENCY
   - CacheDB
-  # - SESSION_SECRET
+  - SESSION_SECRET
   properties:
     region:
       title: 地域
@@ -66,13 +66,12 @@ Parameters:
       # title: 数据库配置
       type: string
       default: mysql
-      description: ""
+      description: 请选择数据库类型
       enum:
       - mysql
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: mysql
-      x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
     MYSQL_DSN:
@@ -90,13 +89,12 @@ Parameters:
       # title: 缓存配置
       type: string
       default: Redis
-      description: ""
+      description: 请选择缓存系统
       enum:
       - Redis
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
-      x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
     REDIS_URL:

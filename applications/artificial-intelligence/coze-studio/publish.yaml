@@ -30,15 +30,19 @@ Parameters:
   - pluginAesAuthSecret
   - pluginAesStateSecret
   - pluginAesOauthTokenSecret
+
+  - ObjectStorage
   - S3_ENDPOINT
   - S3_AK
   - S3_SK
   - S3_REGION
   - S3_BUCKET
+
   - CacheDB
   - REDIS_HOST
   - REDIS_PORT
   - REDIS_PASSWORD
+
   - DataBase
   - MYSQL_HOST
   - MYSQL_PORT
@@ -157,6 +161,17 @@ Parameters:
       x-placeholder: must be 16, 24 or 32 bytes
       x-formitem:
         type: input
+    ObjectStorage:
+      type: string
+      default: OBS
+      description: 请选择对象存储
+      enum:
+      - OBS
+      x-cate: applicationCate
+      x-label: 对象存储配置
+      x-restype: s3
+      x-formitem:
+        type: select
     S3_AK:
       type: secret
       default: ""
@@ -212,13 +227,12 @@ Parameters:
       # title: 缓存配置
       type: string
       default: redis
-      description: ""
+      description: 请选择缓存系统
       enum:
       - redis
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
-      x-placeholder: 请选择缓存系统
       x-formitem:
         type: select
     REDIS_PASSWORD:
@@ -269,13 +283,12 @@ Parameters:
       # title: 数据库配置
       type: string
       default: mysql
-      description: ""
+      description: 请选择数据库类型
       enum:
       - mysql
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: mysql
-      x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
     MYSQL_HOST:
@@ -475,13 +488,12 @@ Parameters:
     embeddingType:
       type: string
       default: openai
-      description: ""
+      description: 选择大模型供应商
       enum:
       - openai
       x-cate: applicationCate
       x-label: embedding配置
       x-restype: openai
-      x-placeholder: 请选择 embedding 类型
       x-formitem:
         type: select
     OPENAI_URL:

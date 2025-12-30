@@ -26,7 +26,9 @@ Parameters:
   - description
   - OPENAI_URL
   - OPENAI_API_KEY
+  - DatabaseType
   - MONGO_URL
+  - VectorDB
   - MILVUS_URL
   - MILVUS_TOKEN
   properties:
@@ -81,6 +83,18 @@ Parameters:
       x-placeholder: 请输入AwsS3存储桶名
       x-formitem:
         type: input
+    LLMType:
+      type: string
+      default: openai
+      description: 选择大模型供应商
+      enum:
+      - openai
+      x-cate: applicationCate
+      x-label: 大模型配置
+      x-restype: openai
+      x-placeholder: 请选择供应商
+      x-formitem:
+        type: select
     OPENAI_URL:
       type: string
       default: "http://your_api_url:port/v1/"
@@ -102,11 +116,24 @@ Parameters:
       x-placeholder: OPENAI_API_KEY
       x-formitem:
         type: input
+    DatabaseType:
+      type: string
+      default: mongo
+      description: 选择数据库类型
+      enum:
+      - mongo
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mongo
+      x-placeholder: 请选择数据库类型
+      x-formitem:
+        type: select
     MONGO_URL:
       # title: mongo 数据库连接参数
       type: string
       default: mongodb://username:password@0.0.0.0:27017/fastgpt?authSource=admin
       pattern: "mongodb://.*"
+      format: uri
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
@@ -114,6 +141,19 @@ Parameters:
       x-placeholder: mongo 数据库连接参数
       x-formitem:
         type: input
+    VectorDB:
+      # title: 向量数据库配置
+      type: string
+      default: milvus
+      description: 选择数据库类型
+      enum:
+      - milvus
+      x-cate: applicationCate
+      x-label: 向量数据库配置
+      x-restype: milvus
+      x-placeholder: 请选择向量数据库类型
+      x-formitem:
+        type: select
     MILVUS_URL:
       # title: milvus 向量库连接参数
       type: string

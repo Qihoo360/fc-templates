@@ -67,13 +67,12 @@ Parameters:
       # title: 数据库配置
       type: string
       default: mysql
-      description: ""
+      description: 请选择数据库类型
       enum:
       - mysql
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: mysql
-      x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
     MYSQL_HOST:

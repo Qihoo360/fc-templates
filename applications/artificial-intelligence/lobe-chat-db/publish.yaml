@@ -25,9 +25,12 @@ Parameters:
   # 必填项
   - region
   - FunctionName
+
+  - CustomDomain
   - DataBase
   - MYSQL_URL
   - NEXT_PUBLIC_SERVICE_MODE
+
   - ObjectStorage
   - S3_ENDPOINT
   - S3_REGION
@@ -42,6 +45,7 @@ Parameters:
       description: 创建应用所在的地区
       enum:
       - beijing
+      - test-3
       x-cate: resourceCate
       x-formitem:
         type: select
@@ -79,24 +83,22 @@ Parameters:
       # title: CustomDomain
       type: string
       default: ""
-      description: ""
+      description: 应用公网访问域名
       x-cate: applicationCate
       x-label: 自定义域名
       x-placeholder: 请输入自定义域名
       x-formitem:
         type: input
-    DataBase
-    - MYSQL_URL:
+    DataBase:
       # title: 数据库配置
       type: string
       default: mysql
-      description: ""
+      description: 请选择数据库类型
       enum:
       - mysql
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: mysql
-      x-placeholder: 请选择数据库类型
       x-formitem:
         type: select
     MYSQL_URL:
@@ -144,13 +146,12 @@ Parameters:
       # title: 对象存储配置
       type: string
       default: OBS
-      description: ""
+      description: 请选择对象存储类型
       enum:
       - OBS
       x-cate: applicationCate
       x-label: 对象存储配置
       x-restype: s3
-      x-placeholder: 请选择对象存储类型
       x-formitem:
         type: select
     S3_ENDPOINT:
