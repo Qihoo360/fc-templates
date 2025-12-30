@@ -283,7 +283,7 @@ Parameters:
       x-extends-value:
         create_username: PolefsVolumeCreateUser
       x-formitem:
-        type: select
+        type: input
         name: volume_unique_name
     MountDir:
       # title: 函数挂载路径
