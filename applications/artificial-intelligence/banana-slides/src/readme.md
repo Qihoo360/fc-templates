@@ -5,7 +5,7 @@
 banana-slides 一个基于 nano banana pro🍌 的原生 AI PPT生成应用，支持想法/大纲/页面描述生成完整PPT演示文稿，
 自动提取附件图表、上传任意素材、口头提出修改，迈向真正的"Vibe PPT"。
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/ArtificialIntelligence/banana-slides/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/banana-slides/src)
 
 * [官方网站](https://dataelem.feishu.cn/wiki/ZxW6wZyAJicX4WkG0NqcWsbynde)
 

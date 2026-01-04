@@ -94,7 +94,7 @@ Parameters:
       x-extends-value:
         create_username: POLEFS_VOLUME_CREATE_USER
       x-formitem:
-        type: input
+        type: select
         name: volume_unique_name
     POLEFS_MOUNT_PATH:
       type: string
