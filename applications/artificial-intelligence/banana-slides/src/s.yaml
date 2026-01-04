@@ -10,7 +10,7 @@ vars:
   POLEFS_MOUNT_PATH: {{POLEFS_MOUNT_PATH}}
   POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
-  yprompt:
+  banana:
     component: ${path('/utils/components/zfc')}
     props:
       region: ${vars.Region}
