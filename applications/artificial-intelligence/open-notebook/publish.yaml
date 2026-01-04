@@ -1,0 +1,246 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: open-notebook
+Provider:
+  - fc
+Version: 0.0.1
+Description: 这是一个注重隐私的 AI 笔记工具
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/open-notebook
+Tags:
+  - AI
+  - Custom Runtime
+Category: 人工智能
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required:
+    # 必填项
+    - region
+    - functionPolefsVolumn
+    - afunctionVolCreateUser
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: beijing
+      description: 创建应用所在的地区
+      enum:
+        - beijing
+        - test-3
+      x-cate: resourceCate
+      x-reaction-properties:
+        - functionPolefsVolumn
+      x-formitem:
+        type: select
+    surrealdbFunctionName:
+      title: 函数名
+      type: string
+      default: surrealdb-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入 surrealdb 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    surrealdbDescription:
+      title: 描述
+      type: string
+      default: "surrealdb"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入 surrealdb  函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    openNotebookBackendFunctionName:
+      title: 函数名
+      type: string
+      default: open-notebook-backend-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入 open-notebook backend 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    openNotebookBackendDescription:
+      title: 描述
+      type: string
+      default: "open-notebook backend"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入 open-notebook backend 函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    openNotebookFrontendFunctionName:
+      title: 函数名
+      type: string
+      default: open-notebook-frontend-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入 open-notebook frontend 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    openNotebookFrontendDescription:
+      title: 描述
+      type: string
+      default: "open-notebook frontend"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入 open-notebook frontend 函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    SURREAL_COMMANDS_MAX_TASKS:
+      # title: Elasticsearch Host
+      type: integer
+      default: 5
+      pattern: "^(?:[1-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
+      description: "low CPU/memory: 1-2, Normal deployment: 5, high CPU/memory: 10-20"
+      x-cate: applicationCate
+      x-label: WORKER 并发配置
+      x-restype: applicationCate
+      x-placeholder: 请输入 WORKER 并发配置
+      x-formitem:
+        type: input
+    OPENAI_COMPATIBLE_BASE_URL_LLM:
+      type: string
+      default: "http://llm.api.zyuncs.com/v1"
+      description: ""
+      pattern: "https?.*$"
+      x-cate: applicationCate
+      x-label: llm 配置
+      x-restype: openai
+      x-placeholder: 请输入 openai llm BaseUrl
+      x-formitem:
+        type: input
+    OPENAI_COMPATIBLE_API_KEY_LLM:
+      # title: DifyRedisUserName
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: llm 配置
+      x-restype: openai
+      x-placeholder: 请输入 openai llm ApiKey
+      x-formitem:
+        type: input
+    OPENAI_COMPATIBLE_BASE_URL_EMBEDDING:
+      type: string
+      default: "http://llm.api.zyuncs.com/v1"
+      description: ""
+      pattern: "https?.*$"
+      x-cate: applicationCate
+      x-label: embedding 配置
+      x-restype: openai
+      x-placeholder: 请输入 openai embedding BaseUrl
+      x-formitem:
+        type: input
+    OPENAI_COMPATIBLE_API_KEY_EMBEDDING:
+      # title: DifyRedisUserName
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: embedding 配置
+      x-restype: openai
+      x-placeholder: 请输入 openai embedding ApiKey
+      x-formitem:
+        type: input
+    OPENAI_COMPATIBLE_BASE_URL_STT:
+      type: string
+      default: "http://llm.api.zyuncs.com/v1"
+      description: ""
+      pattern: "https?.*$"
+      x-cate: applicationCate
+      x-label: stt 配置
+      x-restype: openai
+      x-placeholder: 请输入 openai Speech-to-Text BaseUrl
+      x-formitem:
+        type: input
+    OPENAI_COMPATIBLE_API_KEY_STT:
+      # title: DifyRedisUserName
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: stt 配置
+      x-restype: openai
+      x-placeholder: 请输入 openai Speech-to-Text ApiKey
+      x-formitem:
+        type: input
+    OPENAI_COMPATIBLE_BASE_URL_TTS:
+      type: string
+      default: "http://llm.api.zyuncs.com/v1"
+      description: ""
+      pattern: "https?.*$"
+      x-cate: applicationCate
+      x-label: tts 配置
+      x-restype: openai
+      x-placeholder: 请输入 openai Text-to-Speech BaseUrl
+      x-formitem:
+        type: input
+    OPENAI_COMPATIBLE_API_KEY_TTS:
+      # title: DifyRedisUserName
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: llm 配置
+      x-restype: openai
+      x-placeholder: 请输入 openai Text-to-Speech ApiKey
+      x-formitem:
+        type: input
+    FileStorage:
+      # title: 文件存储配置
+      type: string
+      default: Polefs
+      description: ""
+      enum:
+        - Polefs
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 请选择文件存储类型
+      x-formitem:
+        type: select
+    functionPolefsVolumn:
+      # title: 函数挂载 PoleFS 卷名称
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 函数挂载 PoleFS 卷名称
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: afunctionVolCreateUser
+      x-formitem:
+        type: input
+        name: volume_unique_name
+    afunctionVolCreateUser:
+      # title: 函数挂载的创建用户
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 文件存储配置
+      x-restype: polefs
+      x-placeholder: 函数挂载的创建用户
+      x-hidden: true
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"

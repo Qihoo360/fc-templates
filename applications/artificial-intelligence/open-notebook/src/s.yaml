@@ -1,0 +1,171 @@
+edition: 3.0.0
+name: bisheng-app
+access: default
+vars:
+  region: { { region } }
+  surrealdbFunctionName: { { surrealdbFunctionName } }
+  surrealdbDescription: { { surrealdbDescription } }
+  openNotebookBackendFunctionName: { { openNotebookBackendFunctionName } }
+  openNotebookBackendDescription: { { openNotebookBackendDescription } }
+  openNotebookFrontendFunctionName: { { openNotebookFrontendFunctionName } }
+  openNotebookFrontendDescription: { { openNotebookFrontendDescription } }
+  SURREAL_COMMANDS_MAX_TASKS: { { SURREAL_COMMANDS_MAX_TASKS } }
+  OPENAI_COMPATIBLE_BASE_URL_LLM: { { OPENAI_COMPATIBLE_BASE_URL_LLM } }
+  OPENAI_COMPATIBLE_API_KEY_LLM: { { OPENAI_COMPATIBLE_API_KEY_LLM } }
+  OPENAI_COMPATIBLE_BASE_URL_EMBEDDING:
+    { { OPENAI_COMPATIBLE_BASE_URL_EMBEDDING } }
+  OPENAI_COMPATIBLE_API_KEY_EMBEDDING:
+    { { OPENAI_COMPATIBLE_API_KEY_EMBEDDING } }
+  OPENAI_COMPATIBLE_BASE_URL_STT: { { OPENAI_COMPATIBLE_BASE_URL_STT } }
+  OPENAI_COMPATIBLE_API_KEY_STT: { { OPENAI_COMPATIBLE_API_KEY_STT } }
+  OPENAI_COMPATIBLE_BASE_URL_TTS: { { OPENAI_COMPATIBLE_BASE_URL_TTS } }
+  OPENAI_COMPATIBLE_API_KEY_TTS: { { OPENAI_COMPATIBLE_API_KEY_TTS } }
+  functionPolefsVolumn: { { functionPolefsVolumn } }
+  afunctionVolCreateUser: { { afunctionVolCreateUser } }
+resources:
+  surrealdb:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.surrealdbDescription}
+      runtime: custom
+      memorySize: 5120
+      cpu: 2
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 8000
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.surrealdbFunctionName}
+      sourceSubDir: code/open-notebook/surrealdb
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        TZ: Asia/Shanghai
+        SURREAL_EXPERIMENTAL_GRAPHQL: true
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.functionPolefsVolumn}
+          mountDir: "/mydata"
+          createUserName: ${vars.afunctionVolCreateUser}
+  openNodebookBackend:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.openNotebookBackendDescription}
+      runtime: custom
+      memorySize: 5120
+      cpu: 4
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 5055
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.openNotebookBackendFunctionName}
+      sourceSubDir: code/open-notebook
+      dockerfilePath: Dockerfile-backend
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        SURREAL_URL: "ws://${resources.surrealdb.output.http_trigger_url}"
+        SURREAL_COMMANDS_MAX_TASKS: ${vars.SURREAL_COMMANDS_MAX_TASKS}
+        OPENAI_COMPATIBLE_BASE_URL_LLM: ${vars.OPENAI_COMPATIBLE_BASE_URL_LLM}
+        OPENAI_COMPATIBLE_API_KEY_LLM: ${vars.OPENAI_COMPATIBLE_API_KEY_LLM}
+        OPENAI_COMPATIBLE_BASE_URL_EMBEDDING: ${vars.OPENAI_COMPATIBLE_BASE_URL_EMBEDDING}
+        OPENAI_COMPATIBLE_API_KEY_EMBEDDING: ${vars.OPENAI_COMPATIBLE_API_KEY_EMBEDDING}
+        OPENAI_COMPATIBLE_BASE_URL_STT: ${vars.OPENAI_COMPATIBLE_BASE_URL_STT}
+        OPENAI_COMPATIBLE_API_KEY_STT: ${vars.OPENAI_COMPATIBLE_API_KEY_STT}
+        OPENAI_COMPATIBLE_BASE_URL_TTS: ${vars.OPENAI_COMPATIBLE_BASE_URL_TTS}
+        OPENAI_COMPATIBLE_API_KEY_TTS: ${vars.OPENAI_COMPATIBLE_API_KEY_TTS}
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+  openNodebookFrontend:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.openNotebookFrontendDescription}
+      runtime: custom
+      memorySize: 4196
+      cpu: 2
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 8502
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.openNotebookFrontendFunctionName}
+      sourceSubDir: code/open-notebook
+      dockerfilePath: Dockerfile-frontend
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        TZ: Asia/Shanghai
+        API_CLIENT_TIMEOUT: 33
+        API_URL: "http://${resources.openNodebookBackend.output.http_trigger_url}"
+        INTERNAL_API_URL: "http://${resources.openNodebookBackend.output.http_trigger_url}"
+        NEXT_PUBLIC_API_URL: "http://${resources.openNodebookBackend.output.http_trigger_url}"
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
