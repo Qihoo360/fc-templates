@@ -29,7 +29,7 @@ Parameters:
   # 持久存储
   - FileStorage
   - POLEFS_VOLUME
-  - POLEFS_MOUNT_PATH
+  # - POLEFS_MOUNT_PATH
   - POLEFS_VOLUME_CREATE_USER
 
   properties:
@@ -96,16 +96,6 @@ Parameters:
       x-formitem:
         type: select
         name: volume_unique_name
-    POLEFS_MOUNT_PATH:
-      type: string
-      description: "文件存储挂载路径"
-      default: "/app"
-      x-cate: applicationCate
-      x-label: 文件存储配置
-      x-restype: polefs
-      x-placeholder: 请输入挂载路径
-      x-formitem:
-        type: input
     POLEFS_VOLUME_CREATE_USER:
       type: string
       default: ""

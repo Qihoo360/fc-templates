@@ -1,6 +1,6 @@
 # 构建阶段
 # 如果指定了 DOCKER_REGISTRY，使用镜像源；否则使用官方源
-FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/node:18-alpine AS builder
+FROM wfwqjs-eventing-zevent-pub/node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -25,7 +25,9 @@ RUN npm run build
 
 # 使用 Python 3.10 作为基础镜像
 # 如果指定了 DOCKER_REGISTRY，使用镜像源；否则使用官方源
-FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/python:3.10-slim
+FROM wfwqjs-eventing-zevent-pub/python:3.10-slim
+
+ARG DATA=/data
 
 # 设置工作目录
 WORKDIR /app
@@ -70,6 +72,7 @@ COPY backend/ ./backend/
 # 创建必要的目录
 RUN mkdir -p /app/backend/instance /app/uploads
 
+ENV APPDATA=${DATA}
 ENV PYTHONPATH=/app
 ENV FLASK_APP=backend/app.py
 
@@ -85,12 +88,10 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # 复制 nginx 配置文件
 COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 RUN rm -f /etc/nginx/sites-enabled/default && \
-    sed -i "s|/var/log/nginx/error.log|/app/logs/nginx-error.log|g" /etc/nginx/nginx.conf && \
-    sed -i "s|/var/log/nginx/access.log|access_log /app/logs/nginx-access.log|g" /etc/nginx/nginx.conf && \
+    sed -i "s|/var/log/nginx/error.log|/data/logs/nginx-error.log|g" /etc/nginx/nginx.conf && \
+    sed -i "s|/var/log/nginx/access.log|/data/logs/nginx-access.log|g" /etc/nginx/nginx.conf && \
     sed -i "s|backend:|localhost:|g" /etc/nginx/conf.d/default.conf
 
-# 配置 supervisord
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY startup.sh /app/startup.sh
 
 # 暴露端口

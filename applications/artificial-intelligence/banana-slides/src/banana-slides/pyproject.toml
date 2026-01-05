@@ -34,9 +34,6 @@ test = [
     "black>=23.0.0",
 ]
 
-[tool.uv]
-index-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
-
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
 python_files = ["test_*.py"]
