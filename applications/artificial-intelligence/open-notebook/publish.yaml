@@ -194,7 +194,7 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: llm 配置
+      x-label: tts 配置
       x-restype: openai
       x-placeholder: 请输入 openai Text-to-Speech ApiKey
       x-formitem:
