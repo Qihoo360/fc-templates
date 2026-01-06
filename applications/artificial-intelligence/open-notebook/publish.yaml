@@ -239,16 +239,6 @@ Parameters:
       x-placeholder: 请输入 surrealdb database
       x-formitem:
         type: input
-    SURREAL_COMMANDS_RETRY_ENABLED:
-      type: string
-      default: true
-      description: ""
-      x-cate: applicationCate
-      x-label: surrealdb 配置
-      x-restype: surrealdb
-      x-placeholder: 请输入 surrealdb commands retry enable
-      x-formitem:
-        type: input
     SURREAL_COMMANDS_RETRY_MAX_ATTEMPTS:
       type: string
       default: "3"
