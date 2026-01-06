@@ -125,7 +125,7 @@ Parameters:
     OPENAI_COMPATIBLE_API_KEY_LLM:
       # title: DifyRedisUserName
       type: secret
-      default: ""
+      default: "123456"
       description: ""
       x-cate: applicationCate
       x-label: llm 配置
@@ -147,7 +147,7 @@ Parameters:
     OPENAI_COMPATIBLE_API_KEY_EMBEDDING:
       # title: DifyRedisUserName
       type: secret
-      default: ""
+      default: "123456"
       description: ""
       x-cate: applicationCate
       x-label: embedding 配置
@@ -161,7 +161,7 @@ Parameters:
       description: ""
       pattern: "https?.*$"
       x-cate: applicationCate
-      x-label: stt 配置
+      x-label: speech-to-text 配置
       x-restype: openai
       x-placeholder: 请输入 openai Speech-to-Text BaseUrl
       x-formitem:
@@ -172,7 +172,7 @@ Parameters:
       default: "123456"
       description: ""
       x-cate: applicationCate
-      x-label: stt 配置
+      x-label: speech-to-text 配置
       x-restype: openai
       x-placeholder: 请输入 openai Speech-to-Text ApiKey
       x-formitem:
@@ -183,7 +183,7 @@ Parameters:
       description: ""
       pattern: "https?.*$"
       x-cate: applicationCate
-      x-label: tts 配置
+      x-label: text-to-speech 配置
       x-restype: openai
       x-placeholder: 请输入 openai Text-to-Speech BaseUrl
       x-formitem:
@@ -194,7 +194,7 @@ Parameters:
       default: "123456"
       description: ""
       x-cate: applicationCate
-      x-label: tts 配置
+      x-label: text-to-speech 配置
       x-restype: openai
       x-placeholder: 请输入 openai Text-to-Speech ApiKey
       x-formitem:

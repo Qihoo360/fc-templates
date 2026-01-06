@@ -1,5 +1,5 @@
 edition: 3.0.0
-name: bisheng-app
+name: open-notebook-app
 access: default
 vars:
   region: {{region}}
