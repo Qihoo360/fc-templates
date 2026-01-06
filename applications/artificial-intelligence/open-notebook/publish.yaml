@@ -250,8 +250,8 @@ Parameters:
       x-formitem:
         type: input
     SURREAL_COMMANDS_RETRY_MAX_ATTEMPTS:
-      type: integer
-      default: 3
+      type: string
+      default: "3"
       description: ""
       x-cate: applicationCate
       x-label: surrealdb 配置
@@ -270,8 +270,8 @@ Parameters:
       x-formitem:
         type: input
     SURREAL_COMMANDS_RETRY_WAIT_MIN:
-      type: integer
-      default: 1
+      type: string
+      default: "1"
       description: ""
       x-cate: applicationCate
       x-label: surrealdb 配置
@@ -280,8 +280,8 @@ Parameters:
       x-formitem:
         type: input
     SURREAL_COMMANDS_RETRY_WAIT_MAX:
-      type: integer
-      default: 30
+      type: string
+      default: "30"
       description: ""
       x-cate: applicationCate
       x-label: surrealdb 配置
