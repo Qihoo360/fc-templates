@@ -241,7 +241,7 @@ Parameters:
         type: input
     SURREAL_COMMANDS_RETRY_ENABLED:
       type: string
-      default: "true"
+      default: true
       description: ""
       x-cate: applicationCate
       x-label: surrealdb 配置
@@ -320,7 +320,7 @@ Parameters:
     afunctionVolCreateUser:
       # title: 函数挂载的创建用户
       type: string
-      default: "wangyibang"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 文件存储配置

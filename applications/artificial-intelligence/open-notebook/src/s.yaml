@@ -102,7 +102,7 @@ resources:
         min: 1
         max: 300
       environmentVariables:
-        SURREAL_URL: "ws://${resources.surrealdb.output.http_trigger_url}"
+        SURREAL_URL: "ws://${resources.surrealdb.output.http_trigger_url}/rpc"
         SURREAL_COMMANDS_MAX_TASKS: ${vars.SURREAL_COMMANDS_MAX_TASKS}
         OPENAI_COMPATIBLE_BASE_URL_LLM: ${vars.OPENAI_COMPATIBLE_BASE_URL_LLM}
         OPENAI_COMPATIBLE_API_KEY_LLM: ${vars.OPENAI_COMPATIBLE_API_KEY_LLM}
