@@ -23,7 +23,7 @@ Parameters:
   required:
     # 必填项
     - region
-    - functionPolefsVolumn
+    - POLEFS_VOLUME
     - afunctionVolCreateUser
   properties:
     region:
@@ -36,7 +36,7 @@ Parameters:
         - test-3
       x-cate: resourceCate
       x-reaction-properties:
-        - functionPolefsVolumn
+        - POLEFS_VOLUME
       x-formitem:
         type: select
     surrealdbFunctionName:
@@ -212,7 +212,7 @@ Parameters:
       x-placeholder: 请选择文件存储类型
       x-formitem:
         type: select
-    functionPolefsVolumn:
+    POLEFS_VOLUME:
       # title: 函数挂载 PoleFS 卷名称
       type: string
       default: ""

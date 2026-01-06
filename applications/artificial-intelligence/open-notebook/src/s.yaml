@@ -2,24 +2,26 @@ edition: 3.0.0
 name: open-notebook-app
 access: default
 vars:
-  region: {{region}}
-  surrealdbFunctionName: {{surrealdbFunctionName}}
-  surrealdbDescription: {{surrealdbDescription}}
-  openNotebookBackendFunctionName: {{openNotebookBackendFunctionName}}
-  openNotebookBackendDescription: {{openNotebookBackendDescription}}
-  openNotebookFrontendFunctionName: {{openNotebookFrontendFunctionName}}
-  openNotebookFrontendDescription: {{openNotebookFrontendDescription}}
-  SURREAL_COMMANDS_MAX_TASKS: {{SURREAL_COMMANDS_MAX_TASKS}}
-  OPENAI_COMPATIBLE_BASE_URL_LLM: {{OPENAI_COMPATIBLE_BASE_URL_LLM}}
-  OPENAI_COMPATIBLE_API_KEY_LLM: {{OPENAI_COMPATIBLE_API_KEY_LLM}}
-  OPENAI_COMPATIBLE_BASE_URL_EMBEDDING: {{OPENAI_COMPATIBLE_BASE_URL_EMBEDDING}}
-  OPENAI_COMPATIBLE_API_KEY_EMBEDDING: {{OPENAI_COMPATIBLE_API_KEY_EMBEDDING}}
-  OPENAI_COMPATIBLE_BASE_URL_STT: {{OPENAI_COMPATIBLE_BASE_URL_STT}}
-  OPENAI_COMPATIBLE_API_KEY_STT: {{OPENAI_COMPATIBLE_API_KEY_STT}}
-  OPENAI_COMPATIBLE_BASE_URL_TTS: {{OPENAI_COMPATIBLE_BASE_URL_TTS}}
-  OPENAI_COMPATIBLE_API_KEY_TTS: {{OPENAI_COMPATIBLE_API_KEY_TTS}}
-  functionPolefsVolumn: {{functionPolefsVolumn}}
-  afunctionVolCreateUser: {{afunctionVolCreateUser}}
+  region: { { region } }
+  surrealdbFunctionName: { { surrealdbFunctionName } }
+  surrealdbDescription: { { surrealdbDescription } }
+  openNotebookBackendFunctionName: { { openNotebookBackendFunctionName } }
+  openNotebookBackendDescription: { { openNotebookBackendDescription } }
+  openNotebookFrontendFunctionName: { { openNotebookFrontendFunctionName } }
+  openNotebookFrontendDescription: { { openNotebookFrontendDescription } }
+  SURREAL_COMMANDS_MAX_TASKS: { { SURREAL_COMMANDS_MAX_TASKS } }
+  OPENAI_COMPATIBLE_BASE_URL_LLM: { { OPENAI_COMPATIBLE_BASE_URL_LLM } }
+  OPENAI_COMPATIBLE_API_KEY_LLM: { { OPENAI_COMPATIBLE_API_KEY_LLM } }
+  OPENAI_COMPATIBLE_BASE_URL_EMBEDDING:
+    { { OPENAI_COMPATIBLE_BASE_URL_EMBEDDING } }
+  OPENAI_COMPATIBLE_API_KEY_EMBEDDING:
+    { { OPENAI_COMPATIBLE_API_KEY_EMBEDDING } }
+  OPENAI_COMPATIBLE_BASE_URL_STT: { { OPENAI_COMPATIBLE_BASE_URL_STT } }
+  OPENAI_COMPATIBLE_API_KEY_STT: { { OPENAI_COMPATIBLE_API_KEY_STT } }
+  OPENAI_COMPATIBLE_BASE_URL_TTS: { { OPENAI_COMPATIBLE_BASE_URL_TTS } }
+  OPENAI_COMPATIBLE_API_KEY_TTS: { { OPENAI_COMPATIBLE_API_KEY_TTS } }
+  POLEFS_VOLUME: { { POLEFS_VOLUME } }
+  afunctionVolCreateUser: { { afunctionVolCreateUser } }
 resources:
   surrealdb:
     component: ${path('/utils/components/zfc')}
@@ -65,7 +67,7 @@ resources:
             disable_url_internet: true
             auth_config: ""
       nasConfig:
-        - volumeUniqueName: ${vars.functionPolefsVolumn}
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
           mountDir: "/mydata"
           createUserName: ${vars.afunctionVolCreateUser}
   openNodebookBackend:
