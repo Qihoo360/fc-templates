@@ -169,7 +169,7 @@ Parameters:
     OPENAI_COMPATIBLE_API_KEY_STT:
       # title: DifyRedisUserName
       type: secret
-      default: "******"
+      default: "123456"
       description: ""
       x-cate: applicationCate
       x-label: stt 配置
@@ -191,7 +191,7 @@ Parameters:
     OPENAI_COMPATIBLE_API_KEY_TTS:
       # title: DifyRedisUserName
       type: secret
-      default: "******"
+      default: "123456"
       description: ""
       x-cate: applicationCate
       x-label: tts 配置
