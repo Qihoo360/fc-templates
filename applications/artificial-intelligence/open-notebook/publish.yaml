@@ -199,6 +199,96 @@ Parameters:
       x-placeholder: 请输入 openai Text-to-Speech ApiKey
       x-formitem:
         type: input
+    SURREAL_USER:
+      type: string
+      default: "root"
+      description: ""
+      x-cate: applicationCate
+      x-label: surrealdb 配置
+      x-restype: surrealdb
+      x-placeholder: 请输入 surrealdb username
+      x-formitem:
+        type: input
+    SURREAL_PASSWORD:
+      type: secret
+      default: "root"
+      description: ""
+      x-cate: applicationCate
+      x-label: surrealdb 配置
+      x-restype: surrealdb
+      x-placeholder: 请输入 surrealdb password
+      x-formitem:
+        type: input
+    SURREAL_NAMESPACE:
+      type: string
+      default: "open_notebook"
+      description: ""
+      x-cate: applicationCate
+      x-label: surrealdb 配置
+      x-restype: surrealdb
+      x-placeholder: 请输入 surrealdb namespace
+      x-formitem:
+        type: input
+    SURREAL_DATABASE:
+      type: string
+      default: "staging"
+      description: ""
+      x-cate: applicationCate
+      x-label: surrealdb 配置
+      x-restype: surrealdb
+      x-placeholder: 请输入 surrealdb database
+      x-formitem:
+        type: input
+    SURREAL_COMMANDS_RETRY_ENABLED:
+      type: string
+      default: "true"
+      description: ""
+      x-cate: applicationCate
+      x-label: surrealdb 配置
+      x-restype: surrealdb
+      x-placeholder: 请输入 surrealdb commands retry enable
+      x-formitem:
+        type: input
+    SURREAL_COMMANDS_RETRY_MAX_ATTEMPTS:
+      type: integer
+      default: 3
+      description: ""
+      x-cate: applicationCate
+      x-label: surrealdb 配置
+      x-restype: surrealdb
+      x-placeholder: 请输入 surrealdb commands retry max attempts
+      x-formitem:
+        type: input
+    SURREAL_COMMANDS_RETRY_WAIT_STRATEGY:
+      type: string
+      default: "exponential_jitter"
+      description: ""
+      x-cate: applicationCate
+      x-label: surrealdb 配置
+      x-restype: surrealdb
+      x-placeholder: 请输入 surrealdb commands retry wait strategy
+      x-formitem:
+        type: input
+    SURREAL_COMMANDS_RETRY_WAIT_MIN:
+      type: integer
+      default: 1
+      description: ""
+      x-cate: applicationCate
+      x-label: surrealdb 配置
+      x-restype: surrealdb
+      x-placeholder: 请输入 surrealdb commands retry wait min
+      x-formitem:
+        type: input
+    SURREAL_COMMANDS_RETRY_WAIT_MAX:
+      type: integer
+      default: 30
+      description: ""
+      x-cate: applicationCate
+      x-label: surrealdb 配置
+      x-restype: surrealdb
+      x-placeholder: 请输入 surrealdb commands retry wait max
+      x-formitem:
+        type: input
     FileStorage:
       # title: 文件存储配置
       type: string
