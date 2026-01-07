@@ -25,7 +25,7 @@ COPY . /app
 
 # Install frontend dependencies and build
 WORKDIR /app/frontend
-RUN npm ci
+RUN npm install && npm ci
 RUN npm run build
 
 # Return to app root
