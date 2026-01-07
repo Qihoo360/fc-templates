@@ -24,7 +24,7 @@ Parameters:
     # 必填项
     - region
     - POLEFS_VOLUME
-    - afunctionVolCreateUser
+    - POLEFS_VOLUME_CREATE_USER
   properties:
     region:
       title: 地域
@@ -303,11 +303,11 @@ Parameters:
       x-placeholder: 函数挂载 PoleFS 卷名称
       x-api-uri: /resources/polefs/volumes
       x-extends-value:
-        create_username: afunctionVolCreateUser
+        create_username: POLEFS_VOLUME_CREATE_USER
       x-formitem:
         type: input
         name: volume_unique_name
-    afunctionVolCreateUser:
+    POLEFS_VOLUME_CREATE_USER:
       # title: 函数挂载的创建用户
       type: string
       default: ""

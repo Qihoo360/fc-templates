@@ -27,7 +27,7 @@ vars:
   SURREAL_COMMANDS_RETRY_WAIT_MIN: {{SURREAL_COMMANDS_RETRY_WAIT_MIN}}
   SURREAL_COMMANDS_RETRY_WAIT_MAX: {{SURREAL_COMMANDS_RETRY_WAIT_MAX}}
   POLEFS_VOLUME: {{POLEFS_VOLUME}}
-  afunctionVolCreateUser: {{afunctionVolCreateUser}}
+  POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
   surrealdb:
     component: ${path('/utils/components/zfc')}
@@ -75,7 +75,7 @@ resources:
       nasConfig:
         - volumeUniqueName: ${vars.POLEFS_VOLUME}
           mountDir: "/mydata"
-          createUserName: ${vars.afunctionVolCreateUser}
+          createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
   openNodebookBackend:
     component: ${path('/utils/components/zfc')}
     props:
