@@ -231,7 +231,7 @@ Parameters:
         type: input
     SURREAL_DATABASE:
       type: string
-      default: "staging"
+      default: "open_notebook"
       description: ""
       x-cate: applicationCate
       x-label: surrealdb 配置
@@ -277,6 +277,24 @@ Parameters:
       x-label: surrealdb 配置
       x-restype: surrealdb
       x-placeholder: 请输入 surrealdb commands retry wait max
+      x-formitem:
+        type: input
+    FIRECRAWL_API_KEY:
+      type: string
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: content processing tools 配置
+      x-placeholder: 请输入 firecrawl api key
+      x-formitem:
+        type: input
+    JINA_API_KEY:
+      type: string
+      default: "123456"
+      description: ""
+      x-cate: applicationCate
+      x-label: content processing tools 配置
+      x-placeholder: 请输入 jina api key
       x-formitem:
         type: input
     FileStorage:
