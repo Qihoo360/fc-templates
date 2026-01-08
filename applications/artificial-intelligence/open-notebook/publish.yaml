@@ -280,7 +280,7 @@ Parameters:
       x-formitem:
         type: input
     FIRECRAWL_API_KEY:
-      type: string
+      type: secret
       default: "123456"
       description: ""
       x-cate: applicationCate
@@ -289,7 +289,7 @@ Parameters:
       x-formitem:
         type: input
     JINA_API_KEY:
-      type: string
+      type: secret
       default: "123456"
       description: ""
       x-cate: applicationCate
