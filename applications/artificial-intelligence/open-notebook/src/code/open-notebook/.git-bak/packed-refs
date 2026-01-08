@@ -1,6 +1,8 @@
 # pack-refs with: peeled fully-peeled sorted 
 b1ad0f29283ab899f430baba6cb55cbcf80e64e8 refs/remotes/origin/3_1_patch
 490fc66ddffa112800b19e29ae32c3901fbe8a07 refs/remotes/origin/add-ghcr-support-resolved
+436bf86110b095e08065a752ebde9846d3d41f2f refs/remotes/origin/claude/create-on-tech-agent-4uCwN
+a340fd232083075dbf277eda7ef32c26366fff60 refs/remotes/origin/claude/fix-issue-368-ZD9Il
 7d103fe5df9bb24a7abb1018ec97a96e8bd9420a refs/remotes/origin/contributing_guide
 ac573c46724c5ee5c1d51b9d2787b87ef32f9b48 refs/remotes/origin/delete-note-functionality
 fb69341490d486ecaa49ec1799a8603e84e0a38d refs/remotes/origin/feat/quick-search
@@ -9,7 +11,7 @@ fb69341490d486ecaa49ec1799a8603e84e0a38d refs/remotes/origin/feat/quick-search
 f98522606da7f7633d3ccd95e31227b1f2036ad6 refs/remotes/origin/fix-ollama-json
 92f3076b02b6a0244c53387dc8fd24e841101ad2 refs/remotes/origin/fix/ssl
 657df32055460bc278f0b355b7d692d55ebd5615 refs/remotes/origin/improve_podcast_transcript
-93cda6c42ac71a6761a3931e05782a3ac08c5111 refs/remotes/origin/main
+e69485bb72819f2b53df1496235cdca482753e88 refs/remotes/origin/main
 8e15e6dde25afa7b2299b606e30d819fcb3308bb refs/remotes/origin/pr/add-ghcr-support
 d962c68288f707cf3212b3ac02274f2aa0e549d2 refs/remotes/origin/retire_streamlit
 9d283d4bd1be4f92a636a786015e39680a075ab8 refs/remotes/origin/sep_hotfixes
@@ -49,3 +51,5 @@ aa91523a090586c181e0fb1ebf3db2ae213ec43b refs/tags/v1.0.8
 53cbea6809bbb4d279c7f5348f29f6438c11ac4a refs/tags/v1.2.0
 8160c492c6d79adbe1ae17593a182277d8ca8574 refs/tags/v1.2.4
 ^34aaad4162efb9affc34ce0b4a80ceb55e58961c
+15d5c0d40d50c7e81ce0bc9001026d1d2478b482 refs/tags/v1.3.0
+^b76af505b20c300a274fa3491d63b828056cdece
