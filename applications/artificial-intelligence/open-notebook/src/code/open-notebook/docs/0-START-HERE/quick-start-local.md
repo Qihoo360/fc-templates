@@ -31,12 +31,15 @@ Create a new folder `open-notebook-local` and add this file:
 services:
   surrealdb:
     image: surrealdb/surrealdb:v2
-    command: start --user root --pass password --bind 0.0.0.0:8000 memory
+    command: start --user root --pass password --bind 0.0.0.0:8000 rocksdb:/mydata/mydatabase.db
     ports:
       - "8000:8000"
+    volumes:
+      - ./surreal_data:/mydata
 
   open_notebook:
     image: lfnovo/open_notebook:v1-latest-single
+    pull_policy: always
     ports:
       - "8502:8502"  # Web UI (React frontend)
       - "5055:5055"  # API (required!)
@@ -67,6 +70,7 @@ services:
       # Optional: set GPU support if available
       - OLLAMA_NUM_GPU=0
     restart: always
+
 ```
 
 **That's it!** No API keys, no secrets, completely private.

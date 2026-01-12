@@ -36,14 +36,15 @@ Create a folder `open-notebook` and add this file:
 services:
   surrealdb:
     image: surrealdb/surrealdb:v2
-    command: start --user root --pass password --bind 0.0.0.0:8000 memory
+    command: start --user root --pass password --bind 0.0.0.0:8000 rocksdb:/mydata/mydatabase.db
     ports:
       - "8000:8000"
     volumes:
-      - surreal_data:/mydata
+      - ./surreal_data:/mydata
 
   open_notebook:
     image: lfnovo/open_notebook:v1-latest
+    pull_policy: always
     ports:
       - "8502:8502"  # Web UI
       - "5055:5055"  # API
@@ -65,8 +66,6 @@ services:
       - surrealdb
     restart: always
 
-volumes:
-  surreal_data:
 ```
 
 **Edit the file:**
@@ -142,11 +141,13 @@ Change `environment` section in `docker-compose.yml`:
 # For Groq (fast, free tier available)
 - GROQ_API_KEY=...
 
-# For local Ollama (free, offline)
-- OLLAMA_BASE_URL=http://ollama:11434
+# For local Ollama docker container (free, offline) --> Virtual machine
+- OLLAMA_API_BASE=http://ollama:11434
+# For localhost Ollama (free, offline) --> Real machine
+# - OLLAMA_API_BASE=http://host.docker.internal:11434
 ```
 
-### Adding Ollama (Free Local Models)
+### Adding Ollama container (Free Local Models)
 
 Add to `docker-compose.yml`:
 
@@ -167,7 +168,7 @@ volumes:
 Then update API service:
 ```yaml
 environment:
-  - OLLAMA_BASE_URL=http://ollama:11434
+  - OLLAMA_API_BASE=http://ollama:11434
 ```
 
 Restart and pull a model:
