@@ -1,0 +1,66 @@
+edition: 3.0.0
+name: n8n-app
+access: default
+vars:
+  region: {{ region }}
+  functionName: {{functionName}}
+  description: {{description}}
+  DBSCHEME: {{DBSCHEME}}
+  DBUserName: {{POSTGRES_USERNAME}}
+  DBPassword: {{POSTGRES_PASSWORD}}
+  DBHost: {{POSTGRES_HOST}}
+  DBPort: {{POSTGRES_PORT}}
+  DBDataBase: {{POSTGRES_DATABASE}}
+resources:
+  n8n-service:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      functionName: ${vars.functionName}
+      description: ${vars.description}
+      runtime: custom
+      memorySize: 10240
+      cpu: 8
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 5678
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      sourceSubDir: n8n
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      environmentVariables:
+        N8N_PROTOCOL: https
+        DB_TYPE: postgresdb
+        DB_POSTGRESDB_HOST: ${vars.DBHost}
+        DB_POSTGRESDB_PORT: ${vars.DBPort}
+        DB_POSTGRESDB_DATABASE: ${vars.DBDataBase}
+        DB_POSTGRESDB_USER: ${vars.DBUserName}
+        DB_POSTGRESDB_PASSWORD: ${vars.DBPassword}
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""

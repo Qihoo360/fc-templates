@@ -1,0 +1,21 @@
+Type: Application
+Name: devsapp/start-scf
+Version: 0.0.7
+Provider:
+  - 腾讯云
+Description: 快速部署一个 Node.JS 12.16 的 HTTP 类型的 Hello World 函数到腾讯云函数计算。
+HomePage: https://www.qcloud.com/
+Tags:
+  - 函数计算
+  - 你好世界
+  - 新手入门
+Category: 新手入门
+Service:
+  函数计算:
+    Authorities:
+      - 创建函数
+      - 删除函数
+      - 创建服务
+      - 删除服务
+    Runtime: Node.JS
+Effective: Public
