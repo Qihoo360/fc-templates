@@ -8,7 +8,7 @@ import type {
 import type { ILogInStatus } from '@/features/settings/users/users.types';
 import type { IUsedCredential } from '@/features/credentials/credentials.types';
 import type { Scope } from '@n8n/permissions';
-import type { NodeCreatorTag } from '@n8n/design-system';
+import type { NodeCreatorTag, BinaryMetadata } from '@n8n/design-system';
 import type {
 	GenericValue,
 	IConnections,
@@ -26,12 +26,14 @@ import type {
 	FeatureFlags,
 	ITelemetryTrackProperties,
 	WorkflowSettings,
+	WorkflowSettingsBinaryMode,
 	INodeExecutionData,
 	NodeConnectionType,
 	StartNodeData,
 	ITaskData,
 	ISourceData,
 	PublicInstalledPackage,
+	IDestinationNode,
 } from 'n8n-workflow';
 import type { Version } from '@n8n/rest-api-client/api/versions';
 import type { Cloud, InstanceUsage } from '@n8n/rest-api-client/api/cloudPlans';
@@ -61,6 +63,7 @@ import type {
 	FolderListItem,
 	ResourceParentFolder,
 } from '@/features/core/folders/folders.types';
+import type { WorkflowHistory } from '@n8n/rest-api-client/api/workflowHistory';
 
 export * from '@n8n/design-system/types';
 
@@ -183,7 +186,7 @@ export interface IAiDataContent {
 export interface IStartRunData {
 	workflowData: WorkflowData;
 	startNodes?: StartNodeData[];
-	destinationNode?: string;
+	destinationNode?: IDestinationNode;
 	runData?: IRunData;
 	dirtyNodeNames?: string[];
 	triggerToStartFrom?: {
@@ -249,6 +252,7 @@ export interface IWorkflowDb {
 	homeProject?: ProjectSharingData;
 	scopes?: Scope[];
 	versionId: string;
+	activeVersionId: string | null;
 	usedCredentials?: IUsedCredential[];
 	meta?: WorkflowMetadata;
 	parentFolder?: {
@@ -258,6 +262,8 @@ export interface IWorkflowDb {
 		createdAt?: string;
 		updatedAt?: string;
 	};
+	activeVersion?: WorkflowHistory | null;
+	checksum?: string;
 }
 
 // For workflow list we don't need the full workflow data
@@ -276,6 +282,7 @@ export type WorkflowResource = BaseResource & {
 	updatedAt: string;
 	createdAt: string;
 	active: boolean;
+	activeVersionId: string | null;
 	isArchived: boolean;
 	homeProject?: ProjectSharingData;
 	scopes?: Scope[];
@@ -303,6 +310,7 @@ export type CredentialsResource = BaseResource & {
 	sharedWithProjects?: ProjectSharingData[];
 	readOnly: boolean;
 	needsSetup: boolean;
+	isGlobal?: boolean;
 };
 
 // Base resource types that are always available
@@ -346,6 +354,7 @@ export interface IWorkflowShortResponse {
 	id: string;
 	name: string;
 	active: boolean;
+	activeVersionId: string | null;
 	createdAt: number | string;
 	updatedAt: number | string;
 	tags: ITag[];
@@ -413,6 +422,7 @@ export interface IWorkflowSettings extends IWorkflowSettingsWorkflow {
 	callerIds?: string;
 	callerPolicy?: WorkflowSettings.CallerPolicy;
 	executionOrder: NonNullable<IWorkflowSettingsWorkflow['executionOrder']>;
+	binaryMode?: WorkflowSettingsBinaryMode;
 	availableInMCP?: boolean;
 }
 
@@ -422,7 +432,13 @@ export interface ITimeoutHMS {
 	seconds: number;
 }
 
-export type WorkflowTitleStatus = 'EXECUTING' | 'IDLE' | 'ERROR' | 'DEBUG';
+export type WorkflowTitleStatus =
+	| 'EXECUTING'
+	| 'IDLE'
+	| 'ERROR'
+	| 'DEBUG'
+	| 'AI_BUILDING'
+	| 'AI_DONE';
 
 export type ExtractActionKeys<T> = T extends SimplifiedNodeType ? T['name'] : never;
 
@@ -444,7 +460,7 @@ export type SimplifiedNodeType = Pick<
 	| 'defaults'
 	| 'outputs'
 > & {
-	tag?: string;
+	tag?: NodeCreatorTag;
 };
 export interface SubcategoryItemProps {
 	description?: string;
@@ -761,6 +777,7 @@ export interface ITabBarItem {
 export interface IResourceLocatorResultExpanded extends INodeListSearchItems {
 	linkAlt?: string;
 	isArchived?: boolean;
+	active?: boolean;
 }
 
 export interface CurlToJSONResponse {
@@ -795,9 +812,16 @@ export type SchemaType =
 	| 'object'
 	| 'function'
 	| 'null'
-	| 'undefined';
+	| 'undefined'
+	| 'binary';
 
-export type Schema = { type: SchemaType; key?: string; value: string | Schema[]; path: string };
+export type Schema = {
+	type: SchemaType;
+	key?: string;
+	value: string | Schema[];
+	path: string;
+	binaryData?: BinaryMetadata;
+};
 
 export type NodeAuthenticationOption = {
 	name: string;
@@ -840,11 +864,11 @@ export type CloudUpdateLinkSourceType =
 	| 'evaluations'
 	| 'ai-builder-sidebar'
 	| 'ai-builder-canvas'
-	| 'custom-roles';
+	| 'custom-roles'
+	| 'main-sidebar';
 
 export type UTMCampaign =
 	| 'upgrade-custom-data-filter'
-	| 'upgrade-canvas-nav'
 	| 'upgrade-concurrency'
 	| 'upgrade-workflow-sharing'
 	| 'upgrade-credentials-sharing'
@@ -867,7 +891,9 @@ export type UTMCampaign =
 	| 'upgrade-insights'
 	| 'upgrade-evaluations'
 	| 'upgrade-builder'
-	| 'upgrade-custom-roles';
+	| 'upgrade-custom-roles'
+	| 'upgrade-canvas-nav'
+	| 'upgrade-main-sidebar';
 
 export type AddedNode = {
 	type: string;
