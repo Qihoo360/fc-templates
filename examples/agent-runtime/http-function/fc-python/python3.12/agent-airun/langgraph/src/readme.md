@@ -2,7 +2,7 @@
 
 此示例展示了一个使用 LangGraph 构建并通过 A2A 协议公开的货币转换代理。它展示了支持多轮对话和流式响应的对话式交互。
 
-- [Agent 示例代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/agent-runtime/http-function/fc-python/python3.12/agent-airun/langgraph/src)
+- [Agent 示例代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/examples/agent-runtime/http-function/fc-python/python3.12/agent-airun/langgraph/src/code/handler)
 
 ## 如何工作
 
