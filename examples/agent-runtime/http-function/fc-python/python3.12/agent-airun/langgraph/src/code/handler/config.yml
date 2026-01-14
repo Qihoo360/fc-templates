@@ -1,0 +1,44 @@
+edition: 3.0.0
+name: fc3-example
+access: default
+resources:
+    fcDemo:
+        component: fc3
+        props:
+            region: test-6
+            description: aaaaaaaaaaaaaaaaaaaaaa2a
+            memorySize: 2222
+            cpu: 2
+            diskSize: 512
+            timeout: 60
+            instanceConcurrency: 12
+            requestType: http
+            runtimeType: built-in
+            cloudBuildType: Auto
+            port: null
+            functionName: aaaaa2aa
+            sourceSubDir: ""
+            environmentVariables:
+                API_KEY: O3ZYxilqAhRxA4Ra561f0132C36e4582Ab90327aA40d3915
+                TOOL_LLM_NAME: 360-deepseek-v3.1
+                TOOL_LLM_URL: http://llm.api.zyuncs.com/v1/
+                VVV: eee
+            logConfig:
+                isOpen: false
+            scale:
+                scale_config: 2
+                min: 1
+                max: 300
+            envVars: ""
+            buildProgramEntry: ""
+            requestEntry: index.my_agent
+            buildLayers: ""
+            deployLayers: ""
+            startCmd: ""
+            triggers:
+                - triggerName: trigger-1120ec13-cb67-11f0-bae6-fa163e94d98f
+                  triggerType: http
+                  funcVersion: LATEST
+                  triggerConfig: '{"methods": ["GET", "POST", "PUT", "DELETE"], "auth_type": "None", "auth_config": "", "disable_url_internet": true}'
+            runtimeID: 127
+            runtime: '{"default-label":"AgentRunner","default-label-key":"A2A"}'

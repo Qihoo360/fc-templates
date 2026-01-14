@@ -1,0 +1,43 @@
+edition: 3.0.0
+name: flowise-app
+access: "{{access}}"
+vars:
+  region: "{{region}}"
+resources:
+  framework:
+    component: fc
+    props:
+      region: "{{region}}"
+      description: "{{description}}"
+      runtime: custom
+      memorySize: 2048
+      cpu: 2
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 8080
+      requestType: http
+      runtimeType: built-in
+      cloudBuildType: Auto
+      functionName: "{{functionName}}"
+      code: flowise
+      environmentVariables:
+        testkey: testvalue
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 0
+        max: 300
+      sourceSubDir: code/handler
+      buildProgramEntry: ""
+      requestEntry: index.my_agent
+      startCmd: ""
+      requestEntryDescribe: 在“运行环境”为 Agent 时，当前值的格式为 [文件名].[agent名]。如果当前值为 index.my_agent，那么在函数被触发时，将使用 index.py 文件中的 my_agent 实例。
+      runtimeID: 127
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig: '{"auth_type":"None","methods":["GET","POST","PUT","DELETE","OPTIONS","HEAD","PATCH"],"disable_url_internet":true,"auth_config":""}'
