@@ -6,6 +6,8 @@ import type { BinaryData } from './types';
 
 const STORED_MODES = ['filesystem', 'filesystem-v2', 's3', 'database'] as const;
 
+export const CONFIG_MODES = STORED_MODES;
+
 export function isStoredMode(mode: string): mode is BinaryData.StoredMode {
 	return STORED_MODES.includes(mode as BinaryData.StoredMode);
 }
@@ -32,7 +34,7 @@ export async function streamToBuffer(stream: Readable) {
 	return await new Promise<Buffer>((resolve, reject) => {
 		const chunks: Buffer[] = [];
 		stream.on('data', (chunk: Buffer) => chunks.push(chunk));
-		stream.on('end', () => resolve(Buffer.concat(chunks)));
+		stream.on('end', () => resolve(Buffer.concat(chunks as unknown as Uint8Array[])));
 		stream.once('error', (cause) => {
 			if ('code' in cause && cause.code === 'Z_DATA_ERROR')
 				reject(new UnexpectedError('Failed to decompress response', { cause }));
