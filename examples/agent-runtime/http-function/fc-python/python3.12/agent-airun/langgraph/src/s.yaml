@@ -22,7 +22,9 @@ resources:
       functionName: "{{functionName}}"
       code: flowise
       environmentVariables:
-        testkey: testvalue
+        TOOL_LLM_URL: http://llm.com/v1/
+        TOOL_LLM_NAME: llm_name
+        API_KEY: xxxxxx
       logConfig:
         isOpen: false
       scale:
