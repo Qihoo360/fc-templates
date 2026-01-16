@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LandPPT - AI PPT Generator{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    <link rel="alternate icon" href="/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.loli.net/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --ink-strong: #0f172a;
+            --ink: #111111;
+            --ink-muted: #4b5563;
+            --ink-soft: #6b7280;
+
+            --surface: #ffffff;
+            --surface-subtle: #f5f5f5;
+            --surface-contrast: #111111;
+            --border-color: #e5e7eb;
+            --glass-bg: #ffffff;
+            --glass-border: #e5e7eb;
+            --glass-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+            --primary-gradient: linear-gradient(135deg, #111111 0%, #0f172a 100%);
+            --secondary-gradient: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            --accent-gradient: linear-gradient(135deg, #0f172a 0%, #111111 100%);
+            --success-gradient: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
+            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
+
+            --text-primary: var(--ink);
+            --text-secondary: var(--ink-soft);
+            --text-muted: #9ca3af;
+
+            --border-radius-sm: 10px;
+            --border-radius-md: 14px;
+            --border-radius-lg: 20px;
+            --border-radius-xl: 28px;
+
+            --spacing-xs: 8px;
+            --spacing-sm: 12px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--surface-subtle);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+
+        .header {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            padding: var(--spacing-xl) var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header h1 {
+            text-align: center;
+            color: var(--ink-strong);
+            font-size: 3.2rem;
+            font-weight: 800;
+            margin-bottom: var(--spacing-md);
+            letter-spacing: -0.02em;
+            position: relative;
+        }
+
+        .header p {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-xl);
+            flex-wrap: nowrap;
+        }
+
+        .nav-main {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex: 1;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-user {
+            display: flex;
+            gap: var(--spacing-xs);
+            flex-shrink: 0;
+        }
+
+        .nav a {
+            position: relative;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .nav-user a {
+            padding: var(--spacing-sm) var(--spacing-sm);
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav a:hover {
+            color: var(--surface);
+            background: var(--surface-contrast);
+            border-color: var(--surface-contrast);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .nav a:hover::before {
+            left: 0;
+        }
+
+        .nav a:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .main-content {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            padding: var(--spacing-2xl);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--glass-shadow);
+            margin-bottom: var(--spacing-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.08), transparent);
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: var(--spacing-xl);
+            font-size: 1rem;
+            font-weight: 500;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+            letter-spacing: 0.01em;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-md);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
+            opacity: 0.8;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #27ae60;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border-color: #e74c3c;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-color: #3498db;
+            color: #0c5460;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .grid {
+            display: grid;
+            gap: var(--spacing-xl);
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: var(--spacing-xl);
+            right: var(--spacing-xl);
+            width: 60px;
+            height: 60px;
+            background: var(--surface-contrast);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .fab:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--surface);
+            color: var(--ink);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background: var(--surface-contrast);
+            border-color: #000;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: var(--ink);
+        }
+
+        .btn-success {
+            background: #16a34a;
+            border-color: #15803d;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            border-color: #b91c1c;
+            color: #fff;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border-color);
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.85rem;
+        }
+
+        /* Override fab styles for footer github icon */
+        .footer-github-icon {
+            position: static !important;
+            width: auto !important;
+            height: auto !important;
+            background: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            transform: none !important;
+            z-index: auto !important;
+            bottom: auto !important;
+            right: auto !important;
+            display: inline !important;
+            color: var(--glass-text);
+        }
+
+        @media (max-width: 1200px) {
+            .nav {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .nav-main {
+                justify-content: center;
+                order: 1;
+            }
+
+            .nav-user {
+                justify-content: center;
+                order: 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .nav-main {
+                flex-direction: column;
+                align-items: center;
+                gap: var(--spacing-sm);
+            }
+
+            .nav-user {
+                flex-direction: row;
+                gap: var(--spacing-sm);
+            }
+
+            .nav a {
+                min-width: 120px;
+                text-align: center;
+                font-size: 0.85rem;
+            }
+
+            .nav-user a {
+                min-width: 80px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>
+                <span style="display: inline-flex; align-items: center; gap: 12px;">
+                    <img src="/static/images/landppt-logo.png" alt="LandPPT Logo" style="width: 60px; height: 60px;">
+                    LandPPT
+                </span>
+            </h1>
+            <p>AI-powered presentation generation platform</p>
+            <nav class="nav">
+                <div class="nav-main">
+                    <a href="/home"><i class="fas fa-home"></i> 首页</a>
+                    <a href="/scenarios"><i class="fas fa-list-alt"></i> 场景选择</a>
+                    <a href="/projects"><i class="fas fa-chart-bar"></i> 项目列表</a>
+                    <a href="/dashboard"><i class="fas fa-tachometer-alt"></i> 项目仪表板</a>
+                    <a href="/global-master-templates"><i class="fas fa-palette"></i> 模板管理</a>
+                    <a href="/image-gallery"><i class="fas fa-images"></i> 本地图床</a>
+                    <a href="/ai-config"><i class="fas fa-robot"></i> 系统配置</a>
+                    <!-- <a href="/docs"><i class="fas fa-book"></i> API文档</a> -->
+                </div>
+
+                <div class="nav-user">
+                    <a href="/auth/profile" title="个人资料">
+                        <i class="fas fa-user"></i> 个人资料
+                    </a>
+                    <a href="/auth/logout" title="退出登录" onclick="return confirm('确定要退出登录吗？')">
+                        <i class="fas fa-sign-out-alt"></i> 退出
+                    </a>
+                </div>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2026 LandPPT(v0.1.8) - AI PPT Generator. <a href="https://github.com/sligter/LandPPT"
+                    target="_blank" style="color: inherit; text-decoration: none;"><i
+                        class="fab fa-github footer-github-icon" style="margin-left: 6px;"></i></a></p>
+        </footer>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

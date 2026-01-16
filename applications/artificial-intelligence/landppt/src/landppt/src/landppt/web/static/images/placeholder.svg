@@ -1,0 +1,11 @@
+<svg width="250" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#f8f9fa" stroke="#dee2e6" stroke-width="2"/>
+  <text x="50%" y="45%" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#6c757d">
+    图片加载失败
+  </text>
+  <text x="50%" y="60%" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#adb5bd">
+    Image not found
+  </text>
+  <circle cx="125" cy="80" r="20" fill="#dee2e6"/>
+  <path d="M115 75 L125 85 L135 75" stroke="#6c757d" stroke-width="2" fill="none"/>
+</svg>

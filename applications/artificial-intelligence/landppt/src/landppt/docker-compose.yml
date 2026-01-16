@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  landppt:
+    image: bradleylzh/landppt:latest
+    container_name: landppt
+    ports:
+      - "8000:8000"
+    volumes:
+      # Configuration
+      - ./.env:/app/.env
+      # Data persistence
+      - landppt_data:/app/data
+      - landppt_uploads:/app/uploads
+      - landppt_reports:/app/research_reports
+      - landppt_cache:/app/temp
+    environment:
+      - PYTHONPATH=/app/src
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "./docker-healthcheck.sh"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 40s
+    networks:
+      - landppt_network
+
+volumes:
+  landppt_data:
+    driver: local
+  landppt_uploads:
+    driver: local
+  landppt_reports:
+    driver: local
+  landppt_cache:
+    driver: local
+
+networks:
+  landppt_network:
+    driver: bridge
