@@ -1,0 +1,105 @@
+[project]
+name = "landppt"
+version = "0.1.8"
+description = "AI-powered PPT generation platform with OpenAI-compatible API"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "LandPPT Team", email = "contact@landppt.com"},
+]
+keywords = ["ai", "ppt", "presentation", "fastapi", "openai"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Office/Business :: Office Suites",
+]
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.5.0",
+    "python-multipart>=0.0.6",
+    "jinja2>=3.1.2",
+    "aiofiles>=23.2.1",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "httpx>=0.25.0",
+    "markdown>=3.5.1",
+    "python-docx>=1.1.0",
+    "pypdf2>=3.0.1",
+    "requests>=2.31.0",
+    # Database libraries
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.13.0",
+    "aiosqlite>=0.19.0",
+    # AI and LLM libraries
+    "openai>=1.0.0",
+    "anthropic>=0.7.0",
+    "google-generativeai>=0.3.0",
+    "ollama>=0.1.0",
+    "tiktoken>=0.5.0",
+    "aiohttp>=3.12.4",
+    "pdfkit>=1.0.0",
+    "langchain>=0.1.0",
+    "langchain-core>=0.1.0",
+    "langchain-openai>=0.1.0",
+    "langchain-anthropic>=0.1.0",
+    "langchain-ollama>=0.1.0",
+    "langchain-google-genai>=1.0.0",
+    "langgraph>=0.2.0",
+    "click>=8.0.0",
+    "python-dotenv>=1.0.0",
+    "chardet>=5.0.0",
+    "pandas>=2.0.0",
+    "beautifulsoup4>=4.12.0",
+    "rich>=13.0.0",
+    "pydantic-settings>=2.0.0",
+    "tavily-python>=0.7.8",
+    "markitdown[all]>=0.1.2",
+    "playwright>=1.40.0",
+    "apryse-sdk>=11.6.0",
+    "langchain-community>=0.3.27",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+test = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "httpx>=0.25.0",
+]
+
+[project.scripts]
+landppt = "landppt.main:main"
+
+[project.urls]
+Homepage = "https://github.com/sligter/LandPPT"
+Documentation = "https://github.com/sligter/LandPPT#readme"
+Repository = "https://github.com/sligter/LandPPT.git"
+Issues = "https://github.com/sligter/LandPPT/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/landppt"]
+sources = ["src"]
+
+
+

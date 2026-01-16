@@ -1,0 +1,672 @@
+{% extends "base.html" %}
+
+{% block title %}图片生成测试 - LandPPT{% endblock %}
+
+{% block content %}
+<div class="image-test-page" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <!-- 页面标题 -->
+    <div class="page-hero" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 24px 28px; border-radius: 16px; margin-bottom: 30px; border: 1px solid rgba(17, 17, 17, 0.12);">
+        <h2 style="color: #111111; margin: 0 0 8px;">🎨 AI图片生成测试</h2>
+        <p style="color: #5a5a5a; margin: 0;">测试各种AI图片生成提供商的功能和效果</p>
+    </div>
+
+    <!-- 提供者状态 -->
+    <div class="card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 30px; border: 1px solid #e9ecef;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="color: #111111; margin: 0;">提供者状态</h3>
+            <button onclick="loadProviderStatus()" style="background: #f8f9fa; border: 1px solid #dcdcdc; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9em;">
+                🔄 刷新状态
+            </button>
+        </div>
+        <div id="status-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+            <!-- 状态卡片将通过JavaScript动态生成 -->
+            <div style="text-align: center; padding: 20px; color: #6c757d;">加载中...</div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        <!-- 左侧：图片生成表单 -->
+        <div class="card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 1px solid #e9ecef;">
+            <h3 style="color: #111111; margin: 0 0 20px;">生成图片</h3>
+
+            <form id="generation-form">
+                <!-- 提示词输入 -->
+                <div style="margin-bottom: 20px;">
+                    <label for="prompt" style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057;">提示词：</label>
+                    <textarea id="prompt" name="prompt" rows="4"
+                             style="width: 100%; padding: 12px; border: 2px solid #dcdcdc; border-radius: 8px; font-size: 14px; resize: vertical; transition: border-color 0.3s;"
+                             placeholder="描述您想要生成的图片，例如：一只可爱的橘猫坐在窗台上，阳光透过窗户照进来，温馨的室内场景"></textarea>
+                </div>
+
+                <!-- 提供者选择 -->
+                <div style="margin-bottom: 20px;">
+                    <label for="provider" style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057;">AI提供者：</label>
+                    <select id="provider" name="provider"
+                            style="width: 100%; padding: 12px; border: 2px solid #dcdcdc; border-radius: 8px; font-size: 14px; background: white; cursor: pointer;">
+                        <option value="">选择提供者...</option>
+                        <optgroup label="AI图片生成">
+                            <option value="dalle">🎨 DALL-E 3 (OpenAI)</option>
+                            <option value="openai_image">🖼️ OpenAI 图片生成 (自定义端点)</option>
+                            <option value="gemini">✨ Gemini (Google)</option>
+                            <option value="siliconflow">⚡ SiliconFlow (Kolors)</option>
+                            <option value="pollinations">🌸 Pollinations (免费)</option>
+                            <option value="stable_diffusion">🎭 Stable Diffusion</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <!-- 尺寸选择 -->
+                <div style="margin-bottom: 20px;">
+                    <label for="size" style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057;">图片尺寸：</label>
+                    <select id="size" name="size"
+                            style="width: 100%; padding: 12px; border: 2px solid #dcdcdc; border-radius: 8px; font-size: 14px; background: white; cursor: pointer;">
+                        <option value="1024x1024">1024×1024 (正方形)</option>
+                        <option value="1792x1024" selected>1792×1024 (16:9 横向，适合PPT)</option>
+                        <option value="1024x1792">1024×1792 (9:16 竖向)</option>
+                        <option value="1536x1024">1536×1024 (3:2 横向)</option>
+                        <option value="1024x1536">1024×1536 (2:3 竖向)</option>
+                    </select>
+                </div>
+
+                <!-- 质量选择 -->
+                <div style="margin-bottom: 20px;">
+                    <label for="quality" style="display: block; margin-bottom: 8px; font-weight: 600; color: #495057;">图片质量：</label>
+                    <select id="quality" name="quality"
+                            style="width: 100%; padding: 12px; border: 2px solid #dcdcdc; border-radius: 8px; font-size: 14px; background: white; cursor: pointer;">
+                        <option value="standard">标准质量</option>
+                        <option value="hd">高清质量 (HD)</option>
+                    </select>
+                </div>
+
+                <!-- 生成按钮 -->
+                <button type="submit" id="generate-btn"
+                        style="width: 100%; background: linear-gradient(135deg, #0f0f0f 0%, #2a2a2a 100%);
+                               color: white; border: none; padding: 15px; border-radius: 8px;
+                               font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    🎨 生成图片
+                </button>
+            </form>
+
+            <!-- 生成进度 -->
+            <div id="generation-progress" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #111111;">
+                <div style="text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 15px;">⏳</div>
+                    <div id="progress-text" style="color: #495057; margin-bottom: 15px;">正在生成图片，请稍候...</div>
+                    <div style="width: 100%; background: #e9ecef; border-radius: 10px; overflow: hidden;">
+                        <div id="progress-bar" style="width: 0%; height: 8px; background: linear-gradient(90deg, #0f0f0f, #2a2a2a); transition: width 0.3s ease;"></div>
+                    </div>
+                    <div id="progress-time" style="color: #6c757d; font-size: 0.85em; margin-top: 10px;">已用时: 0秒</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：生成结果 -->
+        <div class="card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); border: 1px solid #e9ecef;">
+            <h3 style="color: #111111; margin: 0 0 20px;">生成结果</h3>
+            <div id="result-content" style="min-height: 300px; display: flex; align-items: center; justify-content: center;">
+                <div style="text-align: center; color: #6c757d;">
+                    <div style="font-size: 3em; margin-bottom: 15px;">🖼️</div>
+                    <p>生成的图片将显示在这里</p>
+                    <p style="font-size: 0.85em;">选择提供者并输入提示词后点击生成</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 历史记录 -->
+    <div class="card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-top: 30px; border: 1px solid #e9ecef;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="color: #111111; margin: 0;">生成历史</h3>
+            <button onclick="clearHistory()" style="background: #f8f9fa; border: 1px solid #dcdcdc; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.9em;">
+                🗑️ 清空历史
+            </button>
+        </div>
+        <div id="history-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+            <div style="text-align: center; padding: 40px; color: #6c757d; grid-column: 1 / -1;">
+                暂无生成历史
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+.image-test-page input:focus,
+.image-test-page select:focus,
+.image-test-page textarea:focus {
+    border-color: #0f0f0f;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
+    outline: none;
+}
+
+.image-test-page button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.image-test-page button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.provider-card {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.provider-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.provider-card.available {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border-color: #28a745;
+}
+
+.provider-card.unavailable {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border-color: #dc3545;
+}
+
+.history-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.history-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.history-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.history-item-info {
+    padding: 10px;
+    font-size: 0.85em;
+}
+
+@media (max-width: 768px) {
+    .image-test-page > div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
+
+
+<script>
+// 生成历史
+let generationHistory = [];
+
+// 页面加载时初始化
+document.addEventListener('DOMContentLoaded', function() {
+    loadProviderStatus();
+    loadHistory();
+});
+
+// 加载提供者状态
+async function loadProviderStatus() {
+    const statusCards = document.getElementById('status-cards');
+    statusCards.innerHTML = '<div style="text-align: center; padding: 20px; color: #6c757d; grid-column: 1 / -1;">加载中...</div>';
+
+    try {
+        const response = await fetch('/api/image/status');
+        const data = await response.json();
+
+        statusCards.innerHTML = '';
+
+        // 所有支持的提供者
+        const providers = [
+            { key: 'dalle', name: 'DALL-E 3', icon: '🎨', desc: 'OpenAI' },
+            { key: 'openai_image', name: 'OpenAI图片', icon: '🖼️', desc: '自定义端点' },
+            { key: 'gemini', name: 'Gemini', icon: '✨', desc: 'Google' },
+            { key: 'siliconflow', name: 'SiliconFlow', icon: '⚡', desc: 'Kolors' },
+            { key: 'pollinations', name: 'Pollinations', icon: '🌸', desc: '免费服务' },
+            { key: 'stable_diffusion', name: 'Stable Diffusion', icon: '🎭', desc: 'Stability AI' }
+        ];
+
+        providers.forEach(provider => {
+            const isAvailable = data.available_providers && data.available_providers.includes(provider.key);
+            const card = document.createElement('div');
+            card.className = `provider-card ${isAvailable ? 'available' : 'unavailable'}`;
+
+            card.innerHTML = `
+                <div style="font-size: 2em; margin-bottom: 8px;">${provider.icon}</div>
+                <div style="font-weight: 600; color: #111111; margin-bottom: 4px;">${provider.name}</div>
+                <div style="font-size: 0.8em; color: #6c757d; margin-bottom: 8px;">${provider.desc}</div>
+                <div style="font-size: 0.85em; font-weight: 500; color: ${isAvailable ? '#155724' : '#721c24'};">
+                    ${isAvailable ? '✅ 可用' : '❌ 未配置'}
+                </div>
+            `;
+
+            statusCards.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error('Failed to load provider status:', error);
+        statusCards.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #dc3545; grid-column: 1 / -1;">
+                ❌ 加载状态失败: ${error.message}
+            </div>
+        `;
+    }
+}
+
+
+// 处理表单提交
+document.getElementById('generation-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const prompt = formData.get('prompt');
+    const provider = formData.get('provider');
+    const size = formData.get('size');
+    const quality = formData.get('quality');
+
+    if (!prompt.trim()) {
+        showNotification('请输入提示词', 'error');
+        return;
+    }
+
+    if (!provider) {
+        showNotification('请选择AI提供者', 'error');
+        return;
+    }
+
+    // 解析尺寸
+    const [width, height] = size.split('x').map(Number);
+
+    // 显示进度
+    showProgress();
+
+    const startTime = Date.now();
+    let timerInterval;
+
+    // 更新计时器
+    timerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        document.getElementById('progress-time').textContent = `已用时: ${elapsed}秒`;
+    }, 1000);
+
+    try {
+        const response = await fetch('/api/image/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prompt: prompt,
+                provider: provider,
+                width: width,
+                height: height,
+                quality: quality
+            })
+        });
+
+        const data = await response.json();
+
+        clearInterval(timerInterval);
+        const totalTime = Math.floor((Date.now() - startTime) / 1000);
+
+        if (data.success) {
+            showResult(data, prompt, provider, totalTime);
+            addToHistory(data, prompt, provider);
+        } else {
+            showError(data.message || '生成失败');
+        }
+
+    } catch (error) {
+        clearInterval(timerInterval);
+        console.error('Generation failed:', error);
+        showError('生成失败: ' + error.message);
+    } finally {
+        hideProgress();
+    }
+});
+
+// 显示进度
+function showProgress() {
+    document.getElementById('generation-progress').style.display = 'block';
+    document.getElementById('generate-btn').disabled = true;
+    document.getElementById('generate-btn').textContent = '⏳ 生成中...';
+    document.getElementById('progress-time').textContent = '已用时: 0秒';
+
+    // 模拟进度条动画
+    let progress = 0;
+    const progressBar = document.getElementById('progress-bar');
+    const interval = setInterval(() => {
+        progress += Math.random() * 8;
+        if (progress > 90) progress = 90;
+        progressBar.style.width = progress + '%';
+    }, 500);
+
+    window.progressInterval = interval;
+}
+
+// 隐藏进度
+function hideProgress() {
+    document.getElementById('generation-progress').style.display = 'none';
+    document.getElementById('generate-btn').disabled = false;
+    document.getElementById('generate-btn').textContent = '🎨 生成图片';
+    document.getElementById('progress-bar').style.width = '100%';
+
+    if (window.progressInterval) {
+        clearInterval(window.progressInterval);
+    }
+}
+
+
+// 显示结果
+function showResult(data, prompt, provider, totalTime) {
+    const resultContent = document.getElementById('result-content');
+
+    const providerNames = {
+        'dalle': 'DALL-E 3',
+        'openai_image': 'OpenAI 图片生成',
+        'gemini': 'Gemini',
+        'siliconflow': 'SiliconFlow',
+        'pollinations': 'Pollinations',
+        'stable_diffusion': 'Stable Diffusion'
+    };
+
+    const imagePath = data.image_path || data.image_info?.local_path || '';
+    // 处理图片URL：如果是完整URL则直接使用，如果是相对路径则添加前缀
+    let imageUrl = imagePath;
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+        // 完整URL，提取路径部分（去掉域名）
+        try {
+            const url = new URL(imagePath);
+            imageUrl = url.pathname;
+        } catch (e) {
+            imageUrl = imagePath;
+        }
+    } else if (!imagePath.startsWith('/')) {
+        imageUrl = '/images/' + imagePath;
+    }
+
+    resultContent.innerHTML = `
+        <div style="margin-bottom: 20px; padding: 15px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="color: #155724; font-weight: 600;">✅ 生成成功</span>
+                <span style="color: #6c757d; font-size: 0.85em;">用时: ${totalTime}秒</span>
+            </div>
+            <div style="font-size: 0.9em; color: #495057;">
+                <strong>提供者：</strong> ${providerNames[provider] || provider}<br>
+                <strong>提示词：</strong> ${prompt.length > 100 ? prompt.substring(0, 100) + '...' : prompt}
+            </div>
+        </div>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="${imageUrl}" alt="Generated Image"
+                 style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);"
+                 onerror="this.onerror=null; this.src='/static/images/placeholder.svg'; this.alt='图片加载失败';">
+        </div>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <a href="${imageUrl}" download style="background: #0f0f0f; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 500; display: inline-flex; align-items: center; gap: 8px;">
+                📥 下载图片
+            </a>
+            <button onclick="copyImageUrl('${imageUrl}')" style="background: #f8f9fa; color: #111111; padding: 10px 20px; border: 1px solid #dcdcdc; border-radius: 6px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                📋 复制链接
+            </button>
+        </div>
+    `;
+}
+
+// 显示错误
+function showError(message) {
+    const resultContent = document.getElementById('result-content');
+
+    resultContent.innerHTML = `
+        <div style="padding: 30px; text-align: center;">
+            <div style="font-size: 3em; margin-bottom: 15px;">❌</div>
+            <div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 20px; border-radius: 8px;">
+                <strong>生成失败</strong><br>
+                <span style="font-size: 0.9em;">${message}</span>
+            </div>
+            <p style="color: #6c757d; margin-top: 15px; font-size: 0.9em;">
+                请检查提供者配置是否正确，或尝试其他提供者
+            </p>
+        </div>
+    `;
+}
+
+// 复制图片URL
+function copyImageUrl(url) {
+    const fullUrl = window.location.origin + url;
+    navigator.clipboard.writeText(fullUrl).then(() => {
+        showNotification('链接已复制到剪贴板', 'success');
+    }).catch(err => {
+        showNotification('复制失败: ' + err.message, 'error');
+    });
+}
+
+
+// 添加到历史记录
+function addToHistory(data, prompt, provider) {
+    const imagePath = data.image_path || data.image_info?.local_path || '';
+    // 处理图片URL：如果是完整URL则提取路径部分
+    let imageUrl = imagePath;
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+        try {
+            const url = new URL(imagePath);
+            imageUrl = url.pathname;
+        } catch (e) {
+            imageUrl = imagePath;
+        }
+    } else if (!imagePath.startsWith('/')) {
+        imageUrl = '/images/' + imagePath;
+    }
+
+    const historyItem = {
+        id: Date.now(),
+        imageUrl: imageUrl,
+        prompt: prompt,
+        provider: provider,
+        timestamp: new Date().toLocaleString()
+    };
+
+    generationHistory.unshift(historyItem);
+
+    // 最多保留20条记录
+    if (generationHistory.length > 20) {
+        generationHistory = generationHistory.slice(0, 20);
+    }
+
+    // 保存到localStorage
+    try {
+        localStorage.setItem('imageGenerationHistory', JSON.stringify(generationHistory));
+    } catch (e) {
+        console.warn('Failed to save history to localStorage:', e);
+    }
+
+    renderHistory();
+}
+
+// 加载历史记录
+function loadHistory() {
+    try {
+        const saved = localStorage.getItem('imageGenerationHistory');
+        if (saved) {
+            generationHistory = JSON.parse(saved);
+            renderHistory();
+        }
+    } catch (e) {
+        console.warn('Failed to load history from localStorage:', e);
+    }
+}
+
+// 渲染历史记录
+function renderHistory() {
+    const container = document.getElementById('history-container');
+
+    if (generationHistory.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #6c757d; grid-column: 1 / -1;">
+                暂无生成历史
+            </div>
+        `;
+        return;
+    }
+
+    const providerNames = {
+        'dalle': 'DALL-E',
+        'openai_image': 'OpenAI',
+        'gemini': 'Gemini',
+        'siliconflow': 'SiliconFlow',
+        'pollinations': 'Pollinations',
+        'stable_diffusion': 'SD'
+    };
+
+    container.innerHTML = generationHistory.map(item => `
+        <div class="history-item" onclick="viewHistoryItem(${item.id})">
+            <img src="${item.imageUrl}" alt="Generated Image" onerror="this.src='/static/images/placeholder.svg';">
+            <div class="history-item-info">
+                <div style="font-weight: 500; color: #111111; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    ${item.prompt.substring(0, 30)}${item.prompt.length > 30 ? '...' : ''}
+                </div>
+                <div style="color: #6c757d; display: flex; justify-content: space-between;">
+                    <span>${providerNames[item.provider] || item.provider}</span>
+                    <span>${item.timestamp.split(' ')[1] || item.timestamp}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// 查看历史记录项
+function viewHistoryItem(id) {
+    const item = generationHistory.find(h => h.id === id);
+    if (!item) return;
+
+    // 填充表单
+    document.getElementById('prompt').value = item.prompt;
+    document.getElementById('provider').value = item.provider;
+
+    // 显示图片
+    showResult({ image_path: item.imageUrl }, item.prompt, item.provider, 0);
+
+    // 滚动到顶部
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 清空历史记录
+function clearHistory() {
+    if (confirm('确定要清空所有生成历史吗？')) {
+        generationHistory = [];
+        try {
+            localStorage.removeItem('imageGenerationHistory');
+        } catch (e) {
+            console.warn('Failed to clear history from localStorage:', e);
+        }
+        renderHistory();
+        showNotification('历史记录已清空', 'success');
+    }
+}
+
+
+// 显示通知
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        z-index: 10000;
+        max-width: 400px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+
+    switch (type) {
+        case 'success':
+            notification.style.background = 'linear-gradient(135deg, #0f0f0f 0%, #2a2a2a 100%)';
+            break;
+        case 'error':
+            notification.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+            break;
+        default:
+            notification.style.background = 'linear-gradient(135deg, #2a2a2a 0%, #0f0f0f 100%)';
+    }
+
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// 根据提供者更新可用的尺寸选项
+document.getElementById('provider').addEventListener('change', function() {
+    const provider = this.value;
+    const sizeSelect = document.getElementById('size');
+    const qualitySelect = document.getElementById('quality');
+
+    // 根据提供者调整可用选项
+    if (provider === 'dalle' || provider === 'openai_image') {
+        // DALL-E 支持的尺寸
+        sizeSelect.innerHTML = `
+            <option value="1024x1024">1024×1024 (正方形)</option>
+            <option value="1792x1024" selected>1792×1024 (16:9 横向)</option>
+            <option value="1024x1792">1024×1792 (9:16 竖向)</option>
+        `;
+        qualitySelect.disabled = false;
+    } else if (provider === 'gemini') {
+        // Gemini 支持的尺寸
+        sizeSelect.innerHTML = `
+            <option value="1024x1024">1024×1024 (正方形)</option>
+            <option value="1792x1024" selected>1792×1024 (16:9 横向，适合PPT)</option>
+            <option value="1024x1792">1024×1792 (9:16 竖向)</option>
+            <option value="1536x1024">1536×1024 (3:2 横向)</option>
+            <option value="1024x1536">1024×1536 (2:3 竖向)</option>
+            <option value="1280x720">1280×720 (HD)</option>
+        `;
+        qualitySelect.disabled = true;
+    } else if (provider === 'pollinations') {
+        // Pollinations 支持更多尺寸
+        sizeSelect.innerHTML = `
+            <option value="1024x1024">1024×1024 (正方形)</option>
+            <option value="1792x1024" selected>1792×1024 (16:9 横向)</option>
+            <option value="1024x1792">1024×1792 (9:16 竖向)</option>
+            <option value="1280x720">1280×720 (HD)</option>
+            <option value="1920x1080">1920×1080 (Full HD)</option>
+        `;
+        qualitySelect.disabled = true;
+    } else {
+        // 默认尺寸选项
+        sizeSelect.innerHTML = `
+            <option value="1024x1024">1024×1024 (正方形)</option>
+            <option value="1792x1024" selected>1792×1024 (16:9 横向)</option>
+            <option value="1024x1792">1024×1792 (9:16 竖向)</option>
+            <option value="1536x1024">1536×1024 (3:2 横向)</option>
+            <option value="1024x1536">1024×1536 (2:3 竖向)</option>
+        `;
+        qualitySelect.disabled = false;
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}生成结果 - LandPPT{% endblock %}
+
+{% block content %}
+{% if success %}
+<div class="alert alert-success">
+    <h3 style="margin-bottom: 10px;">🎉 PPT 生成成功！</h3>
+    <p>您的 PPT 已经成功生成，可以预览和下载。</p>
+</div>
+
+<div style="text-align: center; margin-bottom: 30px;">
+    <h2 style="color: #2c3e50; margin-bottom: 20px;">📊 生成结果</h2>
+    <p style="color: #7f8c8d;">任务ID: <code>{{ task_id }}</code></p>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <h3 style="color: #3498db; margin-bottom: 15px;">📋 PPT 大纲</h3>
+        {% if outline %}
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+            <h4 style="color: #2c3e50; margin-bottom: 15px;">{{ outline.title }}</h4>
+            <p style="color: #7f8c8d; margin-bottom: 15px;">
+                总共 {{ outline.metadata.total_slides }} 页幻灯片 | 
+                场景: {{ outline.metadata.scenario }} | 
+                语言: {{ outline.metadata.language }}
+            </p>
+            
+            <div style="max-height: 300px; overflow-y: auto;">
+                {% for slide in outline.slides %}
+                <div style="padding: 10px; margin-bottom: 10px; background: white; border-radius: 5px; border-left: 4px solid #3498db;">
+                    <strong>第{{ slide.id }}页: {{ slide.title }}</strong>
+                    {% if slide.subtitle %}
+                    <br><em style="color: #7f8c8d;">{{ slide.subtitle }}</em>
+                    {% endif %}
+                    {% if slide.content %}
+                    <div style="margin-top: 8px; font-size: 0.9em; color: #555;">
+                        {{ slide.content[:100] }}{% if slide.content|length > 100 %}...{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div style="text-align: center;">
+            <a href="/projects" class="btn btn-primary">查看项目列表</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3 style="color: #27ae60; margin-bottom: 15px;">🎯 操作选项</h3>
+        
+        <div style="margin-bottom: 20px;">
+            <a href="/preview/{{ task_id }}" class="btn btn-success" target="_blank" style="width: 100%; margin-bottom: 10px;">
+                🔍 预览 PPT
+            </a>
+
+            <button onclick="downloadPPT('{{ task_id }}')" class="btn btn-primary" style="width: 100%; margin-bottom: 10px;">
+                💾 下载 PPT
+            </button>
+
+            <a href="/scenarios" class="btn btn-warning" style="width: 100%; margin-bottom: 10px;">
+                🔄 创建新的 PPT
+            </a>
+
+            <a href="/projects" class="btn" style="background: #9b59b6; width: 100%;">
+                📊 查看所有项目
+            </a>
+        </div>
+        
+        <div style="padding: 15px; background: #e8f4fd; border-radius: 8px; border-left: 4px solid #3498db;">
+            <h4 style="color: #2c3e50; margin-bottom: 10px;">💡 提示</h4>
+            <ul style="color: #7f8c8d; margin: 0; padding-left: 20px;">
+                <li>点击"预览 PPT"可以在新窗口中查看完整的演示文稿</li>
+                <li>PPT 支持键盘导航（左右箭头键）</li>
+                <li>如需修改，可以重新生成或联系技术支持</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% if slides_html %}
+<div style="margin-top: 30px;">
+    <h3 style="color: #2c3e50; margin-bottom: 20px; text-align: center;">🎬 PPT 预览</h3>
+    <div style="border: 2px solid #ecf0f1; border-radius: 10px; overflow: hidden; background: white;">
+        <iframe 
+            srcdoc="{{ slides_html | replace('"', '&quot;') }}" 
+            style="width: 100%; height: 600px; border: none;"
+            title="PPT Preview">
+        </iframe>
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="alert alert-error">
+    <h3 style="margin-bottom: 10px;">❌ 生成失败</h3>
+    <p>很抱歉，PPT 生成过程中出现了错误。</p>
+    {% if error %}
+    <div style="margin-top: 15px; padding: 10px; background: rgba(231, 76, 60, 0.1); border-radius: 5px;">
+        <strong>错误详情:</strong> {{ error }}
+    </div>
+    {% endif %}
+</div>
+
+<div style="text-align: center; margin-top: 30px;">
+    <a href="/scenarios" class="btn btn-primary">🔄 重新尝试</a>
+    <a href="/home" class="btn" style="background: #95a5a6; margin-left: 10px;">🏠 返回首页</a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function downloadPPT(taskId) {
+    // In a real implementation, this would trigger a download
+    // For now, we'll show an alert
+    alert('下载功能正在开发中。您可以通过预览页面手动保存 PPT 内容。');
+    
+    // Alternative: Open preview in new window for manual saving
+    window.open('/preview/' + taskId, '_blank');
+}
+
+// Auto-refresh functionality removed - now using project-based workflow
+</script>
+{% endblock %}

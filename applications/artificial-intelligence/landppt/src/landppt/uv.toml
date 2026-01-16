@@ -1,0 +1,16 @@
+# uv configuration file for LandPPT
+
+# Extra index URLs for additional package sources
+extra-index-url = ["https://pypi.apryse.com"]
+
+# Use the fastest available index
+index-strategy = "first-index"
+
+# Cache configuration - use project temp directory
+cache-dir = "temp/.uv-cache"
+
+# Python version preference
+python-preference = "managed"
+
+# Development dependencies (defined in pyproject.toml instead)
+# This section is moved to pyproject.toml [project.optional-dependencies]
