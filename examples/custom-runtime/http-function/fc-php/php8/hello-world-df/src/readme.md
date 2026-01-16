@@ -2,7 +2,7 @@
 
 快速部署一个 PHP 的 Hello World 函数到函数计算（FC）。
 
-- [HelloWorld 示例代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/examples/custom-runtime/http-function/fc-php/php8/hello-world-df/src)
+- [HelloWorld 示例代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/examples/custom-runtime/http-function/fc-php/php8/hello-world-df/src)
 
 ## 前期准备
 
