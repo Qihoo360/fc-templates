@@ -22,9 +22,9 @@ resources:
       functionName: "{{functionName}}"
       code: flowise
       environmentVariables:
-        TOOL_LLM_URL: http://llm.com/v1/
-        TOOL_LLM_NAME: llm_name
-        API_KEY: xxxxxx
+        TOOL_LLM_URL: https://api.example.com/llm
+        TOOL_LLM_NAME: gpt-4
+        API_KEY: your_api_key_here
       logConfig:
         isOpen: false
       scale:

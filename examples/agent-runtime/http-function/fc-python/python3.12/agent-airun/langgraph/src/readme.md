@@ -51,6 +51,10 @@ sequenceDiagram
 ## 部署 & 体验
 
 - 通过 智汇云官网 -> 产品列表 -> Serverless开发 -> 函数计算 FC，部署该应用。
+- 配置环境变量： 
+TOOL_LLM_URL = "https://api.example.com/llm"
+TOOL_LLM_NAME = "gpt-4"
+API_KEY = "your_api_key_here"
 
 ## 应用使用示例
 
