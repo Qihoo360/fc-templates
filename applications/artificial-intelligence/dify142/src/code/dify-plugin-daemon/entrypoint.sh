@@ -1,1 +1,0 @@
-bash -c "exec /app/main"

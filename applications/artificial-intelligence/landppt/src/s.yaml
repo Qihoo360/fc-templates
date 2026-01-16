@@ -1,0 +1,62 @@
+edition: 3.0.0
+name: landppt
+access: default
+vars:
+  Region: {{region}}
+  FunctionName: {{FunctionName}}
+  Description: {{Description}}
+
+  POLEFS_VOLUME: {{POLEFS_VOLUME}}
+  POLEFS_MOUNT_PATH: /data
+  POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
+resources:
+  banana:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.Region}
+      description: ${vars.Description}
+      runtime: custom
+      memorySize: 4096
+      cpu: 4
+      diskSize: 512
+      timeout: 599
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      sourceSubDir: landppt
+      cloudBuildType: Dockerfile
+      port: 8000
+      functionName: ${vars.FunctionName}
+      environmentVariables:
+        testkey: testvalue
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 1
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
+          mountDir: ${vars.POLEFS_MOUNT_PATH}
+          createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
