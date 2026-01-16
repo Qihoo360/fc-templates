@@ -85,7 +85,6 @@ class CurrencyAgent:
             model=os.getenv('TOOL_LLM_NAME'),
             openai_api_key=os.getenv('API_KEY', 'EMPTY'),
             openai_api_base=os.getenv('TOOL_LLM_URL'),
-            timout=1800,
             temperature=0,
         )
 
