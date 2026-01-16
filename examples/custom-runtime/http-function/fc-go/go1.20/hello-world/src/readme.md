@@ -2,7 +2,7 @@
 
 快速部署一个 Golang 的 Hello World 函数到函数计算（FC）。
 
-- [HelloWorld 示例代码](https://github.com/Qihoo360/fc-templates/tree/feature/fc-app-test/examples/custom-runtime/http-function/fc-go/go1.20/hello-world/src)
+- [HelloWorld 示例代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/examples/custom-runtime/http-function/fc-go/go1.20/hello-world/src)
 
 ## 前期准备
 
