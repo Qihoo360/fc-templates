@@ -133,6 +133,10 @@ RUN chown -R landppt:landppt /home/landppt && \
 # Set work directory
 WORKDIR /app
 
+FROM production AS prepare-stage
+
+FROM wfwqjs-eventing-zevent-pub/fc-templates-prepare-stage:landppt-v1 AS ready-stage
+
 # Copy application code (minimize layers)
 COPY run.py ./
 COPY src/ ./src/
