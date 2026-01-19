@@ -6,7 +6,7 @@
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 cozeloop，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/ArtificialIntelligence/coze-loop/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/coze-loop/src)
 
 * [官方网站](https://www.coze.cn/loop)
 

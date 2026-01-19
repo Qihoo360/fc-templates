@@ -6,7 +6,7 @@ BISHENG 是一款 **开源** LLM应用开发平台，专攻**办公场景**， �
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 bisheng，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/ArtificialIntelligence/bisheng/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/bisheng/src)
 
 * [官方网站](https://dataelem.feishu.cn/wiki/ZxW6wZyAJicX4WkG0NqcWsbynde)
 

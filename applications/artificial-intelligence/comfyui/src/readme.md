@@ -6,7 +6,7 @@ ComfyUI 是构建在 Stable Diffusion 之上的基于节点的 GUI ，而 Stable
 
 通过 Serverless 开发平台，您只需要几步，就可以体验 comfyui  ，并享受 Serverless 架构带来的降本提效的技术红利
 
-* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/ArtificialIntelligence/comfyui/src)
+* [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/comfyui/src)
 
 * [官方网站](https://www.comfy.org/en/)
 
