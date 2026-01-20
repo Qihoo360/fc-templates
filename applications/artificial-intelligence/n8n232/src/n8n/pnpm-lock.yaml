@@ -38028,4 +38028,4 @@ snapshots:
   zx@8.1.4:
     optionalDependencies:
       '@types/fs-extra': 11.0.4
-      '@types/node': 20.17.57\
+      '@types/node': 20.17.57
