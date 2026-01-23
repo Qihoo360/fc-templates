@@ -84,14 +84,16 @@ function computeEnvironment(options: N8NInstancesOptions): Record<string, string
 		env.OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS = 'true';
 
 		if (mains > 1) {
-			if (!process.env.N8N_LICENSE_ACTIVATION_KEY) {
-				throw new Error('N8N_LICENSE_ACTIVATION_KEY is required for multi-main instances');
+			if (!process.env.N8N_LICENSE_ACTIVATION_KEY && !process.env.N8N_LICENSE_CERT) {
+				throw new Error(
+					'N8N_LICENSE_ACTIVATION_KEY or N8N_LICENSE_CERT is required for multi-main instances',
+				);
 			}
 			env.N8N_MULTI_MAIN_SETUP_ENABLED = 'true';
 		}
 	}
 
-	if (mains === 1 && baseUrl) {
+	if (mains === 1 && baseUrl && !serviceEnvironment.WEBHOOK_URL) {
 		env.WEBHOOK_URL = baseUrl;
 		env.N8N_PORT = '5678';
 	}

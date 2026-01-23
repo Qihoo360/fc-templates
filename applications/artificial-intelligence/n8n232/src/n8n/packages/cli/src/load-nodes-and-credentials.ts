@@ -105,6 +105,13 @@ export class LoadNodesAndCredentials {
 		this.postProcessors.push(fn);
 	}
 
+	releaseTypes() {
+		this.types = { nodes: [], credentials: [] };
+		for (const loader of Object.values(this.loaders)) {
+			loader.releaseTypes();
+		}
+	}
+
 	isKnownNode(type: string) {
 		return type in this.known.nodes;
 	}
@@ -371,13 +378,6 @@ export class LoadNodesAndCredentials {
 				description: 'Select which context establishment hook to use',
 				required: true,
 			},
-			{
-				displayName: 'Allow Failure',
-				name: 'isAllowedToFail',
-				type: 'boolean',
-				default: false,
-				description: 'Whether to continue workflow execution if this hook fails',
-			},
 		];
 
 		// Add all hook-specific options with display conditions
@@ -504,6 +504,9 @@ export class LoadNodesAndCredentials {
 		this.types = { nodes: [], credentials: [] };
 
 		for (const loader of Object.values(this.loaders)) {
+			// Reload types if they were released from memory
+			await loader.ensureTypesLoaded();
+
 			// list of node & credential types that will be sent to the frontend
 			const { known, types, directory, packageName } = loader;
 			this.types.nodes = this.types.nodes.concat(
@@ -841,7 +844,7 @@ export class LoadNodesAndCredentials {
 						description: 'Block all requests when used in the HTTP Request node',
 					},
 				],
-				default: 'all',
+				default: 'none',
 				description: 'Control which domains this credential can be used with in HTTP Request nodes',
 			},
 			{
