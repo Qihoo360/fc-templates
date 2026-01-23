@@ -3,6 +3,7 @@ import type { ZodIssue } from 'zod';
 
 import type { AddedNode, NodeDetails, NodeSearchResult } from './nodes';
 import type { SimpleWorkflow } from './workflow';
+import type { PromptCategorization } from './categorization';
 
 /**
  * Types of progress updates
@@ -199,5 +200,13 @@ export interface GetWorkflowExamplesOutput {
 export interface GetNodeConfigurationExamplesOutput {
 	nodeType: string;
 	totalFound: number;
+	message: string;
+}
+
+/**
+ * Output type for categorize prompt tool
+ */
+export interface CategorizePromptOutput {
+	categorization: PromptCategorization;
 	message: string;
 }
