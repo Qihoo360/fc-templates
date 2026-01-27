@@ -1,0 +1,21 @@
+{
+  "addToKnowledgeBase.addSuccess": "Archivo añadido correctamente",
+  "addToKnowledgeBase.confirm": "Añadir",
+  "addToKnowledgeBase.error": "No se pudo añadir el archivo a la biblioteca",
+  "addToKnowledgeBase.id.placeholder": "Por favor, selecciona una biblioteca para añadir",
+  "addToKnowledgeBase.id.required": "Por favor, selecciona una biblioteca",
+  "addToKnowledgeBase.id.title": "Biblioteca de destino",
+  "addToKnowledgeBase.title": "Añadir a la biblioteca",
+  "addToKnowledgeBase.totalFiles": "{{count}} archivos seleccionados",
+  "createNew.confirm": "Crear nueva",
+  "createNew.description.placeholder": "Descripción de la biblioteca (opcional)",
+  "createNew.formTitle": "Información básica",
+  "createNew.name.placeholder": "Nombre de la biblioteca",
+  "createNew.name.required": "Por favor, introduce un nombre para la biblioteca",
+  "createNew.title": "Crear nueva biblioteca",
+  "tab.evals": "Evaluaciones",
+  "tab.files": "Archivos",
+  "tab.settings": "Configuración",
+  "tab.testing": "Pruebas de recuperación",
+  "title": "Biblioteca"
+}

@@ -33,7 +33,7 @@ resources:
       cloudBuildType: Dockerfile
       port: 3210
       functionName: ${vars.FunctionName}
-      sourceSubDir: code/lobe-chat
+      sourceSubDir: code/lobehub
       environmentVariables:
         testkey: "testvalue"
         NEXT_PUBLIC_SERVICE_MODE: "${vars.NEXT_PUBLIC_SERVICE_MODE}"

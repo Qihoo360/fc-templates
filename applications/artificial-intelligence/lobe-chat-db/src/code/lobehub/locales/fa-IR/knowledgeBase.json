@@ -1,0 +1,21 @@
+{
+  "addToKnowledgeBase.addSuccess": "فایل با موفقیت اضافه شد",
+  "addToKnowledgeBase.confirm": "افزودن",
+  "addToKnowledgeBase.error": "افزودن فایل به کتابخانه با شکست مواجه شد",
+  "addToKnowledgeBase.id.placeholder": "لطفاً یک کتابخانه برای افزودن انتخاب کنید",
+  "addToKnowledgeBase.id.required": "لطفاً یک کتابخانه انتخاب کنید",
+  "addToKnowledgeBase.id.title": "کتابخانه مقصد",
+  "addToKnowledgeBase.title": "افزودن به کتابخانه",
+  "addToKnowledgeBase.totalFiles": "{{count}} فایل انتخاب شده",
+  "createNew.confirm": "ایجاد جدید",
+  "createNew.description.placeholder": "توضیحات کتابخانه (اختیاری)",
+  "createNew.formTitle": "اطلاعات پایه",
+  "createNew.name.placeholder": "نام کتابخانه",
+  "createNew.name.required": "لطفاً نام کتابخانه را وارد کنید",
+  "createNew.title": "ایجاد کتابخانه جدید",
+  "tab.evals": "ارزیابی‌ها",
+  "tab.files": "فایل‌ها",
+  "tab.settings": "تنظیمات",
+  "tab.testing": "آزمون یادآوری",
+  "title": "کتابخانه"
+}

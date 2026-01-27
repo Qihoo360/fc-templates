@@ -1,0 +1,21 @@
+{
+  "addToKnowledgeBase.addSuccess": "Dosya başarıyla eklendi",
+  "addToKnowledgeBase.confirm": "Ekle",
+  "addToKnowledgeBase.error": "Dosya Kütüphane'ye eklenemedi",
+  "addToKnowledgeBase.id.placeholder": "Eklenecek bir kütüphane seçin",
+  "addToKnowledgeBase.id.required": "Lütfen bir kütüphane seçin",
+  "addToKnowledgeBase.id.title": "Hedef Kütüphane",
+  "addToKnowledgeBase.title": "Kütüphaneye Ekle",
+  "addToKnowledgeBase.totalFiles": "{{count}} dosya seçildi",
+  "createNew.confirm": "Yeni Oluştur",
+  "createNew.description.placeholder": "Kütüphane açıklaması (isteğe bağlı)",
+  "createNew.formTitle": "Temel Bilgiler",
+  "createNew.name.placeholder": "Kütüphane adı",
+  "createNew.name.required": "Lütfen bir kütüphane adı girin",
+  "createNew.title": "Yeni Kütüphane Oluştur",
+  "tab.evals": "Değerlendirmeler",
+  "tab.files": "Dosyalar",
+  "tab.settings": "Ayarlar",
+  "tab.testing": "Hatırlama Testi",
+  "title": "Kütüphane"
+}

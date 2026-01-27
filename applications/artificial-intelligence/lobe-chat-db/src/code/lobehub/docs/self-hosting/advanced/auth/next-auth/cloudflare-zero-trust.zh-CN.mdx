@@ -1,0 +1,63 @@
+---
+title: 在 LobeHub 中配置 Cloudflare Zero Trust 身份验证服务
+description: >-
+  学习如何在 LobeHub 中配置 Cloudflare Zero Trust 身份验证服务，包括创建提供程序、配置环境变量和部署
+  LobeHub。详细步骤和必要环境变量设置。
+tags:
+  - Cloudflare Zero Trust
+  - 身份验证
+  - 单点登录
+  - 环境变量
+  - LobeHub
+---
+
+# 配置 Cloudflare Zero Trust 身份验证服务
+
+## Cloudflare Zero Trust 配置流程
+
+<Steps>
+  ### 在 Cloudflare Zero Trust 中创建应用
+
+  我们现在默认您已经了解了如何使用 Cloudflare Zero Trust 平台且假设您的 LobeHub 实例部署在 `https://chat.example.com` 中。
+
+  首先我们需要访问 `https://one.dash.cloudflare.com/` 并前往 `Access - Applications` 中。
+
+  ![image](/blog/assetsc74cf5c8daee1515c37a85bce087f0d6.webp)
+
+  现在，在所在页面点击 `Add an application` 并选择 `SaaS`。
+
+  ![image](/blog/assetse717764a3618df4e56212e447a6c20cd.webp)
+
+  在 `Application` 文本框内填入应用名称，如：`LobeHub SSO`，然后点击 `Select OIDC` 后点击 `Add applicaiton`
+
+  ![image](/blog/assets0ceb7e446f9a850df283093563ba7803.webp)
+
+  至此您已成功在 Clouflare Zero Trust 中创建了一个名为 `LobeHub SSO` 的 SaaS 应用。
+
+  接下来我们需要在 `Redirect URLs` 中填入 `https://chat.example.com/api/auth/callback/cloudflare-zero-trust`（注意此处的 `chat.example.com` 需要替换为您的实例地址） ![image](/blog/assets4aaf8d5d092608b649230e0e6fc92df6.webp)
+
+  最后我们将页面往下滚动，您将需要记录以下三个值 `Client secret`, `Client ID` 及 `Issuer` 以备后续部署 LobeHub 环境变量使用。
+
+  ![image](/blog/assets66b0dfa56c1f5b3063b5ba740dd3ef8d.webp)
+
+  ### 配置环境变量
+
+  在部署 LobeHub 时，你需要配置以下环境变量：
+
+  | 环境变量                                | 类型 | 描述                                                                                                           |
+  | ----------------------------------- | -- | ------------------------------------------------------------------------------------------------------------ |
+  | `AUTH_SECRET`                       | 必选 | 用于加密 Auth.js 会话令牌的密钥。您可以使用以下命令生成秘钥： `openssl rand -base64 32`                                                |
+  | `NEXT_AUTH_SSO_PROVIDERS`           | 必选 | 选择 LoboChat 的单点登录提供商。使用 Cloudflare Zero Trust 请填写 `cloudflare-zero-trust`。                                   |
+  | `AUTH_CLOUDFLARE_ZERO_TRUST_ID`     | 必选 | 在 Cloudflare Zero Trust 生成的 `Client ID`，示例值是 `lobe-chat`                                                     |
+  | `AUTH_CLOUDFLARE_ZERO_TRUST_SECRET` | 必选 | 在 Cloudflare Zero Trust 生成的 `Client secret`，示例值是 `insecure_secret`                                           |
+  | `AUTH_CLOUDFLARE_ZERO_TRUST_ISSUER` | 必选 | 在 Cloudflare Zero Trust 生成的 `Issuer`，例如 `https://example.cloudflareaccess.com/cdn-cgi/access/sso/oidc/7db0f` |
+  | `AUTH_URL`                          | 必选 | 该 URL 用于指定 Auth.js 在执行 OAuth 验证时的回调地址，当默认生成的重定向地址发生不正确时才需要设置。`https://chat.example.com/api/auth`             |
+
+  <Callout type={'tip'}>
+    前往 [📘 环境变量](/zh/docs/self-hosting/environment-variable#Cloudflare%20Zero%20Trust) 可查阅相关变量详情。
+  </Callout>
+</Steps>
+
+<Callout type={'info'}>
+  部署成功后，用户将可以使用 Cloudflare Zero Trust 中配置的用户通过身份认证并使用 LobeHub。
+</Callout>

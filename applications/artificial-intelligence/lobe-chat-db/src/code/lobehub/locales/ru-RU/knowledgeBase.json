@@ -1,0 +1,21 @@
+{
+  "addToKnowledgeBase.addSuccess": "Файл успешно добавлен",
+  "addToKnowledgeBase.confirm": "Добавить",
+  "addToKnowledgeBase.error": "Не удалось добавить файл в библиотеку",
+  "addToKnowledgeBase.id.placeholder": "Пожалуйста, выберите библиотеку для добавления",
+  "addToKnowledgeBase.id.required": "Пожалуйста, выберите библиотеку",
+  "addToKnowledgeBase.id.title": "Целевая библиотека",
+  "addToKnowledgeBase.title": "Добавить в библиотеку",
+  "addToKnowledgeBase.totalFiles": "Выбрано файлов: {{count}}",
+  "createNew.confirm": "Создать",
+  "createNew.description.placeholder": "Описание библиотеки (необязательно)",
+  "createNew.formTitle": "Основная информация",
+  "createNew.name.placeholder": "Название библиотеки",
+  "createNew.name.required": "Пожалуйста, введите название библиотеки",
+  "createNew.title": "Создать новую библиотеку",
+  "tab.evals": "Оценки",
+  "tab.files": "Файлы",
+  "tab.settings": "Настройки",
+  "tab.testing": "Проверка запоминания",
+  "title": "Библиотека"
+}

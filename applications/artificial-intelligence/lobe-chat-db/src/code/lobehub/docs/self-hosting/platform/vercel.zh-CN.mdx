@@ -1,0 +1,43 @@
+---
+title: 在 Vercel 上部署 LobeHub
+description: 学习如何在 Vercel 上一键部署 LobeHub，准备 OpenAI API Key，点击按钮进行部署，绑定自定义域名，自动同步更新等。
+tags:
+  - Vercel
+  - 部署指引
+  - LobeHub
+  - OpenAI API Key
+  - 自定义域名
+  - 自动同步更新
+---
+
+# Vercel 部署指引
+
+如果想在 Vercel 上部署 LobeHub，可以按照以下步骤进行操作：
+
+## Vercel 部署流程
+
+<Steps>
+  ### 点击下方按钮进行部署
+
+  [![][deploy-button-image]][deploy-link]
+
+  直接使用 GitHub 账号登录即可完成部署。
+
+  ### 部署完毕后，即可开始使用
+
+  ### 绑定自定义域名（可选）
+
+  Vercel 分配的域名 DNS 在某些区域被污染了，绑定自定义域名即可直连。
+</Steps>
+
+## 自动同步更新
+
+如果你根据上述中的一键部署步骤部署了自己的项目，你可能会发现总是被提示 “有可用更新”。这是因为 Vercel 默认为你创建新项目而非 fork 本项目，这将导致无法准确检测更新。
+
+<Callout>
+  我们建议按照 [📘 LobeHub 自部署保持更新](/zh/docs/self-hosting/advanced/upstream-sync)
+  步骤重新部署。
+</Callout>
+
+[deploy-button-image]: https://vercel.com/button
+[deploy-link]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flobehub%2Flobe-chat&project-name=lobe-chat&repository-name=lobe-chat
