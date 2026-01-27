@@ -208,16 +208,16 @@ Parameters:
       x-placeholder: S3_SECRET_ACCESS_KEY
       x-formitem:
         type: input
-    S3_PUBLIC_DOMAIN:
-      # title: S3_PUBLIC_DOMAIN
-      type: string
-      default: ""
-      description: "公网域名"
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      x-restype: s3
-      x-formitem:
-        type: input
+    # S3_PUBLIC_DOMAIN:
+    #   # title: S3_PUBLIC_DOMAIN
+    #   type: string
+    #   default: ""
+    #   description: "公网域名"
+    #   x-cate: applicationCate
+    #   x-label: 对象存储配置
+    #   x-restype: s3
+    #   x-formitem:
+    #     type: input
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"
