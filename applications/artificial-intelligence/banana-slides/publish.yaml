@@ -29,7 +29,7 @@ Parameters:
   # 持久存储
   - FileStorage
   - POLEFS_VOLUME
-  # - POLEFS_MOUNT_PATH
+  - VOLUME_MOUNT_PATH
   - POLEFS_VOLUME_CREATE_USER
 
   properties:
@@ -105,6 +105,15 @@ Parameters:
       x-restype: polefs
       x-placeholder: 函数创建挂载卷的用户
       x-hidden: true
+    VOLUME_MOUNT_PATH:
+      type: string
+      description: "存储卷挂载的路径，应用数据会写入此路径；注：复用存储卷时需要注意数据覆盖的问题"
+      default: "/data"
+      x-cate: applicationCate
+      x-label: 存储路径
+      x-placeholder: 存储路径
+      x-formitem:
+        type: input
 
 PropertyDescription:
   resourceCate:
