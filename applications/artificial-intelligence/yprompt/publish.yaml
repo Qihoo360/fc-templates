@@ -41,7 +41,7 @@ Parameters:
 
   # 持久存储
   - POLEFS_VOLUME
-  - POLEFS_MOUNT_PATH
+  - VOLUME_MOUNT_PATH
   - POLEFS_VOLUME_CREATE_USER
 
   properties:
@@ -192,7 +192,7 @@ Parameters:
       enum:
       - Polefs
       x-cate: applicationCate
-      x-label: 文件存储配置
+      x-label: 存储卷
       x-restype: polefs
       x-placeholder: 请选择文件存储类型
       x-formitem:
@@ -202,7 +202,7 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 文件存储配置
+      x-label: 存储卷
       x-restype: polefs
       x-placeholder: 函数挂载 PoleFS 卷名称
       x-api-uri: /resources/polefs/volumes
@@ -211,25 +211,24 @@ Parameters:
       x-formitem:
         type: input
         name: volume_unique_name
-    POLEFS_MOUNT_PATH:
-      type: string
-      description: ""
-      default: "/app/data"
-      x-cate: applicationCate
-      x-label: 文件存储配置
-      x-restype: polefs
-      x-placeholder: 函数挂载路径
-      x-formitem:
-        type: input
     POLEFS_VOLUME_CREATE_USER:
       type: string
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 文件存储配置
+      x-label: 存储卷
       x-restype: polefs
       x-placeholder: 函数挂载的创建用户
       x-hidden: true
+    VOLUME_MOUNT_PATH:
+      type: string
+      description: "存储卷挂载的路径，应用数据会写入此路径；注：复用存储卷时需要注意数据覆盖的问题"
+      default: "/app/data"
+      x-cate: applicationCate
+      x-label: 存储路径
+      x-placeholder: 存储路径
+      x-formitem:
+        type: input
 
 PropertyDescription:
   resourceCate:

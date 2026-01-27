@@ -10,7 +10,7 @@ vars:
   ADMIN_PASSWORD: {{ADMIN_PASSWORD}}
   SECRET_KEY: {{SECRET_KEY}}
   POLEFS_VOLUME: {{POLEFS_VOLUME}}
-  POLEFS_MOUNT_PATH: {{POLEFS_MOUNT_PATH}}
+  VOLUME_MOUNT_PATH: {{VOLUME_MOUNT_PATH}}
   POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
   yprompt:
@@ -43,7 +43,7 @@ resources:
         ADMIN_USERNAME: ${vars.ADMIN_USERNAME}
         ADMIN_PASSWORD: ${vars.ADMIN_PASSWORD}
         DB_TYPE: sqlite
-        SQLITE_DB_PATH: ${vars.POLEFS_MOUNT_PATH}/yprompt.db 
+        SQLITE_DB_PATH: ${vars.VOLUME_MOUNT_PATH}/yprompt.db 
 
       logConfig:
         isOpen: true
@@ -74,5 +74,5 @@ resources:
             auth_config: ""
       nasConfig:
         - volumeUniqueName: ${vars.POLEFS_VOLUME}
-          mountDir: ${vars.POLEFS_MOUNT_PATH}
+          mountDir: ${vars.VOLUME_MOUNT_PATH}
           createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
