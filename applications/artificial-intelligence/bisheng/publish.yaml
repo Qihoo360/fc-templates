@@ -231,34 +231,32 @@ Parameters:
     milvusSecure:
       # title: milvus token
       type: string
-      default: "false"
-      description: ""
+      default: false
+      description: 启用 TLS
       x-cate: applicationCate
       x-label: 向量数据库配置
       x-restype: milvus
       x-placeholder: milvus secure
       x-formitem:
-        type: input
+        type: switch
     milvusIsPartition:
-      # title: milvus token
       type: string
-      default: "true"
-      description: ""
+      default: true
+      description: 启用 partition 模式
       x-cate: applicationCate
       x-label: 向量数据库配置
       x-restype: milvus
-      x-placeholder: milvus is partition or not
+      x-placeholder: 启用 partition 模式
       x-formitem:
-        type: input
+        type: switch
     milvusPartitionSuffiix:
       # title: milvus token
       type: string
       default: "1"
-      description: ""
+      description: partition 后缀名称
       x-cate: applicationCate
       x-label: 向量数据库配置
-      x-restype: milvus
-      x-placeholder: milvus partition suffix
+      x-placeholder: partition 后缀名称
       x-formitem:
         type: input
     ObjectStorage:
