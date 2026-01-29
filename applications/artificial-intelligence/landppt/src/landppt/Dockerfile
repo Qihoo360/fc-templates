@@ -2,7 +2,7 @@
 # Multi-stage build for minimal image size
 
 # Build stage
-FROM wfwqjs-eventing-zevent-pub/python:3.11-slim-bookworm AS builder
+FROM python:3.11-slim-bookworm AS builder
 
 # Set environment variables for build
 ENV PYTHONUNBUFFERED=1 \
@@ -55,7 +55,7 @@ RUN set -eux; \
     PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright /opt/venv/bin/python -m playwright install chromium
 
 # Production stage
-FROM wfwqjs-eventing-zevent-pub/python:3.11-slim-bookworm AS production
+FROM python:3.11-slim-bookworm AS production
 
 ARG TARGETARCH
 
@@ -130,12 +130,12 @@ COPY --from=builder /opt/playwright-browsers /opt/playwright-browsers
 RUN chown -R landppt:landppt /home/landppt && \
     chmod -R 755 /opt/playwright-browsers
 
-# Set work directory
-WORKDIR /app
-
 FROM production AS prepare-stage
 
 FROM wfwqjs-eventing-zevent-pub/fc-templates-prepare-stage:landppt-v1 AS ready-stage
+
+# Set work directory
+WORKDIR /app
 
 # Copy application code (minimize layers)
 COPY run.py ./

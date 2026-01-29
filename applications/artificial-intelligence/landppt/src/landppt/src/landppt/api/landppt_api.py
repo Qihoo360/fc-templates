@@ -790,7 +790,11 @@ async def upload_file_and_generate_outline(
                     temp_file_paths.append(temp_file_path)
 
                 # 处理单个文件
-                file_result = await file_processor.process_file(temp_file_path, file.filename)
+                file_result = await file_processor.process_file(
+                    temp_file_path,
+                    file.filename,
+                    file_processing_mode=file_processing_mode,
+                )
                 all_processed_content.append({
                     "filename": file.filename,
                     "content": file_result.processed_content
@@ -818,7 +822,8 @@ async def upload_file_and_generate_outline(
                     topic=topic,
                     language=language,
                     file_paths=file_paths_for_merge,
-                    context=context
+                    context=context,
+                    file_processing_mode=file_processing_mode,
                 )
 
                 temp_file_paths.append(merged_file_path)

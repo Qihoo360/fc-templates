@@ -45,7 +45,7 @@ class OpenAIImageProvider(ImageGenerationProvider):
             logger.warning("OpenAI Image API key not configured")
 
     async def generate(self, request: ImageGenerationRequest) -> ImageOperationResult:
-        """生成图片"""
+        """????"""
         if not self.api_key:
             return ImageOperationResult(
                 success=False,
@@ -54,7 +54,6 @@ class OpenAIImageProvider(ImageGenerationProvider):
             )
 
         try:
-            # 检查速率限制
             if not await self._check_rate_limit():
                 return ImageOperationResult(
                     success=False,
@@ -62,36 +61,10 @@ class OpenAIImageProvider(ImageGenerationProvider):
                     error_code="rate_limit_exceeded"
                 )
 
-            # 准备API请求
-            api_request = self._prepare_api_request(request)
+            if self._is_chat_completions_endpoint():
+                return await self._generate_with_chat_completions(request)
 
-            # 调用OpenAI Images API
-            url = f"{self.api_base.rstrip('/')}/images/generations"
-
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    url,
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json"
-                    },
-                    json=api_request,
-                    timeout=aiohttp.ClientTimeout(total=180)  # 3分钟超时
-                ) as response:
-
-                    if response.status != 200:
-                        error_text = await response.text()
-                        logger.error(f"OpenAI Image API error {response.status}: {error_text}")
-                        return ImageOperationResult(
-                            success=False,
-                            message=f"OpenAI Image API error: {response.status}",
-                            error_code="api_error"
-                        )
-
-                    result_data = await response.json()
-
-            # 处理API响应
-            return await self._process_api_response(result_data, request)
+            return await self._generate_with_images_endpoint(request)
 
         except asyncio.TimeoutError:
             logger.error("OpenAI Image API request timeout")
@@ -107,6 +80,166 @@ class OpenAIImageProvider(ImageGenerationProvider):
                 message=f"Generation failed: {str(e)}",
                 error_code="generation_error"
             )
+
+    def _is_chat_completions_endpoint(self) -> bool:
+        api_base = (self.api_base or "").lower().rstrip("/")
+        return "/chat/completions" in api_base
+
+    async def _generate_with_images_endpoint(self, request: ImageGenerationRequest) -> ImageOperationResult:
+        api_request = self._prepare_api_request(request)
+        url = f"{self.api_base.rstrip('/')}/images/generations"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                url,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json"
+                },
+                json=api_request,
+                timeout=aiohttp.ClientTimeout(total=180)
+            ) as response:
+
+                if response.status != 200:
+                    error_text = await response.text()
+                    logger.error(f"OpenAI Image API error {response.status}: {error_text}")
+                    return ImageOperationResult(
+                        success=False,
+                        message=f"OpenAI Image API error: {response.status}",
+                        error_code="api_error"
+                    )
+
+                result_data = await response.json()
+
+        return await self._process_api_response(result_data, request)
+
+    async def _generate_with_chat_completions(self, request: ImageGenerationRequest) -> ImageOperationResult:
+        api_request = self._prepare_chat_completions_request(request)
+        url = self.api_base.rstrip("/")
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                url,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json"
+                },
+                json=api_request,
+                timeout=aiohttp.ClientTimeout(total=180)
+            ) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    logger.error(f"OpenAI Chat Completions Image API error {response.status}: {error_text}")
+                    return ImageOperationResult(
+                        success=False,
+                        message=f"OpenAI Chat Completions API error: {response.status}",
+                        error_code="api_error"
+                    )
+
+                response_text = await response.text()
+
+        image_entry = self._extract_image_from_chat_response(response_text)
+        if not image_entry:
+            return ImageOperationResult(
+                success=False,
+                message="No image data in chat completions response",
+                error_code="no_data"
+            )
+
+        image_path, image_size = await self._save_image_from_chat_entry(image_entry, request)
+        image_info = self._create_image_info(image_path, image_size, request)
+
+        return ImageOperationResult(
+            success=True,
+            message="Image generated successfully",
+            image_info=image_info
+        )
+
+    def _prepare_chat_completions_request(self, request: ImageGenerationRequest) -> Dict[str, Any]:
+        prompt = request.prompt
+        if request.negative_prompt:
+            prompt = f"{prompt}\nNegative prompt: {request.negative_prompt}"
+
+        return {
+            "model": self.model,
+            "temperature": 0.7,
+            "messages": [{"role": "user", "content": prompt}],
+            "stream": True,
+            "stream_options": {"include_usage": True}
+        }
+
+    def _extract_image_from_chat_response(self, response_text: str) -> Optional[Any]:
+        for line in response_text.splitlines():
+            line = line.strip()
+            if not line.startswith("data:"):
+                continue
+            data = line[len("data:"):].strip()
+            if not data or data == "[DONE]":
+                continue
+            try:
+                payload = json.loads(data)
+            except json.JSONDecodeError:
+                continue
+            images = self._collect_images_from_payload(payload)
+            if images:
+                return images[0]
+
+        try:
+            payload = json.loads(response_text)
+        except json.JSONDecodeError:
+            return None
+
+        images = self._collect_images_from_payload(payload)
+        return images[0] if images else None
+
+    def _collect_images_from_payload(self, payload: Dict[str, Any]) -> List[Any]:
+        images: List[Any] = []
+        if not isinstance(payload, dict):
+            return images
+
+        if isinstance(payload.get("images"), list):
+            images.extend(payload["images"])
+
+        for choice in payload.get("choices", []) or []:
+            if not isinstance(choice, dict):
+                continue
+            delta = choice.get("delta") or {}
+            if isinstance(delta, dict) and isinstance(delta.get("images"), list):
+                images.extend(delta["images"])
+            message = choice.get("message") or {}
+            if isinstance(message, dict) and isinstance(message.get("images"), list):
+                images.extend(message["images"])
+
+        return images
+
+    async def _save_image_from_chat_entry(self, image_entry: Any, request: ImageGenerationRequest) -> tuple[Path, int]:
+        image_base64 = None
+        image_url = None
+
+        if isinstance(image_entry, dict):
+            if image_entry.get("b64_json"):
+                image_base64 = image_entry["b64_json"]
+            else:
+                image_url = image_entry.get("image_url", {}).get("url") or image_entry.get("url")
+        elif isinstance(image_entry, str):
+            image_url = image_entry
+
+        if image_url and image_url.startswith("data:"):
+            image_base64 = self._extract_base64_from_data_url(image_url)
+            image_url = None
+
+        if image_base64:
+            return await self._save_image_from_base64(image_base64, request)
+        if image_url:
+            return await self._download_image(image_url, request)
+
+        raise ValueError("Unsupported image payload in chat completions response")
+
+    def _extract_base64_from_data_url(self, data_url: str) -> Optional[str]:
+        marker = "base64,"
+        if marker not in data_url:
+            return None
+        return data_url.split(marker, 1)[1]
 
     def _prepare_api_request(self, request: ImageGenerationRequest) -> Dict[str, Any]:
         """准备API请求"""
@@ -317,7 +450,10 @@ class OpenAIImageProvider(ImageGenerationProvider):
 
         try:
             # 简单的API连通性检查
-            url = f"{self.api_base.rstrip('/')}/models"
+            url_base = self.api_base.rstrip("/")
+            if self._is_chat_completions_endpoint():
+                url_base = url_base.rsplit("/chat/completions", 1)[0]
+            url = f"{url_base}/models"
             async with aiohttp.ClientSession() as session:
                 async with session.get(
                     url,

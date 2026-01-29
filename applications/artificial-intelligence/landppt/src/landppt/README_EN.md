@@ -284,7 +284,9 @@ ENABLE_IMAGE_SERVICE=true                      # Enable image service
 PIXABAY_API_KEY=your_pixabay_api_key_here     # Pixabay gallery
 UNSPLASH_ACCESS_KEY=your_unsplash_key_here    # Unsplash gallery
 SILICONFLOW_API_KEY=your_siliconflow_key_here # AI image generation
-POLLINATIONS_API_TOKEN=your_pollinations_token # Pollinations AI
+POLLINATIONS_API_BASE=https://gen.pollinations.ai # Pollinations image API base
+POLLINATIONS_API_TOKEN=your_pollinations_api_key # Pollinations API key (Authorization: Bearer or ?key=)
+POLLINATIONS_MODEL=flux                       # Pollinations image model (flux/kontext/turbo etc.)
 
 # Export Functionality Configuration
 APRYSE_LICENSE_KEY=your_apryse_key_here       # PPTX export
@@ -324,7 +326,7 @@ After starting the service, visit:
 - **Pillow**: Image processing and format conversion
 - **OpenAI DALL-E**: AI image generation
 - **SiliconFlow**: Domestic AI image generation service
-- **Pollinations**: Open-source AI image generation platform
+- **Pollinations**: gen.pollinations.ai image generation API with multiple models
 
 ### Research Capabilities
 - **Tavily**: Professional search engine API

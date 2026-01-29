@@ -252,6 +252,18 @@ class EnhancedPPTService(PPTService):
         """配置summeryanyfile的API设置"""
         try:
             import os
+            # MinerU(Magic-PDF) relies on environment variables. Ensure they are set from the latest app config
+            # so summeryanyfile can actually call the MinerU API when magic_pdf mode is enabled.
+            mineru_api_key = getattr(ai_config, "mineru_api_key", None)
+            mineru_base_url = getattr(ai_config, "mineru_base_url", None)
+            if mineru_api_key:
+                os.environ["MINERU_API_KEY"] = str(mineru_api_key)
+                masked = ("***" + str(mineru_api_key)[-4:]) if len(str(mineru_api_key)) > 4 else "***"
+                logger.info(f"已配置MinerU API Key: {masked}")
+            if mineru_base_url:
+                os.environ["MINERU_BASE_URL"] = str(mineru_base_url)
+                logger.info(f"已配置MinerU Base URL: {mineru_base_url}")
+
             # 获取当前角色的配置
             role_settings = ai_config.get_model_config_for_role(role, provider_override=self.provider_name)
             current_provider = role_settings.get("provider")
@@ -6312,7 +6324,8 @@ Please fully utilize the above research information to enrich the PPT content, e
         topic: str,
         language: str,
         file_paths: Optional[List[str]] = None,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, Any]] = None,
+        file_processing_mode: Optional[str] = None,
     ) -> str:
         """
         进行联网搜索并与本地文件整合
@@ -6366,7 +6379,11 @@ Please fully utilize the above research information to enrich the PPT content, e
                 for file_path in file_paths:
                     try:
                         filename = os.path.basename(file_path)
-                        file_result = await file_processor.process_file(file_path, filename)
+                        file_result = await file_processor.process_file(
+                            file_path,
+                            filename,
+                            file_processing_mode=file_processing_mode,
+                        )
                         local_files_content.append({
                             "filename": filename,
                             "content": file_result.processed_content

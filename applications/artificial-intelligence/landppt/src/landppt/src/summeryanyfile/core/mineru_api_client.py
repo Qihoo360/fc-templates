@@ -37,6 +37,8 @@ class MineruAPIClient:
     DEFAULT_BASE_URL = "https://mineru.net/api/v4"
     TASK_ENDPOINT = "/extract/task"
     RESULT_ENDPOINT = "/extract/task/{task_id}"
+    FILE_URLS_BATCH_ENDPOINT = "/file-urls/batch"
+    BATCH_RESULTS_ENDPOINT = "/extract-results/batch/{batch_id}"
     
     # 轮询配置
     DEFAULT_POLL_INTERVAL = 3  # 秒
@@ -56,7 +58,17 @@ class MineruAPIClient:
             base_url: API 基础地址，如果为 None 则从环境变量 MINERU_BASE_URL 读取
             timeout: HTTP 请求超时时间（秒）
         """
-        self.api_key = api_key or os.getenv("MINERU_API_KEY", "")
+        raw_key = api_key or os.getenv("MINERU_API_KEY", "")
+        raw_key = (raw_key or "").strip().strip("\"'").strip()
+        # Users sometimes paste a full header value like "Bearer xxx". The API expects the token only.
+        if raw_key.lower().startswith("bearer "):
+            raw_key = raw_key[7:].strip()
+        if raw_key.lower().startswith("authorization:"):
+            raw_key = raw_key.split(":", 1)[1].strip()
+            if raw_key.lower().startswith("bearer "):
+                raw_key = raw_key[7:].strip()
+
+        self.api_key = raw_key
         self.base_url = base_url or os.getenv("MINERU_BASE_URL", "") or self.DEFAULT_BASE_URL
         self.timeout = timeout
         self._client: Optional[httpx.AsyncClient] = None
@@ -123,25 +135,168 @@ class MineruAPIClient:
         if not path.exists():
             raise FileNotFoundError(f"文件不存在: {file_path}")
         
-        # 读取文件并转换为 base64
-        with open(path, "rb") as f:
-            file_content = f.read()
-        
-        file_base64 = base64.b64encode(file_content).decode("utf-8")
         file_name = path.name
-        
-        logger.info(f"创建 MinerU 解析任务: {file_name} ({len(file_content)} bytes)")
-        
-        payload = {
-            "file": file_base64,
-            "file_name": file_name,
-            "is_ocr": enable_ocr,
-            "enable_formula": enable_formula,
-            "enable_table": enable_table,
-            "language": language
+
+        # Per MinerU docs, /extract/task does not support direct file upload.
+        # The correct flow for local files is:
+        # 1) POST /file-urls/batch to get a presigned upload URL
+        # 2) PUT the file bytes to that URL (no Content-Type header)
+        # 3) Poll /extract-results/batch/{batch_id} until done, then download result
+        batch_id = await self._apply_upload_url_for_file(
+            file_name=file_name,
+            enable_ocr=enable_ocr,
+            enable_formula=enable_formula,
+            enable_table=enable_table,
+            language=language,
+        )
+        await self._upload_file_to_batch(batch_id=batch_id, file_path=file_path, file_name=file_name)
+        return batch_id
+
+    async def _apply_upload_url_for_file(
+        self,
+        *,
+        file_name: str,
+        enable_ocr: bool,
+        enable_formula: bool,
+        enable_table: bool,
+        language: str,
+        model_version: str = "pipeline",
+    ) -> str:
+        """Request a presigned upload URL for a single file and return batch_id."""
+        if not self.is_available:
+            raise ValueError("MinerU API Key 未配置，请设置环境变量 MINERU_API_KEY")
+
+        client = await self._get_client()
+        payload: Dict[str, Any] = {
+            "files": [{"name": file_name, "is_ocr": bool(enable_ocr)}],
+            "model_version": model_version,
+            "enable_formula": bool(enable_formula),
+            "enable_table": bool(enable_table),
+            "language": language,
         }
-        
-        return await self._create_task(payload)
+
+        try:
+            response = await client.post(self.FILE_URLS_BATCH_ENDPOINT, json=payload)
+            response.raise_for_status()
+            result = response.json()
+        except httpx.HTTPStatusError as e:
+            body = None
+            try:
+                body = e.response.text
+            except Exception:
+                body = None
+            logger.error(f"MinerU API HTTP 错误: {e.response.status_code}, body={body}")
+            raise ValueError(f"MinerU API 请求失败: HTTP {e.response.status_code}")
+
+        if result.get("code") != 0:
+            raise ValueError(f"MinerU API 错误: {result.get('msg', '未知错误')}")
+
+        data = result.get("data") or {}
+        batch_id = data.get("batch_id")
+        if not batch_id:
+            raise ValueError("MinerU API 返回无效的 batch_id")
+
+        file_urls = data.get("file_urls") or []
+        if not file_urls or not isinstance(file_urls, list):
+            raise ValueError("MinerU API 未返回上传地址 file_urls")
+
+        # Save for later lookup in _upload_file_to_batch
+        self._pending_file_urls = getattr(self, "_pending_file_urls", {})
+        self._pending_file_urls[batch_id] = {file_name: file_urls[0]}
+
+        return batch_id
+
+    async def _upload_file_to_batch(self, *, batch_id: str, file_path: str, file_name: str) -> None:
+        """Upload file bytes to the presigned URL obtained from /file-urls/batch."""
+        pending = getattr(self, "_pending_file_urls", {}).get(batch_id) or {}
+        upload_url = pending.get(file_name)
+        if not upload_url:
+            raise ValueError("未找到上传地址，请先调用 /file-urls/batch 获取 file_urls")
+
+        # IMPORTANT: upload_url is a presigned URL; do not include MinerU auth headers or Content-Type.
+        # httpx.AsyncClient cannot send a sync file object as the request body; stream bytes asynchronously.
+        async def _iter_file_bytes(path: str, chunk_size: int = 1024 * 1024):
+            import anyio
+
+            async with await anyio.open_file(path, "rb") as f:
+                while True:
+                    chunk = await f.read(chunk_size)
+                    if not chunk:
+                        break
+                    yield chunk
+
+        timeout = httpx.Timeout(self.timeout)
+        async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as upload_client:
+            resp = await upload_client.put(upload_url, content=_iter_file_bytes(file_path))
+            try:
+                resp.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                body = None
+                try:
+                    body = e.response.text
+                except Exception:
+                    body = None
+                logger.error(f"MinerU 上传失败: HTTP {e.response.status_code}, body={body}")
+                raise ValueError(f"MinerU 上传失败: HTTP {e.response.status_code}")
+
+    async def get_batch_results(self, batch_id: str) -> Dict[str, Any]:
+        """Get batch extraction results."""
+        client = await self._get_client()
+        endpoint = self.BATCH_RESULTS_ENDPOINT.format(batch_id=batch_id)
+        try:
+            response = await client.get(endpoint)
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            body = None
+            try:
+                body = e.response.text
+            except Exception:
+                body = None
+            logger.error(f"MinerU API HTTP 错误: {e.response.status_code}, body={body}")
+            raise ValueError(f"MinerU API 请求失败: HTTP {e.response.status_code}")
+        except Exception as e:
+            logger.error(f"获取批量结果失败: {e}")
+            raise ValueError(f"获取批量结果失败: {e}")
+
+    async def wait_for_batch_result(
+        self,
+        batch_id: str,
+        *,
+        file_name: str,
+        poll_interval: float = DEFAULT_POLL_INTERVAL,
+        max_wait_time: float = DEFAULT_MAX_WAIT_TIME,
+    ) -> Dict[str, Any]:
+        """Wait for a single file in a batch to finish and return its result entry."""
+        start_time = time.time()
+        while True:
+            elapsed = time.time() - start_time
+            if elapsed > max_wait_time:
+                raise TimeoutError(f"等待批量任务完成超时 ({max_wait_time}秒)")
+
+            result = await self.get_batch_results(batch_id)
+            if result.get("code") != 0:
+                raise ValueError(f"MinerU API 错误: {result.get('msg', '未知错误')}")
+
+            data = result.get("data") or {}
+            extract_results = data.get("extract_result") or []
+            entry = None
+            for item in extract_results:
+                if isinstance(item, dict) and item.get("file_name") == file_name:
+                    entry = item
+                    break
+
+            if not entry:
+                await asyncio.sleep(poll_interval)
+                continue
+
+            state = entry.get("state")
+            if state == "done":
+                return entry
+            if state == "failed":
+                raise ValueError(f"MinerU 解析失败: {entry.get('err_msg', '任务执行失败')}")
+
+            await asyncio.sleep(poll_interval)
     
     async def create_task_from_url(
         self,
@@ -171,7 +326,8 @@ class MineruAPIClient:
             "is_ocr": enable_ocr,
             "enable_formula": enable_formula,
             "enable_table": enable_table,
-            "language": language
+            "language": language,
+            "model_version": "pipeline",
         }
         
         return await self._create_task(payload)
@@ -209,7 +365,12 @@ class MineruAPIClient:
             return task_id
             
         except httpx.HTTPStatusError as e:
-            logger.error(f"MinerU API HTTP 错误: {e.response.status_code}")
+            body = None
+            try:
+                body = e.response.text
+            except Exception:
+                body = None
+            logger.error(f"MinerU API HTTP 错误: {e.response.status_code}, body={body}")
             raise ValueError(f"MinerU API 请求失败: HTTP {e.response.status_code}")
         except Exception as e:
             logger.error(f"MinerU API 调用失败: {e}")
@@ -311,35 +472,32 @@ class MineruAPIClient:
         if not file_path and not pdf_url:
             raise ValueError("必须提供 file_path 或 pdf_url")
         
-        # 创建任务
         if file_path:
-            task_id = await self.create_task_from_file(
+            batch_id = await self.create_task_from_file(
                 file_path, enable_ocr, enable_formula, enable_table, language
             )
-        else:
-            task_id = await self.create_task_from_url(
-                pdf_url, enable_ocr, enable_formula, enable_table, language
-            )
-        
-        # 等待结果
+            file_name = Path(file_path).name
+            entry = await self.wait_for_batch_result(batch_id, file_name=file_name)
+            md_url = entry.get("full_zip_url") or entry.get("md_url")
+            markdown_content = await self._download_markdown(md_url) if md_url else ""
+            extra_info = {
+                "batch_id": batch_id,
+                "file_name": file_name,
+                "state": entry.get("state"),
+            }
+            return markdown_content, extra_info
+
+        task_id = await self.create_task_from_url(
+            pdf_url, enable_ocr, enable_formula, enable_table, language
+        )
         result = await self.wait_for_result(task_id)
-        
-        # 提取 Markdown 内容
         md_url = result.get("full_zip_url") or result.get("md_url")
-        
-        if md_url:
-            # 如果返回的是 URL，需要下载内容
-            markdown_content = await self._download_markdown(md_url)
-        else:
-            # 直接从结果中获取
-            markdown_content = result.get("markdown", "")
-        
+        markdown_content = await self._download_markdown(md_url) if md_url else result.get("markdown", "")
         extra_info = {
             "task_id": task_id,
             "pages": result.get("pages", 0),
             "processing_time": result.get("processing_time"),
         }
-        
         return markdown_content, extra_info
     
     async def _download_markdown(self, url: str) -> str:
@@ -357,25 +515,144 @@ class MineruAPIClient:
                 response = await client.get(url)
                 response.raise_for_status()
                 
-                # 检查是否是 zip 文件
-                if url.endswith(".zip"):
-                    # 解压并提取 .md 文件
-                    import io
-                    import zipfile
-                    
-                    zip_buffer = io.BytesIO(response.content)
-                    with zipfile.ZipFile(zip_buffer, 'r') as zip_file:
-                        for name in zip_file.namelist():
-                            if name.endswith('.md'):
-                                return zip_file.read(name).decode('utf-8')
-                    
-                    return ""
-                else:
+                # Detect zip payload (MinerU often returns a zip containing md + images)
+                content_type = (response.headers.get("content-type") or "").lower()
+                is_zip = url.endswith(".zip") or "zip" in content_type or response.content[:2] == b"PK"
+
+                if not is_zip:
                     return response.text
-                    
+
+                import io
+                import zipfile
+
+                zip_buffer = io.BytesIO(response.content)
+                with zipfile.ZipFile(zip_buffer, "r") as zip_file:
+                    names = [n for n in zip_file.namelist() if n and not n.endswith("/")]
+
+                    md_candidates = [n for n in names if n.lower().endswith(".md")]
+                    if not md_candidates:
+                        return ""
+
+                    # Prefer the "main" md by shortest path (usually at root), then lexicographically.
+                    md_name = sorted(md_candidates, key=lambda n: (len(n.split("/")), len(n), n))[0]
+                    markdown_content = zip_file.read(md_name).decode("utf-8", errors="replace")
+
+                    # Collect image assets
+                    image_exts = (".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg")
+                    images: Dict[str, bytes] = {}
+                    for name in names:
+                        lower = name.lower()
+                        if lower.endswith(image_exts):
+                            try:
+                                images[name.replace("\\", "/")] = zip_file.read(name)
+                            except Exception:
+                                continue
+
+                if images:
+                    markdown_content = await self._upload_zip_images_to_local_gallery_and_replace_links(
+                        markdown_content, images
+                    )
+
+                return markdown_content
+                     
         except Exception as e:
             logger.error(f"下载 Markdown 内容失败: {e}")
             return ""
+
+    async def _upload_zip_images_to_local_gallery_and_replace_links(
+        self,
+        markdown_content: str,
+        images: Dict[str, bytes],
+    ) -> str:
+        """
+        Upload images extracted from MinerU zip into LandPPT local image gallery and
+        replace markdown image links with the gallery URLs.
+
+        If LandPPT image service is unavailable, returns markdown content unchanged.
+        """
+        try:
+            from landppt.services.image.image_service import get_image_service
+            from landppt.services.image.models import ImageUploadRequest
+            from landppt.services.url_service import build_image_url
+        except Exception:
+            return markdown_content
+
+        import hashlib
+        import mimetypes
+        from pathlib import Path
+
+        image_service = get_image_service()
+
+        def _candidate_refs(zip_path: str) -> set[str]:
+            p = (zip_path or "").replace("\\", "/").lstrip("/")
+            candidates = {p}
+            if p.startswith("./"):
+                candidates.add(p[2:])
+            else:
+                candidates.add("./" + p)
+
+            # Common MinerU md uses "images/<name>" even if the zip stores deeper paths.
+            base = Path(p).name
+            if base:
+                candidates.add("images/" + base)
+                candidates.add("./images/" + base)
+                candidates.add(base)
+            return {c for c in candidates if c}
+
+        def _replace_ref(text: str, old: str, new: str) -> str:
+            if old not in text:
+                return text
+            # Markdown image/link
+            text = text.replace(f"]({old})", f"]({new})")
+            text = text.replace(f"]({old} ", f"]({new} ")
+            # HTML img src
+            text = text.replace(f'src="{old}"', f'src="{new}"')
+            text = text.replace(f"src='{old}'", f"src='{new}'")
+            # Fallback
+            return text.replace(old, new)
+
+        # Upload referenced images and replace links
+        for zip_path, data in images.items():
+            if not data:
+                continue
+
+            candidates = _candidate_refs(zip_path)
+            if not any(c in markdown_content for c in candidates):
+                continue
+
+            content_hash = hashlib.sha256(data).hexdigest()[:16]
+            ext = Path(zip_path).suffix.lower() or ".png"
+            filename = f"mineru_{content_hash}{ext}"
+            content_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+            if not content_type.startswith("image/"):
+                # Best-effort default
+                content_type = "image/" + (ext.lstrip(".") or "png")
+
+            upload_request = ImageUploadRequest(
+                filename=filename,
+                content_type=content_type,
+                file_size=len(data),
+                title=Path(filename).stem,
+                description="Imported from MinerU zip",
+                tags=["mineru"],
+                category="local_storage",
+            )
+
+            try:
+                result = await image_service.upload_image(upload_request, data)
+            except Exception as e:
+                logger.warning(f"Failed to upload MinerU image {zip_path}: {e}")
+                continue
+
+            if not result or not result.success or not result.image_info:
+                logger.warning(f"Failed to upload MinerU image {zip_path}: {getattr(result, 'message', '')}")
+                continue
+
+            new_url = build_image_url(result.image_info.image_id)
+            for old in candidates:
+                markdown_content = _replace_ref(markdown_content, old, new_url)
+
+        return markdown_content
     
     def extract_markdown_sync(
         self,
@@ -391,14 +668,49 @@ class MineruAPIClient:
         
         适用于非异步环境
         """
-        return asyncio.run(self.extract_markdown(
-            file_path=file_path,
-            pdf_url=pdf_url,
-            enable_ocr=enable_ocr,
-            enable_formula=enable_formula,
-            enable_table=enable_table,
-            language=language
-        ))
+        # NOTE: This sync wrapper may be called from within an already-running event loop
+        # (e.g. FastAPI / async pipelines). In that case, asyncio.run() would raise:
+        # "asyncio.run() cannot be called from a running event loop".
+        # We run the coroutine in a dedicated thread with its own event loop to keep
+        # the API sync-friendly while remaining safe in async contexts.
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            return asyncio.run(self.extract_markdown(
+                file_path=file_path,
+                pdf_url=pdf_url,
+                enable_ocr=enable_ocr,
+                enable_formula=enable_formula,
+                enable_table=enable_table,
+                language=language
+            ))
+
+        import threading
+
+        result_container: Dict[str, Any] = {}
+        error_container: Dict[str, BaseException] = {}
+
+        def _runner():
+            try:
+                result_container["result"] = asyncio.run(self.extract_markdown(
+                    file_path=file_path,
+                    pdf_url=pdf_url,
+                    enable_ocr=enable_ocr,
+                    enable_formula=enable_formula,
+                    enable_table=enable_table,
+                    language=language
+                ))
+            except BaseException as e:
+                error_container["error"] = e
+
+        t = threading.Thread(target=_runner, daemon=True)
+        t.start()
+        t.join()
+
+        if "error" in error_container:
+            raise error_container["error"]
+
+        return result_container["result"]
 
 
 # 便捷函数

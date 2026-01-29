@@ -27,7 +27,7 @@ class PollinationsProvider(ImageGenerationProvider):
         super().__init__(ImageProvider.POLLINATIONS, config)
         
         # API配置
-        self.api_base = config.get('api_base', 'https://image.pollinations.ai')
+        self.api_base = config.get('api_base', 'https://gen.pollinations.ai')
         self.api_token = config.get('api_token', '')
         self.referrer = config.get('referrer', '')
         self.model = config.get('model', 'flux')
@@ -145,13 +145,22 @@ class PollinationsProvider(ImageGenerationProvider):
                 message=f"Generation failed: {str(e)}"
             )
 
+    def _build_base_url(self, encoded_prompt: str) -> str:
+        """构建API基础URL"""
+        base = (self.api_base or "").rstrip("/")
+        if base.endswith("/image") or base.endswith("/prompt"):
+            return f"{base}/{encoded_prompt}"
+        if "gen.pollinations.ai" in base:
+            return f"{base}/image/{encoded_prompt}"
+        return f"{base}/prompt/{encoded_prompt}"
+
     def _build_api_url(self, request: ImageGenerationRequest) -> str:
         """构建API请求URL"""
         # URL编码提示词
         encoded_prompt = urllib.parse.quote(request.prompt, safe='')
         
         # 构建基础URL
-        url = f"{self.api_base}/prompt/{encoded_prompt}"
+        url = self._build_base_url(encoded_prompt)
         
         # 添加参数
         params = []
@@ -189,7 +198,7 @@ class PollinationsProvider(ImageGenerationProvider):
             params.append("private=true")
 
         # 透明背景（仅gptimage模型支持）
-        if self.default_transparent and self.model == 'gptimage':
+        if self.default_transparent and self.model in {"gptimage", "gptimage-large"}:
             params.append("transparent=true")
 
         # 推荐人标识符（用于认证）
@@ -233,6 +242,41 @@ class PollinationsProvider(ImageGenerationProvider):
                 "id": "gptimage",
                 "name": "GPT Image",
                 "description": "GPT-based image generation with transparency support"
+            },
+            {
+                "id": "gptimage-large",
+                "name": "GPT Image Large",
+                "description": "Higher-quality GPT image generation"
+            },
+            {
+                "id": "kontext",
+                "name": "Kontext",
+                "description": "Context-aware image generation"
+            },
+            {
+                "id": "seedream",
+                "name": "Seedream",
+                "description": "Stylized image generation model"
+            },
+            {
+                "id": "seedream-pro",
+                "name": "Seedream Pro",
+                "description": "Enhanced Seedream model"
+            },
+            {
+                "id": "nanobanana",
+                "name": "NanoBanana",
+                "description": "Lightweight image generation model"
+            },
+            {
+                "id": "nanobanana-pro",
+                "name": "NanoBanana Pro",
+                "description": "Enhanced NanoBanana model"
+            },
+            {
+                "id": "zimage",
+                "name": "ZImage",
+                "description": "General-purpose image generation model"
             }
         ]
 
@@ -262,7 +306,7 @@ class PollinationsProvider(ImageGenerationProvider):
             # 简单的健康检查 - 尝试访问API基础URL
             async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=10)) as session:
                 # 使用一个简单的测试提示词
-                test_url = f"{self.api_base}/prompt/test?width=64&height=64"
+                test_url = f"{self._build_base_url('test')}?width=64&height=64"
                 async with session.head(test_url, headers=headers) as response:
                     if response.status in [200, 404]:  # 404也表示API可访问
                         return {

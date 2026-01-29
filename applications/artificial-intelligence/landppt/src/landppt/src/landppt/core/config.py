@@ -80,6 +80,10 @@ class AIConfig(BaseSettings):
     research_max_content_length: int = Field(default=5000, env="RESEARCH_MAX_CONTENT_LENGTH")
     research_extraction_timeout: int = Field(default=30, env="RESEARCH_EXTRACTION_TIMEOUT")
 
+    # MinerU API Configuration (for high-quality PDF parsing)
+    mineru_api_key: Optional[str] = Field(default=None, env="MINERU_API_KEY")
+    mineru_base_url: str = Field(default="https://mineru.net/api/v4", env="MINERU_BASE_URL")
+
     # Apryse SDK Configuration (for PPTX export functionality)
     apryse_license_key: Optional[str] = Field(default=None, env="APRYSE_LICENSE_KEY")
 

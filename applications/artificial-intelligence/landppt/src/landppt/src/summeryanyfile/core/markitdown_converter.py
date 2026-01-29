@@ -137,7 +137,19 @@ class MarkItDownConverter:
                     # 从缓存元数据中获取编码信息
                     encoding = cached_metadata.get('processing_metadata', {}).get('detected_encoding', 'utf-8')
                     logger.info(f"成功从缓存恢复转换结果: {path.name}")
-                    return cached_content, encoding
+                    # 对于PDF：当启用magic_pdf且MinerU可用时，避免直接复用非magic_pdf的旧缓存，
+                    # 否则会导致“magic_pdf模式”仍然不调用MinerU接口。
+                    if path.suffix.lower() == '.pdf' and self.use_magic_pdf:
+                        processing_metadata = (cached_metadata or {}).get('processing_metadata') or {}
+                        processing_method = processing_metadata.get('processing_method')
+                        if processing_method != 'magic_pdf' and self._get_magic_pdf_converter():
+                            logger.info(
+                                f"PDF缓存命中但来源为{processing_method or 'unknown'}，将重新调用Magic-PDF(MinerU)处理: {path.name}"
+                            )
+                        else:
+                            return cached_content, encoding
+                    else:
+                        return cached_content, encoding
 
         # 对于PDF文件，优先尝试Magic-PDF
         if path.suffix.lower() == '.pdf':

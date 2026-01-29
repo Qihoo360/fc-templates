@@ -10601,9 +10601,6 @@
                         const slide = slidesData[i];
                         if (!slide || !slide.html_content) continue;
 
-                        // 标记为用户编辑状态
-                        slide.is_user_edited = true;
-
                         const success = await saveSingleSlideToServer(i, slide.html_content);
                         if (success) {
                             saveSuccessCount++;
@@ -10634,9 +10631,6 @@
                 for (let i = 0; i < slidesData.length; i++) {
                     try {
                         const slide = slidesData[i];
-
-                        // 标记为用户编辑状态
-                        slide.is_user_edited = true;
 
                         const success = await saveSingleSlideToServer(i, slide.html_content);
                         if (success) {
@@ -10716,9 +10710,10 @@
 
 
 
-                const requestData = {
-                    html_content: htmlContent
-                };
+                const requestData = { html_content: htmlContent };
+                if (slidesData && slidesData[slideIndex] && Object.prototype.hasOwnProperty.call(slidesData[slideIndex], 'is_user_edited')) {
+                    requestData.is_user_edited = !!slidesData[slideIndex].is_user_edited;
+                }
 
 
 

@@ -63,10 +63,10 @@ class ImageServiceConfig:
 
             # Pollinations配置
             'pollinations': {
-                'api_base': 'https://image.pollinations.ai',
+                'api_base': 'https://gen.pollinations.ai',
                 'api_token': '',  # API token（可选，用于认证和移除logo）
                 'referrer': '',  # 推荐人标识符（可选，用于认证）
-                'model': 'flux',  # flux, turbo, gptimage
+                'model': 'flux',  # flux, turbo, gptimage, gptimage-large, kontext, seedream, seedream-pro, nanobanana, nanobanana-pro, zimage
                 'default_width': 1024,
                 'default_height': 1024,
                 'default_enhance': False,  # 是否增强提示词

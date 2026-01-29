@@ -108,6 +108,10 @@ class ConfigService:
             "research_max_content_length": {"type": "number", "category": "generation_params", "default": "5000"},
             "research_extraction_timeout": {"type": "number", "category": "generation_params", "default": "30"},
 
+            # MinerU API Configuration (for high-quality PDF parsing)
+            "mineru_api_key": {"type": "password", "category": "generation_params"},
+            "mineru_base_url": {"type": "url", "category": "generation_params", "default": "https://mineru.net/api/v4"},
+
             "apryse_license_key": {"type": "password", "category": "generation_params"},
             
             # Feature Flags

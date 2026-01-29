@@ -61,7 +61,13 @@ class FileProcessor:
             'general': ['介绍', '概述', '总结', '说明', '展示', '汇报', '演示', '分享']
         }
     
-    async def process_file(self, file_path: str, filename: str) -> FileUploadResponse:
+    async def process_file(
+        self,
+        file_path: str,
+        filename: str,
+        *,
+        file_processing_mode: Optional[str] = None,
+    ) -> FileUploadResponse:
         """Process uploaded file and extract content"""
         try:
             file_ext = Path(filename).suffix.lower()
@@ -71,8 +77,11 @@ class FileProcessor:
                 raise ValueError(f"Unsupported file format: {file_ext}")
             
             # Process file based on type
-            processor = self.supported_formats[file_ext]
-            content = await processor(file_path)
+            if file_ext == ".pdf":
+                content = await self._process_pdf(file_path, file_processing_mode=file_processing_mode)
+            else:
+                processor = self.supported_formats[file_ext]
+                content = await processor(file_path)
             
             # Extract topics and suggest scenarios
             topics = self._extract_topics(content)
@@ -131,9 +140,10 @@ class FileProcessor:
             logger.error(f"Error processing DOCX file: {e}")
             raise ValueError(f"DOCX 文件处理失败: {str(e)}")
     
-    async def _process_pdf(self, file_path: str) -> str:
+    async def _process_pdf(self, file_path: str, *, file_processing_mode: Optional[str] = None) -> str:
         """Process PDF file"""
-        if not PDF_AVAILABLE:
+        # PyPDF2 is only required for the fallback path. In magic_pdf mode we can use MinerU without PyPDF2.
+        if not PDF_AVAILABLE and (file_processing_mode or "").lower() != "magic_pdf":
             raise ValueError("PDF processing not available. Please install PyPDF2.")
 
         def _process_pdf_sync(file_path: str) -> str:
@@ -156,6 +166,35 @@ class FileProcessor:
             # 在线程池中执行文件处理以避免阻塞主服务
             import asyncio
             loop = asyncio.get_running_loop()
+
+            if (file_processing_mode or "").lower() == "magic_pdf":
+                try:
+                    from ..core.config import ai_config
+                    if getattr(ai_config, "mineru_api_key", None):
+                        os.environ["MINERU_API_KEY"] = str(ai_config.mineru_api_key)
+                    if getattr(ai_config, "mineru_base_url", None):
+                        os.environ["MINERU_BASE_URL"] = str(ai_config.mineru_base_url)
+                except Exception:
+                    pass
+
+                try:
+                    from summeryanyfile.core.magic_pdf_converter import MagicPDFConverter
+                    logger.info(f"magic_pdf模式：优先使用MinerU处理PDF: {Path(file_path).name}")
+                    def _mineru_convert_sync() -> str:
+                        converter = MagicPDFConverter()
+                        md_content, _encoding = converter.convert_pdf_file(file_path)
+                        return (md_content or "").strip()
+
+                    md_content = await loop.run_in_executor(None, _mineru_convert_sync)
+                    if md_content:
+                        return md_content
+                    logger.warning("MinerU返回内容为空，回退到PyPDF2解析")
+                except Exception as e:
+                    logger.warning(f"MinerU处理PDF失败，回退到PyPDF2解析: {e}")
+
+            if not PDF_AVAILABLE:
+                raise ValueError("PyPDF2未安装，且MinerU处理失败，无法解析PDF")
+
             return await loop.run_in_executor(None, _process_pdf_sync, file_path)
 
         except Exception as e:

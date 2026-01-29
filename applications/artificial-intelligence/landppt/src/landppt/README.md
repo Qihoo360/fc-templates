@@ -294,7 +294,9 @@ ENABLE_IMAGE_SERVICE=true                      # 启用图像服务
 PIXABAY_API_KEY=your_pixabay_api_key_here     # Pixabay 图库
 UNSPLASH_ACCESS_KEY=your_unsplash_key_here    # Unsplash 图库
 SILICONFLOW_API_KEY=your_siliconflow_key_here # AI图像生成
-POLLINATIONS_API_TOKEN=your_pollinations_token # Pollinations AI
+POLLINATIONS_API_BASE=https://gen.pollinations.ai # Pollinations 图片接口
+POLLINATIONS_API_TOKEN=your_pollinations_api_key # Pollinations API Key（Authorization: Bearer 或 ?key=）
+POLLINATIONS_MODEL=flux                       # Pollinations 图片模型（flux/kontext/turbo 等）
 
 # 导出功能配置
 APRYSE_LICENSE_KEY=your_apryse_key_here       # PPTX导出
@@ -334,7 +336,7 @@ TEMPERATURE=0.7
 - **Pillow**: 图像处理和格式转换
 - **OpenAI DALL-E**: AI图像生成
 - **SiliconFlow**: 国产AI图像生成服务
-- **Pollinations**: 开源AI图像生成平台
+- **Pollinations**: gen.pollinations.ai 图片生成 API，支持多模型
 
 ### 研究功能
 - **Tavily**: 专业搜索引擎API
@@ -415,7 +417,7 @@ A: 大多数AI提供商支持并发请求，但可能有不同的限制。建议
 - **讨论区**: https://github.com/sligter/LandPPT/discussions
 - **交流群**: https://t.me/+EaOfoceoNwdhNDVlsh
 
-![LandPPT](https://img.pub/p/07932f893d144bbe9784.jpg)
+![LandPPT](https://img.pub/p/57e3ca538b6ea62592f6.png)
 ---
 
 <div align="center">

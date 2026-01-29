@@ -928,6 +928,7 @@
                                 <input type="text" name="openai_image_api_base" placeholder="https://api.openai.com/v1"
                                     value="{{ current_config.get('openai_image_api_base', '') }}"
                                     style="font-family: monospace; font-size: 0.9em; margin-top: 5px;">
+                                <small style="color: #6c757d; margin-top: 5px; display: block;">Use `/v1/chat/completions` for OpenAI-compatible image chat endpoints.</small>
                                 <small
                                     style="color: #6c757d; margin-top: 5px; display: block;">支持自定义API端点，如302.AI等兼容服务</small>
                             </div>
@@ -963,38 +964,30 @@
                     <div style="margin-bottom: 30px;">
                         <h5 class="subheading"
                             style="margin-bottom: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-                            Pollinations (免费服务)
+                            Pollinations
                         </h5>
                         <div
                             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
                             <div class="form-group">
-                                <label style="font-weight: 500; color: #495057;">API Token (可选):</label>
+                                <label style="font-weight: 500; color: #495057;">API Key:</label>
                                 <input type="password" name="pollinations_api_token"
-                                    placeholder="your-pollinations-token"
+                                    placeholder="sk_..."
                                     value="{{ current_config.get('pollinations_api_token', '') }}"
                                     style="font-family: monospace; font-size: 0.9em; margin-top: 5px;">
-                                <small style="color: #6c757d; margin-top: 5px; display: block;">可选的API
-                                    Token，用于移除logo和获得更高的使用限制</small>
+                                <small style="color: #6c757d; margin-top: 5px; display: block;">在 enter.pollinations.ai 获取 API Key（sk_ / pk_）</small>
                             </div>
-
                             <div class="form-group">
                                 <label style="font-weight: 500; color: #495057;">Referrer (可选):</label>
-                                <input type="text" name="pollinations_referrer" placeholder="MyApp"
+                                <input type="text" name="pollinations_referrer"
+                                    placeholder="your-app-name"
                                     value="{{ current_config.get('pollinations_referrer', '') }}"
-                                    style="margin-top: 5px;">
-                                <small
-                                    style="color: #6c757d; margin-top: 5px; display: block;">推荐人标识符，用于认证和统计（可选）</small>
+                                    style="font-family: monospace; font-size: 0.9em; margin-top: 5px;">
+                                <small style="color: #6c757d; margin-top: 5px; display: block;">用于 referrer 参数，可配合 nologo / private</small>
                             </div>
+
+
                         </div>
-                        <div
-                            style="margin-top: 15px; padding: 12px 16px; background: #f1f1f1; border: 1px solid #dcdcdc; border-radius: 8px; border-left: 4px solid #111111;">
-                            <div
-                                style="display: flex; align-items: center; gap: 8px; color: #111111; font-weight: 500;">
-                                基础功能免费
-                            </div>
-                            <small
-                                style="color: #4a4a4a; margin-top: 5px; display: block;">Pollinations提供免费的AI图片生成服务，Token可选用于高级功能</small>
-                        </div>
+                        
                     </div>
 
                     <!-- 网络图片搜索服务 -->
@@ -1125,7 +1118,7 @@
                                             endif %}>SiliconFlow (Kolors)</option>
                                         <option value="pollinations" {% if
                                             current_config.get('default_ai_image_provider')=='pollinations' %}selected{%
-                                            endif %}>Pollinations (免费)</option>
+                                            endif %}>Pollinations</option>
                                         <option value="gemini" {% if
                                             current_config.get('default_ai_image_provider')=='gemini' %}selected{% endif
                                             %}>Gemini (Google)</option>
@@ -1180,12 +1173,20 @@
                                     <div class="form-group">
                                         <label style="font-weight: 500; color: #495057;">生成模型:</label>
                                         <select name="pollinations_model" style="margin-top: 5px;">
-                                            <option value="flux">Flux (高质量，默认)</option>
-                                            <option value="turbo">Turbo (快速生成)</option>
-                                            <option value="gptimage">GPT Image (支持透明背景)</option>
+                                            <option value="kontext" {% if current_config.get('pollinations_model')=='kontext' %}selected{% endif %}>Kontext (FLUX.1 Kontext)</option>
+                                            <option value="turbo" {% if current_config.get('pollinations_model')=='turbo' %}selected{% endif %}>Turbo (SDXL Turbo)</option>
+                                            <option value="nanobanana" {% if current_config.get('pollinations_model')=='nanobanana' %}selected{% endif %}>NanoBanana (Gemini 2.5 Flash)</option>
+                                            <option value="nanobanana-pro" {% if current_config.get('pollinations_model')=='nanobanana-pro' %}selected{% endif %}>NanoBanana Pro (Gemini 3 Pro)</option>
+                                            <option value="seedream" {% if current_config.get('pollinations_model')=='seedream' %}selected{% endif %}>Seedream (ByteDance ARK)</option>
+                                            <option value="seedream-pro" {% if current_config.get('pollinations_model')=='seedream-pro' %}selected{% endif %}>Seedream Pro (ByteDance ARK 4K)</option>
+                                            <option value="gptimage" {% if current_config.get('pollinations_model')=='gptimage' %}selected{% endif %}>GPT Image (OpenAI GPT Image 1 Mini)</option>
+                                            <option value="gptimage-large" {% if current_config.get('pollinations_model')=='gptimage-large' %}selected{% endif %}>GPT Image Large (OpenAI GPT Image 1.5)</option>
+                                            <option value="flux" {% if current_config.get('pollinations_model', 'flux')=='flux' %}selected{% endif %}>Flux (Schnell)</option>
+                                            <option value="zimage" {% if current_config.get('pollinations_model')=='zimage' %}selected{% endif %}>ZImage (Z-Image Turbo)</option>
                                         </select>
                                         <small
-                                            style="color: #4a4a4a; margin-top: 5px; display: block;">选择Pollinations的图片生成模型</small>
+                                            style="color: #4a4a4a; margin-top: 5px; display: block;">模型列表来自
+                                            https://gen.pollinations.ai/image/models，仅展示图片模型</small>
                                     </div>
                                 </div>
                                 <div class="pollinations-options-grid">
@@ -1214,8 +1215,8 @@
                                             <input type="checkbox" name="pollinations_nologo"
                                                 class="pollinations-checkbox">
                                             <span class="pollinations-option-text">
-                                                <strong>移除Pollinations Logo</strong>
-                                                <small>需要API Token或Referrer认证才能生效</small>
+                                                <strong>移除生成 Logo</strong>
+                                                <small>需要 API Key 或 Referrer 认证</small>
                                             </span>
                                         </label>
                                     </div>
@@ -1225,7 +1226,7 @@
                                                 class="pollinations-checkbox">
                                             <span class="pollinations-option-text">
                                                 <strong>私有模式</strong>
-                                                <small>生成的图片不会出现在公共feed中</small>
+                                                <small>只对有认证的请求生效</small>
                                             </span>
                                         </label>
                                     </div>
@@ -1235,7 +1236,7 @@
                                                 class="pollinations-checkbox">
                                             <span class="pollinations-option-text">
                                                 <strong>透明背景</strong>
-                                                <small>生成透明背景图片（仅GPT Image模型支持）</small>
+                                                <small>生成透明背景图片（仅 gptimage / gptimage-large 支持）</small>
                                             </span>
                                         </label>
                                     </div>
@@ -1678,7 +1679,8 @@
     }
 
     /* 现代化复选框样式 */
-    .form-group input[type="checkbox"] {
+    .form-group input[type="checkbox"],
+    .pollinations-checkbox {
         appearance: none;
         -webkit-appearance: none;
         width: 20px;
@@ -1694,25 +1696,33 @@
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
-    .form-group input[type="checkbox"]:hover {
+    .pollinations-checkbox {
+        margin-right: 0;
+    }
+
+    .form-group input[type="checkbox"]:hover,
+    .pollinations-checkbox:hover {
         border-color: #0f0f0f;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         transform: translateY(-1px);
     }
 
-    .form-group input[type="checkbox"]:focus {
+    .form-group input[type="checkbox"]:focus,
+    .pollinations-checkbox:focus {
         outline: none;
         border-color: #0f0f0f;
         box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
     }
 
-    .form-group input[type="checkbox"]:checked {
+    .form-group input[type="checkbox"]:checked,
+    .pollinations-checkbox:checked {
         border-color: #0f0f0f;
         background: linear-gradient(135deg, #0f0f0f 0%, #2a2a2a 100%);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.24);
     }
 
-    .form-group input[type="checkbox"]:checked::after {
+    .form-group input[type="checkbox"]:checked::after,
+    .pollinations-checkbox:checked::after {
         content: '';
         position: absolute;
         top: 2px;
@@ -1744,14 +1754,16 @@
     }
 
     /* 复选框禁用状态 */
-    .form-group input[type="checkbox"]:disabled {
+    .form-group input[type="checkbox"]:disabled,
+    .pollinations-checkbox:disabled {
         opacity: 0.5;
         cursor: not-allowed;
         background: #f8f9fa;
         border-color: #e9ecef;
     }
 
-    .form-group input[type="checkbox"]:disabled:hover {
+    .form-group input[type="checkbox"]:disabled:hover,
+    .pollinations-checkbox:disabled:hover {
         transform: none;
         box-shadow: none;
     }
@@ -2152,9 +2164,10 @@
     /* Pollinations配置区域专用样式 */
     .pollinations-options-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 16px;
-        margin-top: 15px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+        margin-top: 12px;
+        align-items: stretch;
     }
 
     .pollinations-option {
@@ -2163,6 +2176,8 @@
         border-radius: 8px;
         padding: 12px 16px;
         transition: all 0.3s ease;
+        display: flex;
+        align-items: stretch;
     }
 
     .pollinations-option:hover {
@@ -2448,7 +2463,8 @@
 
         /* 复选框和单选框响应式 */
         .form-group input[type="checkbox"],
-        .custom-radio input[type="radio"] {
+        .custom-radio input[type="radio"],
+        .pollinations-checkbox {
             width: 18px;
             height: 18px;
         }

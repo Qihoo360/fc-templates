@@ -393,7 +393,7 @@ class LLMManager:
 
         # 构建参数
         openai_kwargs = {
-            "model": model_str,
+            "model": model,
             "temperature": temperature,
             # "max_tokens": max_tokens,
             "api_key": api_key,
