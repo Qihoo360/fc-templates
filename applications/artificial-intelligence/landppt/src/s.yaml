@@ -7,7 +7,7 @@ vars:
   Description: {{Description}}
 
   POLEFS_VOLUME: {{POLEFS_VOLUME}}
-  POLEFS_MOUNT_PATH: /data
+  POLEFS_MOUNT_PATH: /app/mnt
   POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
   banana:

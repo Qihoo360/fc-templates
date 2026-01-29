@@ -92,6 +92,7 @@ create_directories() {
     log "Creating necessary directories..."
     
     local dirs=(
+        "/app/mnt"
         "/app/data"
         "/app/uploads"
         "/app/temp/ai_responses_cache"
