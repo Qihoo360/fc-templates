@@ -1,0 +1,176 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: Moltbot
+Organization: 函数计算 (FC)
+Provider:
+  - fc
+Version: 1.0.0
+Description: Moltbot（原名 Clawdbot） 是一款开源、自托管的个人 AI 助手，可以通过插件和 Skill 扩展更多能力。
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/moltbot
+Tags:
+  - AI
+Category: 人工智能
+Service:
+  FC:
+    Authorities:
+    - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required:
+  # 函数设置
+  - region
+  - FunctionName
+  - Description
+
+  # 应用设定
+  - CLAWDBOT_GATEWAY_TOKEN
+
+  # 大语言模型
+  - OPENAI_URL
+  - OPENAI_MODELNAME
+  - OPENAI_API_KEY
+
+  # 持久存储
+  - FileStorage
+  - POLEFS_VOLUME
+  - POLEFS_VOLUME_CREATE_USER
+
+  properties:
+    region:
+      title: 部署区域
+      type: string
+      default: beijing
+      description: 应用将部署到所选择的区域
+      enum:
+      - beijing
+      - test-3
+      x-cate: resourceCate
+      x-reaction-properties:
+      - POLEFS_VOLUME
+      x-formitem:
+        type: select
+
+    FunctionName:
+      title: 函数名
+      type: string
+      default: moltbot-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 名称只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+
+    Description:
+      title: 函数描述
+      type: string
+      default: "moltbot AI 助手"
+      pattern: ".{0,255}$"
+      description: 最大长度为 255 个字符
+      x-placeholder: 请输入函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+
+    CLAWDBOT_GATEWAY_TOKEN:
+      title: MOLTBOT Token
+      type: string
+      pattern: ".{0,255}$"
+      description: MOLTBOT AI 助手 Token；最大长度为 255 个字符
+      x-placeholder: 请输入 Token
+      x-cate: applicationCate
+      x-label: MOLTBOT 设置
+      x-formitem:
+        type: input
+
+    CLAWDBOT_UI_ALLOW_INSECURE_AUTH:
+      title: MOLTBOT UI 允许非 HTTPS 链接
+      type: boolean
+      default: false
+      pattern: ".{0,255}$"
+      description: MOLTBOT UI 允许使用非 HTTPS 链接
+      x-cate: applicationCate
+      x-label: MOLTBOT 设置
+      x-formitem:
+        type: switch
+
+    OPENAI_URL:
+      type: string
+      default: https://llm.api.zyuncs.com/v1
+      description: 兼容 OpenAI 接口规范
+      pattern: "https?.*$"
+      x-cate: applicationCate
+      x-label: 大语言模型
+      x-restype: openai
+      x-placeholder: 请输入 BaseURL
+      x-formitem:
+        type: input
+    OPENAI_MODELNAME:
+      type: string
+      default: 360-glm-4.7
+      description: "语言模型名称"
+      x-cate: applicationCate
+      x-label: 大语言模型
+      x-restype: openai
+      x-placeholder: 请输入语言模型名称
+      x-formitem:
+        type: input
+
+    OPENAI_API_KEY:
+      type: secret
+      default: ""
+      description: "OpenAI API 密钥"
+      x-cate: applicationCate
+      x-label: 大语言模型
+      x-restype: openai
+      x-placeholder: 请输入 OpenAI APIKEY
+      x-formitem:
+        type: input
+
+    FileStorage:
+      type: string
+      default: Polefs
+      description: 文件存储类型
+      enum:
+      - Polefs
+      x-cate: applicationCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-formitem:
+        type: select
+
+    POLEFS_VOLUME:
+      type: string
+      description: |
+        保存应用数据的文件存储，如：'bjpdc-polefs/app/data'；注：复用存储时需要注意数据覆盖的问题
+      x-cate: applicationCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-placeholder: POLEFS 存储卷
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: POLEFS_VOLUME_CREATE_USER
+      x-formitem:
+        type: input
+        name: volume_unique_name
+    POLEFS_VOLUME_CREATE_USER:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-placeholder: 函数创建挂载卷的用户
+      x-hidden: true
+
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
