@@ -411,6 +411,14 @@ class ConfigService:
             if openai_image_updates:
                 image_config.update_config({'openai_image': openai_image_updates})
 
+            try:
+                from .image.image_service import get_image_service
+                image_service = get_image_service()
+                image_service.initialized = False
+                logger.info("ImageService marked for reload (initialized=False)")
+            except Exception as e:
+                logger.warning(f"Could not trigger ImageService reload: {e}")
+
             logger.info("Image service configuration reloaded")
         except Exception as e:
             logger.error(f"Failed to reload image service configuration: {e}")

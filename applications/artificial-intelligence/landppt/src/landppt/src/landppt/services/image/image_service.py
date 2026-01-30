@@ -61,6 +61,12 @@ class ImageService:
             return
         
         try:
+
+            from .config.image_config import image_config
+            self.config = image_config.get_config()
+
+            provider_registry.__init__()
+
             # 初始化提供者（这里需要在具体实现中注册）
             await self._initialize_providers()
             
