@@ -10,7 +10,7 @@ vars:
   POLEFS_MOUNT_PATH: /app/mnt
   POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
-  banana:
+  landppt:
     component: ${path('/utils/components/zfc')}
     props:
       region: ${vars.Region}
