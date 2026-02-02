@@ -18,6 +18,20 @@ CLAWDBOT_AGENT_WORKSPACE=${CLAWDBOT_DATA}/agent
 
 CLAWDBOT_UI_ALLOW_INSECURE_AUTH=${CLAWDBOT_UI_ALLOW_INSECURE_AUTH:-false}
 
+# 变量处理
+if [[ "${OPENAI_URL}" =~ ^(https?)://([^/]+?)(/.*)?$ ]]; then
+    SCHEME=${BASH_REMATCH[1]} # schema
+    DOMAIN=${BASH_REMATCH[2]}
+    URI=${BASH_REMATCH[3]}
+elif [[ "${OPENAI_URL}" =~ ^([^/]+?)(/.*)?$ ]]; then
+    DOMAIN=${BASH_REMATCH[1]}
+    URI=${BASH_REMATCH[2]}
+fi
+
+if [[ -n "${DOMAIN}" ]]; then
+    OPENAI_URL=${SCHEME:-https}://${DOMAIN}/v1
+fi
+
 # 初始化目录
 mkdir -p ${CLAWDBOT_LOG_DIR}
 mkdir -p ${CLAWDBOT_STATE_DIR}
