@@ -7,7 +7,7 @@ banana-slides 一个基于 nano banana pro🍌 的原生 AI PPT生成应用，�
 
 * [代码](https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/banana-slides/src)
 
-* [官方网站](https://dataelem.feishu.cn/wiki/ZxW6wZyAJicX4WkG0NqcWsbynde)
+* [官方网站](https://github.com/Anionex/banana-slides/tree/main)
 
 # 前期准备
 

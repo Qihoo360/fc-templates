@@ -12,7 +12,7 @@ RUN if [ -n "$CLAWDBOT_DOCKER_APT_PACKAGES" ]; then \
       rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*; \
     fi
 
-RUN npm install -g clawdbot@latest
+RUN npm install -g openclaw@latest
 COPY startup.sh /app/startup.sh
 
 # 暴露端口

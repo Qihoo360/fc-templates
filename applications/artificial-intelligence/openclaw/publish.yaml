@@ -8,8 +8,8 @@ Organization: 函数计算 (FC)
 Provider:
   - fc
 Version: 1.0.0
-Description: Moltbot（原名 Clawdbot） 是一款开源、自托管的个人 AI 助手，可以通过插件和 Skill 扩展更多能力。
-HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/moltbot
+Description: OpenClaw 是一款开源、自托管的个人 AI 助手，可以通过插件和 Skill 扩展更多能力。
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/openclaw
 Tags:
   - AI
 Category: 人工智能
@@ -27,7 +27,7 @@ Parameters:
   - Description
 
   # 应用设定
-  - CLAWDBOT_GATEWAY_TOKEN
+  - OPENCLAW_GATEWAY_TOKEN
 
   # 大语言模型
   - OPENAI_URL
@@ -57,7 +57,7 @@ Parameters:
     FunctionName:
       title: 函数名
       type: string
-      default: moltbot-${default-suffix}
+      default: openclaw-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 名称只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
       x-placeholder: 请输入函数名
@@ -68,7 +68,7 @@ Parameters:
     Description:
       title: 函数描述
       type: string
-      default: "moltbot AI 助手"
+      default: "OpenClaw AI 助手"
       pattern: ".{0,255}$"
       description: 最大长度为 255 个字符
       x-placeholder: 请输入函数描述
@@ -76,33 +76,22 @@ Parameters:
       x-formitem:
         type: input
 
-    CLAWDBOT_GATEWAY_TOKEN:
-      title: MOLTBOT Token
-      type: string
-      pattern: ".{0,255}$"
-      description: MOLTBOT AI 助手 Token；最大长度为 255 个字符
+    OPENCLAW_GATEWAY_TOKEN:
+      title: OpenClaw 网关 Token
+      type: secret
+      pattern: ".{0,64}$"
+      description: OpenClaw AI 助手 Token；最大长度为 64 个字符
       x-placeholder: 请输入 Token
       x-cate: applicationCate
-      x-label: MOLTBOT 设置
+      x-label: OpenClaw 设置
       x-formitem:
         type: input
 
-    CLAWDBOT_UI_ALLOW_INSECURE_AUTH:
-      title: MOLTBOT UI 允许非 HTTPS 链接
-      type: boolean
-      default: false
-      pattern: ".{0,255}$"
-      description: MOLTBOT UI 允许使用非 HTTPS 链接
-      x-cate: applicationCate
-      x-label: MOLTBOT 设置
-      x-formitem:
-        type: switch
-
     OPENAI_URL:
       type: string
-      default: https://llm.api.zyuncs.com/v1
+      default: https://llm.api.zyuncs.com/
       description: 兼容 OpenAI 接口规范
-      pattern: "https?.*$"
+      pattern: "https?://.*$"
       x-cate: applicationCate
       x-label: 大语言模型
       x-restype: openai

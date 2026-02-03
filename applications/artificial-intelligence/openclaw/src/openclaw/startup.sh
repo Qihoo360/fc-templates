@@ -7,16 +7,17 @@ OPENAI_URL=${OPENAI_URL}
 OPENAI_MODELNAME=${OPENAI_MODELNAME}
 OPENAI_API_KEY=${OPENAI_API_KEY}
 
-CLAWDBOT_DATA=${APPDATA}/clawdbot
-CLAWDBOT_LOG_DIR=${CLAWDBOT_DATA}/logs
+OPENCLAW_DATA=${APPDATA}/openclaw
+OPENCLAW_LOG_DIR=${OPENCLAW_DATA}/logs
 
-CLAWDBOT_STATE_DIR=${CLAWDBOT_DATA}/.clawdbot
-CLAWDBOT_CONFIG_PATH=${CLAWDBOT_STATE_DIR}/clawdbot.json
+OPENCLAW_STATE_DIR=${OPENCLAW_DATA}/.openclaw
+OPENCLAW_CONFIG_PATH=${OPENCLAW_STATE_DIR}/openclaw.json
 
-CLAWDBOT_GATEWAY_TOKEN=${CLAWDBOT_GATEWAY_TOKEN}
-CLAWDBOT_AGENT_WORKSPACE=${CLAWDBOT_DATA}/agent
+OPENCLAW_GATEWAY_TOKEN=${OPENCLAW_GATEWAY_TOKEN}
+OPENCLAW_AGENT_WORKSPACE=${OPENCLAW_DATA}/agent
 
-CLAWDBOT_UI_ALLOW_INSECURE_AUTH=${CLAWDBOT_UI_ALLOW_INSECURE_AUTH:-false}
+OPENCLAW_UI_BASE_PATH=${OPENCLAW_UI_BASE_PATH:-/openclaw}
+OPENCLAW_UI_ALLOW_INSECURE_AUTH=${OPENCLAW_UI_ALLOW_INSECURE_AUTH:-false}
 
 # 变量处理
 if [[ "${OPENAI_URL}" =~ ^(https?)://([^/]+?)(/.*)?$ ]]; then
@@ -33,12 +34,12 @@ if [[ -n "${DOMAIN}" ]]; then
 fi
 
 # 初始化目录
-mkdir -p ${CLAWDBOT_LOG_DIR}
-mkdir -p ${CLAWDBOT_STATE_DIR}
+mkdir -p ${OPENCLAW_LOG_DIR}
+mkdir -p ${OPENCLAW_STATE_DIR}
 
-# 初始化 clawdbot.json 配置
-if [ ! -f ${CLAWDBOT_CONFIG_PATH} ]; then
-cat << EOF > ${CLAWDBOT_CONFIG_PATH}
+# 初始化 openclaw.json 配置
+if [ ! -f ${OPENCLAW_CONFIG_PATH} ]; then
+cat << EOF > ${OPENCLAW_CONFIG_PATH}
 {
     "meta": {
         "lastTouchedVersion": "2026.1.24-3",
@@ -79,7 +80,7 @@ cat << EOF > ${CLAWDBOT_CONFIG_PATH}
     },
     "agents": {
         "defaults": {
-            "workspace": "${CLAWDBOT_AGENT_WORKSPACE}",
+            "workspace": "${OPENCLAW_AGENT_WORKSPACE}",
             "model": {
                 "primary": "${OPENAI_PROVIDER}/${OPENAI_MODELNAME}"
             },
@@ -111,11 +112,12 @@ cat << EOF > ${CLAWDBOT_CONFIG_PATH}
         "mode": "local",
         "bind": "lan",
         "controlUi": {
-            "allowInsecureAuth": ${CLAWDBOT_UI_ALLOW_INSECURE_AUTH}
+            "enabled": true,
+            "allowInsecureAuth": ${OPENCLAW_UI_ALLOW_INSECURE_AUTH}
         },
         "auth": {
             "mode": "token",
-            "token": "${CLAWDBOT_GATEWAY_TOKEN}"
+            "token": "${OPENCLAW_GATEWAY_TOKEN}"
         },
         "tailscale": {
             "mode": "off",
@@ -151,18 +153,18 @@ fi
 cat << EOF > /etc/supervisor/conf.d/supervisord.conf
 [supervisord]
 nodaemon=true
-logfile=${CLAWDBOT_LOG_DIR}/supervisord.log
-pidfile=${CLAWDBOT_LOG_DIR}/supervisord.pid
+logfile=${OPENCLAW_LOG_DIR}/supervisord.log
+pidfile=${OPENCLAW_LOG_DIR}/supervisord.pid
 logfile_maxbytes=50MB
 logfile_backups=10
 
-[program:clawdbot-gateway]
-command=/bin/bash -c "clawdbot gateway run"
-environment=CLAWDBOT_STATE_DIR=${CLAWDBOT_STATE_DIR},CLAWDBOT_CONFIG_PATH=${CLAWDBOT_CONFIG_PATH}
+[program:openclaw-gateway]
+command=/bin/bash -c "openclaw gateway run"
+environment=OPENCLAW_STATE_DIR=${OPENCLAW_STATE_DIR},OPENCLAW_CONFIG_PATH=${OPENCLAW_CONFIG_PATH},OPENCLAW_DISABLE_BONJOUR=1
 autostart=true
 autorestart=true
-stdout_logfile=${CLAWDBOT_LOG_DIR}/clawdbot-gateway-stdout.log
-stderr_logfile=${CLAWDBOT_LOG_DIR}/clawdbot-gateway-stderr.log
+stdout_logfile=${OPENCLAW_LOG_DIR}/openclaw-gateway-stdout.log
+stderr_logfile=${OPENCLAW_LOG_DIR}/openclaw-gateway-stderr.log
 logfile_maxbytes=50MB
 logfile_backups=10
 EOF

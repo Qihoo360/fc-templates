@@ -6,8 +6,8 @@ vars:
   FunctionName: {{FunctionName}}
   Description: {{Description}}
 
-  CLAWDBOT_GATEWAY_TOKEN: {{CLAWDBOT_GATEWAY_TOKEN}}
-  CLAWDBOT_UI_ALLOW_INSECURE_AUTH: {{CLAWDBOT_UI_ALLOW_INSECURE_AUTH}}
+  OPENCLAW_GATEWAY_TOKEN: {{OPENCLAW_GATEWAY_TOKEN}}
+  OPENCLAW_UI_ALLOW_INSECURE_AUTH: true
 
   OPENAI_URL: {{OPENAI_URL}}
   OPENAI_MODELNAME: {{OPENAI_MODELNAME}}
@@ -17,7 +17,7 @@ vars:
   VOLUME_MOUNT_PATH: /data
   POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
-  moltbot:
+  openclaw:
     component: ${path('/utils/components/zfc')}
     props:
       region: ${vars.Region}
@@ -30,15 +30,15 @@ resources:
       instanceConcurrency: 100
       requestType: http
       runtimeType: customize
-      sourceSubDir: moltbot
+      sourceSubDir: openclaw
       cloudBuildType: Dockerfile
       port: 18789
       functionName: ${vars.FunctionName}
       environmentVariables:
         APPDATA: ${vars.VOLUME_MOUNT_PATH}
 
-        CLAWDBOT_GATEWAY_TOKEN: ${vars.CLAWDBOT_GATEWAY_TOKEN}
-        CLAWDBOT_UI_ALLOW_INSECURE_AUTH: ${vars.CLAWDBOT_UI_ALLOW_INSECURE_AUTH}
+        OPENCLAW_GATEWAY_TOKEN: ${vars.OPENCLAW_GATEWAY_TOKEN}
+        OPENCLAW_UI_ALLOW_INSECURE_AUTH: ${vars.OPENCLAW_UI_ALLOW_INSECURE_AUTH}
 
         OPENAI_PROVIDER: appmkt
         OPENAI_URL: ${vars.OPENAI_URL}
