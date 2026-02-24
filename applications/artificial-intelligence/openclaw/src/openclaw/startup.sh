@@ -114,7 +114,8 @@ cat << EOF > ${OPENCLAW_CONFIG_PATH}
         "controlUi": {
             "enabled": true,
             "dangerouslyAllowHostHeaderOriginFallback": true,
-            "allowInsecureAuth": ${OPENCLAW_UI_ALLOW_INSECURE_AUTH}
+            "dangerouslyDisableDeviceAuth": true,
+            "allowInsecureAuth": true
         },
         "auth": {
             "mode": "token",
