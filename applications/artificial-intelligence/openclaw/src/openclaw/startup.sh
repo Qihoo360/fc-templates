@@ -113,6 +113,7 @@ cat << EOF > ${OPENCLAW_CONFIG_PATH}
         "bind": "lan",
         "controlUi": {
             "enabled": true,
+            "dangerouslyAllowHostHeaderOriginFallback": true,
             "allowInsecureAuth": ${OPENCLAW_UI_ALLOW_INSECURE_AUTH}
         },
         "auth": {
