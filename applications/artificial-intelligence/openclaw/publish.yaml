@@ -47,6 +47,7 @@ Parameters:
       description: 应用将部署到所选择的区域
       enum:
       - beijing
+      - test-2
       - test-3
       x-cate: resourceCate
       x-reaction-properties:
