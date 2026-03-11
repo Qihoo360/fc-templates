@@ -4,7 +4,7 @@ from bisheng.custom import customs
 from bisheng.interface.base import LangChainTypeCreator
 from bisheng.interface.tools.constants import ALL_TOOLS_NAMES, CUSTOM_TOOLS, FILE_TOOLS, OTHER_TOOLS
 from bisheng.interface.tools.util import get_tool_params
-from bisheng.settings import settings
+from bisheng.common.services.config_service import settings
 from bisheng.template.field.base import TemplateField
 from bisheng.template.template.base import Template
 from bisheng.utils import util
@@ -121,8 +121,8 @@ class ToolCreator(LangChainTypeCreator):
 
             # Pop unnecessary fields and add name
             fields.pop('_type')  # type: ignore
-            fields.pop('return_direct')  # type: ignore
-            fields.pop('verbose')  # type: ignore
+            fields.pop('return_direct', None)  # type: ignore
+            fields.pop('verbose', None)  # type: ignore
 
             tool_params = {
                 'name': fields.pop('name')['value'],  # type: ignore

@@ -3,36 +3,18 @@ import { WordIcon } from "@/components/bs-icons";
 import { AvatarIcon } from "@/components/bs-icons/avatar";
 import { Button } from "@/components/bs-ui/button";
 import { Textarea } from "@/components/bs-ui/input";
-import { CodeBlock } from "@/modals/formModal/chatMessage/codeBlock";
 import { WorkflowMessage } from "@/types/flow";
 import { downloadFile } from "@/util/utils";
 import { CheckCircle } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import ReactMarkdown from "react-markdown";
-import rehypeMathjax from "rehype-mathjax";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-// 颜色列表
-const colorList = [
-    "#111",
-    "#FF5733",
-    "#3498DB",
-    "#27AE60",
-    "#E74C3C",
-    "#9B59B6",
-    "#F1C40F",
-    "#34495E",
-    "#16A085",
-    "#E67E22",
-    "#95A5A6"
-]
+import MessageMarkDown from "./MessageMarkDown";
+import { useLinsightConfig } from "@/pages/ModelPage/manage/tabs/WorkbenchModel";
+import { AudioPlayComponent } from "@/components/voiceFunction/audioPlayButton";
 
 export default function MessageBsChoose({ type = 'choose', logo, data }: { type?: string, logo: string, data: WorkflowMessage }) {
     const { t } = useTranslation()
-    const avatarColor = colorList[
-        (data.sender?.split('').reduce((num, s) => num + s.charCodeAt(), 0) || 0) % colorList.length
-    ]
+    const { data: linsightConfig } = useLinsightConfig();
 
     const [selected, setSelected] = useState(data.message.hisValue || '')
     const handleSelect = (obj) => {
@@ -74,45 +56,12 @@ export default function MessageBsChoose({ type = 'choose', logo, data }: { type?
         document.dispatchEvent(myEvent);
     }
 
-    const mkdown = useMemo(
-        () => (
-            <ReactMarkdown
-                remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[rehypeMathjax]}
-                linkTarget="_blank"
-                className="bs-mkdown inline-block break-all max-w-full text-sm text-text-answer "
-                components={{
-                    code: ({ node, inline, className, children, ...props }) => {
-                        if (children.length) {
-                            if (children[0] === "▍") {
-                                return (<span className="form-modal-markdown-span"> ▍ </span>);
-                            }
+    const files = useMemo(() => {
+        return typeof data.files === 'string' ? [] : data.files
+    }, [data.files])
 
-                            if (typeof children[0] === "string") {
-                                children[0] = children[0].replace("▍", "▍");
-                            }
-                        }
-
-                        const match = /language-(\w+)/.exec(className || "");
-
-                        return !inline ? (
-                            <CodeBlock
-                                key={Math.random()}
-                                language={(match && match[1]) || ""}
-                                value={String(children).replace(/\n$/, "")}
-                                {...props}
-                            />
-                        ) : (
-                            <code className={className} {...props}> {children} </code>
-                        );
-                    },
-                }}
-            >
-                {data.message.msg}
-            </ReactMarkdown>
-        ),
-        [data.message]
-    )
+    // hack
+    if (typeof data.files === 'string') return null
 
     return <div className="flex w-full">
         <div className="w-fit group max-w-[90%]">
@@ -124,18 +73,13 @@ export default function MessageBsChoose({ type = 'choose', logo, data }: { type?
             </div>
             <div className="min-h-8 px-6 py-4 rounded-2xl bg-[#F5F6F8] dark:bg-[#313336]">
                 <div className="flex gap-2">
-                    {logo ? <div className="max-w-6 min-w-6 max-h-6 rounded-full overflow-hidden">
-                        <img className="w-6 h-6" src={logo} />
-                    </div>
-                        : <div className="w-6 h-6 min-w-6 flex justify-center items-center rounded-full" style={{ background: avatarColor }} >
-                            <AvatarIcon />
-                        </div>}
+                    {logo}
                     <div className="text-sm max-w-[calc(100%-24px)]">
                         {/* message */}
-                        <div>{mkdown}</div>
+                        <div>{<MessageMarkDown message={data.message.msg} />}</div>
                         {/* files */}
                         <div>
-                            {data.files?.map((file) => <div
+                            {files.map((file) => <div
                                 className="flex gap-2 w-52 border border-gray-200 shadow-sm bg-gray-50 dark:bg-gray-600 px-4 py-2 rounded-sm cursor-pointer"
                                 onClick={() => handleDownloadFile(file)}
                             >
@@ -152,10 +96,10 @@ export default function MessageBsChoose({ type = 'choose', logo, data }: { type?
                             {type === 'input' ?
                                 <div>
                                     <Textarea
-                                        className="w-96"
+                                        className="w-full"
                                         ref={textRef}
                                         disabled={inputSended}
-                                        defaultValue={data.message.input_msg}
+                                        defaultValue={data.message.input_msg || data.message.hisValue}
                                     />
                                     <div className="flex justify-end mt-2">
                                         <Button
@@ -168,11 +112,11 @@ export default function MessageBsChoose({ type = 'choose', logo, data }: { type?
                                 : <div>
                                     {data.message.options.map(opt => <div
                                         key={opt.id}
-                                        className="min-w-56 bg-[#fff] dark:bg-background rounded-xl p-4 mt-2 hover:bg-gray-200 cursor-pointer flex justify-between"
+                                        className="min-w-56 bg-[#fff] dark:bg-background rounded-xl p-4 mt-2 hover:bg-gray-200 cursor-pointer flex justify-between items-center break-all"
                                         onClick={() => handleSelect(opt)}
                                     >
                                         {opt.label}
-                                        {selected === opt.id && <CheckCircle size={20} />}
+                                        {selected === opt.id && <CheckCircle size={20} className="min-w-5" />}
                                     </div>)
                                     }
                                 </div>
@@ -180,6 +124,14 @@ export default function MessageBsChoose({ type = 'choose', logo, data }: { type?
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className={`text-right group-hover:opacity-100 opacity-0`}>
+                {linsightConfig?.tts_model?.id && (
+                    <AudioPlayComponent
+                        messageId={String(data.message.node_id)}
+                        msg={data.message.msg}
+                    />
+                )}
             </div>
         </div>
     </div>

@@ -15,6 +15,25 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+    ::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+
+  
+  *:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5); /* gray-400 with opacity */
+    border-radius: 9999px;
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  *:hover {
+    scrollbar-color: rgb(156 163 175 / 0.5) transparent;
+  }
 }
 
 
@@ -257,7 +276,7 @@
     @apply h-full w-full py-5 text-foreground
   }
   .generic-node-desc-text {
-    @apply w-full px-5 pb-3 text-sm text-muted-foreground
+    @apply w-full px-5 pb-3 text-sm text-muted-foreground break-words
   }
 
   .alert-icon {
@@ -1014,7 +1033,7 @@
   }
 
   .bisheng-node {
-    @apply relative flex w-[332px] flex-col justify-center rounded-[20px] border-4 group-hover:shadow-sm
+    @apply relative flex w-[332px] flex-col justify-center rounded-[24px] border-4 group-hover:shadow-sm
   }
   .bisheng-node-top{
     @apply bg-[#EFF1F5] dark:bg-background rounded-t-[20px] px-3 py-1.5
@@ -1026,21 +1045,21 @@
     @apply p-3 border-t border-[#cad0de] dark:bg-background dark:border-gray-700
   }
 
-  .bisheng-flow-handle {
+  .bisheng-node .bisheng-flow-handle {
     @apply h-6 w-6 bg-transparent border-none flex justify-center items-center
   }
-  .bisheng-flow-handle:hover span{
+  .bisheng-node .bisheng-flow-handle:hover span{
     @apply size-10/12
   }
-  .bisheng-flow-handle span {
+  .bisheng-node .bisheng-flow-handle span {
     @apply w-2 h-2 bg-primary rounded-full transition-all relative pointer-events-none
   }
-  .bisheng-flow-handle span::before {
+  .bisheng-node .bisheng-flow-handle span::before {
     content: '';
     @apply absolute bg-[#fff] w-[1px] h-2/3 top-[3px] left-1/2 transform -translate-x-1/2 opacity-0 transition-opacity duration-300;
   }
   
-  .bisheng-flow-handle span::after {
+  .bisheng-node .bisheng-flow-handle span::after {
     content: '';
     @apply absolute bg-[#fff] h-[1px] w-2/3 left-[3px] top-1/2 transform -translate-y-1/2 opacity-0 transition-opacity duration-300;
   }
@@ -1049,8 +1068,8 @@
     @apply bg-primary;
   } */
   
-  .bisheng-flow-handle:hover span::before,
-  .bisheng-flow-handle:hover span::after {
+  .bisheng-node .bisheng-flow-handle:hover span::before,
+  .bisheng-node .bisheng-flow-handle:hover span::after {
     @apply opacity-100 ;
   }
   .textarea-badge{
@@ -1064,6 +1083,9 @@
   }
   .bisheng-richtext.placeholder{
     @apply text-gray-400
+  }
+  .textarea-badge {
+    user-select: text;
   }
   /* .textarea-badge::before{
     content: '(x)';

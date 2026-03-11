@@ -1,7 +1,9 @@
 import { WorkflowNode } from "@/types/flow";
+import { useTranslation } from "react-i18next";
 import Parameter from "./Parameter";
 
-export default function ParameterGroup({ nodeId, node, cate, tab, onOutPutChange, onStatusChange, onVarEvent }
+export default function ParameterGroup({ nodeId, node, cate, tab,
+    onOutPutChange, onAddSysPrompt, onStatusChange, onVarEvent, onFouceUpdate, selectedKnowledgeIds }
     : {
         nodeId: string,
         node: WorkflowNode,
@@ -10,12 +12,14 @@ export default function ParameterGroup({ nodeId, node, cate, tab, onOutPutChange
         onOutPutChange: (key: string, value: any) => void
         onStatusChange: (key: string, obj: any) => void
         onVarEvent: (key: string, obj: any) => void
+        onAddSysPrompt: (type: string) => void
+        onFouceUpdate: () => void
     }) {
-
+    const { t } = useTranslation('flow')
     if (!cate.params.filter(el => tab === el.tab || !el.tab).length) return null
 
     return <div className="px-4 py-2 border-t border-[#E8EAF0] dark:border-gray-700">
-        {cate.name && <p className='mt-2 mb-3 text-sm font-bold'>{cate.name}</p>}
+        {cate.name && <p className='mt-2 mb-3 text-sm font-bold'>{t(`node.${node.type}.${cate.name}`)}</p>}
         {cate.params.map(item => tab === item.tab || !item.tab ? <Parameter
             nodeId={nodeId}
             node={node}
@@ -24,6 +28,9 @@ export default function ParameterGroup({ nodeId, node, cate, tab, onOutPutChange
             onOutPutChange={onOutPutChange}
             onStatusChange={onStatusChange}
             onVarEvent={onVarEvent}
+            onFouceUpdate={onFouceUpdate}
+            onAddSysPrompt={onAddSysPrompt}
+            selectedKnowledgeIds={selectedKnowledgeIds}
         /> : null)}
     </div>
 };

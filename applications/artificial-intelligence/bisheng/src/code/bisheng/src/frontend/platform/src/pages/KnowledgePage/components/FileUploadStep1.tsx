@@ -1,52 +1,86 @@
 
+import KnowledgeUploadComponent from "@/components/bs-comp/knowledgeUploadComponent";
 import { Button } from "@/components/bs-ui/button";
-import { useToast } from "@/components/bs-ui/toast/use-toast";
-import Upload from "@/components/bs-ui/upload";
 import { locationContext } from "@/contexts/locationContext";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 
-export default function FileUploadStep1({ hidden, onNext, onChange }) {
+export default function FileUploadStep1({ hidden, onNext, onSave, initialFiles }) {
     const { t } = useTranslation('knowledge')
+    const { id: kid } = useParams()
     const { appConfig } = useContext(locationContext)
-    const uploadRef = useRef<any>(null)
-    const { message } = useToast()
 
     const [fileCount, setFileCount] = useState(0)
-    // useEffect(() => {
-    //     onChange()
-    // }, [fileCount])
+    const [finish, setFinish] = useState(false)
+    const filesRef = useRef<any>([])
+    const failFilesRef = useRef<any>([])
 
-    const handleSaveFiles = () => {
-        const [fileCount, files, failFiles] = uploadRef.current?.getUploadResult()
-        if (!files.length) return message({ variant: 'error', description: t('code.selectFileToUpload', { ns: 'bs' }) })
-        onNext({ fileCount, files, failFiles })
+    const handleFileChange = (files, failFiles) => {
+
+        filesRef.current = files.map(file => ({
+            ...file,
+            suffix: file.fileName.split('.').pop().toLowerCase() || 'txt',
+            fileType: ['xlsx', 'xls', 'csv'].includes(file.fileName.split('.').pop().toLowerCase()) ? 'table' : 'file',
+            fileId: 0
+        }))
+        failFilesRef.current = failFiles
+
+        setFinish(!failFiles.length)
     }
 
-    return <div className={`flex flex-col ${hidden ? 'hidden' : ''}`}>
-        <div className="flex items-center gap-2 my-6 px-12 text-sm font-bold max-w-96">
-            <span className="text-primary">{t('step1UploadFile')}</span>
-            <div className="h-[1px] flex-grow bg-gray-300"></div>
-            <span>{t('step2DocProcessing')}</span>
-        </div>
-        <Upload
-            ref={uploadRef}
+    const [loading, setLoading] = useState(false)
+    const handleSave = async () => {
+        const params = {
+            knowledge_id: kid,
+            file_list: filesRef.current.map(file => ({
+                file_path: file.file_path,
+                excel_rule: file.fileType === 'file' ? {} : {
+                    "append_header": true,
+                    "header_end_row": 1,
+                    "header_start_row": 1,
+                    "slice_length": 10
+                }
+            })),
+            separator: ["\n\n", "\n"],
+            separator_rule: ["after", "after"],
+            chunk_size: 1000,
+            chunk_overlap: 100,
+            retain_images: true,
+            enable_formula: true,
+            force_ocr: true,
+            fileter_page_header_footer: true
+        }
+
+        setLoading(true)
+        await onSave(params)
+        setLoading(false)
+    }
+    useEffect(() => {
+        if (initialFiles.length > 0) {
+            handleFileChange(initialFiles, []);
+            setFileCount(initialFiles.length);
+
+        }
+    }, [initialFiles]);
+    return <div className={`relative h-full max-w-[1200px] mx-auto flex flex-col px-10 pt-4 ${hidden ? 'hidden' : ''}`}>
+        <KnowledgeUploadComponent
             size={appConfig.uploadFileMaxSize}
-            url={__APP_ENV__.BASE_URL + '/api/v1/knowledge/upload'}
-            accept={appConfig.libAccepts}
-            progressClassName='max-h-[374px]'
-            onFileCountChange={(count, all) => {
-                console.log('count all :>> ', count, all);
-                setFileCount(count === all ? count : 0)
-            }
-            }
-            onBeforeUpload={() => setFileCount(0)}
+            progressClassName='max-h-[460px]'
+            knowledgeId={kid}
+            onSelectFile={(count) => {
+                setFileCount(count)
+                setFinish(false)
+            }}
+            onFileChange={handleFileChange}
+            initialFiles={initialFiles}
         />
-        <div className="flex justify-end">
-            <Button className="px-10 mt-4" disabled={!fileCount} onClick={handleSaveFiles}>
-                {fileCount ? <span>{t('totalFiles', { count: fileCount })}<span className="mx-1">|</span></span> : null}
-                {t('nextStep')}
-            </Button>
+        <div className="flex justify-end gap-4 mt-8">
+            <Button disabled={loading || !finish} variant="outline" onClick={handleSave}>{t("uploadDirectly")}</Button>
+            <Button disabled={loading || !finish} onClick={() => {
+                onNext(filesRef.current)
+            }} >
+                {fileCount ? <span>{t('totalFiles', { count: fileCount })}</span> : null}&nbsp;{t('nextStep')}</Button>
         </div>
     </div>
 

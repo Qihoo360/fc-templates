@@ -1,4 +1,4 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "./index";
+import { Tooltip, TooltipContent, TooltipTrigger, Portal } from "./index";
 
 export default function Tip({
     content,
@@ -7,26 +7,28 @@ export default function Tip({
     children,
     styleClasses,
     delayDuration = 200,
+    align = "center"
 }: {
     content: string;
-    side: "top" | "right" | "bottom" | "left";
+    side: "top" | "right" | "bottom" | "left" | "top-right";
     asChild?: boolean;
     children: React.ReactNode;
     styleClasses?: string;
     delayDuration?: number
+    align?: "center" | "start" | "end"
 }): JSX.Element {
-    return (
-        <Tooltip delayDuration={delayDuration}>
-            <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>
-
+    return content ? <Tooltip delayDuration={delayDuration}>
+        <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>
+        <Portal>
             <TooltipContent
-                className={`${styleClasses} bg-popover text-sm shadow-md text-popover-foreground`}
+                className={`${styleClasses} text-sm shadow-md`}
                 side={side}
+                align={align}
                 avoidCollisions={false}
                 sticky="always"
             >
-                <div className="max-w-96 text-left break-all whitespace-normal">{content}</div>
+                <div className=" max-w-96 text-left break-all whitespace-normal">{content}</div>
             </TooltipContent>
-        </Tooltip>
-    );
+        </Portal>
+    </Tooltip> : children
 }

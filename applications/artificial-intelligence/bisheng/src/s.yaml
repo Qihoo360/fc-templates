@@ -3,12 +3,15 @@ name: bisheng-app
 access: default
 vars:
   region: {{region}}
+  bishengMinioFunctionName: {{bishengMinioFunctionName}}
+  bishengMinioDescription: {{bishengMinioDescription}}
   bishengOfficeFunctionName: {{bishengOfficeFunctionName}}
   bishengOfficeDescription: {{bishengOfficeDescription}}
   bishengBackendFunctionName: {{bishengBackendFunctionName}}
   bishengBackendDescription: {{bishengBackendDescription}}
   bishengFrontendFunctionName: {{bishengFrontendFunctionName}}
   bishengFrontendDescription: {{bishengFrontendDescription}}
+  workerNum: {{workerNum}}
   ELASTICSEARCH_HOST: {{ELASTICSEARCH_HOST}}
   ELASTICSEARCH_PORT: {{ELASTICSEARCH_PORT}}
   ELASTICSEARCH_USERNAME: {{ELASTICSEARCH_USERNAME}}
@@ -20,25 +23,71 @@ vars:
   milvusSecure: {{milvusSecure}}
   milvusIsPartition: {{milvusIsPartition}}
   milvusPartitionSuffiix: {{milvusPartitionSuffiix}}
-  minioEndpoint: {{minioEndpoint}}
-  minioAccessKey: {{minioAccessKey}}
-  minioSecretKey: {{minioSecretKey}}
-  minioCertCheck: {{minioCertCheck}}
-  minioSchema: {{minioSchema}}
-  minioSharePoin: {{minioSharePoin}}
-  REDIS_URL: {{REDIS_URL}}
+  REDIS_HOST: {{REDIS_HOST}}
+  REDIS_PORT: {{REDIS_PORT}}
+  REDIS_PASSWORD: {{REDIS_PASSWORD}}
   CELERY_REDIS_URL: {{CELERY_REDIS_URL}}
-  MYSQL_URL: {{MYSQL_URL}}
+  MYSQL_HOST: {{MYSQL_HOST}}
+  MYSQL_PORT: {{MYSQL_PORT}}
+  MYSQL_DATABASE: {{MYSQL_DATABASE}}
+  MYSQL_USERNAME: {{MYSQL_USERNAME}}
+  MYSQL_PASSWORD: {{MYSQL_PASSWORD}}
+  POLEFS_VOLUME: {{POLEFS_VOLUME}}
+  POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
+  bishengMinio:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.bishengMinioDescription}
+      runtime: custom
+      memorySize: 2048
+      cpu: 1
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 9000
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.bishengMinioFunctionName}
+      sourceSubDir: code/bisheng/docker/minio
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
+          mountDir: /minio_data
+          createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
   bishengOffice:
     component: ${path('/utils/components/zfc')}
     props:
       region: ${vars.region}
       description: ${vars.bishengOfficeDescription}
       runtime: custom
-      memorySize: 8192
-      cpu: 4
-      diskSize: 5120
+      memorySize: 4096
+      cpu: 2
+      diskSize: 512
       timeout: 100
       instanceConcurrency: 100
       port: 80
@@ -79,9 +128,9 @@ resources:
       region: ${vars.region}
       description: ${vars.bishengBackendDescription}
       runtime: custom
-      memorySize: 10240
+      memorySize: 16384
       cpu: 6
-      diskSize: 5120
+      diskSize: 512
       timeout: 100
       instanceConcurrency: 100
       port: 7860
@@ -102,16 +151,17 @@ resources:
         BS_MILVUS_CONNECTION_ARGS: '{"host":"${vars.MILVUS_HOST}","port":"${vars.MILVUS_PORT}","user":"${vars.MILVUS_USERNAME}","password":"${vars.MILVUS_PASSWORD}","secure":${vars.milvusSecure}}'
         BS_MILVUS_IS_PARTITION: ${vars.milvusIsPartition}
         BS_MILVUS_PARTITION_SUFFIX: ${vars.milvusPartitionSuffiix}
-        BS_MINIO_ENDPOINT: ${vars.minioEndpoint}
-        BS_MINIO_ACCESS_KEY: ${vars.minioAccessKey}
-        BS_MINIO_SECRET_KEY: ${vars.minioSecretKey}
-        BS_MINIO_CERT_CHECK: ${vars.minioCertCheck}
-        BS_MINIO_SCHEMA: ${vars.minioSchema}
-        BS_MINIO_SHAREPOIN: ${vars.minioSharePoin}
-        BS_DATABASE_URL: ${vars.MYSQL_URL}
-        BS_REDIS_URL: ${vars.REDIS_URL}
-        BS_CELERY_REDIS_URL: ${vars.CELERY_REDIS_URL}
+        BS_DATABASE_URL: "mysql+pymysql://${vars.MYSQL_USERNAME}:${vars.MYSQL_PASSWORD}@${vars.MYSQL_HOST}:${vars.MYSQL_PORT}/${vars.MYSQL_DATABASE}?charset=utf8mb4"
+        BS_REDIS_URL: "redis://:${vars.REDIS_HOST}@${vars.REDIS_PORT}:${vars.REDIS_PASSWORD}"
+        BS_CELERY_REDIS_URL: "redis://:${vars.REDIS_HOST}@${vars.REDIS_PORT}:${vars.REDIS_PASSWORD}"
+        BS_MINIO_ENDPOINT: "${resources.bishengMinio.output.http_trigger_url}"
+        BS_MINIO_ACCESS_KEY: minioadmin
+        BS_MINIO_SECRET_KEY: minioadmin
+        BS_MINIO_CERT_CHECK: false
+        BS_MINIO_SCHEMA: false
+        BS_MINIO_SHAREPOINT: "${resources.bishengMinio.output.http_trigger_url}"
         BS_OFFICE_URL: "http://${resources.bishengOffice.output.http_trigger_url}"
+        WORKER_NUM: ${vars.workerNum}
       triggers:
         - triggerName: httptrigger
           triggerType: http
@@ -129,15 +179,19 @@ resources:
               - PATCH
             disable_url_internet: true
             auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
+          mountDir: /app/data
+          createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
   bishengFrontend:
     component: ${path('/utils/components/zfc')}
     props:
       region: ${vars.region}
       description: ${vars.bishengFrontendDescription}
       runtime: custom
-      memorySize: 10240
-      cpu: 6
-      diskSize: 5120
+      memorySize: 4096
+      cpu: 2
+      diskSize: 512
       timeout: 100
       instanceConcurrency: 100
       port: 3001

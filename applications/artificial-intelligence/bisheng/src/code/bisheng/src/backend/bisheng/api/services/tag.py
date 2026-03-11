@@ -1,16 +1,17 @@
 import json
 from typing import List
 
-from fastapi import Request, HTTPException
+from fastapi import Request
 from loguru import logger
 
-from bisheng.api.errcode.base import UnAuthorizedError
-from bisheng.api.errcode.tag import TagExistError, TagNotExistError
-from bisheng.api.services.user_service import UserPayload
+from bisheng.common.dependencies.user_deps import UserPayload
+from bisheng.common.errcode.http_error import UnAuthorizedError, NotFoundError
+from bisheng.common.errcode.tag import TagExistError, TagNotExistError
+from bisheng.common.models.config import ConfigDao, ConfigKeyEnum, Config
 from bisheng.database.models.assistant import AssistantDao
-from bisheng.database.models.config import ConfigDao, ConfigKeyEnum, Config
 from bisheng.database.models.flow import FlowDao
 from bisheng.database.models.group_resource import ResourceTypeEnum, GroupResourceDao
+from bisheng.database.models.role_access import AccessType
 from bisheng.database.models.tag import TagDao, Tag, TagLink
 
 
@@ -21,7 +22,7 @@ class TagService:
                     request: Request,
                     login_user: UserPayload,
                     keyword: str = None, page: int = 0, limit: int = 10) -> (List[Tag], int):
-        """ 获取所有的标签 """
+        """ Get all tags """
         result = TagDao.search_tags(keyword, page, limit)
         return result, TagDao.count_tags(keyword)
 
@@ -30,7 +31,7 @@ class TagService:
                    request: Request,
                    login_user: UserPayload,
                    name: str) -> Tag:
-        # 查询是否有重名的标签名称
+        # Query if there is a renaming of the label name
         exist_tag = TagDao.get_tag_by_name(name)
         if exist_tag:
             raise TagExistError.http_exception()
@@ -47,7 +48,7 @@ class TagService:
         tag_info = TagDao.get_tag_by_id(tag_id)
         if not tag_info:
             raise TagNotExistError.http_exception()
-        # 查询是否有重名的标签名称
+        # Query if there is a renaming of the label name
         exist_tag = TagDao.get_tag_by_name(name)
         if exist_tag and exist_tag.id != tag_id:
             raise TagExistError.http_exception()
@@ -61,7 +62,7 @@ class TagService:
                    request: Request,
                    login_user: UserPayload,
                    tag_id: int) -> bool:
-        """ 删除标签 """
+        """ NO NAME SPACE NO KEY VALUE!! """
         return TagDao.delete_tag(tag_id)
 
     @classmethod
@@ -70,30 +71,34 @@ class TagService:
                                   login_user: UserPayload,
                                   resource_id: str,
                                   resource_type: ResourceTypeEnum) -> bool:
-        """ 检查是否允许给资源打标签 """
+        """ Check if labeling of resources is allowed """
         if login_user.is_admin():
             return True
         resource_info = None
+        access_type: AccessType
         if resource_type == ResourceTypeEnum.ASSISTANT:
             resource_info = AssistantDao.get_one_assistant(resource_id)
+            access_type = AccessType.ASSISTANT_WRITE
         elif resource_type == ResourceTypeEnum.FLOW:
             resource_info = FlowDao.get_flow_by_id(resource_id)
+            access_type = AccessType.FLOW_WRITE
         elif resource_type == ResourceTypeEnum.WORK_FLOW:
             resource_info = FlowDao.get_flow_by_id(resource_id)
+            access_type = AccessType.WORKFLOW_WRITE
         else:
-            raise HTTPException(status_code=404, detail="资源类型不支持")
+            raise NotFoundError()
         if not resource_info:
-            raise HTTPException(status_code=404, detail="资源不存在")
-        # 是资源的创建人
-        if resource_info.user_id == login_user.user_id:
+            raise NotFoundError()
+
+        if login_user.access_check(resource_info.user_id, resource_id, access_type):
             return True
 
-        # 获取资源所属的用户组
+        # Get user groups to which the resource belongs
         resource_groups = GroupResourceDao.get_resource_group(resource_type, resource_id)
         resource_groups = [int(one.group_id) for one in resource_groups]
-        # 判断下操作人是否是用户组的管理员
+        # Determine if the operator under is an administrator of a user group
         if not login_user.check_groups_admin(resource_groups):
-            raise UnAuthorizedError.http_exception()
+            raise UnAuthorizedError()
 
         return True
 
@@ -104,7 +109,7 @@ class TagService:
                         tag_id: int,
                         resource_id: str,
                         resource_type: ResourceTypeEnum) -> TagLink:
-        """ 建立资源和标签的关联 """
+        """ Associate resources with tags """
         cls.check_tag_link_permission(request, login_user, resource_id, resource_type)
 
         new_link = TagLink(tag_id=tag_id, resource_id=resource_id, resource_type=resource_type.value,
@@ -123,7 +128,7 @@ class TagService:
                         tag_id: int,
                         resource_id: str,
                         resource_type: ResourceTypeEnum) -> bool:
-        """ 删除资源和标签的关联 """
+        """ Remove association of resources and tags """
         cls.check_tag_link_permission(request, login_user, resource_id, resource_type)
 
         return TagDao.delete_resource_tag(tag_id, resource_id, resource_type)
@@ -132,7 +137,7 @@ class TagService:
     def get_home_tag(cls,
                      request: Request,
                      login_user: UserPayload) -> List[Tag]:
-        """ 获取首页展示的标签列表 """
+        """ Get a list of tags to show on the homepage """
         home_tags = ConfigDao.get_config(ConfigKeyEnum.HOME_TAGS)
         if not home_tags:
             return []
@@ -147,7 +152,7 @@ class TagService:
                         request: Request,
                         login_user: UserPayload,
                         tag_ids: List[int]) -> bool:
-        """ 更新首页展示的标签列表 """
+        """ Update the list of tags displayed on the homepage """
         home_tags = ConfigDao.get_config(ConfigKeyEnum.HOME_TAGS)
         if not home_tags:
             home_tags = Config(key=ConfigKeyEnum.HOME_TAGS.value, value=json.dumps(tag_ids))

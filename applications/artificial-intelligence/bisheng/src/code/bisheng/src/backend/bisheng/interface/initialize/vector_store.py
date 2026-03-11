@@ -3,15 +3,16 @@ import json
 import os
 from typing import Any, Callable, Dict, Type
 
-from bisheng.database.base import session_getter
-from bisheng.database.models.knowledge import Knowledge, KnowledgeDao
-from bisheng.settings import settings
-from bisheng.utils.embedding import decide_embeddings
-from bisheng_langchain.vectorstores import ElasticKeywordsSearch
 from langchain_community.vectorstores import (FAISS, Chroma, Milvus, MongoDBAtlasVectorSearch,
                                               Pinecone, Qdrant, SupabaseVectorStore, Weaviate)
 from loguru import logger
 from sqlmodel import select
+
+from bisheng.common.services.config_service import settings
+from bisheng.core.database import get_sync_db_session
+from bisheng.knowledge.domain.models.knowledge import Knowledge, KnowledgeDao
+from bisheng.llm.domain import LLMService
+from bisheng_langchain.vectorstores import ElasticKeywordsSearch
 
 
 def docs_in_params(params: dict) -> bool:
@@ -209,18 +210,16 @@ def initialize_qdrant(class_object: Type[Qdrant], params: dict, search: dict):
 
 
 def initial_milvus(class_object: Type[Milvus], params: dict, search_kwargs: dict):
-    if not params.get('connection_args') and settings.get_knowledge().get('vectorstores').get(
-            'Milvus'):
-        params['connection_args'] = settings.get_knowledge().get('vectorstores').get('Milvus').get(
-            'connection_args')
+    if not params.get('connection_args') and settings.get_vectors_conf().milvus.connection_args:
+        params['connection_args'] = settings.get_vectors_conf().milvus.connection_args
     elif isinstance(params.get('connection_args'), str):
         print(f"milvus before params={params} type={type(params['connection_args'])}")
         params['connection_args'] = json.loads(params.pop('connection_args'))
     if 'embedding' not in params:
-        # 匹配知识库的embedding
+        # Matching Knowledge Base'sembedding
         col = params['collection_name']
         collection_id = params.pop('collection_id', '')
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             if collection_id:
                 knowledge = session.get(Knowledge, collection_id)
                 params['collection_name'] = knowledge.collection_name
@@ -229,8 +228,8 @@ def initial_milvus(class_object: Type[Milvus], params: dict, search_kwargs: dict
                     select(Knowledge).where(Knowledge.collection_name == col)).first()
 
         if not knowledge:
-            raise ValueError(f'不能找到知识库collection={col} knowledge_id={collection_id}')
-        params['embedding'] = decide_embeddings(knowledge.model)
+            raise ValueError(f'Unable to find knowledge basecollection={col} knowledge_id={collection_id}')
+        params['embedding'] = LLMService.get_bisheng_knowledge_embedding_sync(0, model_id=int(knowledge.model))
         if knowledge.collection_name.startswith('partition'):
             search_kwargs.update({'partition_key': knowledge.id})
             params['partition_key'] = knowledge.id
@@ -240,21 +239,17 @@ def initial_milvus(class_object: Type[Milvus], params: dict, search_kwargs: dict
 
 
 def initial_elastic(class_object: Type[ElasticKeywordsSearch], params: dict, search: dict):
-    if not params.get('elasticsearch_url') and settings.get_knowledge().get('vectorstores').get(
-            'ElasticKeywordsSearch'):
-        params['elasticsearch_url'] = settings.get_knowledge().get('vectorstores').get(
-            'ElasticKeywordsSearch').get('elasticsearch_url')
+    if not params.get('elasticsearch_url') and settings.get_vectors_conf().elasticsearch.elasticsearch_url:
+        params['elasticsearch_url'] = settings.get_vectors_conf().elasticsearch.elasticsearch_url
 
-    if not params.get('ssl_verify') and settings.get_knowledge().get('vectorstores').get(
-            'ElasticKeywordsSearch'):
-        params['ssl_verify'] = ast.literal_eval(settings.get_knowledge().get('vectorstores').get(
-            'ElasticKeywordsSearch').get('ssl_verify'))
-    elif isinstance(params.get('ssl_verify'), str):
-        params['ssl_verify'] = json.loads(params['ssl_verify'])
+    if not params.get('ssl_verify') and settings.get_vectors_conf().elasticsearch.ssl_verify:
+        params['ssl_verify'] = settings.get_vectors_conf().elasticsearch.ssl_verify
+    if isinstance(params.get('ssl_verify'), str):
+        params['ssl_verify'] = ast.literal_eval(params['ssl_verify'])
 
     collection_id = params.pop('collection_id', '')
     if collection_id:
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             knowledge = session.get(Knowledge, collection_id)
         index_name = knowledge.index_name or knowledge.collection_name
         params['index_name'] = index_name
@@ -263,17 +258,13 @@ def initial_elastic(class_object: Type[ElasticKeywordsSearch], params: dict, sea
 
 
 def initial_elastic_vector(class_object: Type[ElasticKeywordsSearch], params: dict, search: dict):
-    if not params.get('connect_kwargs') and settings.get_knowledge().get('vectorstores').get(
-            'ElasticsearchStore'):
-        params['connect_kwargs'] = settings.get_knowledge().get('vectorstores').get(
-            'ElasticsearchStore')
     params.update(params.pop('connect_kwargs'))
     collection_id = params.pop('collection_id', '')
     if collection_id:
         knowledge = KnowledgeDao.query_by_id(collection_id)
         index_name = knowledge.index_name or knowledge.collection_name
         params['index_name'] = index_name
-        params['embedding'] = decide_embeddings(knowledge.model)
+        params['embedding'] = LLMService.get_bisheng_knowledge_embedding_sync(0, model_id=int(knowledge.model))
     if params['documents']:
         return class_object.from_documents(**params)
     else:

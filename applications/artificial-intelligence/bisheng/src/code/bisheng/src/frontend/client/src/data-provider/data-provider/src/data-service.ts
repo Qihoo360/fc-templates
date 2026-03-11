@@ -30,11 +30,12 @@ export function deleteUser(): Promise<s.TPreset> {
   return request.delete(endpoints.deleteUser());
 }
 
-export function getMessagesByConvoId(conversationId: string): Promise<s.TMessage[]> {
+export function getMessagesByConvoId(conversationId: string, shareToken: string): Promise<s.TMessage[]> {
   if (conversationId === 'new') {
     return Promise.resolve([]);
   }
-  return request.get(endpoints.messages(conversationId)).then(res => res.data);
+  const headers = shareToken ? { 'share-token': shareToken } : {}
+  return request.get(endpoints.messages(conversationId), { headers }).then(res => res.data);
 }
 
 export function getSharedMessages(shareId: string): Promise<t.TSharedMessagesResponse> {
@@ -124,7 +125,10 @@ export function getSearchEnabled(): Promise<boolean> {
 
 export function getUser(): Promise<t.TUser> {
   return request.get(endpoints.user()).then(res => {
-    const { user_id, user_name, create_time, update_time } = res.data;
+    const { user_id, user_name, create_time, update_time, role, web_menu } = res.data;
+    if (role !== 'admin' && !web_menu.includes('frontend')) {
+      location.href = `${location.origin}${__APP_ENV__.BISHENG_HOST}?error=90002`  // workspace useErrorPrompt
+    }
     return {
       "_id": user_id,
       "name": user_name,
@@ -133,8 +137,8 @@ export function getUser(): Promise<t.TUser> {
       "emailVerified": true,
       "avatar": null,
       "provider": "local",
-      "role": "USER",
-      "plugins": [],
+      "role": role,
+      "plugins": web_menu,
       "termsAccepted": false,
       "backupCodes": [],
       "refreshToken": [],
@@ -197,6 +201,7 @@ export const resendVerificationEmail = (
 };
 
 export const getAvailablePlugins = (): Promise<s.TPlugin[]> => {
+  return Promise.resolve([])
   return request.get(endpoints.plugins());
 };
 
@@ -465,14 +470,24 @@ export const uploadImage = (
 ): Promise<f.TFileUpload> => {
   const requestConfig = signal ? { signal } : undefined;
   return request.postMultiPart(endpoints.images(), data, requestConfig).then(res => {
-    // res.data.temp_file_id = data.get('file_id')
+    if (!res.data.temp_file_id) {
+      res.data.temp_file_id = data.get('file_id')
+      res.data.type = res.data.type || "image"
+      res.data.filename = decodeURIComponent(res.data.file_name)
+    }
     return res.data
   });
 };
 
 export const uploadFile = (data: FormData, signal?: AbortSignal | null): Promise<f.TFileUpload> => {
   const requestConfig = signal ? { signal } : undefined;
-  return request.postMultiPart(endpoints.images(), data, requestConfig).then(res => res.data);
+  return request.postMultiPart(endpoints.images(), data, requestConfig).then(res => {
+    if (!res.data.temp_file_id) {
+      res.data.temp_file_id = data.get('file_id')
+      res.data.filename = decodeURIComponent(res.data.file_name)
+    }
+    return res.data
+  });
 };
 
 /* actions */
@@ -658,10 +673,15 @@ export const deleteFiles = async (payload: {
   agent_id?: string;
   assistant_id?: string;
   tool_resource?: a.EToolResources;
-}): Promise<f.DeleteFilesResponse> =>
-  request.deleteWithOptions(endpoints.files(), {
-    data: payload,
-  });
+}): Promise<f.DeleteFilesResponse> => new Promise((resolve, reject) => {
+  resolve({
+    message: '',
+    result: {}
+  })
+})
+// request.deleteWithOptions(endpoints.files(), {
+//   data: payload,
+// });
 
 /* Speech */
 
@@ -729,6 +749,8 @@ export const listConversations = (
         "user": conv.user_id,
         "__v": 0,
         "_id": conv.chat_id,
+        "flowId": conv.flow_id,
+        "flowType": conv.flow_type
       })),
       pageNumber: pageNumber,
       pageSize: 40,
@@ -762,7 +784,10 @@ export function getConversations(pageNumber: string): Promise<t.TGetConversation
 }
 
 export function getConversationById(id: string): Promise<s.TConversation> {
-  return request.get(endpoints.conversationById(id));
+  return Promise.resolve({
+
+  })
+  // return request.get(endpoints.conversationById(id));
 }
 
 export function updateConversation(
@@ -770,6 +795,7 @@ export function updateConversation(
 ): Promise<t.TUpdateConversationResponse> {
   return request.post(endpoints.updateConversation(), {
     conversationId: payload.conversationId,
+    flow_type: payload.flowType,
     name: payload.title
   });
 }
@@ -965,12 +991,29 @@ export function verifyTwoFactorTemp(
 export function knowledgeUpload(data: any): Promise<t.TRegenerateBackupCodesResponse> {
   return request.postMultiPart(endpoints.knowledgeUpload(), data);
 }
+export async function getUserInfo() {
+  return await request.get(`/api/v1/knowledge/personal_knowledge_info`);
+}
+export async function repeatUpload(data: any, id: string) {
+  return await request.postMultiPart(`/api/v1/knowledge/upload/${id}`, data);
+}
+export async function subUploadLibFile(data: any) {
+  return await request.post(`/api/v1/knowledge/process`, data);
+}
+export async function retryUpload(data: any) {
+  return await request.post(`/api/v1/knowledge/retry`, data);
+}
+
+
 export function queryKnowledge(payload: t.TVerify2FARequest): Promise<f.TFile[]> {
   return request.get(endpoints.queryKnowledge(), { params: payload });
 }
 export function deleteKnowledge(id: string): Promise<t.TConversationTagResponse> {
   return request.delete(endpoints.deleteKnowledge(id));
 }
-export function getFileDownloadApi(name: string): Promise<f.TFile> {
-  return request.get('/api/v1/download?object_name=' + name);
+export async function getFilePathApi(file_id: string) {
+  return request.get(`/api/v1/knowledge/file_share`, { params: { file_id } });
+}
+export function getLinsightFileDownloadApi(fileUrl: string, vid: string): Promise<f.TFile> {
+  return request.post('/api/v1/linsight/workbench/file_download', { file_url: fileUrl, session_version_id: vid });
 }

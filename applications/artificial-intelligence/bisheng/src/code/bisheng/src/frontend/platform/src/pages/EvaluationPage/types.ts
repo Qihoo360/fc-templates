@@ -1,14 +1,20 @@
 export enum EvaluationType {
   flow = "flow",
+   skill = "skill",  
   assistant = "assistant",
+  workflow = "workflow"
 }
 
 export const EvaluationTypeLabelMap = {
   [EvaluationType.flow]: {
     label: "build.skill",
   },
+  [EvaluationType.skill]: { label: "build.skill" },
   [EvaluationType.assistant]: {
     label: "build.assistant",
+  },
+   [EvaluationType.workflow]: {
+    label: "build.workflow",
   },
 };
 
@@ -23,10 +29,10 @@ export const EvaluationScoreLabelMap = {
     label: "F1",
   },
   [EvaluationScore.answer_precision]: {
-    label: "准确率",
+    label: "evaluation.precision",
   },
   [EvaluationScore.answer_recall]: {
-    label: "召回率",
+    label: "evaluation.recall",
   },
 };
 

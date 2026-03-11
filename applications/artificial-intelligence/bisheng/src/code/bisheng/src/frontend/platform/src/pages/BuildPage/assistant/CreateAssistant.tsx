@@ -84,7 +84,7 @@ ${t('build.exampleTwo')}
             const res = await captureAndAlertRequestErrorHoc(createAssistantsApi(formData.name, formData.roleAndTasks, formData.url))
             if (res) {
                 //@ts-ignore
-                window.assistantCreate = true // 标记新建助手
+                window.assistantCreate = true // Mark as creating new assistant
                 navigate('/assistant/' + res.id)
             }
             setLoading(false)
@@ -93,7 +93,7 @@ ${t('build.exampleTwo')}
 
     const uploadAvator = (file) => {
         uploadFileWithProgress(file, (progress) => { }, 'icon').then(res => {
-            setFormData(prev => ({ ...prev, url: res.file_path }));
+            setFormData(prev => ({ ...prev, url: res.relative_path }));
         })
     }
 
@@ -109,7 +109,7 @@ ${t('build.exampleTwo')}
             </div>
             <div className="">
                 <label htmlFor="name" className="bisheng-label">{t('build.assistantName')}<span className="bisheng-tip">*</span></label>
-                <Input id="name" name="name" maxLength={50} placeholder={t('build.giveAssistantName')} className="mt-2" value={formData.name} onChange={handleChange} />
+                <Input id="name" name="name" maxLength={50} showCount placeholder={t('build.giveAssistantName')} className="mt-2" value={formData.name} onChange={handleChange} />
                 {errors.name && <p className="bisheng-tip mt-1">{errors.name}</p>}
             </div>
             <div className="">

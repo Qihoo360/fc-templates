@@ -5,7 +5,7 @@ import { cname } from '@/components/bs-ui/utils';
 import { WorkflowNode } from '@/types/flow';
 import { Handle, NodeToolbar, Position } from '@xyflow/react';
 import { ChevronDown } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Sidebar from '../Sidebar';
 import EditText from './EditText';
 import NodeLogo from './NodeLogo';
@@ -14,6 +14,9 @@ import NodeToolbarComponent from './NodeToolbarComponent';
 import ParameterGroup from './ParameterGroup';
 import RunLog from './RunLog';
 import { RunTest } from './RunTest';
+import { useUpdateVariableState } from './flowNodeStore';
+import { useTranslation } from 'react-i18next';
+import ParameterSubGroup from './ParameterSubGroup';
 
 export const CustomHandle = ({ id = '', node, isLeft = false, className = '' }) => {
     const [openLeft, setOpenLeft] = useState(false);
@@ -105,10 +108,34 @@ function CustomNode({ data: node, selected, isConnectable }: { data: WorkflowNod
     const [focusUpdate, setFocusUpdate] = useState(false)
     const runRef = useRef(null)
     const { message } = useToast()
-    const onChange = useCallback((evt) => {
-        console.log(evt.target.value);
-    }, []);
     const [currentTab, setCurrentTab] = useState<undefined | string>(node.tab && node.tab.value)
+    const { t } = useTranslation('flow')
+
+    // 检查知识库检索设置
+    const hasKnowledgeSearchEnabled = useMemo(() => {
+        const knowledgeGroup = node.group_params.find(group => group.name === '知识库检索设置');
+
+        if (knowledgeGroup && knowledgeGroup.params) {
+            const thirdItem = knowledgeGroup.params[2]; // 第三项（索引为2）
+
+            return thirdItem.value && thirdItem.value?.conditions?.length > 0 && thirdItem.value?.enabled;
+        }
+        return false;
+    }, [
+        node.group_params.find(group => group.name === '知识库检索设置')?.params?.[2]?.value?.conditions?.length,
+        node.group_params.find(group => group.name === '知识库检索设置')?.params?.[2]?.value?.enabled
+    ]);
+
+    // 动态计算节点宽度类名
+    const nodeWidthClass = useMemo(() => {
+        const baseClasses = ['condition'];
+
+        if (hasKnowledgeSearchEnabled) {
+            baseClasses.push('rag');
+            baseClasses.push('knowledge_retriever');
+        }
+        return baseClasses.includes(node.type) ? 'w-auto min-w-80' : '';
+    }, [node.type, hasKnowledgeSearchEnabled]);
 
     const handleUpdate = () => {
         // 创建并触发自定义事件，传递需要更新的节点 id 和数据
@@ -126,9 +153,11 @@ function CustomNode({ data: node, selected, isConnectable }: { data: WorkflowNod
         node.group_params.some(group => {
             return group.params.some(param => {
                 if (param.key === key) {
-                    param.value = value.map(item => ({
-                        key: 'output_' + item.key,
-                        label: 'output_' + item.label
+                    const prefix = key.split('_')[0]
+                    const values = Array.isArray(value) ? value : [value];
+                    param.value = values.map(item => ({
+                        key: `${prefix}_${item.key}`,
+                        label: `${prefix}_${item.label}`
                     }))
                     return true
                 }
@@ -151,29 +180,77 @@ function CustomNode({ data: node, selected, isConnectable }: { data: WorkflowNod
         runRef.current.run(node)
     }
 
+    // 直接使用函数获取知识库ID，不依赖useMemo
+    const getSelectedKnowledgeIds = () => {
+        if (!node) {
+            return [];
+        }
+
+        const knowledgeParam = node.group_params
+            .flatMap(group => group.params)
+            .find(param => param.type === "knowledge_select_multi");
+
+        if (knowledgeParam && knowledgeParam.value && Array.isArray(knowledgeParam.value.value)) {
+            const ids = knowledgeParam.value.value.map(kb => String(kb.key));
+            return ids;
+        }
+        return [];
+    }
+
+    // update system prompt
+    const hackCountRef = useRef(0)
+    const handleAddSysPrompt = (type: 'knowledge' | 'sql') => {
+        node.group_params.forEach(group => {
+            if (group.params && Array.isArray(group.params)) {
+
+                const targetParam = group.params.find(p => p.key === 'system_prompt');
+
+                if (targetParam) {
+                    let currentValue = targetParam.value || "";
+                    const map = {
+                        'knowledge': t('kbQueryToolIntro'),
+                        'sql': t('sqlAgentToolIntro')
+                    }
+                    const searchStr = map[type]
+                    if (!currentValue.includes(searchStr)) {
+                        hackCountRef.current++
+                        const hackSpace = hackCountRef.current % 2 === 0 ? ' ' : '' // Avoid React's refresh mechanism 
+                        targetParam.value = currentValue === '\n' ? searchStr : `${currentValue}\n${searchStr}${hackSpace}`;
+                    }
+                }
+            }
+        });
+
+        setTimeout(() => {
+            setFocusUpdate(!focusUpdate) // render
+        }, 100);
+    }
+
     const [expend, setExpend] = useState(node.expand === undefined ? true : node.expand)
 
     const { isVisible, handleMouseEnter, handleMouseLeave } = useHoverToolbar();
+
+    const [_, setUpdateVariable] = useUpdateVariableState()
 
     return (
         <div
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className={`${selected ? 'border-primary' : 'border-transparent'} border rounded-[20px]`}>
+            className={`${selected ? 'border-primary' : 'border-transparent'} border rounded-[25px]`}>
             {/* head bars */}
             <NodeToolbar isVisible align="end" className={`${isVisible ? '' : 'hidden'}`} >
                 <NodeToolbarComponent nodeId={node.id} type={node.type} onRun={handleRun}></NodeToolbarComponent>
             </NodeToolbar>
 
             <div
-                className={cname(`bisheng-node hover:border-primary/10 ${node.type === 'condition' ? 'w-auto min-w-80' : ''} ${selected ? 'border-primary/10' : ' border-transparent'}`, nodeError && 'border-red-500')}
+                className={cname(`bisheng-node hover:border-primary/10 max-w-[35rem] ${nodeWidthClass} ${selected ? 'border-primary/10' : ' border-transparent'}`, nodeError && 'border-red-500')}
                 data-id={node.id}
             >
                 {/* top */}
                 <RunLog node={node}>
                     <div className='bisheng-node-top flex items-center'>
-                        <LoadingIcon className='size-5 text-[#B3BBCD]' />
-                        <span className='text-sm text-[#B3BBCD]'>BISHENG</span>
+                        {t('bisheng', { ns: 'bs' }) === 'BISHENG' && <LoadingIcon className='size-5 text-[#B3BBCD]' />}
+                        <span className='node-face text-sm text-[#B3BBCD]'>{t('bisheng', { ns: 'bs' })}</span>
                     </div>
                 </RunLog>
 
@@ -190,6 +267,14 @@ function CustomNode({ data: node, selected, isConnectable }: { data: WorkflowNod
                                 disable={['start', 'end'].includes(node.type)}
                                 onChange={(val) => {
                                     node.name = val;
+                                    setUpdateVariable({
+                                        action: 'u',
+                                        node: {
+                                            id: node.id,
+                                            name: node.name,
+                                        },
+                                        question: null
+                                    })
                                     setFocusUpdate(!focusUpdate)
                                 }}>
                                 <span className='truncate block min-h-4'>{node.name}</span>
@@ -223,7 +308,7 @@ function CustomNode({ data: node, selected, isConnectable }: { data: WorkflowNod
                 <div className='-nowheel bg-[#F7F8FB] dark:bg-background pb-5 rounded-b-[20px]'>
                     <div className={expend || ['output', 'condition', 'end'].includes(node.type) ? `` : 'h-0 overflow-hidden'}>
                         {node.tab && <NodeTabs
-                            data={node.tab}
+                            data={node}
                             onChange={(val) => {
                                 setCurrentTab(val)
                                 node.tab.value = val
@@ -238,16 +323,28 @@ function CustomNode({ data: node, selected, isConnectable }: { data: WorkflowNod
                                     })
                                 })
                             }} />}
-                        {node.group_params.map(group =>
-                            <ParameterGroup
+                        {node.group_params.map(group => group.groupKey ?
+                            <ParameterSubGroup
+                                key={group.groupKey}
+                                nodeId={node.id}
+                                node={node}
+                                cate={group}
+                                onStatusChange={((key, obj) => paramValidateEntities.current[key] = obj)}
+                                onVarEvent={((key, obj) => varValidateEntities.current[key] = obj)}
+                                tab={currentTab}
+                            />
+                            : <ParameterGroup
                                 nodeId={node.id}
                                 key={group.name}
                                 tab={currentTab}
                                 node={node}
                                 cate={group}
                                 onOutPutChange={handleChangeOutPut}
+                                onAddSysPrompt={handleAddSysPrompt}
+                                onFouceUpdate={() => setFocusUpdate(!focusUpdate)}
                                 onStatusChange={((key, obj) => paramValidateEntities.current[key] = obj)}
                                 onVarEvent={((key, obj) => varValidateEntities.current[key] = obj)}
+                                selectedKnowledgeIds={getSelectedKnowledgeIds}
                             />
                         )}
                     </div>
@@ -272,6 +369,7 @@ export default CustomNode;
 const useEventMaster = (node, setNodeError) => {
     const paramValidateEntities = useRef({})
     const varValidateEntities = useRef({})
+    const { t } = useTranslation('flow')
 
     const validateParams = (noTemporaryFile) => {
         const errors = []
@@ -280,7 +378,7 @@ const useEventMaster = (node, setNodeError) => {
             if (param.tab && node.tab && node.tab.value !== param.tab) return
             const msg = validate()
             if (noTemporaryFile && msg === 'input_file') {
-                errors.push('临时知识库不支持单节点调试')
+                errors.push(t('tmpKnowledgeBaseNotSupportSingleNodeDebug'));
             } else {
                 msg && msg !== 'input_file' && errors.push(msg)
             }
@@ -300,7 +398,9 @@ const useEventMaster = (node, setNodeError) => {
             if (param.tab && node.tab && node.tab.value !== param.tab) return;
 
             const msg = await validate(config); // 获取验证结果
-            if (msg) errors.push(msg);
+            if (msg) {
+                Array.isArray(msg) ? errors.push(...msg) : errors.push(msg);
+            }
         });
 
         await Promise.all(promises);
@@ -338,7 +438,6 @@ const useEventMaster = (node, setNodeError) => {
     }, [node])
 
     return {
-        validateParams,
         validateAll,
         paramValidateEntities,
         varValidateEntities
@@ -362,7 +461,7 @@ const useBorderColor = (node) => {
 }
 
 
-const useHoverToolbar = () => {
+export const useHoverToolbar = () => {
     const [isVisible, setIsVisible] = useState(false);
     const timeoutRef = useRef(null);
 

@@ -8,7 +8,7 @@ import { CustomHandle } from "..";
 import DragOptions from "./DragOptions";
 import VarInput from "./VarInput";
 
-const OutputItem = ({ nodeId, node, data, onChange, onValidate }) => {
+const OutputItem = ({ nodeId, node, data, onChange, onValidate, onVarEvent, i18nPrefix }) => {
     const { t } = useTranslation('flow'); // 使用国际化
     const [interactionType, setInteractionType] = useState<string>(data.value.type || "none"); // 交互类型状态
     const options = useMemo(() => {
@@ -19,9 +19,8 @@ const OutputItem = ({ nodeId, node, data, onChange, onValidate }) => {
         }))
     }, [data.options]);
 
-    const nData = useMemo(() => {
-        return { ...data, label: '变量输入', required: false }
-    }, [data])
+    data.label = t('userInputContent')
+    data.required = false
 
     // 根据交互类型切换不同的展示
     const renderContent = (error) => {
@@ -62,8 +61,9 @@ const OutputItem = ({ nodeId, node, data, onChange, onValidate }) => {
                             placeholder={t("userInputPlaceholder")}
                             nodeId={nodeId}
                             itemKey={data.key}
-                            flowNode={nData}
+                            paramItem={data}
                             value={data.value.value}
+                            onVarEvent={onVarEvent}
                             onChange={(msg) =>
                                 onChange({ type: interactionType, value: msg })
                             }
@@ -106,7 +106,7 @@ const OutputItem = ({ nodeId, node, data, onChange, onValidate }) => {
 
     return (
         <div className="node-item mb-4" data-key={data.key}>
-            <Label className="bisheng-label">{data.label}</Label>
+            <Label className="bisheng-label">{t(`${i18nPrefix}label`)}</Label>
             {/* 交互类型选择器 */}
             <RadioGroup
                 value={interactionType}

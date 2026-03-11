@@ -3,9 +3,9 @@ from typing import Any, ClassVar, Dict, List, Optional, Type
 from bisheng.custom.customs import get_custom_nodes
 from bisheng.interface.base import LangChainTypeCreator
 from bisheng.interface.importing.utils import import_class
-from bisheng.settings import settings
+from bisheng.common.services.config_service import settings
 from bisheng.template.frontend_node.chains import ChainFrontendNode
-from bisheng.utils.logger import logger
+from loguru import logger
 from bisheng.utils.util import build_template_from_class, build_template_from_method
 from bisheng_langchain import chains as bisheng_chains
 from bisheng_langchain import sql as bisheng_sql
@@ -48,7 +48,7 @@ class ChainCreator(LangChainTypeCreator):
                 chain_name: import_class(f'bisheng_langchain.chains.{chain_name}')
                 for chain_name in bisheng_chains.__all__
             }
-            # 若配置在custom_chains里，则不会从method初始化的方式，导致报错
+            # If configured incustom_chains, it will not start frommethodHow to initialize, resulting in an error
             self.type_dict['BishengRetrievalQA'] = BishengRetrievalQA
             self.type_dict.update(bisheng)
 

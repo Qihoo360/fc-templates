@@ -1,9 +1,8 @@
 from typing import Any, Dict, Optional, List, Union
-from uuid import UUID
 
 from bisheng.workflow.callback.base_callback import BaseCallback
 from bisheng.workflow.callback.event import OutputMsgData, StreamMsgData, StreamMsgOverData
-from langchain_core.callbacks.base import AsyncCallbackHandler, BaseCallbackHandler
+from langchain_core.callbacks.base import BaseCallbackHandler
 from langchain_core.outputs import LLMResult
 from loguru import logger
 
@@ -16,6 +15,7 @@ class LLMNodeCallbackHandler(BaseCallbackHandler):
             callback: BaseCallback,
             unique_id: str,
             node_id: str,
+            node_name: str,
             output: bool,
             output_key: str,
             stream: bool = True,
@@ -25,6 +25,7 @@ class LLMNodeCallbackHandler(BaseCallbackHandler):
         self.callback_manager = callback
         self.unique_id = unique_id
         self.node_id = node_id
+        self.node_name = node_name
         self.output = output
         self.output_len = 0
         self.output_key = output_key
@@ -52,12 +53,13 @@ class LLMNodeCallbackHandler(BaseCallbackHandler):
     async def on_tool_end(self, output: str, **kwargs: Any) -> Any:
         """Run when tool ends running."""
         logger.debug(f'on_tool_end  output={output} kwargs={kwargs}')
+        result = output if isinstance(output, str) else getattr(output, 'content', output)
         if self.tool_list is not None:
             self.tool_list.append({
                 'type': 'end',
                 'run_id': kwargs.get('run_id').hex,
                 'name': kwargs['name'],
-                'output': output,
+                'output': result,
             })
         if kwargs['name'] == 'sql_agent':
             self.output = True
@@ -77,15 +79,16 @@ class LLMNodeCallbackHandler(BaseCallbackHandler):
 
     def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
         chunk = kwargs.get('chunk', None)
-        # azure偶尔会返回一个None
+        # azureOccasionally returns aNone
         if token is None and chunk is None:
             return
         if not self.output or not self.stream:
             return
 
-        self.output_len += len(token)  # 判断是否已经流输出完成
+        self.output_len += len(token)  # Determine if the streaming output has been completed
         self.callback_manager.on_stream_msg(
             StreamMsgData(node_id=self.node_id,
+                          name=self.node_name,
                           msg=token,
                           reasoning_content=getattr(chunk.message, 'additional_kwargs', {}).get('reasoning_content'),
                           unique_id=self.unique_id,
@@ -97,23 +100,30 @@ class LLMNodeCallbackHandler(BaseCallbackHandler):
             return
         if not self.output:
             return
-        msg = response.generations[0][0].text
+        msg = response.generations[0][0].message
+        # ChatTongYi vl model special text
+        if isinstance(msg.content, list):
+            msg = ''.join([one.get('text', '') for one in msg.content])
+        else:
+            msg = msg.content
         if not msg:
             logger.warning('LLM output is empty')
             return
 
         if self.stream and self.output_len > 0:
-            # 流式输出结束需要返回一个流式结束事件
+            # Streaming output end needs to return a streaming end event
             self.callback_manager.on_stream_over(StreamMsgOverData(node_id=self.node_id,
+                                                                   name=self.node_name,
                                                                    msg=msg,
                                                                    reasoning_content=self.reasoning_content,
                                                                    unique_id=self.unique_id,
                                                                    output_key=self.output_key))
             return
 
-        # 需要输出，但是没有执行流输出，则补一条。命中缓存的情况下会出现这种情况。需要输出的情况下也这样处理
+        # If the output is required, but the stream output is not performed, a supplement is made. This happens when the cache is hit. This is also the case when output is required
         self.callback_manager.on_output_msg(
             OutputMsgData(node_id=self.node_id,
+                          name=self.node_name,
                           msg=msg,
                           unique_id=self.unique_id,
                           output_key=self.output_key))

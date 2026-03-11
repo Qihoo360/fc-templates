@@ -160,11 +160,13 @@ const MultiSelect = ({
 
     // search
     const handleSearch = useDebounce((e) => {
+        if (onSearch) {
+            return onSearch?.(inputRef.current?.value || '')
+        }
         const newValues = options.filter((item) => {
-            return item.label.toLowerCase().indexOf(e.target.value.toLowerCase()) !== -1
+            return item.label.toLowerCase().indexOf(e.target.value.trim().toLowerCase()) !== -1
         })
         setOptionFilter(newValues)
-        onSearch?.(inputRef.current?.value || '')
     }, 500, false)
 
     // scroll laod
@@ -219,7 +221,7 @@ const MultiSelect = ({
                         {
                             values.map(item =>
                                 <Badge onPointerDown={(e) => e.stopPropagation()} key={item.value}
-                                    className={`flex whitespace-normal items-center gap-1 select-none bg-primary/20 text-primary hover:bg-primary/15 m-[2px] ${errorKeys.includes(item.value) && 'bg-red-100 border-red-600'}`}>
+                                    className={`flex whitespace-normal items-center gap-1 select-none bg-primary/20 text-primary hover:bg-primary/15 m-[2px] break-all ${errorKeys.includes(item.value) && 'bg-red-100 border-red-600'}`}>
                                     {item.label}
                                     {lockedValues.includes(item.value) || <X className="h-3 w-3 min-w-3" onClick={() => handleDelete(item.value)}></X>}
                                 </Badge>
@@ -229,7 +231,7 @@ const MultiSelect = ({
                         {
                             // 使用key反推label
                             options.filter(option => (values as string[]).includes(option.value)).map(option =>
-                                <Badge onPointerDown={(e) => e.stopPropagation()} key={option.value} className="flex whitespace-normal items-center gap-1 select-none bg-primary/20 text-primary hover:bg-primary/15 m-[2px] break-all">
+                                <Badge onPointerDown={(e) => e.stopPropagation()} key={option.value} className="flex whitespace-normal items-center gap-1 select-none bg-primary/20 text-primary hover:bg-primary/15 m-[2px] break-all  11">
                                     {option.label}
                                     {lockedValues.includes(option.value) || <X className="h-3 w-3 min-w-3" onClick={() => handleDelete(option.value)}></X>}
                                 </Badge>
@@ -256,7 +258,7 @@ const MultiSelect = ({
             }
             footerNode={children}
         >
-            <div className="mt-2">
+            <div className="mt-2 max-w-96">
                 {
                     optionFilter.map((item) => (
                         <MultiItem

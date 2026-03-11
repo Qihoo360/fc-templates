@@ -10,7 +10,6 @@ import { useTable } from "@/util/hook";
 import { formatDate } from "@/util/utils";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { transformEvent, transformModule, transformObjectType } from "../utils";
 import { LoadingIcon } from "@/components/bs-icons/loading";
 
 const useGroups = () => {
@@ -30,7 +29,7 @@ const useModules = () => {
 
 export default function SystemLog() {
     const { t } = useTranslation()
-    const { users, selectedRef, loadUsers, searchUser } = useUsers()
+    const { users, loadUsers } = useUsers()
     const { groups, loadData } = useGroups()
     const { modules, loadModules } = useModules()
     const { page, pageSize, loading, data: logs, total, setPage, filterData } = useTable({ pageSize: 20 }, (param) =>
@@ -77,8 +76,8 @@ export default function SystemLog() {
                         options={users}
                         value={keys.userIds}
                         placeholder={t('log.selectUser')}
-                        onLoad={loadUsers}
-                        onSearch={(key) => { searchUser(key); selectedRef.current = keys.userIds }}
+                        // onLoad={loadUsers}
+                        // onSearch={(key) => { searchUser(key); selectedRef.current = keys.userIds }}
                         onChange={(values) => setKeys({ ...keys, userIds: values })}
                     ></MultiSelect>
                 </div>
@@ -153,13 +152,13 @@ export default function SystemLog() {
                             <TableCell>{log.id}</TableCell>
                             <TableCell><div className="max-w-[200px] break-all truncate-multiline">{log.operator_name}</div></TableCell>
                             <TableCell>{log.create_time.replace('T', ' ')}</TableCell>
-                            <TableCell>{transformModule(log.system_id)}</TableCell>
-                            <TableCell>{transformEvent(log.event_type)}</TableCell>
-                            <TableCell>{transformObjectType(log.object_type)}</TableCell>
-                            <TableCell><div className="max-w-[200px] break-all truncate-multiline">{log.object_name || '无'}</div></TableCell>
+                            <TableCell>{t(`log.systemIdEnum.${log.system_id}`)}</TableCell>
+                            <TableCell>{t(`log.eventTypeEnum.${log.event_type}`)}</TableCell>
+                            <TableCell>{t(`log.objectTypeEnum.${log.object_type}`)}</TableCell>
+                            <TableCell><div className="max-w-[200px] break-all truncate-multiline">{log.object_name || t('log.objectTypeEnum.none')}</div></TableCell>
                             <TableCell>{log.ip_address}</TableCell>
                             <TableCell className="max-w-[250px]">
-                                <div className="whitespace-pre-line break-all">{log.note?.replace('编辑后', `\n编辑后`) || '无'}</div>
+                                <div className="whitespace-pre-line break-all">{log.note?.replace('编辑后', `\n编辑后`) || t('log.objectTypeEnum.none')}</div>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -172,7 +171,7 @@ export default function SystemLog() {
             </Table>
             {!logs.length && <div className="h-[700px]"></div>}
         </div>
-        {/* 分页 */}
+        {/* Pagination */}
         {/* <Pagination count={10}></Pagination> */}
         <div className="bisheng-table-footer bg-background-login">
             <p className="desc pl-4">{t('log.auditManagement')}</p>
@@ -201,9 +200,9 @@ const useUsers = () => {
         })
     }
     const search = (name) => {
-        const newUsers = userRef.current.filter(u => u.label.toLowerCase().includes(name.toLowerCase())
-            || selectedRef.current.includes(u.value))
-        setUsers(newUsers)
+        // const newUsers = userRef.current.filter(u => u.label.toLowerCase().includes(name.toLowerCase())
+        //     || selectedRef.current.includes(u.value))
+        // setUsers(newUsers)
     }
 
     return {

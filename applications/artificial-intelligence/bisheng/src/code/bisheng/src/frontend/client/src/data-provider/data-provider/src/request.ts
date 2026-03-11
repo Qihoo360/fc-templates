@@ -90,7 +90,13 @@ const processQueue = (error: AxiosError | null, token: string | null = null) => 
 };
 
 customAxios.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.data.status_code === 403) {
+      localStorage.setItem('ERROR_REQUEST_PATH', response.config.url || '')
+      location.href = `${__APP_ENV__.BASE_URL}/c/new?error=11403`;
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
     if (!error.response) {
@@ -109,7 +115,8 @@ customAxios.interceptors.response.use(
       originalRequest._retry = true;
 
       if (import.meta.env.MODE === 'production') {
-        location.href = `${location.origin}?from=workspace`
+        localStorage.setItem('LOGIN_PATHNAME', location.pathname)
+        location.href = `${location.origin}${__APP_ENV__.BISHENG_HOST}`
       }
       // } else {
       //   if (location.pathname.indexOf('login') === -1) {

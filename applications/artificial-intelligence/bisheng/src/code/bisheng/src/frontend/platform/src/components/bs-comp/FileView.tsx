@@ -41,7 +41,7 @@ const Row = React.memo(({ drawfont, index, style, size, labels, pdf, onLoad, onS
         canvas.height = Math.floor(viewport.height);
         canvas.style.width = size + "px";
         canvas.style.height = Math.floor(viewport.height * scale) + "px";
-        wrapRef.current.append(canvas)
+        wrapRef.current?.append(canvas)
         const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale,
             0, 0
         ] : null;
@@ -233,6 +233,7 @@ const DragPanne = ({ onMouseEnd }) => {
     );
 };
 export default function FileView({
+    startIndex = 1,
     drawfont = false,
     select = false,
     scrollTo,
@@ -257,7 +258,9 @@ export default function FileView({
                     const [width, height] = [entry.contentRect.width, entry.contentRect.height];
                     setBoxSize({ width, height });
                     const warpDom = document.getElementById('warp-pdf');
-                    warpDom.style.setProperty("--scale-factor", width / fileWidthRef.current + '');
+                    if (warpDom) {
+                        warpDom.style.setProperty("--scale-factor", width / fileWidthRef.current + '');
+                    }
                 }
             }
         }, 300);
@@ -272,14 +275,21 @@ export default function FileView({
     }, []);
     // 加载文件
     const [pdf, setPdf] = useState(null)
+
+
     useEffect(() => {
         // loding
         setLoading(true)
-
         // sass环境使用sass地址
         const pdfUrl = fileUrl.replace(/https?:\/\/[^\/]+/, __APP_ENV__.BASE_URL);  // '/doc.pdf';
+
+
         pdfjsLib.GlobalWorkerOptions.workerSrc = __APP_ENV__.BASE_URL + '/pdf.worker.min.js';
-        pdfjsLib.getDocument(pdfUrl).promise.then(async (pdfDocument) => {
+        pdfjsLib.getDocument({
+            url: pdfUrl,
+            cMapUrl: __APP_ENV__.BASE_URL + '/cmaps/',
+            cMapPacked: true,
+        }).promise.then(async (pdfDocument) => {
             pdfPageCache = {}
             const page = pdfPageCache[1] || await pdfDocument.getPage(1);
             pdfPageCache[1] = page
@@ -293,7 +303,7 @@ export default function FileView({
     }, [fileUrl])
 
     const scrollToFunc = (() => {
-        const pageY = (scrollTo[0] - 1) * (boxSize.width / pageScale)
+        const pageY = (scrollTo[0] - startIndex) * (boxSize.width / pageScale)
         const offsetY = scrollTo[1] * (boxSize.width / fileWidthRef.current) - 100
         listRef.current.scrollTo(pageY + offsetY);
     })
@@ -330,7 +340,7 @@ export default function FileView({
             const pagelabels = labels[key]
             pagelabels.forEach(item => {
                 const [sx, sy, ex, ey] = item.label
-                const pageH = (key - 1) * (boxSize.width / pageScale * scale)
+                const pageH = (key - startIndex) * (boxSize.width / pageScale * scale)
                 if (x <= sx && y <= sy + pageH && x1 >= ex && y1 >= ey + pageH) {
                     console.log('item.id :>> ', item.id);
                     selects.push({ id: item.id, active: !item.active })
@@ -352,7 +362,7 @@ export default function FileView({
         drawfont={drawfont}
         pdf={pdf}
         size={boxSize.width}
-        labels={labels[props.index + 1]}
+        labels={labels[props.index + startIndex]}
         onLoad={handleLoadPage}
         onSelectLabel={val => select && onSelectLabel([val])}
     ></Row>, [pdf, drawfont, select, labels, boxSize]);

@@ -4,13 +4,15 @@
 database_url: !env ${BS_DATABASE_URL}
 
 # 缓存配置  redis://[[username]:[password]]@localhost:6379/0
+# 如果设置了密码，需要参考MySQL密码的加密逻辑对密码进行加密。eg: redis://root:gAAAAABlp4b4c59FeVGF_OQRVf6NOUIGdxq8246EBD-b0hdK_jVKRs1x4PoAn0A6C5S6IiFKmWn0Nm5eBUWu-7jxcqw6TiVjQA==@redis:6379/0
 # 普通模式:
+# redis_url: "redis://redis:6379/1"
 redis_url: !env ${BS_REDIS_URL}
 
 # 集群模式或者哨兵模式（只能选其一）:
-# redis_url: 
+# redis_url:
 #   mode: "cluster"
-#   startup_nodes: 
+#   startup_nodes:
 #     - {"host": "192.168.106.115", "port": 6002}
 #   password: encrypt(gAAAAABlp4b4c59FeVGF_OQRVf6NOUIGdxq8246EBD-b0hdK_jVKRs1x4PoAn0A6C5S6IiFKmWn0Nm5eBUWu-7jxcqw6TiVjQA==)
 #   #sentinel
@@ -21,7 +23,15 @@ redis_url: !env ${BS_REDIS_URL}
 #   db: 1
 
 # celery的broken地址
+# celery_redis_url: "redis://redis:6379/2"
 celery_redis_url: !env ${BS_CELERY_REDIS_URL}
+celery_task:
+  # 对celery熟悉的用户可以自定义配置任务的路由，启动不同类型的worker处理不同类型的异步任务。注意工作流的执行只能在一个进程内！！！
+  task_routers:
+    bisheng.worker.knowledge.*: # 知识库文件处理相关任务
+      queue: knowledge_celery
+    bisheng.worker.workflow.*: # 工作流相关任务
+      queue: workflow_celery
 
 # 知识库的milvus和es配置  支持使用 !env ${PATH} 填写环境变量的值, 若环境变量不存在则会报错
 vector_stores:
@@ -40,37 +50,57 @@ object_storage:
     schema: !env ${BS_MINIO_SCHEMA}
     cert_check: !env ${BS_MINIO_CERT_CHECK}
     endpoint: !env ${BS_MINIO_ENDPOINT}
-    sharepoint: !env ${BS_MINIO_SHAREPOIN}
+    sharepoint: !env ${BS_MINIO_SHAREPOINT}
     access_key: !env ${BS_MINIO_ACCESS_KEY}
     secret_key: !env ${BS_MINIO_SECRET_KEY}
+    public_bucket: "bisheng" # 公共bucket，存储平台上一些需要持久化的文件。会设置为可公开访问
+    tmp_bucket: "tmp-dir" # 临时bucket，会对传到此bucket内的文件设置有效期
 
 environment:
   env: dev
-  uns_support: [ 'png', 'jpg', 'jpeg', 'bmp', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt', 'md', 'html', 'pdf', 'csv', 'tiff' ]
+  uns_support:
+    [
+      "png",
+      "jpg",
+      "jpeg",
+      "bmp",
+      "doc",
+      "docx",
+      "ppt",
+      "pptx",
+      "xls",
+      "xlsx",
+      "txt",
+      "md",
+      "html",
+      "pdf",
+      "csv",
+      "tiff",
+    ]
 
 # 可根据loguru的文档配置不同 handlers
 logger_conf:
   # 默认输出到sys.stdout的日志级别, 大于等于此级别都会输出
   level: INFO
   # 默认输出格式
-  format: '<level>[{time:YYYY-MM-DD HH:mm:ss.SSSSSS}] [{level.name} process-{process.id}-{thread.id} {name}:{line}]</level> - <level>trace={extra[trace_id]} {message}</level>'
+  format: "<level>[{time:YYYY-MM-DD HH:mm:ss.SSSSSS}] [{level.name} process-{process.id}-{thread.id} {name}:{line}]</level> - <level>trace={extra[trace_id]} {message}</level>"
   # 参考loguru.add()中的参数可以配置多个handler
   handlers:
-  # 文件路径，支持插入一些系统环境变量，若环境变量不存在则置空。例如 HOSTNAME: 主机名。后端会处理环境变量的替换
-  - sink: "/app/data/bisheng.log"
-    # 日志级别
-    level: INFO
-    # 日志格式化函数，extra内支持trace_id
-    format: '<level>[{time:YYYY-MM-DD HH:mm:ss.SSSSSS}] [{level.name} process-{process.id}-{thread.id} {name}:{line}]</level> - <level>trace={extra[trace_id]} {message}</level>'
-    # 每天的几点进行切割
-    rotation: "00:00"
-    retention: "3 Days"
-    enqueue: ture
-  - sink: "/app/data/statistic.log"
-    level: INFO
-    # 和原生不一样，后端会将配置使用eval()执行转为函数用来过滤特定日志级别。推荐lambda
-    filter: "lambda record: record['level'].name == 'INFO' and record['message'].startswith('k=s')"
-    format: "[{time:YYYY-MM-DD HH:mm:ss.SSSSSS}]|{level}|BISHENG|{extra[trace_id]}||{process.id}|{thread.id}|||#EX_ERR:POS={name},line {line},ERR=500,EMSG={message}"
-    rotation: "00:00"
-    retention: "3 Days"
-    enqueue: ture
+    # 文件路径，支持插入一些系统环境变量，若环境变量不存在则置空。例如 HOSTNAME: 主机名。后端会处理环境变量的替换
+    - sink: "/app/data/bisheng.log"
+      # 日志级别
+      level: INFO
+      # 日志格式化函数，extra内支持trace_id
+      format: "<level>[{time:YYYY-MM-DD HH:mm:ss.SSSSSS}] [{level.name} process-{process.id}-{thread.id} {name}:{line}]</level> - <level>trace={extra[trace_id]} {message}</level>"
+      # 每天的几点进行切割
+      rotation: "00:00"
+      retention: "3 Days"
+      enqueue: ture
+    - sink: "/app/data/statistic.log"
+      level: INFO
+      # 和原生不一样，后端会将配置使用eval()执行转为函数用来过滤特定日志级别。推荐lambda
+      filter: "lambda record: record['level'].name == 'INFO' and record['message'].startswith('k=s')"
+      format: "[{time:YYYY-MM-DD HH:mm:ss.SSSSSS}]|{level}|BISHENG|{extra[trace_id]}||{process.id}|{thread.id}|||#EX_ERR:POS={name},line {line},ERR=500,EMSG={message}"
+      rotation: "00:00"
+      retention: "3 Days"
+      enqueue: ture

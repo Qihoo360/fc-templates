@@ -2,7 +2,7 @@ from bisheng.api.v1.base import (Code, CodeValidationResponse, PromptValidationR
                                  ValidatePromptRequest, validate_prompt)
 from bisheng.api.v1.schemas import UnifiedResponseModel, resp_200
 from bisheng.template.field.base import TemplateField
-from bisheng.utils.logger import logger
+from loguru import logger
 from bisheng.utils.validate import validate_code
 from fastapi import APIRouter, HTTPException
 
@@ -10,7 +10,7 @@ from fastapi import APIRouter, HTTPException
 router = APIRouter(prefix='/validate', tags=['Validate'])
 
 
-@router.post('/code', status_code=200, response_model=UnifiedResponseModel[CodeValidationResponse])
+@router.post('/code', status_code=200)
 def post_validate_code(code: Code):
     try:
         errors = validate_code(code.code)
@@ -23,9 +23,7 @@ def post_validate_code(code: Code):
         return HTTPException(status_code=500, detail=str(e))
 
 
-@router.post('/prompt',
-             status_code=200,
-             response_model=UnifiedResponseModel[PromptValidationResponse])
+@router.post('/prompt')
 def post_validate_prompt(prompt_request: ValidatePromptRequest):
     try:
         input_variables = validate_prompt(prompt_request.template)

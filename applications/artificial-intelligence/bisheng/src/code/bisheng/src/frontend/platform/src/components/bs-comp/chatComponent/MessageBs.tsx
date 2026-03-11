@@ -1,20 +1,19 @@
-import { AvatarIcon } from "@/components/bs-icons/avatar";
+import { ToastIcon } from "@/components/bs-icons";
 import { LoadIcon, LoadingIcon } from "@/components/bs-icons/loading";
-import { CodeBlock } from "@/modals/formModal/chatMessage/codeBlock";
+import { cname } from "@/components/bs-ui/utils";
+import MessageMarkDown from "@/pages/BuildPage/flow/FlowChat/MessageMarkDown";
 import { ChatMessageType } from "@/types/chat";
 import { formatStrTime } from "@/util/utils";
 import { copyText } from "@/utils";
-import { useEffect, useMemo, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeMathjax from "rehype-mathjax";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
+import { ChevronDown } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
 import MessageButtons from "./MessageButtons";
 import SourceEntry from "./SourceEntry";
 import { useMessageStore } from "./messageStore";
-import { ChevronDown } from "lucide-react";
-import { cname } from "@/components/bs-ui/utils";
-import { ToastIcon } from "@/components/bs-icons";
+import { useLinsightConfig } from "@/pages/ModelPage/manage/tabs/WorkbenchModel";
+import { AudioPlayComponent } from "@/components/voiceFunction/audioPlayButton";
+import { useTranslation } from "react-i18next";
+
 
 // 颜色列表
 const colorList = [
@@ -59,61 +58,23 @@ export const ReasoningLog = ({ loading, msg = '' }) => {
     </div>
 }
 
-export default function MessageBs({ mark = false, logo, data, onUnlike = () => { }, onSource, onMarkClick }: { logo: string, data: ChatMessageType, onUnlike?: any, onSource?: any }) {
+export default function MessageBs({ debug,start,version, mark = false, logo, data, onUnlike = () => { }, onSource, onMarkClick, chat }: { logo: string, data: ChatMessageType, onUnlike?: any, onSource?: any }) {
     const avatarColor = colorList[
         (data.sender?.split('').reduce((num, s) => num + s.charCodeAt(), 0) || 0) % colorList.length
     ]
+        const { t } = useTranslation('flow')
 
     const message = useMemo(() => {
-        const msg = data.message[data.chatKey] || data.message
-        return msg.replaceAll('$$', '$')
+        return data.message[data.chatKey] || data.message
     }, [data.message])
 
-    const mkdown = useMemo(
-        () => (
-            <ReactMarkdown
-                remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[rehypeMathjax]}
-                linkTarget="_blank"
-                className="bs-mkdown inline-block break-all max-w-full text-sm text-text-answer "
-                components={{
-                    code: ({ node, inline, className, children, ...props }) => {
-                        if (children.length) {
-                            if (children[0] === "▍") {
-                                return (<span className="form-modal-markdown-span"> ▍ </span>);
-                            }
-
-                            if (typeof children[0] === "string") {
-                                children[0] = children[0].replace("▍", "▍");
-                            }
-                        }
-
-                        const match = /language-(\w+)/.exec(className || "");
-
-                        return !inline ? (
-                            <CodeBlock
-                                key={Math.random()}
-                                language={(match && match[1]) || ""}
-                                value={String(children).replace(/\n$/, "")}
-                                {...props}
-                            />
-                        ) : (
-                            <code className={className} {...props}> {children} </code>
-                        );
-                    },
-                }}
-            >
-                {message}
-            </ReactMarkdown>
-        ),
-        [data.message]
-    )
 
     const messageRef = useRef<HTMLDivElement>(null)
     const handleCopyMessage = () => {
         // api data.id
         copyText(messageRef.current)
     }
+    const { data: linsightConfig, isLoading: loading, refetch: refetchConfig, error } = useLinsightConfig();
 
     const chatId = useMessageStore(state => state.chatId)
 
@@ -124,20 +85,15 @@ export default function MessageBs({ mark = false, logo, data, onUnlike = () => {
                 <div className="flex justify-between items-center mb-1">
                     {data.sender ? <p className="text-gray-600 text-xs">{data.sender}</p> : <p />}
                     <div className={`text-right group-hover:opacity-100 opacity-0`}>
-                        <span className="text-slate-400 text-sm">{formatStrTime(data.create_time, 'MM 月 dd 日 HH:mm')}</span>
+                        <span className="text-slate-400 text-sm">{formatStrTime(data.create_time,  t('short'))}</span>
                     </div>
                 </div>
                 <div className="min-h-8 px-6 py-4 rounded-2xl bg-[#F5F6F8] dark:bg-[#313336]">
                     <div className="flex gap-2">
-                        {logo ? <div className="max-w-6 min-w-6 max-h-6 rounded-full overflow-hidden">
-                            <img className="w-6 h-6" src={logo} />
-                        </div>
-                            : <div className="w-6 h-6 min-w-6 flex justify-center items-center rounded-full" style={{ background: avatarColor }} >
-                                <AvatarIcon />
-                            </div>}
+                        {logo}
                         {data.message.toString() ?
                             <div ref={messageRef} className="text-sm max-w-[calc(100%-24px)]">
-                                {mkdown}
+                                {<MessageMarkDown message={message} version={version}/>}
                                 {/* @user */}
                                 {data.receiver && <p className="text-blue-500 text-sm">@ {data.receiver.user_name}</p>}
                                 {/* 光标 */}
@@ -147,6 +103,28 @@ export default function MessageBs({ mark = false, logo, data, onUnlike = () => {
                         }
                     </div>
                 </div>
+                <div className={`text-right group-hover:opacity-100 opacity-0`}>
+                    {linsightConfig?.tts_model?.id && (version !== 'v2')&& (
+                        <AudioPlayComponent
+                            messageId={String(data.id)}
+                            msg={message}
+                        />
+                    )}
+                </div>
+                <div className="flex justify-end mt-2">
+                    {start && <MessageButtons
+                            mark={mark}
+                            id={data.id}
+                            data={data.liked}
+                            onUnlike={onUnlike}
+                            onCopy={handleCopyMessage}
+                            onMarkClick={onMarkClick}
+                            version={version}
+                            debug={debug}
+                            text={data?.message || data.thought}
+                        ></MessageButtons>}
+                </div>
+
             </>}
             {/* 附加信息 */}
             {
@@ -161,14 +139,17 @@ export default function MessageBs({ mark = false, logo, data, onUnlike = () => {
                             messageId: data.id,
                             message: data.message || data.thought,
                         })} />
-                    <MessageButtons
+                    {!debug && <MessageButtons
                         mark={mark}
                         id={data.id}
                         data={data.liked}
                         onUnlike={onUnlike}
                         onCopy={handleCopyMessage}
                         onMarkClick={onMarkClick}
-                    ></MessageButtons>
+                        version={version}
+                        debug={debug}
+                        text={data?.message || data.thought}
+                    ></MessageButtons>}
                 </div>
             }
         </div>

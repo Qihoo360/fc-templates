@@ -1,5 +1,5 @@
-import { AssistantIcon, FlowIcon } from "@/components/bs-icons/";
 import { cname } from "@/components/bs-ui/utils";
+import { AppNumType, AppType } from "@/types/app";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SkillIcon } from "../../bs-icons";
@@ -11,13 +11,14 @@ import { SettingIcon } from "../../bs-icons/setting";
 import { UserIcon } from "../../bs-icons/user";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../bs-ui/card";
 import { Switch } from "../../bs-ui/switch";
+import i18next from "i18next";
 
 interface IProps<T> {
   data: T,
   /** id为''时，表示新建 */
   id?: number | string,
-  logo?: string,
-  type: "skill" | "sheet" | "assistant" | "setting", // 技能列表｜侧边弹窗列表
+  logo?: React.ReactNode,
+  type: AppType | AppNumType;// 技能列表｜侧边弹窗列表
   title: string,
   edit?: boolean,
   description: React.ReactNode | string,
@@ -28,7 +29,6 @@ interface IProps<T> {
   isAdmin?: boolean,
   headSelecter?: React.ReactNode,
   footer?: React.ReactNode,
-  icon?: any,
   onClick?: () => void,
   onSwitchClick?: () => void,
   onAddTemp?: (data: T) => void,
@@ -67,16 +67,11 @@ export function TitleIconBg({ id, className = '', children = <SkillIcon /> }) {
   return <div className={cname(`rounded-md flex justify-center items-center ${gradients[parseInt(id + '', 16) % gradients.length]}`, className)}>{children}</div>
 }
 
-export function TitleLogo({ id = 0, url, className = '', children = <SkillIcon /> }) {
-  return url ? <img src={url} className={cname(`w-6 h-6 rounded-sm object-cover`, className)} /> : <TitleIconBg id={id} className={className}>{children}</TitleIconBg>
-}
-
 export default function CardComponent<T>({
   id = '',
   logo = '',
   data,
   type,
-  icon: Icon = SkillIcon,
   edit = false,
   user,
   labelPannel = null,
@@ -143,12 +138,7 @@ export default function CardComponent<T>({
     <CardHeader className="pb-2">
       <CardTitle className="truncate-doubleline">
         <div className="flex gap-2 pb-2 items-center">
-          <TitleLogo
-            url={logo}
-            id={id}
-          >
-            <Icon />
-          </TitleLogo>
+          {logo}
           <p className="leading-5 align-middle">{title}</p>
         </div>
         {/* <span></span> */}
@@ -163,20 +153,15 @@ export default function CardComponent<T>({
   </Card>
 
   // 助手&技能&工作流列表卡片组件
-  return <Card className="group w-[320px] hover:bg-card/80 cursor-pointer grid" onClick={() => edit && onClick()}>
+  return <Card className="group w-[320px] hover:bg-card/80 cursor-pointer grid" onClick={() => onClick()}>
     <CardHeader>
       <div className="flex justify-between pb-2">
-        <TitleLogo
-          url={logo}
-          id={id}
-        >
-          {type === 'skill' ? <SkillIcon /> : type === 'assistant' ? <AssistantIcon /> : <FlowIcon />}
-        </TitleLogo>
+        {logo}
         <div className="flex gap-1 items-center">
           {headSelecter}
           <Switch
             checked={_checked}
-            className="w-12"
+            className={i18next.language === 'ja' ? 'w-20' : 'w-12'}
             // @ts-ignore
             texts={[t('skills.online'), t('skills.offline')]}
             onCheckedChange={(b) => edit && handleCheckedChange(b)}
@@ -184,7 +169,7 @@ export default function CardComponent<T>({
           ></Switch>
         </div>
       </div>
-      <CardTitle className="truncate-doubleline leading-5">{title}</CardTitle>
+      <CardTitle className="truncate-doubleline leading-5 break-all">{title}</CardTitle>
     </CardHeader>
     <CardContent className="h-[140px] overflow-auto scrollbar-hide">
       <CardDescription className="break-all">{description}</CardDescription>
@@ -199,7 +184,7 @@ export default function CardComponent<T>({
         </div>
         {edit
           && <div className="hidden group-hover:flex">
-            {!checked && <div className="hover:bg-[#EAEDF3] rounded cursor-pointer" onClick={(e) => { e.stopPropagation(); onSetting(data) }}><SettingIcon /></div>}
+            {/* {!checked && <div className="hover:bg-[#EAEDF3] rounded cursor-pointer" onClick={(e) => { e.stopPropagation(); onSetting(data) }}><SettingIcon /></div>} */}
             {isAdmin && type !== 'assistant' && <div className="hover:bg-[#EAEDF3] rounded cursor-pointer" onClick={(e) => { e.stopPropagation(); onAddTemp(data) }}><AddToIcon /></div>}
             {!checked && <div className="hover:bg-[#EAEDF3] rounded cursor-pointer" onClick={(e) => { e.stopPropagation(); onDelete(data) }}><DelIcon /></div>}
           </div>

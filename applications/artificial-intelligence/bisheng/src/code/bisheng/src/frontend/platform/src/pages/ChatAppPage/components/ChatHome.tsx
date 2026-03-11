@@ -81,11 +81,13 @@ export default function HomePage({ onSelect }) {
         if (shouldClose) {
             await fetchCategoryTags()
             setIsLabelModalOpen(false)
+        } else {
+            setIsLabelModalOpen(shouldClose)
         }
     }
 
     const handleCategoryFilter = (categoryId) => {
-        setSelectedCategoryId(categoryId)
+        // setSelectedCategoryId(categoryId)
         setHasMoreData(false)
         currentPageRef.current = 1
         fetchChatData(categoryId)
@@ -141,10 +143,10 @@ export default function HomePage({ onSelect }) {
                 key={index}
                 id={index + 1}
                 data={chat}
-                logo={chat.logo}
+                logo={null}
                 title={chat.name}
                 description={chat.description}
-                type="sheet"
+                type={chat.flow_type}
                 icon={getChatTypeIcon(chat.flow_type)}
                 footer={renderChatTypeBadge(chat.flow_type)}
                 onClick={() => onSelect(chat)}
@@ -167,7 +169,7 @@ export default function HomePage({ onSelect }) {
 
     return (
         <div className="h-full overflow-hidden bs-chat-bg"
-            style={{ backgroundImage: `url(${BASE_IMAGE_URL}/points.png)` }}>
+            style={{ backgroundImage: `url(${BASE_IMAGE_URL}/assets/points.png)` }}>
 
             <HeaderSection BASE_IMAGE_URL={BASE_IMAGE_URL} t={t} />
 
@@ -211,7 +213,7 @@ const HeaderSection = ({ BASE_IMAGE_URL, t }) => (
     <div className="flex justify-center place-items-center gap-20">
         <img
             className="w-[138px]"
-            src={`${BASE_IMAGE_URL}/application-start-logo.png`}
+            src={`${BASE_IMAGE_URL}/assets/application-start-logo.png`}
             alt="Application Logo"
         />
         <p className="text-2xl leading-[50px] dark:text-[#D4D4D4]">

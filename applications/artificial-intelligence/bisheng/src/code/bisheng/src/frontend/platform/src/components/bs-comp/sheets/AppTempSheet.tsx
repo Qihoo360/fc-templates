@@ -1,11 +1,12 @@
 import { AbilitiesIcon, FlowIcon, HelperIcon } from "@/components/bs-icons/app";
 import { readTempsDatabase } from "@/controllers/API";
-import { AppType } from "@/types/app";
+import { AppType, AppTypeToNum } from "@/types/app";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SearchInput } from "../../bs-ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "../../bs-ui/sheet";
 import CardComponent from "../cardComponent";
+import AppAvator from "../cardComponent/avatar";
 
 /** 应用模板选择 */
 export default function AppTempSheet({ children, onCustomCreate, onSelect }) {
@@ -31,7 +32,7 @@ export default function AppTempSheet({ children, onCustomCreate, onSelect }) {
             }
         }
         return descs[type]
-    }, [type])
+    }, [type, t])
 
     const [keyword, setKeyword] = useState(' ')
     const allDataRef = useRef([])
@@ -53,7 +54,7 @@ export default function AppTempSheet({ children, onCustomCreate, onSelect }) {
             {children}
         </SheetTrigger>
         <SheetContent className="sm:min-w-[966px] ">
-            <div className="flex h-full" onClick={e => e.stopPropagation()}>
+            <div className="app-sheet flex h-full" onClick={e => e.stopPropagation()}>
                 <div className="w-fit p-6">
                     <SheetTitle>{t('appTemplate')}</SheetTitle>
                     <SheetDescription>{t('chooseTemplateOrCreateBlank')}</SheetDescription>
@@ -64,7 +65,7 @@ export default function AppTempSheet({ children, onCustomCreate, onSelect }) {
                             className={`flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer hover:bg-muted-foreground/10 transition-all duration-200 mb-2 ${type === AppType.FLOW && 'bg-muted-foreground/10'}`}
                             onClick={() => setType(AppType.FLOW)}
                         >
-                            <FlowIcon />
+                            <FlowIcon/>
                             <span>{t('workflow')}</span>
                         </div>
                         <div
@@ -98,7 +99,7 @@ export default function AppTempSheet({ children, onCustomCreate, onSelect }) {
                             <CardComponent key={i}
                                 id={i + 1}
                                 data={flow}
-                                logo={flow.logo}
+                                logo={<AppAvator id={flow.name} flowType={AppTypeToNum[type]} url={flow.logo} />}
                                 title={flow.name}
                                 description={flow.description}
                                 type="sheet"

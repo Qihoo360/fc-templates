@@ -1,0 +1,531 @@
+from datetime import datetime
+from enum import Enum
+from typing import Any, List, Optional, Union, Dict
+
+from pydantic import BaseModel, field_validator
+from sqlalchemy import JSON
+from sqlmodel import Column, DateTime, Field, delete, func, or_, select, text, update
+from sqlmodel.sql.expression import Select, SelectOfScalar, col
+
+from bisheng.common.models.base import SQLModelSerializable
+from bisheng.core.database import get_sync_db_session, get_async_db_session
+from bisheng.database.models.role_access import AccessType, RoleAccessDao
+from bisheng.knowledge.domain.models.knowledge_file import KnowledgeFile, KnowledgeFileDao
+from bisheng.user.domain.models.user import UserDao
+from bisheng.user.domain.models.user_role import UserRoleDao
+
+
+class KnowledgeTypeEnum(Enum):
+    QA = 1  # QAThe knowledge base upon
+    NORMAL = 0  # Docly Knowledge Base
+    PRIVATE = 2  # Workbench Personal Knowledge Base
+
+
+class KnowledgeState(Enum):
+    UNPUBLISHED = 0
+    PUBLISHED = 1  # Document Knowledge Base Success Status
+    COPYING = 2
+    REBUILDING = 3  # Status in Document Knowledge Base Reconstruction
+    FAILED = 4  # Status of Documentation Knowledge Base Reconstruction Failure
+
+
+class MetadataFieldType(str, Enum):
+    """ Metadata field type"""
+    STRING = "string"
+    NUMBER = "number"
+    TIME = "time"
+
+    # Case-insensitive enumeration matching
+    @classmethod
+    def _missing_(cls, value: Any) -> Optional["MetadataFieldType"]:
+        if isinstance(value, str):
+            for member in cls:
+                if member.value.lower() == value.lower():
+                    return member
+        return None
+
+
+class KnowledgeBase(SQLModelSerializable):
+    user_id: Optional[int] = Field(default=None, index=True)
+    name: str = Field(index=True, min_length=1, max_length=200, description='Knowledge Base Name, Minimum one character, maximum30characters')
+    type: int = Field(index=False, default=0, description='0 is a general knowledge base,1 areQAThe knowledge base upon')
+    description: Optional[str] = Field(default=None, index=True)
+    model: Optional[str] = Field(default=None, index=False)
+    collection_name: Optional[str] = Field(default=None, index=False)
+    index_name: Optional[str] = Field(default=None, index=False)
+    state: Optional[int] = Field(index=False, default=KnowledgeState.PUBLISHED.value,
+                                 description='0 is unpublished,1 Is Published, 2 Is copying')
+
+    metadata_fields: Optional[List[Dict]] = Field(default=None, sa_column=Column(JSON, nullable=True),
+                                                  description="Metadata Field Configuration for Knowledge Base")
+    create_time: Optional[datetime] = Field(default=None, sa_column=Column(
+        DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP')))
+    update_time: Optional[datetime] = Field(default=None, sa_column=Column(
+        DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')))
+
+    @field_validator('model', mode='before')
+    @classmethod
+    def convert_model(cls, v: Any) -> str:
+        if isinstance(v, int):
+            v = str(v)
+        return v
+
+
+class Knowledge(KnowledgeBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+
+
+class KnowledgeRead(KnowledgeBase):
+    id: int
+    user_name: Optional[str] = None
+    copiable: Optional[bool] = None
+
+
+class KnowledgeUpdate(BaseModel):
+    knowledge_id: int
+    name: Optional[str] = None
+    description: Optional[str] = None
+
+
+class KnowledgeCreate(KnowledgeBase):
+    is_partition: Optional[bool] = None
+
+
+class KnowledgeDao(KnowledgeBase):
+
+    @classmethod
+    def insert_one(cls, data: Knowledge) -> Knowledge:
+        with get_sync_db_session() as session:
+            session.add(data)
+            session.commit()
+            session.refresh(data)
+            return data
+
+    @classmethod
+    async def async_insert_one(cls, data: Knowledge) -> Knowledge:
+        async with get_async_db_session() as session:
+            session.add(data)
+            await session.commit()
+            await session.refresh(data)
+            return data
+
+    @classmethod
+    def update_one(cls, data: Knowledge) -> Knowledge:
+        with get_sync_db_session() as session:
+            session.add(data)
+            session.commit()
+            session.refresh(data)
+            return data
+
+    @classmethod
+    async def aupdate_one(cls, data: Knowledge) -> Knowledge:
+        async with get_async_db_session() as session:
+            session.add(data)
+            await session.commit()
+            await session.refresh(data)
+            return data
+
+    @classmethod
+    async def async_update_state(cls, knowledge_id: int, state: KnowledgeState, update_time: Optional[datetime] = None):
+        async with get_async_db_session() as session:
+            statement = update(Knowledge).where(col(Knowledge.id) == knowledge_id)
+            statement = statement.values(state=state.value,
+                                         update_time=update_time or datetime.now())
+            await session.exec(statement)
+            await session.commit()
+
+    @classmethod
+    def update_state(cls, knowledge_id: int, state: KnowledgeState, update_time: Optional[datetime] = None):
+        with get_sync_db_session() as session:
+            statement = update(Knowledge).where(col(Knowledge.id) == knowledge_id)
+            statement = statement.values(state=state.value,
+                                         update_time=update_time or datetime.now())
+            session.exec(statement)
+            session.commit()
+
+    @classmethod
+    def update_knowledge_update_time(cls, knowledge: Knowledge):
+        statement = update(Knowledge).where(Knowledge.id == knowledge.id).values(
+            update_time=text('NOW()'))
+        with get_sync_db_session() as session:
+            session.exec(statement)
+            session.commit()
+
+    @classmethod
+    def query_by_id(cls, knowledge_id: int) -> Knowledge:
+        with get_sync_db_session() as session:
+            return session.get(Knowledge, knowledge_id)
+
+    @classmethod
+    async def aquery_by_id(cls, knowledge_id: int) -> Knowledge:
+        async with get_async_db_session() as session:
+            return await session.get(Knowledge, knowledge_id)
+
+    @classmethod
+    async def async_query_by_id(cls, knowledge_id: int) -> Knowledge:
+        async with get_async_db_session() as session:
+            result = await session.execute(select(Knowledge).where(Knowledge.id == knowledge_id))
+            return result.scalars().first()
+
+    @classmethod
+    def get_list_by_ids(cls, ids: List[int]) -> List[Knowledge]:
+        with get_sync_db_session() as session:
+            return session.exec(select(Knowledge).where(Knowledge.id.in_(ids))).all()
+
+    @classmethod
+    async def aget_list_by_ids(cls, ids: List[int]) -> List[Knowledge]:
+        async with get_async_db_session() as session:
+            result = await session.exec(select(Knowledge).where(col(Knowledge.id).in_(ids)))
+            return result.all()
+
+    @classmethod
+    def _user_knowledge_filters(
+            cls,
+            statement: Any,
+            user_id: int,
+            knowledge_id_extra: List[int] = None,
+            knowledge_type: KnowledgeTypeEnum = None,
+            name: str = None,
+            page: int = 0,
+            limit: int = 0,
+            filter_knowledge: List[int] = None) -> Union[Select, SelectOfScalar]:
+        if knowledge_id_extra:
+            statement = statement.where(
+                or_(Knowledge.id.in_(knowledge_id_extra), Knowledge.user_id == user_id))
+        else:
+            statement = statement.where(Knowledge.user_id == user_id)
+        if filter_knowledge:
+            statement = statement.where(Knowledge.id.in_(filter_knowledge))
+        if knowledge_type:
+            statement = statement.where(Knowledge.type == knowledge_type.value)
+        elif knowledge_type is False:
+            # When explicitly passed inFalse, do not filter personal knowledge base
+            pass
+        else:
+            # Filter personal knowledge base by default
+            statement = statement.where(Knowledge.type != KnowledgeTypeEnum.PRIVATE.value)
+        if name:
+
+            conditions = [col(Knowledge.name).like(f'%{name}%'), col(Knowledge.description).like(f'%{name}%')]
+
+            file_knowledge_ids = KnowledgeFileDao.get_knowledge_ids_by_name(name)
+            if file_knowledge_ids:
+                conditions.append(Knowledge.id.in_(file_knowledge_ids))
+
+            if conditions:
+                statement = statement.where(or_(*conditions))
+
+        if page and limit:
+            statement = statement.offset((page - 1) * limit).limit(limit)
+        return statement
+
+    @classmethod
+    def get_user_knowledge(cls,
+                           user_id: int,
+                           knowledge_id_extra: List[int] = None,
+                           knowledge_type: KnowledgeTypeEnum = None,
+                           name: str = None,
+                           page: int = 0,
+                           limit: int = 10,
+                           filter_knowledge: List[int] = None) -> List[Knowledge]:
+        statement = select(Knowledge)
+
+        statement = cls._user_knowledge_filters(statement, user_id, knowledge_id_extra,
+                                                knowledge_type, name, page, limit,
+                                                filter_knowledge)
+
+        statement = statement.order_by(Knowledge.update_time.desc())
+        with get_sync_db_session() as session:
+            return session.exec(statement).all()
+
+    @classmethod
+    async def aget_user_knowledge(cls,
+                                  user_id: int,
+                                  knowledge_id_extra: List[int] = None,
+                                  knowledge_type: KnowledgeTypeEnum = None,
+                                  name: str = None,
+                                  sort_by: str = "update_time",
+                                  page: int = 0,
+                                  limit: int = 10,
+                                  filter_knowledge: List[int] = None) -> List[Knowledge]:
+        statement = select(Knowledge)
+
+        statement = cls._user_knowledge_filters(statement, user_id, knowledge_id_extra,
+                                                knowledge_type, name, page, limit,
+                                                filter_knowledge)
+
+        if sort_by == "create_time":
+            statement = statement.order_by(Knowledge.create_time.desc())
+        elif sort_by == "update_time":
+            statement = statement.order_by(Knowledge.update_time.desc())
+        elif sort_by == "name":
+            statement = statement.order_by(text('CONVERT(name USING gbk) ASC'))
+        async with get_async_db_session() as session:
+            return (await session.exec(statement)).all()
+
+    @classmethod
+    def count_user_knowledge(cls,
+                             user_id: int,
+                             knowledge_id_extra: List[int] = None,
+                             knowledge_type: KnowledgeTypeEnum = None,
+                             name: str = None) -> int:
+        statement = select(func.count(Knowledge.id))
+        statement = cls._user_knowledge_filters(statement, user_id, knowledge_id_extra,
+                                                knowledge_type, name)
+        with get_sync_db_session() as session:
+            return session.scalar(statement)
+
+    @classmethod
+    async def acount_user_knowledge(cls,
+                                    user_id: int,
+                                    knowledge_id_extra: List[int] = None,
+                                    knowledge_type: KnowledgeTypeEnum = None,
+                                    name: str = None) -> int:
+        statement = select(func.count(Knowledge.id))
+        statement = cls._user_knowledge_filters(statement, user_id, knowledge_id_extra,
+                                                knowledge_type, name)
+        async with get_async_db_session() as session:
+            return await session.scalar(statement)
+
+    @classmethod
+    def count_by_filter(cls, filters: List[Any]) -> int:
+        with get_sync_db_session() as session:
+            return session.scalar(select(Knowledge.id).where(*filters))
+
+    @classmethod
+    def judge_knowledge_permission(cls, user_name: str,
+                                   knowledge_ids: List[int]) -> List[Knowledge]:
+        """
+        Based on username and knowledge baseIDList to get a list of knowledge bases that the user has permission to view
+        :param user_name: Username
+        :param knowledge_ids: The knowledge base uponIDVertical
+        :return: Returns a list of knowledge bases that the user has permissions
+        """
+        # get user info
+        user_info = UserDao.get_user_by_username(user_name)
+        if not user_info:
+            return []
+
+        # Query the role the user belongs to
+        role_list = UserRoleDao.get_user_roles(user_info.user_id)
+        if not role_list:
+            return []
+
+        role_id_list = []
+        is_admin = False
+        for role in role_list:
+            role_id_list.append(role.role_id)
+            if role.role_id == 1:
+                is_admin = True
+        # admin User has all knowledge base permissions
+        if is_admin:
+            return KnowledgeDao.get_list_by_ids(knowledge_ids)
+
+        # query role List of knowledge bases with permissions
+        role_access_list = RoleAccessDao.find_role_access(role_id_list, [str(one) for one in knowledge_ids],
+                                                          AccessType.KNOWLEDGE)
+
+        user_knowledge_list = cls.get_user_knowledge(user_info.user_id,
+                                                     knowledge_id_extra=[int(access.third_id) for access in
+                                                                         role_access_list],
+                                                     filter_knowledge=knowledge_ids)
+        return user_knowledge_list
+
+    @classmethod
+    async def ajudge_knowledge_permission(cls, user_name: str,
+                                          knowledge_ids: List[int]) -> List[Knowledge]:
+        """
+        By Username and Knowledge BaseIDlist, asynchronously get a list of knowledge bases that the user has permission to view
+        Args:
+            user_name:
+            knowledge_ids:
+
+        Returns:
+
+        """
+        # get user info
+        user_info = await UserDao.aget_user_by_username(user_name)
+        if not user_info:
+            return []
+        # Query the role the user belongs to
+        role_list = await UserRoleDao.aget_user_roles(user_info.user_id)
+        if not role_list:
+            return []
+        role_id_list = []
+        is_admin = False
+        for role in role_list:
+            role_id_list.append(role.role_id)
+            if role.role_id == 1:
+                is_admin = True
+        # admin User has all knowledge base permissions
+        if is_admin:
+            return await cls.aget_list_by_ids(knowledge_ids)
+        # query role List of knowledge bases with permissions
+        role_access_list = await RoleAccessDao.afind_role_access(role_id_list, [str(one) for one in knowledge_ids],
+                                                                 AccessType.KNOWLEDGE)
+        # Query whether the knowledge base created by the user is included
+        user_knowledge_list = await cls.aget_user_knowledge(user_info.user_id,
+                                                            knowledge_id_extra=[int(access.third_id) for access in
+                                                                                role_access_list],
+                                                            filter_knowledge=knowledge_ids)
+        return user_knowledge_list
+
+    @classmethod
+    def filter_knowledge_by_ids(cls,
+                                knowledge_ids: List[int],
+                                keyword: str = None,
+                                page: int = 0,
+                                limit: int = 0) -> (List[Knowledge], int):
+        """
+        Based on keywords and knowledge baseidFilter out the corresponding knowledge base
+
+        """
+        statement = select(Knowledge)
+        count_statement = select(func.count(Knowledge.id))
+        if knowledge_ids:
+            statement = statement.where(Knowledge.id.in_(knowledge_ids))
+            count_statement = count_statement.where(Knowledge.id.in_(knowledge_ids))
+        if keyword:
+            statement = statement.where(
+                or_(Knowledge.name.like('%' + keyword + '%'),
+                    Knowledge.description.like('%' + keyword + '%')))
+            count_statement = count_statement.where(
+                or_(Knowledge.name.like('%' + keyword + '%'),
+                    Knowledge.description.like('%' + keyword + '%')))
+        if page and limit:
+            statement = statement.offset((page - 1) * limit).limit(limit)
+        statement = statement.order_by(Knowledge.update_time.desc())
+        with get_sync_db_session() as session:
+            return session.exec(statement).all(), session.scalar(count_statement)
+
+    @classmethod
+    def generate_all_knowledge_filter(cls,
+                                      statement,
+                                      name: str = None,
+                                      knowledge_type: KnowledgeTypeEnum = None):
+        if knowledge_type:
+            statement = statement.where(Knowledge.type == knowledge_type.value)
+
+        if name:
+            conditions = [col(Knowledge.name).like(f'%{name}%'), col(Knowledge.description).like(f'%{name}%')]
+
+            file_knowledge_ids = KnowledgeFileDao.get_knowledge_ids_by_name(name)
+            if file_knowledge_ids:
+                conditions.append(Knowledge.id.in_(file_knowledge_ids))
+
+            if conditions:
+                statement = statement.where(or_(*conditions))
+
+        return statement
+
+    @classmethod
+    def get_all_knowledge(cls,
+                          name: str = None,
+                          knowledge_type: KnowledgeTypeEnum = None,
+                          page: int = 0,
+                          limit: int = 0) -> List[Knowledge]:
+        statement = select(Knowledge)
+        statement = cls.generate_all_knowledge_filter(statement,
+                                                      name=name,
+                                                      knowledge_type=knowledge_type)
+
+        if page and limit:
+            statement = statement.offset((page - 1) * limit).limit(limit)
+        statement = statement.order_by(Knowledge.update_time.desc())
+        with get_sync_db_session() as session:
+            return session.exec(statement).all()
+
+    @classmethod
+    async def aget_all_knowledge(cls,
+                                 name: str = None,
+                                 knowledge_type: KnowledgeTypeEnum = None,
+                                 sort_by: str = "update_time",
+                                 page: int = 0,
+                                 limit: int = 0) -> List[Knowledge]:
+        statement = select(Knowledge)
+        statement = cls.generate_all_knowledge_filter(statement,
+                                                      name=name,
+                                                      knowledge_type=knowledge_type)
+
+        if page and limit:
+            statement = statement.offset((page - 1) * limit).limit(limit)
+        if sort_by == "create_time":
+            statement = statement.order_by(Knowledge.create_time.desc())
+        elif sort_by == "update_time":
+            statement = statement.order_by(Knowledge.update_time.desc())
+        elif sort_by == "name":
+            statement = statement.order_by(text('CONVERT(name USING gbk) ASC'))
+        async with get_async_db_session() as session:
+            return (await session.exec(statement)).all()
+
+    @classmethod
+    def count_all_knowledge(cls,
+                            name: str = None,
+                            knowledge_type: KnowledgeTypeEnum = None) -> int:
+        statement = select(func.count(Knowledge.id))
+        statement = cls.generate_all_knowledge_filter(statement,
+                                                      name=name,
+                                                      knowledge_type=knowledge_type)
+        with get_sync_db_session() as session:
+            return session.scalar(statement)
+
+    @classmethod
+    async def acount_all_knowledge(cls,
+                                   name: str = None,
+                                   knowledge_type: KnowledgeTypeEnum = None) -> int:
+        statement = select(func.count(Knowledge.id))
+        statement = cls.generate_all_knowledge_filter(statement,
+                                                      name=name,
+                                                      knowledge_type=knowledge_type)
+        async with get_async_db_session() as session:
+            return await session.scalar(statement)
+
+    @classmethod
+    def update_knowledge_list(cls, knowledge_list: List[Knowledge]):
+        with get_sync_db_session() as session:
+            for knowledge in knowledge_list:
+                session.add(knowledge)
+            session.commit()
+
+    @classmethod
+    def get_knowledge_by_name(cls, name: str, user_id: int = 0) -> Knowledge:
+        """ Get Knowledge Base Details by Knowledge Base Name """
+        statement = select(Knowledge).where(Knowledge.name == name)
+        if user_id:
+            statement = statement.where(Knowledge.user_id == user_id)
+        with get_sync_db_session() as session:
+            return session.exec(statement).first()
+
+    @classmethod
+    def delete_knowledge(cls, knowledge_id: int, only_clear: bool = False):
+        """
+        Delete or empty the knowledge base
+        """
+        # <g id="Bold">Medical Treatment:</g>knowledge file
+        with get_sync_db_session() as session:
+            session.exec(delete(KnowledgeFile).where(KnowledgeFile.knowledge_id == knowledge_id))
+            # Do not delete knowledge base records when clearing the knowledge base
+            if not only_clear:
+                session.exec(delete(Knowledge).where(Knowledge.id == knowledge_id))
+            session.commit()
+
+    @classmethod
+    def get_knowledge_by_time_range(cls, start_time: datetime, end_time: datetime, page: int = 0,
+                                    page_size: int = 0) -> List[Knowledge]:
+        """ Get a list of knowledge bases based on the creation timeframe """
+        statement = select(Knowledge).where(
+            Knowledge.create_time >= start_time,
+            Knowledge.create_time < end_time
+        )
+        if page and page_size:
+            statement = statement.offset((page - 1) * page_size).limit(page_size)
+        statement = statement.order_by(col(Knowledge.id).asc())
+        with get_sync_db_session() as session:
+            return session.exec(statement).all()
+
+    @classmethod
+    def get_first_knowledge(cls) -> Optional[Knowledge]:
+        """ Get the first knowledge base """
+        statement = select(Knowledge).order_by(col(Knowledge.id).asc()).limit(1)
+        with get_sync_db_session() as session:
+            return session.exec(statement).first()

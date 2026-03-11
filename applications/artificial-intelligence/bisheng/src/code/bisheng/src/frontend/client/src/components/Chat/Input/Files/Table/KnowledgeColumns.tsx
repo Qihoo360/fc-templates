@@ -37,7 +37,7 @@ export const getKnowledgeColumns = (
     {
       accessorKey: 'update_time',
       header: ({ column }) => {
-        return '上传时间';
+        return localize('com_knowledge_upload_time');
       },
       cell: ({ row }) => {
         return row.original.update_time.replace('T', ' ');
@@ -46,23 +46,31 @@ export const getKnowledgeColumns = (
     {
       accessorKey: 'status',
       header: ({ column }) => {
-        return '状态';
+        return localize('com_knowledge_status');
       },
       cell: ({ row }) => {
-        return ['', '处理中', '成功', '失败'][row.original.status]
+        const statusTexts = [
+          '',
+          localize('com_knowledge_processing'),
+          localize('com_knowledge_success'),
+          localize('com_knowledge_failed'),
+          localize('com_knowledge_model_switching'),
+          localize('com_knowledge_processing'),
+        ];
+        return statusTexts[row.original.status];
       },
     },
     {
       accessorKey: 'operate',
       header: ({ column }) => {
-        return '操作';
+        return localize('com_knowledge_operation');
       },
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-3">
             <div
               className="cursor-pointer rounded-md px-2 py-1 hover:bg-gray-100"
-              onClick={() => handleDownload(row.original.object_name, row.original.file_name)}
+              onClick={() => handleDownload(row.original.id, row.original.file_name)}
             >
               <Download className="h-5 w-5" />
             </div>

@@ -1,21 +1,22 @@
 import asyncio
 import json
-# 设置 websockets 的日志级别为 NONE
+# Pengaturan websockets Log level is NONE
 import logging
 from collections import defaultdict
 from datetime import datetime, timedelta
 
-from bisheng.api.v1.schemas import resp_500
-from bisheng.database.base import session_getter
-from bisheng.database.models.message import ChatMessage
 from pydantic import BaseModel
 from websockets import connect
 
-# 维护一个连接池
+from bisheng.common.errcode.http_error import ServerError
+from bisheng.core.database import get_sync_db_session
+from bisheng.database.models.message import ChatMessage
+
+# Maintain a connection pool
 connection_pool = defaultdict(asyncio.Queue)
 logging.getLogger('websockets').setLevel(logging.ERROR)
 
-expire = 600  # reids 60s 过期
+expire = 600  # reids 60s Overdue
 
 
 class TimedQueue:
@@ -43,44 +44,46 @@ async def clean_inactive_queues(queue: defaultdict, timeout_threshold: timedelta
     while True:
         current_time = datetime.now()
         for key, timed_queue in list(queue.items()):
-            # 如果队列超过设定的阈值时间没有活跃，则清理队列
+            # If the queue is not active beyond the set threshold time, clear the queue
             if current_time - timed_queue.last_active > timeout_threshold:
                 while not timed_queue.empty():
-                    timed_queue.get_nowait()  # 从队列中移除任务
-                del queue[key]  # 删除队列
+                    timed_queue.get_nowait()  # Remove task from queue
+                del queue[key]  # Delete queue
         await asyncio.sleep(timeout_threshold.total_seconds())
 
 
-# 维护一个连接池
+# Maintain a connection pool
 connection_pool = defaultdict(TimedQueue)
-clean_inactive_queues(connection_pool, timedelta(minutes=5))
+
+
+# clean_inactive_queues(connection_pool, timedelta(minutes=5))
 
 
 async def get_connection(uri, identifier):
     """
-    获取WebSocket连接。如果连接池中有可用的连接，则直接返回；
-    否则，创建新的连接并添加到连接池。
+    DapatkanWebSocketConnections. Returns directly if there are connections available in the connection pool;
+    Otherwise, create a new connection and add it to the connection pool.
     """
     if connection_pool[identifier].empty():
-        # 建立新的WebSocket连接
+        # build newWebSocketCONNECT
         websocket = await connect(uri)
 
         await connection_pool[identifier].put_nowait(websocket)
 
-    # 从连接池中获取连接
+    # Get Connection from Connection Pool
     websocket = await connection_pool[identifier].get_nowait()
     return websocket
 
 
 async def release_connection(identifier, websocket):
     """
-    释放WebSocket连接，将其放回连接池。
+    releaseWebSocketConnect and put it back into the connection pool.
     """
     await connection_pool[identifier].put_nowait(websocket)
 
 
 def comment_answer(message_id: int, comment: str):
-    with session_getter() as session:
+    with get_sync_db_session() as session:
         message = session.get(ChatMessage, message_id)
         if message:
             message.remark = comment[:4096]
@@ -105,36 +108,35 @@ class ChoiceStreamResp(BaseModel):
 
 
 async def event_stream(
-    webosocket: connect,
-    message: str,
-    session_id: str,
-    model: str,
-    streaming: bool,
+        webosocket: connect,
+        message: str,
+        session_id: str,
+        model: str,
+        streaming: bool,
 ):
-
     payload = {'inputs': message, 'flow_id': model, 'chat_id': session_id}
     try:
         await webosocket.send(json.dumps(payload, ensure_ascii=False))
     except Exception as e:
-        yield json.dumps(resp_500(message=str(e)).__dict__)
+        yield ServerError(exception=e).to_sse_event_instance_str()
         return
     sync = ''
     while True:
         try:
             msg = await webosocket.recv()
         except Exception as e:
-            yield json.dumps(resp_500(message=str(e)).__dict__)
+            yield ServerError(exception=e).to_sse_event_instance_str()
             break
         if msg is None:
             continue
-        # 判断msg 的类型
+        # Judgingmsg of income they generate.
         res = json.loads(msg)
         if streaming:
             if res.get('type') != 'end' and res.get('message'):
                 delta = ContentStreamResp(role='assistant', content=res.get('message'))
                 yield str(ChoiceStreamResp(index=0, session_id=session_id, delta=delta))
         else:
-            # 通过此处控制下面的close是否发送消息
+            # Control the following via thecloseWhether to send a message
             if res.get('type') == 'end':
                 sync = res.get('message')
 
@@ -146,7 +148,7 @@ async def event_stream(
                                        delta=delta,
                                        finish_reason='stop')
                 yield '{"choices":[%s]}' % (json.dumps(msg.dict()))
-            # 释放连接
+            # Release Connection
             elif streaming:
                 yield 'data: [DONE]'
             await release_connection(session_id, webosocket)

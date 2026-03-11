@@ -21,19 +21,28 @@ customAxios.interceptors.request.use(function (config) {
 });
 
 customAxios.interceptors.response.use(function (response) {
+    if (response.data instanceof Blob) return response.data;
     if (response.data.status_code === 200) {
         return response.data.data;
     }
-    const i18Msg = i18next.t(`errors.${response.data.status_code}`)
+    if (response.data.status_code === 11010) {
+        return response.data;
+    }
+    const i18Msg = i18next.t(`errors.${response.data.status_code}`, response.data.data)
     const errorMessage = i18Msg === `errors.${response.data.status_code}` ? response.data.status_message : i18Msg
 
-    // 特殊状态码
-    if ([10802, 10803].includes(response.data.status_code)) {
-        return { ...response.data.data, code: response.data.status_code, msg: errorMessage };
-    }
     // 无权访问
-    if (response.data.status_code === 403) {
-        location.href = __APP_ENV__.BASE_URL + '/403'
+    if ([403, 404].includes(response.data.status_code) && response.config.url !== '/api/v1/user/info') {
+        // 修改不跳转
+        localStorage.setItem('noAccessUrl', response.request.responseURL)
+        if (response.config.method === 'get') {
+            location.href = __APP_ENV__.BASE_URL + '/' + response.data.status_code
+        }
+        return Promise.reject(errorMessage);
+    }
+    // 应用无编辑权限 (TODO业务状态码放行到具体业务中)
+    if ([10599, 17005].includes(response.data.status_code)) {
+        location.href = `${__APP_ENV__.BASE_URL}/build/apps?error=${response.data.status_code}`
         return Promise.reject(errorMessage);
     }
     // 异地登录
@@ -53,7 +62,7 @@ customAxios.interceptors.response.use(function (response) {
         infoStr && location.reload()
         return Promise.reject('登录过期,请重新登录');
     }
-    if (error.code === "ERR_CANCELED") return Promise.reject(null);
+    if (error.code === "ERR_CANCELED") return Promise.reject(error);
     // app 弹窗
     toast({
         title: `${i18next.t('prompt')}`,
@@ -71,6 +80,7 @@ export default customAxios
 export function captureAndAlertRequestErrorHoc(apiFunc, iocFunc?) {
     return apiFunc.catch(error => {
         if (error === null) return // app error
+        if (error?.code === "ERR_CANCELED") return 'canceled'
 
         console.log('error :>> ', error);
         iocFunc?.(error)

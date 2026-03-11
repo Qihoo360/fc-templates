@@ -2,6 +2,7 @@ import { Input } from "@/components/bs-ui/input";
 import { Label } from "@/components/bs-ui/label";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 
+// 模型表单项
 const modelProviders = {
     ollama: [
         {
@@ -105,14 +106,6 @@ const modelProviders = {
     ],
     qwen: [
         {
-            label: "Base URL",
-            type: "text",
-            default: "https://dashscope.aliyuncs.com/compatible-mode/v1",
-            placeholder: "",
-            required: true,
-            key: "openai_api_base",
-        },
-        {
             label: "API Key",
             type: "password",
             placeholder: "",
@@ -123,20 +116,20 @@ const modelProviders = {
     ],
     qianfan: [
         {
+            label: "Base URL",
+            type: "",
+            placeholder: "",
+            default: "https://qianfan.baidubce.com/v2",
+            required: true,
+            key: "base_url",
+        },
+        {
             label: "API Key",
             type: "password",
             placeholder: "",
             default: "",
             required: true,
-            key: "wenxin_api_key",
-        },
-        {
-            label: "Secret Key",
-            type: "password",
-            placeholder: "",
-            default: "",
-            required: true,
-            key: "wenxin_secret_key",
+            key: "api_key",
         },
     ],
     zhipu: [
@@ -175,7 +168,25 @@ const modelProviders = {
             key: "openai_api_key",
         },
     ],
+    MindIE: [
+        {
+            label: "Base URL",
+            type: "text",
+            placeholder: "格式示例：http://ip:port/v1",
+            default: "",
+            required: true,
+            key: "base_url",
+        },
+    ],
     spark: [
+        // {
+        //     label: "App ID",
+        //     type: "text",
+        //     placeholder: "",
+        //     default: "",
+        //     required: true,
+        //     key: "appid",
+        // },
         {
             label: "API Key",
             type: "password",
@@ -254,18 +265,92 @@ const modelProviders = {
             required: true,
             key: "host_base_url",
         }
+    ],
+    tencent: [
+        {
+            label: "Base URL",
+            type: "text",
+            default: "https://api.hunyuan.cloud.tencent.com/v1",
+            required: true,
+            key: "base_url",
+        },
+        {
+            label: "API Key",
+            type: "password",
+            placeholder: "",
+            default: "",
+            required: true,
+            key: "api_key",
+        },
+    ],
+    moonshot: [
+        {
+            label: "Base URL",
+            type: "text",
+            placeholder: "格式示例：https://api.moonshot.cn/v1",
+            default: "https://api.moonshot.cn/v1",
+            required: true,
+            key: "base_url",
+        },
+        {
+            label: "API Key",
+            type: "password",
+            placeholder: "",
+            default: "",
+            required: true,
+            key: "api_key",
+        },
+    ],
+    volcengine: [
+        {
+            label: "Base URL",
+            type: "text",
+            placeholder: "格式示例：https://ark.cn-beijing.volces.com/api/v3",
+            default: "https://ark.cn-beijing.volces.com/api/v3",
+            required: true,
+            key: "base_url",
+        },
+        {
+            label: "API Key",
+            type: "password",
+            placeholder: "",
+            default: "",
+            required: true,
+            key: "api_key",
+        },
+    ],
+    "silicon": [
+        {
+            label: "Base URL",
+            type: "text",
+            placeholder: "",
+            default: "https://api.siliconflow.cn/v1",
+            required: true,
+            key: "openai_api_base",
+        },
+        {
+            label: "API Key",
+            type: "password",
+            placeholder: "",
+            default: "",
+            required: true,
+            key: "api_key",
+        },
     ]
 };
 
 
-const FormField = ({ showDefault, field, value, onChange }) => {
+const FormField = ({ showDefault, field, value, providerName, apiKeySite, onChange }) => {
     useEffect(() => {
         showDefault && field.default && onChange(field.key, field.default)
     }, [showDefault])
 
     return (
         <div className="mb-2">
-            <Label className="bisheng-label">{field.label}</Label>
+            <Label className="bisheng-label">
+                {field.label}
+                {apiKeySite && field.label.indexOf('API Key') !== -1 && <a href={apiKeySite} target="_blank" rel="noreferrer" className="ml-1 text-primary">(获取{providerName} API Key)</a>}
+            </Label>
             <Input
                 type={field.type}
                 placeholder={field.placeholder}
@@ -278,17 +363,19 @@ const FormField = ({ showDefault, field, value, onChange }) => {
 };
 
 
-const CustomForm = forwardRef(({ showDefault, provider, formData }, ref) => {
+const CustomForm = forwardRef(({ showDefault, provider, formData, providerName, apiKeySite, apiKeyUrl }, ref) => {
     const [form, setForm] = useState(formData);
     const fields = modelProviders[provider] || [];
-
+    
     const handleChange = (key, value) => {
         setForm((prevData) => ({
             ...prevData,
             [key]: value,
         }));
     };
-
+    useEffect(() => {
+        setForm(formData);
+    }, [formData]);
     useImperativeHandle(ref, () => ({
         getData() {
             const errorObj = fields.find(field => field.required && !form[field.key]);
@@ -304,10 +391,12 @@ const CustomForm = forwardRef(({ showDefault, provider, formData }, ref) => {
         <div className="overflow-hidden">
             {fields.map((field) => (
                 <FormField
-                    key={field.key}
+                    key={provider + field.key}
                     showDefault={showDefault}
                     field={field}
-                    value={form[field.key] || ''}
+                    value={form[field.key]|| ''}
+                    providerName={providerName}
+                    apiKeySite={apiKeySite}
                     onChange={handleChange}
                 />
             ))}

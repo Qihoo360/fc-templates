@@ -1,18 +1,6 @@
-import { QuestionMarkIcon } from "@/components/bs-icons/questionMark";
-import { UploadIcon } from "@/components/bs-icons/upload";
-import { Input } from "@/components/bs-ui/input";
-import { AssistantItemDB, getAssistantsApi } from "@/controllers/API/assistant";
-import { createEvaluationApi } from "@/controllers/API/evaluate";
-import { TypeModal } from "@/utils";
-import { SelectViewport } from "@radix-ui/react-select";
-import { debounce, find } from "lodash-es";
-import { ArrowLeft } from "lucide-react";
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
 import ShadTooltip from "@/components/ShadTooltipComponent";
 import { Button } from "@/components/bs-ui/button";
+import { Input } from "@/components/bs-ui/input";
 import { Label } from "@/components/bs-ui/label";
 import {
   Select,
@@ -22,19 +10,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/bs-ui/select";
+import { useToast } from "@/components/bs-ui/toast/use-toast";
 import {
-  QuestionTooltip,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+  QuestionTooltip
 } from "@/components/bs-ui/tooltip";
-import { alertContext } from "@/contexts/alertContext";
 import { TabsContext } from "@/contexts/tabsContext";
-import { readFlowsFromDatabase } from "@/controllers/API/flow";
+import { createEvaluationApi } from "@/controllers/API/evaluate";
+import { getAppsApi } from "@/controllers/API/flow";
+import { captureAndAlertRequestErrorHoc } from "@/controllers/request";
+import { TypeModal } from "@/utils";
+import { SelectViewport } from "@radix-ui/react-select";
+import { debounce, find } from "lodash-es";
+import { ArrowLeft, UploadIcon } from "lucide-react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useParams } from "react-router-dom";
 import PromptAreaComponent from "./PromptCom";
 import defaultPrompt from "./defaultPrompt";
-import { useToast } from "@/components/bs-ui/toast/use-toast";
 
 export default function EvaluatingCreate() {
   const { t } = useTranslation();
@@ -45,9 +38,7 @@ export default function EvaluatingCreate() {
   const flow = useMemo(() => {
     return id ? nextFlow : null;
   }, [nextFlow]);
-  const [selectedType, setSelectedType] = useState<"flow" | "assistant" | "">(
-    ""
-  );
+  const [selectedType, setSelectedType] = useState<"workflow" | "assistant" | "flow" | "">("");
   const [selectedKeyId, setSelectedKeyId] = useState("");
   const [selectedVersion, setSelectedVersion] = useState("");
   const [query, setQuery] = useState("");
@@ -59,11 +50,25 @@ export default function EvaluatingCreate() {
   const fileRef = useRef(null);
 
   const onDrop = (acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (!file) return;
+
+    const fileExt = file.name.split('.').pop()?.toLowerCase();
+
+
     fileRef.current = acceptedFiles[0];
     const size = fileRef.current.size
     const errorlist = [];
 
-    // 限制文件最大为 10M
+    // 1. File extension validation (double insurance)
+    if (fileExt !== 'csv') {
+      errorlist.push(t("evaluation.onlyCsvAllowed"));
+      fileRef.current = null;
+      handleError(errorlist);
+      return;
+    }
+
+    // File size limit: 10M max
     if (size > 10 * 1024 * 1024) {
       errorlist.push(t("evaluation.fileSizeLimit"));
       fileRef.current = null
@@ -74,13 +79,29 @@ export default function EvaluatingCreate() {
     setFileName(names);
   };
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, rejectedFiles } = useDropzone({
+    // Precise matching of CSV MIME types and extensions to avoid file bypass
     accept: {
-      "application/*": [".csv"],
+      "text/csv": [".csv"],          // Standard CSV text type
+      "application/csv": [".csv"],   // CSV application type recognized by some browsers
+      "application/vnd.ms-excel": [".csv"] // Compatible with CSV exported from old Excel versions
     },
     useFsAccessApi: false,
     onDrop,
     maxFiles: 1,
+    onDropRejected: (files) => {
+      if (files.length > 0) {
+        // Check rejected file types
+        const rejectedFile = files[0];
+        const fileExt = rejectedFile.file.name.split('.').pop()?.toLowerCase();
+
+        if (fileExt === 'xlsx' || fileExt === 'xls') {
+          handleError([t("evaluation.excelNotSupported")]);
+        } else {
+          handleError([t("evaluation.onlyCsvSupported")]);
+        }
+      }
+    }
   });
 
   const navigate = useNavigate();
@@ -88,22 +109,44 @@ export default function EvaluatingCreate() {
   const handleCreateEvaluation = async () => {
     const errorlist = [];
     if (!selectedType) errorlist.push(t("evaluation.enterExecType"));
-    if (!selectedKeyId) errorlist.push(t("evaluation.enterUniqueId"));
-    if (selectedType === "flow" && !selectedVersion)
-      errorlist.push(t("evaluation.enterVersion"));
-    if (!fileRef.current) errorlist.push(t("evaluation.enterFile"));
+
+    if (selectedType && !selectedKeyId) {
+      if (selectedType === "workflow") errorlist.push(t("evaluation.selectWorkflow"));
+      if (selectedType === "flow") errorlist.push(t("evaluation.selectSkill"));
+      if (selectedType === "assistant") errorlist.push(t("evaluation.selectAssistant"));
+    }
+
+    if (selectedKeyId && (selectedType === "workflow" || selectedType === "flow") && !selectedVersion) {
+      errorlist.push(t("evaluation.selectVersion"));
+    }
+    if (
+      !fileRef.current &&
+      selectedKeyId &&
+      (
+        (selectedType === "workflow" || selectedType === "flow") && selectedVersion // Types with versions selected
+        || selectedType === "assistant" // Types that don't need versions
+      )
+    ) {
+      errorlist.push(t("evaluation.enterFile"));
+    }
     if (!prompt) errorlist.push(t("evaluation.enterPrompt"));
 
     if (errorlist.length) return handleError(errorlist);
     setLoading(true);
     try {
-      await createEvaluationApi({
-        exec_type: selectedType,
-        unique_id: selectedKeyId,
-        version: selectedVersion,
-        prompt,
-        file: fileRef.current,
-      });
+      const formData = new FormData();
+      formData.append('exec_type', selectedType);       // Execution type
+      formData.append('unique_id', selectedKeyId);     // Unique ID
+      formData.append('version', selectedVersion);     // Version number
+      formData.append('prompt', prompt);               // Prompt text
+
+      if (fileRef.current) {
+        formData.append('file', fileRef.current); // Key name 'file' must match backend
+      }
+      await captureAndAlertRequestErrorHoc(
+        createEvaluationApi(formData)
+      )
+
       navigate(-1);
     } finally {
       setLoading(false);
@@ -117,37 +160,53 @@ export default function EvaluatingCreate() {
     });
   };
 
-  // 助手技能发生变化
+  // Type selection
   const handleTypeChange = (type) => {
     setQuery("");
-    if (type === "flow") {
-      readFlowsFromDatabase(1, 100, "").then((_flow) => {
-        setDataSource(_flow.data);
-      });
-    } else if (type === "assistant") {
-      getAssistantsApi(1, 100, "").then((data) => {
-        setDataSource((data as any).data as AssistantItemDB[]);
+    if (type) {
+      // Compatible with old names
+      const typeMap = {
+        workflow: 'flow',
+        assistant: 'assistant',
+        flow: 'skill'
+      };
+
+      getAppsApi({
+        page: 1,
+        pageSize: 100,
+        keyword: "",
+        type: typeMap[type]
+      }).then((response) => {
+        setDataSource(response.data);
       });
     }
   };
 
   const handleDownloadTemplate = () => {
     const link = document.createElement("a");
-    link.href = __APP_ENV__.BASE_URL + "/template.csv"; // 文件路径
-    link.download = "template.csv"; // 下载时的文件名
+    link.href = __APP_ENV__.BASE_URL + "/template.csv"; // File path
+    link.download = "template.csv"; // Download filename
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   const handleSearch = useCallback(debounce((value) => {
-    if (selectedType === "flow") {
-      readFlowsFromDatabase(1, 100, value).then((_flow) => {
-        setDataSource(_flow.data);
-      });
-    } else if (selectedType === "assistant") {
-      getAssistantsApi(1, 100, value).then((data) => {
-        setDataSource((data as any).data as AssistantItemDB[]);
+    if (selectedType) {
+      // Compatible with old names
+      const typeMap = {
+        workflow: 'flow',
+        assistant: 'assistant',
+        flow: 'skill'
+      };
+
+      getAppsApi({
+        page: 1,
+        pageSize: 100,
+        keyword: value,
+        type: typeMap[selectedType]
+      }).then((response) => {
+        setDataSource(response.data);
       });
     }
   }, 300), [selectedType])
@@ -176,13 +235,13 @@ export default function EvaluatingCreate() {
             </button>
           </ShadTooltip>
         </div>
-        {/* form */}
+        {/* Form */}
         <div className="pt-6">
           <p className="text-center text-2xl">{t("evaluation.createTitle")}</p>
-          <div className="mx-auto mt-4 w-full max-w-2xl">
-            {/* base form */}
-            <div className="w-full overflow-hidden px-1 transition-all">
-              <div className="mt-4 flex items-center justify-between gap-1">
+          <div className="mx-auto mt-4 w-full max-w-3xl">
+            {/* Base form */}
+            <div className="w-full overflow-hidden px-1 transition-all space-y-8">
+              <div className="flex items-center justify-between gap-1">
                 <Label className="w-[180px] text-right">
                   {t("evaluation.selectLabel")}
                 </Label>
@@ -204,9 +263,8 @@ export default function EvaluatingCreate() {
                     <SelectContent>
                       <SelectGroup>
                         <SelectItem value="flow">{t("build.skill")}</SelectItem>
-                        <SelectItem value="assistant">
-                          {t("build.assistant")}
-                        </SelectItem>
+                        <SelectItem value="assistant">{t("build.assistant")}</SelectItem>
+                        <SelectItem value="workflow">{t("build.workFlow")}</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -225,17 +283,19 @@ export default function EvaluatingCreate() {
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectViewport>
-                        <Input
-                          value={query}
-                          onChange={handleInputChange}
-                          className="my-2 mx-auto"
-                          placeholder={t("evaluation.selectInputPlaceholder")}
-                        />
+                      <Input
+                        value={query}
+                        onChange={handleInputChange}
+                        autoFocus
+                        className="my-2 mx-auto"
+                        placeholder={t("evaluation.selectInputPlaceholder")}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                      <SelectViewport className="h-80">
                         <SelectGroup>
                           {dataSource.map((item) => {
                             return (
-                              <SelectItem value={item.id}>
+                              <SelectItem key={item.id} value={item.id}>
                                 {item.name}
                               </SelectItem>
                             );
@@ -244,13 +304,18 @@ export default function EvaluatingCreate() {
                       </SelectViewport>
                     </SelectContent>
                   </Select>
-                  {selectedType === "flow" && (
+                  {(selectedType === "workflow" || selectedType === "flow") && (
                     <Select
                       value={selectedVersion}
                       onValueChange={(version) => setSelectedVersion(version)}
                       onOpenChange={() => {
-                        if (!selectedKeyId)
-                          return handleError([t("evaluation.enterUniqueId")]);
+                        if (!selectedKeyId) {
+                          if (selectedType === "workflow") {
+                            return handleError([t("evaluation.selectWorkflow")]);
+                          } else if (selectedType === "flow") {
+                            return handleError([t("evaluation.selectSkill")]);
+                          }
+                        }
                       }}
                     >
                       <SelectTrigger className="min-w-[50px]">
@@ -265,7 +330,7 @@ export default function EvaluatingCreate() {
                             id: selectedKeyId,
                           })?.version_list?.map((item) => {
                             return (
-                              <SelectItem value={item.id}>
+                              <SelectItem key={item.id} value={item.id}>
                                 {item.name}
                               </SelectItem>
                             );
@@ -276,7 +341,7 @@ export default function EvaluatingCreate() {
                   )}
                 </div>
               </div>
-              <div className="mt-4 flex items-center gap-1">
+              <div className="flex items-center gap-1">
                 <div className="min-w-[180px] text-right">
                   <Label className="whitespace-nowrap">
                     {t("evaluation.dataLabel")}
@@ -288,8 +353,8 @@ export default function EvaluatingCreate() {
                     className="flex w-0 flex-1 items-center"
                   >
                     <input {...getInputProps()} />
-                    <div className="flex cursor-pointer items-center justify-center rounded-md border px-[12px] py-[6px] hover:border-primary">
-                      <UploadIcon className="group-hover:text-primary" />
+                    <div className="flex cursor-pointer text-sm items-center justify-center rounded-md border px-[12px] py-[6px] hover:border-primary">
+                      <UploadIcon size={14} />
                       <span className="whitespace-nowrap">
                         {t("code.uploadFile")}
                       </span>
@@ -302,7 +367,7 @@ export default function EvaluatingCreate() {
                     </Label>
                   </div>
                   <Button
-                    className="ml-2 w-[80px]"
+                    className="ml-2"
                     variant="link"
                     onClick={handleDownloadTemplate}
                   >
@@ -310,7 +375,7 @@ export default function EvaluatingCreate() {
                   </Button>
                 </div>
               </div>
-              <div className="mt-4 flex items-center justify-between gap-1">
+              <div className="flex items-center justify-between gap-1">
                 <div className="min-w-[180px] text-right">
                   <Label className="flex items-center justify-end">
                     <QuestionTooltip content={t("evaluation.tooltip")} />
@@ -331,7 +396,7 @@ export default function EvaluatingCreate() {
                 </div>
               </div>
 
-              <div className="mt-8 flex">
+              <div className="flex">
                 <div className="min-w-[180px]"></div>
                 <div className="flex flex-1 gap-4">
                   <Button

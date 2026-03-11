@@ -4,16 +4,18 @@ import json
 from queue import Queue
 from typing import Any, Dict, List, Union
 
-from bisheng.api.v1.schemas import ChatResponse
-from bisheng.database.models.message import ChatMessage as ChatMessageModel
-from bisheng.database.models.message import ChatMessageDao
-from bisheng.utils.logger import logger
 from fastapi import WebSocket
 from langchain.callbacks.base import AsyncCallbackHandler, BaseCallbackHandler
 from langchain.schema import AgentFinish, LLMResult
 from langchain.schema.agent import AgentAction
 from langchain.schema.document import Document
 from langchain.schema.messages import BaseMessage
+from langchain_core.messages import ToolMessage
+
+from bisheng.api.v1.schemas import ChatResponse
+from bisheng.database.models.message import ChatMessage as ChatMessageModel
+from bisheng.database.models.message import ChatMessageDao
+from loguru import logger
 
 
 # https://github.com/hwchase17/chat-langchain/blob/master/callback.py
@@ -31,21 +33,21 @@ class AsyncStreamingLLMCallbackHandler(AsyncCallbackHandler):
         self.chat_id = chat_id
         self.user_id = user_id
 
-        # 工具调用的缓存，在tool_end时将开始和结束拼接到一起存储到数据库
+        # Cache for tool calls intool_endWhen stitching the start and end together, store it in the database
         self.tool_cache = {}
         # self.tool_cache = {
         #     'run_id': {
         #         'input': {},
         #         'category': "",
-        #     },  # 存储工具调用的input信息
+        #     },  # Storage tool callinputMessage
         # }
 
-        # 流式输出的队列
+        # Queue for Streaming Output
         self.stream_queue: Queue = kwargs.get('stream_queue')
 
     async def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
         chunk = kwargs.get('chunk')
-        # azure偶尔会返回一个None
+        # azureOccasionally returns aNone
         if token is None and chunk is None:
             return
         reasoning_content = getattr(chunk.message, 'additional_kwargs',
@@ -56,10 +58,10 @@ class AsyncStreamingLLMCallbackHandler(AsyncCallbackHandler):
             'content': token,
             'reasoning_content': reasoning_content
         },
-                            type='stream',
-                            flow_id=self.flow_id,
-                            chat_id=self.chat_id)
-        # 将流式输出内容放入到队列内，以方便中断流式输出后，可以将内容记录到数据库
+            type='stream',
+            flow_id=self.flow_id,
+            chat_id=self.chat_id)
+        # Streaming output is placed in a queue to facilitate recording of content to a database after interrupting the streaming output
         await self.websocket.send_json(resp.dict())
         if self.stream_queue:
             if reasoning_content:
@@ -120,7 +122,7 @@ class AsyncStreamingLLMCallbackHandler(AsyncCallbackHandler):
         observation_prefix = kwargs.get('observation_prefix', 'Tool output: ')
         # from langchain.docstore.document import Document # noqa
         # result = eval(output).get('result')
-        result = output
+        result = output if isinstance(output, str) else getattr(output, 'content', output)
 
         # Create a formatted message.
         intermediate_steps = f'{observation_prefix}{result[:100]}'
@@ -182,7 +184,7 @@ class AsyncStreamingLLMCallbackHandler(AsyncCallbackHandler):
                                    chat_id=self.chat_id)
                 await self.websocket.send_json(log.dict())
                 if kwargs.get('type'):
-                    # 兼容下
+                    # Under compatibility
                     start = ChatResponse(type='start',
                                          category=kwargs.get('type'),
                                          flow_id=self.flow_id,
@@ -235,7 +237,7 @@ class AsyncStreamingLLMCallbackHandler(AsyncCallbackHandler):
 
     async def on_retriever_end(self, result: List[Document], **kwargs: Any) -> Any:
         """Run when retriever end running."""
-        # todo 判断技能权限
+        # todo Determine skill permissions
         logger.debug(f'on_retriever_end result={result} kwargs={kwargs}')
         if result:
             tmp_result = copy.deepcopy(result)
@@ -271,7 +273,7 @@ class StreamingLLMCallbackHandler(BaseCallbackHandler):
         self.stream_queue: Queue = kwargs.get('stream_queue')
 
     def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
-        # azure偶尔会返回一个None
+        # azureOccasionally returns aNone
         if token is None:
             return
         resp = ChatResponse(message=token,
@@ -332,7 +334,7 @@ class StreamingLLMCallbackHandler(BaseCallbackHandler):
 
         # from langchain.docstore.document import Document # noqa
         # result = eval(output).get('result')
-        result = output
+        result = output if isinstance(output, str) else getattr(output, 'content', output)
         # Create a formatted message.
         intermediate_steps = f'{observation_prefix}{result}'
 
@@ -359,7 +361,7 @@ class StreamingLLMCallbackHandler(BaseCallbackHandler):
 
     def on_retriever_end(self, result: List[Document], **kwargs: Any) -> Any:
         """Run when retriever end running."""
-        # todo 判断技能权限
+        # todo Determine skill permissions
         logger.debug(f'retriver_result result={result}')
         if result:
             tmp_result = copy.deepcopy(result)
@@ -427,15 +429,15 @@ class AsyncGptsDebugCallbackHandler(AsyncGptsLLMCallbackHandler):
     @staticmethod
     def parse_tool_category(tool_name) -> (str, str):
         """
-        将tool_name解析为tool_category和真正的tool_name
+        will betool_nameResolve totool_categoryand the realtool_name
         """
         tool_category = 'tool'
         if tool_name.startswith('flow_'):
-            # 说明是技能调用
+            # Description is a skill call
             tool_category = 'flow'
             tool_name = tool_name.replace('flow_', '')
         elif tool_name.startswith('knowledge_'):
-            # 说明是知识库调用
+            # Description is a knowledge base call
             tool_category = 'knowledge'
             tool_name = tool_name.replace('knowledge_', '')
         return tool_name, tool_category
@@ -495,18 +497,18 @@ class AsyncGptsDebugCallbackHandler(AsyncGptsLLMCallbackHandler):
                             extra=json.dumps({'run_id': kwargs.get('run_id').hex}))
         await self.websocket.send_json(resp.dict())
 
-    async def on_tool_end(self, output: str, **kwargs: Any) -> Any:
+    async def on_tool_end(self, output: ToolMessage, **kwargs: Any) -> Any:
         """Run when tool ends running."""
         logger.debug(f'on_tool_end output={output} kwargs={kwargs}')
         observation_prefix = kwargs.get('observation_prefix', 'Tool output: ')
 
-        result = output
+        result = output if isinstance(output, str) else getattr(output, 'content', output)
         # Create a formatted message.
         intermediate_steps = f'{observation_prefix}\n\n{result}'
         tool_name, tool_category = self.parse_tool_category(kwargs.get('name'))
 
         # Create a ChatResponse instance.
-        output_info = {'tool_key': tool_name, 'output': output}
+        output_info = {'tool_key': tool_name, 'output': result}
         resp = ChatResponse(type='end',
                             category=tool_category,
                             intermediate_steps=intermediate_steps,
@@ -516,11 +518,11 @@ class AsyncGptsDebugCallbackHandler(AsyncGptsLLMCallbackHandler):
                             extra=json.dumps({'run_id': kwargs.get('run_id').hex}))
 
         await self.websocket.send_json(resp.dict())
-        # 从tool cache中获取input信息
+        # FROMtool cacheGet ininputMessage
         input_info = self.tool_cache.get(kwargs.get('run_id').hex)
         if input_info:
             if not self.chat_id:
-                # 说明是调试界面，不用持久化数据
+                # Explain that it is a debugging interface and does not need to persist data
                 self.tool_cache.pop(kwargs.get('run_id').hex)
                 return
             output_info.update(input_info['input'])
@@ -554,9 +556,9 @@ class AsyncGptsDebugCallbackHandler(AsyncGptsLLMCallbackHandler):
                                 extra=json.dumps({'run_id': kwargs.get('run_id').hex}))
             await self.websocket.send_json(resp.dict())
 
-            # 保存工具调用记录
+            # Save tool call history
             if not self.chat_id:
-                # 说明是调试界面，不用持久化数据
+                # Explain that it is a debugging interface and does not need to persist data
                 self.tool_cache.pop(kwargs.get('run_id').hex)
                 return
             tool_name, tool_category = self.parse_tool_category(kwargs.get('name'))
@@ -566,7 +568,7 @@ class AsyncGptsDebugCallbackHandler(AsyncGptsLLMCallbackHandler):
                     is_bot=1,
                     message=json.dumps(output_info),
                     intermediate_steps=f'{input_info["steps"]}\n\nTool output:\n\n  Error: ' +
-                    str(error),
+                                       str(error),
                     category=tool_category,
                     type='end',
                     flow_id=self.flow_id,

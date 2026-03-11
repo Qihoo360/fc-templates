@@ -1,17 +1,19 @@
 from enum import Enum
 
 
-# client的业务类型
+# clientBusiness Type
 class WorkType(Enum):
-    # 技能会话业务
+    # Skills Conversation Business
     FLOW = 'flow'
-    # 助手会话业务
+    # Assistant Conversation Business
     GPTS = 'assistant'
-    # workflow 业务
+    # workflow in terms of business,
     WORKFLOW = 'workflow'
 
 
 class IgnoreException(Exception):
+    """ dont`t need print traceback stack """
+
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)

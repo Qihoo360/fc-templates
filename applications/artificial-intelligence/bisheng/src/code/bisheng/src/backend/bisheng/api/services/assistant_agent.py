@@ -1,43 +1,38 @@
-import asyncio
 import json
 import os
 import time
 import uuid
-from pathlib import Path
 from typing import Any, Dict, List
 
-from bisheng.api.services.assistant_base import AssistantUtils
-from bisheng.api.services.knowledge_imp import decide_vectorstores
-from bisheng.api.services.llm import LLMService
-from bisheng.api.services.openapi import OpenApiSchema
-from bisheng.api.utils import build_flow_no_yield
-from bisheng.api.v1.schemas import InputRequest
-from bisheng.database.models.assistant import Assistant, AssistantLink, AssistantLinkDao
-from bisheng.database.models.flow import FlowDao, FlowStatus
-from bisheng.database.models.gpts_tools import GptsTools, GptsToolsDao, GptsToolsType
-from bisheng.database.models.knowledge import Knowledge, KnowledgeDao
-from bisheng.settings import settings
-from bisheng.utils.embedding import decide_embeddings
-from bisheng_langchain.gpts.assistant import ConfigurableAssistant
-from bisheng_langchain.gpts.auto_optimization import (generate_breif_description,
-                                                      generate_opening_dialog,
-                                                      optimize_assistant_prompt)
-from bisheng_langchain.gpts.auto_tool_selected import ToolInfo, ToolSelector
-from bisheng_langchain.gpts.load_tools import load_tools
-from bisheng_langchain.gpts.prompts import ASSISTANT_PROMPT_OPT
-from bisheng_langchain.gpts.tools.api_tools.openapi import OpenApiTools
 from langchain_core.callbacks import Callbacks
 from langchain_core.language_models import BaseLanguageModel
 from langchain_core.messages import AIMessage, HumanMessage, BaseMessage
 from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import BaseTool, Tool
 from langchain_core.utils.function_calling import format_tool_to_openai_tool
-from langchain_core.vectorstores import VectorStoreRetriever
+from langgraph.prebuilt import create_react_agent
 from loguru import logger
+
+from bisheng.api.services.assistant_base import AssistantUtils
+from bisheng.api.utils import build_flow_no_yield
+from bisheng.api.v1.schemas import InputRequest
+from bisheng.common.constants.enums.telemetry import ApplicationTypeEnum
+from bisheng.common.errcode.assistant import AssistantModelEmptyError, AssistantModelNotConfigError, \
+    AssistantAutoLLMError
+from bisheng.database.models.assistant import Assistant, AssistantLink, AssistantLinkDao
+from bisheng.database.models.flow import FlowDao, FlowStatus
+from bisheng.llm.domain.services import LLMService
+from bisheng.tool.domain.services.executor import ToolExecutor
+from bisheng_langchain.gpts.assistant import ConfigurableAssistant
+from bisheng_langchain.gpts.auto_optimization import (generate_breif_description,
+                                                      generate_opening_dialog,
+                                                      optimize_assistant_prompt)
+from bisheng_langchain.gpts.auto_tool_selected import ToolInfo, ToolSelector
+from bisheng_langchain.gpts.prompts import ASSISTANT_PROMPT_OPT
 
 
 class AssistantAgent(AssistantUtils):
-    # cohere的模型需要的特殊prompt
+    # cohereThe special needs of the model prompt
     ASSISTANT_PROMPT_COHERE = """{preamble}|<instruct>|Carefully perform the following instructions, in order, starting each with a new line.
     Firstly, You may need to use complex and advanced reasoning to complete your task and answer the question. Think about how you can use the provided tools to answer the question and come up with a high level plan you will execute.
     Write 'Plan:' followed by an initial high level plan of how you will solve the problem including the tools and steps required.
@@ -52,11 +47,15 @@ class AssistantAgent(AssistantUtils):
 
     Additional instructions to note:
     - If the user's question is in Chinese, please answer it in Chinese.
-    - 当问题中有涉及到时间信息时，比如最近6个月、昨天、去年等，你需要用时间工具查询时间信息。
+    - When there is time information involved in a question, such as recently6Months, yesterday, last year, etc., you need to use the time tool to query the time information.
     """  # noqa
 
-    def __init__(self, assistant_info: Assistant, chat_id: str):
+    def __init__(self, assistant_info: Assistant, chat_id: str, invoke_user_id: int):
         self.assistant = assistant_info
+
+        # To record the data tracking points
+        self.invoke_user_id = invoke_user_id
+
         self.chat_id = chat_id
         self.tools: List[BaseTool] = []
         self.offline_flows = []
@@ -68,9 +67,7 @@ class AssistantAgent(AssistantUtils):
         self.current_agent_executor = None
         self.llm: BaseLanguageModel | None = None
         self.llm_agent_executor = None
-        self.knowledge_skill_path = str(Path(__file__).parent / 'knowledge_skill.json')
-        self.knowledge_skill_data = None
-        # 知识库检索相关参数
+        # Knowledge Base Retrieval Related Parameters
         self.knowledge_retriever = {'max_content': 15000, 'sort_by_source_and_index': False}
 
     async def init_assistant(self, callbacks: Callbacks = None):
@@ -79,10 +76,10 @@ class AssistantAgent(AssistantUtils):
         await self.init_agent()
 
     async def init_llm(self):
-        # 获取配置的助手模型列表
-        assistant_llm = LLMService.get_assistant_llm()
+        # Get a list of configured helper models
+        assistant_llm = await LLMService.get_assistant_llm()
         if not assistant_llm.llm_list:
-            raise Exception('助手推理模型列表为空')
+            raise AssistantModelEmptyError()
         default_llm = None
         for one in assistant_llm.llm_list:
             if str(one.model_id) == self.assistant.model_name:
@@ -91,7 +88,7 @@ class AssistantAgent(AssistantUtils):
             elif not default_llm and one.default:
                 default_llm = one
         if not default_llm:
-            raise Exception('未配置助手推理模型')
+            raise AssistantModelNotConfigError()
 
         self.llm_agent_executor = default_llm.agent_executor_type
         self.knowledge_retriever = {
@@ -99,171 +96,34 @@ class AssistantAgent(AssistantUtils):
             'sort_by_source_and_index': default_llm.knowledge_sort_index
         }
 
-        # 初始化llm
-        self.llm = LLMService.get_bisheng_llm(model_id=default_llm.model_id,
-                                              temperature=self.assistant.temperature,
-                                              streaming=default_llm.streaming)
+        # Inisialisasillm
+        self.llm = await LLMService.get_bisheng_llm(model_id=default_llm.model_id,
+                                                    temperature=self.assistant.temperature,
+                                                    streaming=default_llm.streaming,
+                                                    app_id=self.assistant.id,
+                                                    app_name=self.assistant.name,
+                                                    app_type=ApplicationTypeEnum.ASSISTANT,
+                                                    user_id=self.invoke_user_id)
 
     async def init_auto_update_llm(self):
-        """ 初始化自动优化prompt等信息的llm实例 """
-        assistant_llm = LLMService.get_assistant_llm()
+        """ Initialize Automatic Optimization prompt and other information.llmInstances """
+        assistant_llm = await LLMService.get_assistant_llm()
         if not assistant_llm.auto_llm:
-            raise Exception('未配置助手画像自动优化模型')
+            raise AssistantAutoLLMError()
 
-        self.llm = LLMService.get_bisheng_llm(model_id=assistant_llm.auto_llm.model_id,
-                                              temperature=self.assistant.temperature,
-                                              streaming=assistant_llm.auto_llm.streaming)
-
-    @staticmethod
-    def parse_tool_params(tool: GptsTools) -> Dict:
-        """
-        解析预置工具的初始化参数
-        """
-        # 特殊处理下bisheng_code_interpreter的参数
-        if tool.tool_key == 'bisheng_code_interpreter':
-            return {'minio': settings.get_knowledge().get('minio', {})}
-        if not tool.extra:
-            return {}
-        params = json.loads(tool.extra)
-
-        return params
-
-    @staticmethod
-    def sync_init_preset_tools(tool_list: List[GptsTools],
-                               llm: BaseLanguageModel = None,
-                               callbacks: Callbacks = None):
-        """
-        初始化预置工具列表
-        """
-        tool_name_param = {
-            tool.tool_key: AssistantAgent.parse_tool_params(tool)
-            for tool in tool_list
-        }
-        tool_langchain = load_tools(tool_params=tool_name_param, llm=llm, callbacks=callbacks)
-        return tool_langchain
-
-    async def init_preset_tools(self, tool_list: List[GptsTools], callbacks: Callbacks = None):
-        """
-        初始化预置工具列表
-        """
-        tool_name_param = {
-            tool.tool_key: AssistantAgent.parse_tool_params(tool)
-            for tool in tool_list
-        }
-        tool_langchain = load_tools(tool_params=tool_name_param, llm=self.llm, callbacks=callbacks)
-        return tool_langchain
-
-    @staticmethod
-    def parse_personal_params(tool: GptsTools, all_tool_type: Dict[int, GptsToolsType]) -> Dict:
-        """
-        解析自定义工具的初始化参数
-        """
-        tool_type_info = all_tool_type.get(tool.type)
-        if not tool_type_info:
-            raise Exception(f'获取工具类型失败，tool_type_id: {tool.type}')
-        extra_json = json.loads(tool.extra) if tool.extra else {}
-        extra_json.update(json.loads(tool_type_info.extra) if tool_type_info.extra else {})
-        return OpenApiSchema.parse_openapi_tool_params(tool.name, tool.desc, json.dumps(extra_json),
-                                                       tool_type_info.server_host,
-                                                       tool_type_info.auth_method,
-                                                       tool_type_info.auth_type,
-                                                       tool_type_info.api_key)
-
-    @staticmethod
-    def sync_init_personal_tools(tool_list: List[GptsTools], callbacks: Callbacks = None):
-        """
-        初始化自定义工具列表
-        """
-        tool_type_ids = [one.type for one in tool_list]
-        all_tool_type = GptsToolsDao.get_all_tool_type(tool_type_ids)
-        all_tool_type = {one.id: one for one in all_tool_type}
-        tool_langchain = []
-        for one in tool_list:
-            tool_params = AssistantAgent.parse_personal_params(one, all_tool_type)
-            openapi_tool = OpenApiTools.get_api_tool(one.tool_key, **tool_params)
-            openapi_tool.callbacks = callbacks
-            tool_langchain.append(openapi_tool)
-        return tool_langchain
-
-    async def init_personal_tools(self, tool_list: List[GptsTools], callbacks: Callbacks = None):
-        """
-        初始化自定义工具列表
-        """
-        return asyncio.get_running_loop().run_in_executor(None, self.sync_init_personal_tools,
-                                                          tool_list, callbacks)
-
-    @staticmethod
-    def sync_init_knowledge_tool(knowledge: Knowledge,
-                                 llm: BaseLanguageModel,
-                                 callbacks: Callbacks = None,
-                                 knowledge_retriever: dict = None):
-        """
-        初始化知识库工具
-        """
-        embeddings = decide_embeddings(knowledge.model)
-        vector_client = decide_vectorstores(knowledge.collection_name, 'Milvus', embeddings)
-        if isinstance(vector_client, VectorStoreRetriever):
-            vector_client = vector_client.vectorstore
-        vector_client.partition_key = knowledge.id
-
-        es_vector_client = decide_vectorstores(knowledge.index_name, 'ElasticKeywordsSearch',
-                                               embeddings)
-        tool_params = {
-            'bisheng_rag': {
-                'name': f'knowledge_{knowledge.id}',
-                'description': f'{knowledge.name}:{knowledge.description}',
-                'vector_store': vector_client,
-                'keyword_store': es_vector_client,
-                'llm': llm
-            }
-        }
-        if knowledge_retriever:
-            tool_params['bisheng_rag'].update(knowledge_retriever)
-        tool = load_tools(tool_params=tool_params, llm=llm, callbacks=callbacks)
-        return tool
-
-    async def init_knowledge_tool(self, knowledge: Knowledge, callbacks: Callbacks = None):
-        """
-        初始化知识库工具
-        """
-        return self.sync_init_knowledge_tool(knowledge,
-                                             self.llm,
-                                             callbacks,
-                                             self.knowledge_retriever)
-
-    @staticmethod
-    def init_tools_by_toolid(
-            tool_ids: List[int],
-            llm: BaseLanguageModel,
-            callbacks: Callbacks = None,
-    ):
-        """通过id初始化tool"""
-        tools_model: List[GptsTools] = GptsToolsDao.get_list_by_ids(tool_ids)
-        preset_tools = []
-        personal_tools = []
-        tools: List[BaseTool] = []
-        for one in tools_model:
-            if one.is_preset:
-                preset_tools.append(one)
-            else:
-                personal_tools.append(one)
-        if preset_tools:
-            tool_langchain = AssistantAgent.sync_init_preset_tools(preset_tools, llm, callbacks)
-            logger.info('act=build_preset_tools size={} return_tools={}', len(preset_tools),
-                        len(tool_langchain))
-            tools += tool_langchain
-        if personal_tools:
-            tool_langchain = AssistantAgent.sync_init_personal_tools(personal_tools, callbacks)
-            logger.info('act=build_personal_tools size={} return_tools={}', len(personal_tools),
-                        len(tool_langchain))
-            tools += tool_langchain
-        return tools
+        self.llm = await LLMService.get_bisheng_llm(model_id=assistant_llm.auto_llm.model_id,
+                                                    temperature=self.assistant.temperature,
+                                                    streaming=assistant_llm.auto_llm.streaming,
+                                                    app_id=self.assistant.id,
+                                                    app_name=self.assistant.name,
+                                                    app_type=ApplicationTypeEnum.ASSISTANT,
+                                                    user_id=self.invoke_user_id)
 
     async def init_tools(self, callbacks: Callbacks = None):
-        """通过名称获取tool 列表
+        """Get by nametool Vertical
            tools_name_param:: {name: params}
         """
-        links: List[AssistantLink] = AssistantLinkDao.get_assistant_link(
+        links: List[AssistantLink] = await AssistantLinkDao.get_assistant_link(
             assistant_id=self.assistant.id)
         # tool
         tools: List[BaseTool] = []
@@ -275,21 +135,25 @@ class AssistantAgent(AssistantUtils):
             else:
                 flow_links.append(link)
         if tool_ids:
-            tools = self.init_tools_by_toolid(tool_ids, self.llm, callbacks)
+            tools = await ToolExecutor.init_by_tool_ids(tool_ids,
+                                                        app_id=self.assistant.id,
+                                                        app_name=self.assistant.name,
+                                                        app_type=ApplicationTypeEnum.ASSISTANT,
+                                                        user_id=self.invoke_user_id,
+                                                        llm=self.llm,
+                                                        callbacks=callbacks)
 
         # flow + knowledge
         flow_data = FlowDao.get_flow_by_ids([link.flow_id for link in flow_links if link.flow_id])
-        knowledge_data = KnowledgeDao.get_list_by_ids(
-            [link.knowledge_id for link in flow_links if link.knowledge_id])
-        knowledge_data = {knowledge.id: knowledge for knowledge in knowledge_data}
         flow_id2data = {flow.id: flow for flow in flow_data}
 
         for link in flow_links:
             knowledge_id = link.knowledge_id
             if knowledge_id:
-                knowledge_tool = await self.init_knowledge_tool(knowledge_data[knowledge_id],
-                                                                callbacks)
-                tools.extend(knowledge_tool)
+                knowledge_tool = await ToolExecutor.init_knowledge_tool(self.invoke_user_id, knowledge_id, llm=self.llm,
+                                                                        callbacks=callbacks,
+                                                                        **self.knowledge_retriever)
+                tools.append(knowledge_tool)
             else:
                 tmp_flow_id = link.flow_id
                 one_flow_data = flow_id2data.get(link.flow_id)
@@ -315,7 +179,7 @@ class AssistantAgent(AssistantUtils):
                     logger.info('act=init_flow_tool build_end')
                     flow_tool = Tool(name=tool_name,
                                      func=built_object,
-                                     coroutine=built_object.acall,
+                                     coroutine=built_object.ainvoke,
                                      description=tool_description,
                                      args_schema=InputRequest,
                                      callbacks=callbacks)
@@ -327,27 +191,38 @@ class AssistantAgent(AssistantUtils):
 
     async def init_agent(self):
         """
-        初始化智能体的agent
+        Initialize agentagent
         """
-        # 引入agent执行参数
+        # Introductionagentexecution parameter
         agent_executor_type = self.llm_agent_executor
         self.current_agent_executor = agent_executor_type
-        # 做转换
+        # Do the Conversion
         agent_executor_type = self.agent_executor_dict.get(agent_executor_type,
                                                            agent_executor_type)
 
         prompt = self.assistant.prompt
         if getattr(self.llm, 'model_name', '').startswith('command-r'):
             prompt = self.ASSISTANT_PROMPT_COHERE.format(preamble=prompt)
+        if self.current_agent_executor == 'ReAct':
+            # Inisialisasiagent
+            self.agent = ConfigurableAssistant(agent_executor_type=agent_executor_type,
+                                               tools=self.tools,
+                                               llm=self.llm,
+                                               assistant_message=prompt)
+        else:
+            # function-callingpattern, but also add recursive constraints
+            logger.info(f'Creating LangGraph agent with {len(self.tools)} tools, llm type: {type(self.llm)}')
+            logger.info(f'LLM streaming capability: {getattr(self.llm, "streaming", "unknown")}')
 
-        # 初始化agent
-        self.agent = ConfigurableAssistant(agent_executor_type=agent_executor_type,
-                                           tools=self.tools,
-                                           llm=self.llm,
-                                           assistant_message=prompt)
+            self.agent = create_react_agent(self.llm, self.tools, prompt=prompt, checkpointer=False)
+            logger.info(f'LangGraph agent created: {type(self.agent)}')
+
+            # areagentAdd Recursive Limit Configuration
+            self.agent = self.agent.with_config({'recursion_limit': 100})
+            logger.info(f'Agent config applied: recursion_limit=100')
 
     async def optimize_assistant_prompt(self):
-        """ 自动优化生成prompt """
+        """ Automatically optimize generationprompt """
         chain = ({
                      'assistant_name': lambda x: x['assistant_name'],
                      'assistant_description': lambda x: x['assistant_description'],
@@ -364,16 +239,16 @@ class AssistantAgent(AssistantUtils):
         return optimize_assistant_prompt(self.llm, self.assistant.name, self.assistant.desc)
 
     def generate_guide(self, prompt: str):
-        """ 生成开场对话和开场问题 """
+        """ Generate opening dialogue and opening questions """
         return generate_opening_dialog(self.llm, prompt)
 
     def generate_description(self, prompt: str):
-        """ 生成描述对话 """
+        """ Generate description dialog """
         return generate_breif_description(self.llm, prompt)
 
     def choose_tools(self, tool_list: List[Dict[str, str]], prompt: str) -> List[str]:
         """
-         选择工具
+         Choose A Tool
          tool_list: [{name: xxx, description: xxx}]
         """
         tool_list = [
@@ -386,7 +261,7 @@ class AssistantAgent(AssistantUtils):
     async def fake_callback(self, callback: Callbacks):
         if not callback:
             return
-        # 假回调，将已下线的技能回调给前端
+        # False callback to call back skills that are offline to the front-end
         for one in self.offline_flows:
             run_id = uuid.uuid4()
             await callback[0].on_tool_start({
@@ -397,7 +272,7 @@ class AssistantAgent(AssistantUtils):
             await callback[0].on_tool_end(output='flow is offline', name=one, run_id=run_id)
 
     async def record_chat_history(self, message: List[Any]):
-        # 记录助手的聊天历史
+        # Record Assistant Chat History
         if not os.getenv('BISHENG_RECORD_HISTORY'):
             return
         try:
@@ -417,11 +292,11 @@ class AssistantAgent(AssistantUtils):
             logger.error(f'record assistant history error: {str(e)}')
 
     async def trim_messages(self, messages: List[Any]) -> List[Any]:
-        # 获取encoding
+        # Dapatkanencoding
         enc = self.cl100k_base()
 
         def get_finally_message(new_messages: List[Any]) -> List[Any]:
-            # 修剪到只有一条记录则不再处理
+            # No more processing until only one record has been trimmed
             if len(new_messages) == 1:
                 return new_messages
             total_count = 0
@@ -442,21 +317,9 @@ class AssistantAgent(AssistantUtils):
 
         return get_finally_message(messages)
 
-    async def arun(self, query: str, chat_history: List = None, callback: Callbacks = None):
-        await self.fake_callback(callback)
-
-        if chat_history:
-            chat_history.append(HumanMessage(content=query))
-            inputs = chat_history
-        else:
-            inputs = [HumanMessage(content=query)]
-
-        async for one in self.agent.astream(inputs, config=RunnableConfig(callbacks=callback)):
-            yield one
-
     async def run(self, query: str, chat_history: List = None, callback: Callbacks = None) -> List[BaseMessage]:
         """
-        运行智能体对话
+        Run Agent Conversation
         """
         await self.fake_callback(callback)
 
@@ -472,15 +335,77 @@ class AssistantAgent(AssistantUtils):
         if self.current_agent_executor == 'ReAct':
             result = await self.react_run(inputs, callback)
         else:
-            result = await self.agent.ainvoke(inputs, config=RunnableConfig(callbacks=callback))
+            result = await self.agent.ainvoke({'messages': inputs}, config=RunnableConfig(callbacks=callback))
+            result = result['messages']
 
-        # 记录聊天历史
+        # Record Chat History
         await self.record_chat_history([one.to_json() for one in result])
 
         return result
 
+    async def astream(self, query: str, chat_history: List = None, callback: Callbacks = None):
+        """
+        Run Agent Conversation - Streaming version
+        """
+        await self.fake_callback(callback)
+
+        if chat_history:
+            chat_history.append(HumanMessage(content=query))
+            inputs = chat_history
+        else:
+            inputs = [HumanMessage(content=query)]
+
+        # trim message
+        inputs = await self.trim_messages(inputs)
+
+        if self.current_agent_executor == 'ReAct':
+            # ReActMode temporarily does not support streaming, downgrade to non streaming
+            result = await self.react_run(inputs, callback)
+            # Record Chat History
+            await self.record_chat_history([one.to_json() for one in result])
+            yield result
+        else:
+            # Use Streaming Calls
+            config = RunnableConfig(callbacks=callback)
+            final_messages = []
+
+            logger.info(f'Using function-calling mode, starting astream...')
+
+            chunk_count = 0
+
+            try:
+                # UsemessagesPatternedLangGraph streamingattaintokenLevel of Streaming Output
+                async for chunk in self.agent.astream({'messages': inputs}, config=config, stream_mode="messages"):
+                    chunk_count += 1
+
+                    # stream_mode="messages" Return (message, metadata) Meta Group
+                    message = None
+                    if isinstance(chunk, tuple) and len(chunk) >= 2:
+                        message, metadata = chunk[:2]
+                    elif hasattr(chunk, 'content'):
+                        # Directly to the message object
+                        message = chunk
+
+                    if message:
+                        # stream_mode="messages"Returns Independencechunk, use its content directly
+                        final_messages = [message]  # Save message for history
+                        yield [message]
+
+            except Exception as astream_error:
+                logger.exception(f'Error in astream async for loop: {str(astream_error)}')
+                raise astream_error
+
+            logger.info(f'Function calling astream completed, total chunks: {chunk_count}')
+
+            if chunk_count == 0:
+                logger.warning(f'No chunks received from agent.astream()! This indicates a streaming issue.')
+
+            # Record Chat History
+            if final_messages:
+                await self.record_chat_history([one.to_json() for one in final_messages])
+
     async def react_run(self, inputs: List, callback: Callbacks = None):
-        """ react 模式的输入和执行 """
+        """ react Mode input and execution """
         result = await self.agent.ainvoke({
             'input': inputs[-1].content,
             'chat_history': inputs[:-1],

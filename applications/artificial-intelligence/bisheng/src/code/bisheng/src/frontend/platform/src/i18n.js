@@ -5,25 +5,45 @@ import {
 } from "react-i18next";
 import json from "../package.json";
 
-const userLanguage = (localStorage.getItem('language') ||
-    navigator.language ||
-    navigator.userLanguage || 'en').substring(0, 2)
+// Obtain user language preferences, supporting full language codes (e.g., zh-Hans, en-US) 
+const getBrowserLanguage = () => {
+    const savedLanguage = localStorage.getItem('i18nextLng');
+    if (savedLanguage) return savedLanguage === 'zh' ? 'zh-Hans' : savedLanguage;
+
+    const browserLang = navigator.language || navigator.userLanguage || 'en-US';
+    // Map browser language codes to the languages we support 
+    if (browserLang.startsWith('zh')) return 'zh-Hans';
+    if (browserLang.startsWith('ja')) return 'ja';
+    return 'en-US';
+};
+
+const userLanguage = getBrowserLanguage();
+const config = window.BRAND_CONFIG || {};
 
 i18n.use(Backend)
     .use(initReactI18next)
     .init({
         partialBundledLanguages: true,
         ns: ['bs', 'flow'],
-        lng: 'zh', // userLanguage === 'zh' ? userLanguage : 'en', // 除中文即英文
+        lng: userLanguage,
+        fallbackLng: 'en-US',
         backend: {
             loadPath: __APP_ENV__.BASE_URL + '/locales/{{lng}}/{{ns}}.json?v=' + json.version
         },
         interpolation: {
-            escapeValue: false // react already safes from xss
+            escapeValue: false, // react already safes from xss
+            defaultVariables: {
+                bisheng: config.brandName?.en,
+                bishengZh: config.brandName?.zh,
+                linsight: config.linsightAgentName?.en,
+                linsightZh: config.linsightAgentName?.zh,
+                linsightFull: config.linsightFullName?.en,
+                linsightFullZh: config.linsightFullName?.zh
+            }
         }
     });
 
 export default i18n;
 
-// 动态的加载命名空间
+// Dynamically load the namespace 
 // i18n.loadNamespaces(['bs']);

@@ -1,3 +1,4 @@
+import { message } from '@/components/bs-ui/toast/use-toast';
 import { generateUUID } from '@/components/bs-ui/utils';
 import { getChatHistory } from '@/controllers/API';
 import { ChatMessageType } from '@/types/chat';
@@ -27,6 +28,7 @@ type State = {
      * 控制引导问题的显示状态
      */
     showGuideQuestion: boolean
+    inputForm: null | any
 }
 
 type Actions = {
@@ -44,6 +46,7 @@ type Actions = {
     insetBsMsg: (text: string) => void;
     setShowGuideQuestion: (text: boolean) => void;
     clearMsgs: () => void;
+    setInputForm: (inputForm: any) => void;
 }
 
 
@@ -55,27 +58,40 @@ const handleHistoryMsg = (data: any[]): ChatMessageType[] => {
         .replace(/\t/g, '\\t')                  // 转义制表符
         .replace(/'/g, '"');                    // 将单引号替换为双引号
 
-    return data.filter(item => ["question", "output_with_input_msg", "output_with_choose_msg", "stream_msg", "output_msg", "guide_question", "guide_word", "input", "node_run"].includes(item.category)).map(item => {
-        let { message, files, is_bot, intermediate_steps, category, ...other } = item
-        try {
-            message = message && message[0] === '{' ? JSON.parse(message) : message || ''
-        } catch (e) {
-            // 未考虑的情况暂不处理
-            console.error('消息 to JSON error :>> ', e);
-        }
-        return {
-            ...other,
-            category,
-            chatKey: typeof message === 'string' ? undefined : Object.keys(message)[0],
-            end: true,
-            files: files ? JSON.parse(files) : [],
-            isSend: !is_bot,
-            message,
-            thought: intermediate_steps,
-            reasoning_log: message.reasoning_content || '',
-            noAccess: true
-        }
-    })
+    return data.filter(item =>
+        ["question", "output_with_input_msg", "output_with_choose_msg", "stream_msg", "output_msg", "guide_question", "guide_word", "node_run", "answer"].includes(item.category)
+        && (item.message || item.reasoning_log)).map(item => {
+            let { message, files, is_bot, intermediate_steps, category, ...other } = item
+            try {
+                message = message && message[0] === '{' ? JSON.parse(message) : message || ''
+            } catch (e) {
+                // 未考虑的情况暂不处理
+                console.error('消息 to JSON error :>> ', e);
+            }
+            // hack
+            let chatKey = undefined
+            if (typeof message !== 'string') {
+                // 优先 input
+                if ('input' in message) {
+                    chatKey = 'input'
+                } else {
+                    chatKey = Object.keys(message)[0]
+                }
+            }
+
+            return {
+                ...other,
+                category,
+                chatKey,
+                end: true,
+                files: files ? JSON.parse(files) : [],
+                isSend: !is_bot,
+                message,
+                thought: intermediate_steps,
+                reasoning_log: message.reasoning_content || '',
+                noAccess: true
+            }
+        })
 }
 
 let currentChatId = ''
@@ -83,7 +99,7 @@ let currentChatId = ''
 export const useMessageStore = create<State & Actions>((set, get) => ({
     chatId: '',
     messages: [],
-
+    inputForm: null,
     running: false,
     hisMessages: [],
     historyEnd: false,
@@ -125,12 +141,13 @@ export const useMessageStore = create<State & Actions>((set, get) => ({
         if (!currentMsg) return get().createWsMsg(
             { ...data, message: data.message.msg, reasoning_log: reasoning_content || '', message_id: unique_id + output_key }
         )
+
         // append
         const newCurrentMessage = {
             ...currentMsg,
             message_id: data.type === 'end' ? data.message_id : currentMsg.message_id,
             message: data.type === 'end' ? data.message.msg : currentMsg.message + data.message.msg,
-            reasoning_log: reasoning_content ? currentMsg.reasoning_log + reasoning_content : currentMsg.reasoning_log,
+            reasoning_log: data.type === 'end' ? currentMsg.reasoning_log : currentMsg.reasoning_log + (reasoning_content || ''),
             create_time: formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss'),
             source: data.source,
             end: data.type === 'end'
@@ -226,8 +243,19 @@ export const useMessageStore = create<State & Actions>((set, get) => ({
             set({ historyEnd: true })
         }
     },
-
-
+    overWsMsg(data) {
+        // 删除所有未结束消息
+        if (data.type === 'end_cover' && data.message) {
+            console.log('触发安全审计,删除所有未结束消息 :>> ');
+            data.category = "stream_msg"
+            data.type = 'over'
+            data.message_id = generateUUID(8)
+            get().createWsMsg(data)
+            setTimeout(() => {
+                set((state) => ({ messages: state.messages.filter(msg => msg.end) }))
+            }, 0);
+        }
+    },
     // stream end old
     updateCurrentMessage(data) {
         const messages = get().messages
@@ -256,9 +284,15 @@ export const useMessageStore = create<State & Actions>((set, get) => ({
         }, 0);
     },
     destory() {
-        set({ chatId: '', messages: [] })
+        set({
+            chatId: '',
+            messages: [],
+            inputForm: null
+        })
     },
-
+    setInputForm(form) {
+        set({ inputForm: form })
+    },
 
     // // stream end
     // updateCurrentMessage(wsdata, cover = false) {

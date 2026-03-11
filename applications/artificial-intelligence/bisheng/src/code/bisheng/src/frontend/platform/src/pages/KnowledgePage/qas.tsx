@@ -1,10 +1,13 @@
+import { checkSassUrl } from "@/components/bs-comp/FileView";
 import { LoadIcon } from "@/components/bs-icons";
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 import { Checkbox } from "@/components/bs-ui/checkBox";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 import { Switch } from "@/components/bs-ui/switch";
 import { useToast } from "@/components/bs-ui/toast/use-toast";
-import { ArrowLeft } from "lucide-react";
+import Tip from "@/components/bs-ui/tooltip/tip";
+import { downloadFile, formatDate } from "@/util/utils";
+import { ArrowLeft, SquareCheckBig, SquareX, Trash2 } from "lucide-react";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
@@ -20,16 +23,17 @@ import {
     TableHeader,
     TableRow
 } from "../../components/bs-ui/table";
-import { deleteQa, generateSimilarQa, getQaDetail, getQaList, updateQa, updateQaStatus } from "../../controllers/API";
+import { deleteQa, generateSimilarQa, getQaDetail, getQaFile, getQaList, updateQa, updateQaStatus } from "../../controllers/API";
 import { captureAndAlertRequestErrorHoc } from "../../controllers/request";
 import { useTable } from "../../util/hook";
-import { LoadingIcon } from "@/components/bs-icons/loading";
+import { ImportQa } from "./components/ImportQa";
 
 const defaultQa = {
     question: '',
     similarQuestions: [''],
     answer: ''
 }
+
 // 添加&编辑qa
 const EditQa = forwardRef(function ({ knowlageId, onChange }, ref) {
     const { t } = useTranslation('knowledge');
@@ -127,7 +131,7 @@ const EditQa = forwardRef(function ({ knowlageId, onChange }, ref) {
                 description: t('max100CharactersForSimilarQuestion')
             });
         }
-        if (form.answer.length > 1000) {
+        if (form.answer.length > 10000) {
             return message({
                 variant: 'warning',
                 description: t('max1000CharactersForAnswer')
@@ -215,34 +219,148 @@ const EditQa = forwardRef(function ({ knowlageId, onChange }, ref) {
 });
 
 
-
 export default function QasPage() {
     const { t } = useTranslation('knowledge')
 
     const { id } = useParams()
     const [title, setTitle] = useState('')
-    const [selectedItems, setSelectedItems] = useState([]); // 存储选中的项
-    const [selectAll, setSelectAll] = useState(false); // 全选状态
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
     const editRef = useRef(null)
+    const importRef = useRef(null)
     const [hasPermission, setHasPermission] = useState(false)
+    const { toast } = useToast();
+
+      const sourceTypeKeys = [
+        'source_unknown',      // 0: 未知
+        'source_manual',       // 1: 手动创建
+        'source_annotation_import', // 2: 标注导入
+        'source_api_import',   // 3: api导入
+        'source_batch_import'  // 4: 批量导入
+    ];
 
     const { page, pageSize, data: datalist, total, loading, setPage, search, reload, refreshData } = useTable({}, (param) =>
         getQaList(id, param).then(res => {
             setHasPermission(res.writeable)
-            setSelectedItems([]);
-            setSelectAll(false);
             return res
         })
     )
 
+    // Polling effect to check if any item is in processing status
     useEffect(() => {
-        // @ts-ignore
-        const libname = window.libname // 临时记忆
-        if (libname) {
-            localStorage.setItem('libname', window.libname)
+        const runing = datalist.some(item => item.status === 2)
+        if (runing) {
+            const timer = setTimeout(() => {
+                reload()
+            }, 5000)
+            return () => clearTimeout(timer)
         }
-        setTitle(window.libname || localStorage.getItem('libname'))
-    }, [])
+    }, [datalist])
+
+    // Modify useEffect to handle title processing
+    useEffect(() => {
+        // Handle potential format issues with window.libname
+        let libName = '';
+        if (window.libname) {
+            if (Array.isArray(window.libname) && window.libname.length > 0) {
+                libName = window.libname[0];
+            } else if (typeof window.libname === 'string') {
+                libName = window.libname;
+            }
+            // Store only the name in localStorage
+            localStorage.setItem('libname', libName);
+        } else {
+            libName = localStorage.getItem('libname') || '';
+        }
+        setTitle(libName || t('unknownKnowledgeBase')); // Provide default text
+    }, []);
+
+    const handleEnableSelected = async () => {
+        if (!selectedItems.length) return;
+
+        try {
+            const itemsToEnable = selectedItems.filter(id => {
+                const item = datalist.find(el => el.id === id);
+                return !item || item.status !== 1;
+            });
+
+            if (itemsToEnable.length === 0) {
+                toast({ variant: 'info', description: t('theSelectedItemsAlreadyEnabled') });
+                return;
+            }
+
+            refreshData(
+                item => itemsToEnable.includes(item.id),
+                { status: 2 } // Processing status
+            );
+
+            const results = await Promise.allSettled(
+                itemsToEnable.map(id => updateQaStatus(id, 1)) // 1 = Enable
+            );
+
+            const successCount = results.filter(res => res.status === 'fulfilled').length;
+            const failedIds = results
+                .filter(res => res.status === 'rejected')
+                .map((res, idx) => itemsToEnable[idx]);
+
+            await reload();
+            setSelectedItems([]);
+            setSelectAll(false);
+
+            if (successCount > 0) {
+                toast({ variant: 'success', description: t('successfullyEnabled', { count: successCount }) });
+            }
+            if (failedIds.length > 0) {
+                toast({
+                    variant: 'warning',
+                    description: t('someItemsFailedToEnable', { ids: failedIds.join(', ') })
+                });
+            }
+        } catch (error) {
+            toast({ variant: 'error', description: t('batchEnableOperationFailed') });
+        }
+    };
+
+    const handleDisableSelected = async () => {
+        if (!selectedItems.length) return;
+
+        try {
+            const itemsToDisable = selectedItems.filter(id => {
+                const item = datalist.find(el => el.id === id);
+                return !item || item.status !== 0; // 0 = Disabled
+            });
+
+            if (itemsToDisable.length === 0) {
+                toast({ variant: 'info', description: t('theSelectedItemsAlreadyDisabled') });
+                return;
+            }
+
+            const results = await Promise.allSettled(
+                itemsToDisable.map(id => updateQaStatus(id, 0))
+            );
+
+            const successCount = results.filter(res => res.status === 'fulfilled').length;
+            const failedIds = results
+                .filter(res => res.status === 'rejected')
+                .map((res, idx) => itemsToDisable[idx]);
+
+            await reload();
+            setSelectedItems([]);
+            setSelectAll(false);
+
+            if (successCount > 0) {
+                toast({ variant: 'success', description: t('successfullyDisabled', { count: successCount }) });
+            }
+            if (failedIds.length > 0) {
+                toast({
+                    variant: 'warning',
+                    description: t('someItemsFailedToDisable', { ids: failedIds.join(', ') })
+                });
+            }
+        } catch (error) {
+            toast({ variant: 'error', description: t('batchDisableOperationFailed') });
+        }
+    };
 
     const handleCheckboxChange = (id) => {
         setSelectedItems((prevSelectedItems) => {
@@ -254,19 +372,32 @@ export default function QasPage() {
         });
     };
 
+    useEffect(() => {
+        const currentPageIds = datalist.map(item => item.id);
+        const isAllSelected = currentPageIds.length > 0 &&
+            currentPageIds.every(id => selectedItems.includes(id));
+        setSelectAll(isAllSelected);
+    }, [datalist, selectedItems]);
+
     const handleSelectAll = () => {
-        if (selectAll) {
-            setSelectedItems([]);
-        } else {
-            setSelectedItems(datalist.map(item => item.id));
-        }
-        setSelectAll(!selectAll);
+        const currentPageIds = datalist.map(item => item.id);
+        setSelectedItems(prev => {
+            const newSelected = new Set(prev);
+            if (selectAll) {
+                currentPageIds.forEach(id => newSelected.delete(id));
+            } else {
+                currentPageIds.forEach(id => newSelected.add(id));
+            }
+            return Array.from(newSelected);
+        });
     };
 
     useEffect(() => {
-        setSelectedItems([]);
-        setSelectAll(false);
-    }, [page]);
+        const currentPageIds = datalist.map(item => item.id);
+        const isCurrentPageAllSelected = currentPageIds.length > 0 &&
+            currentPageIds.every(id => selectedItems.includes(id));
+        setSelectAll(isCurrentPageAllSelected);
+    }, [datalist, selectedItems]);
 
     const handleDelete = (id) => {
         bsConfirm({
@@ -281,113 +412,213 @@ export default function QasPage() {
     }
 
     const handleDeleteSelected = () => {
+        if (!selectedItems.length) return;
+
         bsConfirm({
-            desc: t('confirmDeleteSelectedQaData'),
+            desc: t('confirmDeleteSelectedQaData', { count: selectedItems.length }), // Display the total number of selected items
             onOk(next) {
-                captureAndAlertRequestErrorHoc(deleteQa(selectedItems).then(res => {
-                    reload();
-                }));
+                captureAndAlertRequestErrorHoc(
+                    deleteQa(selectedItems) // Pass all selected IDs
+                        .then(res => {
+                            reload(); // Refresh all data
+                            setSelectedItems([]); // Clear selected items
+                            setSelectAll(false);
+                        })
+                );
                 next();
             },
         });
     };
 
-    const handleStatusClick = async (id, checked) => {
-        const status = checked ? 1 : 0
-        await updateQaStatus(id, status)
-        refreshData((item) => item.id === id, { status })
-    }
+    const handleStatusClick = async (id: number, checked: boolean) => {
+        const targetStatus = checked ? 1 : 0;
+        const item = datalist.find(el => el.id === id);
 
-    return <div className="relative px-2 pt-4 size-full">
-        {loading && <div className="absolute w-full h-full top-0 left-0 flex justify-center items-center z-10 bg-[rgba(255,255,255,0.6)] dark:bg-blur-shared">
-            <LoadingIcon />
-        </div>}
-        <div className="h-full bg-background-login">
-            <div className="flex justify-between">
-                <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center">
-                        <ShadTooltip content={t('back')} side="top">
-                            <button className="extra-side-bar-buttons w-[36px]" onClick={() => { }} >
-                                <Link to='/filelib'><ArrowLeft className="side-bar-button-size" /></Link>
-                            </button>
-                        </ShadTooltip>
-                        <span className="text-gray-700 text-sm font-black pl-4 dark:text-white">{title}</span>
+        if (item && item.status === targetStatus) {
+            return;
+        }
+
+        const isOpening = checked;
+        try {
+            if (isOpening) {
+                refreshData(item => item.id === id, { status: 2 });
+            }
+            await updateQaStatus(id, targetStatus);
+            refreshData(item => item.id === id, { status: targetStatus });
+        } catch (error) {
+            toast({
+                variant: 'error',
+                description: error
+            });
+            refreshData(item => item.id === id, {
+                status: 3
+            });
+        }
+    };
+
+    return (
+        <div className="relative px-2 pt-4 size-full">
+            <div className="h-full bg-background-login">
+                <div className="flex justify-between">
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="flex items-center">
+                            <ShadTooltip content={t('back')} side="top">
+                                <button className="extra-side-bar-buttons w-[36px]" onClick={() => { }} >
+                                    <Link to='/filelib'><ArrowLeft className="side-bar-button-size" /></Link>
+                                </button>
+                            </ShadTooltip>
+                            <span className="text-gray-700 text-sm font-black pl-4 dark:text-white truncate max-w-80">{title}</span>
+                        </div>
                     </div>
-                </div>
-                <div className="flex justify-between items-center mb-4">
                     <div className={selectedItems.length ? 'visible' : 'invisible'}>
-                        <span className="pl-1 text-sm">{t('selectedItems')}: {selectedItems.length}</span>
-                        <Button variant="link" className="text-red-500 ml-2" onClick={handleDeleteSelected}>{t('batchDelete')}</Button>
+                        <Tip content={!hasPermission && t('noOperationPermission')} side='top'>
+                            <Button variant="outline" className="disabled:pointer-events-auto ml-2" disabled={!hasPermission} onClick={handleDeleteSelected}>
+                                <Trash2 className="mr-2 h-4 w-4" ></Trash2> {t('delete')}
+                            </Button>
+                        </Tip>
+                        <Tip content={!hasPermission && t('noOperationPermission')} side='top'>
+                            <Button variant="outline" className="disabled:pointer-events-auto ml-2" disabled={!hasPermission} onClick={handleDisableSelected}>
+                                <SquareX className="mr-2 h-4 w-4" /> {t('disable')}
+                            </Button>
+                        </Tip>
+                        <Tip content={!hasPermission && t('noOperationPermission')} side='top'>
+                            <Button variant="outline" className="disabled:pointer-events-auto ml-2" disabled={!hasPermission} onClick={handleEnableSelected}>
+                                <SquareCheckBig className="mr-2 h-4 w-4" /> {t('enable')}
+                            </Button>
+                        </Tip>
                     </div>
-                    <div className="flex gap-4 items-center">
-                        <SearchInput placeholder={t('qaContent')} onChange={(e) => search(e.target.value)}></SearchInput>
-                        <Button className="px-8" onClick={() => editRef.current.open()}>{t('createQA')}</Button>
+                    <div className="flex justify-between items-center mb-4">
+                        <div className="flex gap-4 items-center">
+                            <SearchInput placeholder={t('qaContent')} onChange={(e) => search(e.target.value)}></SearchInput>
+                            <Tip content={!hasPermission && t('noOperationPermission')} side='top'>
+                                <Button variant="outline" disabled={!hasPermission} className="disabled:pointer-events-auto px-8" onClick={() => importRef.current.open()}>{t('import')}</Button>
+                            </Tip>
+                            <Button variant="outline" className="px-8" onClick={() => {
+                                getQaFile(id).then(res => {
+                                    const fileUrl = res.file_list[0];
+                                    downloadFile(checkSassUrl(fileUrl), `${title} ${formatDate(new Date(), 'yyyy-MM-dd')}.xlsx`);
+                                })
+                            }}>{t('export')}</Button>
+                            <Tip content={!hasPermission && t('noOperationPermission')} side='top'>
+                                <Button className="disabled:pointer-events-auto px-8" disabled={!hasPermission} onClick={() => editRef.current.open()}>{t('createQA')}</Button>
+                            </Tip>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="overflow-y-auto h-[calc(100vh-132px)] pb-20">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-8">
-                                <Checkbox checked={selectAll} onCheckedChange={handleSelectAll} />
-                            </TableHead>
-                            <TableHead className="w-[340px]">{t('question')}</TableHead>
-                            <TableHead className="w-[340px]">{t('answer')}</TableHead>
-                            <TableHead className="w-[130px] flex items-center gap-4">{t('type')}</TableHead>
-                            <TableHead>{t('creationTime')}</TableHead>
-                            <TableHead>{t('updateTime')}</TableHead>
-                            <TableHead className="w-20">{t('creator')}</TableHead>
-                            <TableHead>{t('status')}</TableHead>
-                            <TableHead className="text-right pr-6">{t('operations')}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {datalist.map(el => (
-                            <TableRow key={el.id}>
-                                <TableCell className="font-medium">
-                                    <Checkbox checked={selectedItems.includes(el.id)} onCheckedChange={() => handleCheckboxChange(el.id)} />
-                                </TableCell>
-                                <TableCell className="font-medium">
-                                    <div className="max-h-48 overflow-y-auto scrollbar-hide">
-                                        {el.questions}
-                                    </div>
-                                </TableCell>
-                                <TableCell className="font-medium">
-                                    <div className="max-h-48 overflow-y-auto scrollbar-hide">
-                                        {el.answers}
-                                    </div>
-                                </TableCell>
-                                <TableCell>{[t('unknown'), t('manualCreation'), t('auditTag')][el.source]}</TableCell>
-                                <TableCell>{el.create_time.replace('T', ' ')}</TableCell>
-                                <TableCell>{el.update_time.replace('T', ' ')}</TableCell>
-                                <TableCell>{el.user_name}</TableCell>
-                                <TableCell>
-                                    <Switch checked={el.status === 1} onCheckedChange={(bln) => handleStatusClick(el.id, bln)} />
-                                </TableCell>
-                                {hasPermission ? <TableCell className="text-right">
-                                    <Button variant="link" onClick={() => editRef.current.edit(el)} className="ml-4">{t('update')}</Button>
-                                    <Button variant="link" onClick={() => handleDelete(el.id)} className="ml-4 text-red-500">{t('delete')}</Button>
-                                </TableCell> : <TableCell className="text-right">
-                                    <Button variant="link" disabled className="ml-4">{t('update')}</Button>
-                                    <Button variant="link" disabled className="ml-4 text-red-500">{t('delete')}</Button>
-                                </TableCell>}
+                <div className="overflow-y-auto h-[calc(100vh-132px)] pb-20">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-8">
+                                    <Checkbox checked={selectAll} onCheckedChange={handleSelectAll} />
+                                </TableHead>
+                                <TableHead className="w-[340px]">{t('question')}</TableHead>
+                                <TableHead className="w-[340px]">{t('answer')}</TableHead>
+                                <TableHead>{t('type')}</TableHead>
+                                <TableHead>{t('updateTime')}</TableHead>
+                                <TableHead>{t('createUser')}</TableHead>
+                                <TableHead className="text-right pr-6">{t('operations')}</TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {datalist.map(el => (
+                                <TableRow key={el.id} className={hasPermission ? "hover:bg-gray-100" : ""}>
+                                    <TableCell className="font-medium" onClick={(e) => e.stopPropagation()}>
+                                        <Checkbox
+                                            checked={selectedItems.includes(el.id)}
+                                            onCheckedChange={() => handleCheckboxChange(el.id)}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    </TableCell>
+
+                                    <TableCell
+                                        className="font-medium cursor-pointer"
+                                        onClick={() => hasPermission && editRef.current.edit(el)}
+                                    >
+                                        <div className="max-h-48 overflow-y-auto scrollbar-hide">
+                                            {el.questions}
+                                        </div>
+                                    </TableCell>
+
+                                    <TableCell
+                                        className="font-medium cursor-pointer"
+                                        onClick={() => hasPermission && editRef.current.edit(el)}
+                                    >
+                                        <div className="max-h-48 overflow-y-auto scrollbar-hide">
+                                            {el.answers}
+                                        </div>
+                                    </TableCell>
+
+                                    <TableCell
+                                        className="cursor-pointer"
+                                        onClick={() => hasPermission && editRef.current.edit(el)}
+                                    >
+                                        {/* {['未知', '手动创建', '标注导入', 'api导入', '批量导入'][el.source]} */}
+                                        {t(sourceTypeKeys[el.source] || sourceTypeKeys[0])}
+                                    </TableCell>
+                                    <TableCell>{el.update_time.replace('T', ' ')}</TableCell>
+                                    <TableCell>{el.user_name}</TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <div className="flex items-center">
+                                                {el.status !== 2 && (
+                                                    <Tip
+                                                        content={!hasPermission && t('noOperationPermission')}
+                                                        side='top'>
+                                                        <div>
+                                                            <Switch
+                                                                checked={el.status === 1}
+                                                                disabled={!hasPermission}
+                                                                className="disabled:pointer-events-auto"
+                                                                onCheckedChange={(bln) => handleStatusClick(el.id, bln)}
+                                                            />
+                                                        </div>
+                                                    </Tip>
+                                                )}
+                                                {el.status === 2 && (
+                                                    <span className="text-sm">{t('processing')}</span>
+                                                )}
+                                                {el.status === 3 && (
+                                                    <span className="text-sm">{t('notEnabled')}</span>
+                                                )}
+                                            </div>
+                                            <Tip
+                                                content={!hasPermission && t('noOperationPermission')}
+                                                styleClasses="-translate-x-6"
+                                                side='top'>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="disabled:pointer-events-auto"
+                                                    disabled={!hasPermission}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDelete(el.id);
+                                                    }}
+                                                >
+                                                    <Trash2 size={16} />
+                                                </Button>
+                                            </Tip>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
-        </div>
-        <div className="bisheng-table-footer px-6 justify-end">
-            <div>
-                <AutoPagination
-                    page={page}
-                    pageSize={pageSize}
-                    total={total}
-                    onChange={(newPage) => setPage(newPage)}
-                />
+            <div className="bisheng-table-footer px-6 justify-end">
+                <div>
+                    <AutoPagination
+                        page={page}
+                        pageSize={pageSize}
+                        total={total}
+                        onChange={(newPage) => setPage(newPage)}
+                    />
+                </div>
             </div>
+            <EditQa ref={editRef} knowlageId={id} onChange={reload} />
+            <ImportQa ref={importRef} knowlageId={id} onChange={reload} />
         </div>
-        <EditQa ref={editRef} knowlageId={id} onChange={reload} />
-    </div >
-};
+    );
+}

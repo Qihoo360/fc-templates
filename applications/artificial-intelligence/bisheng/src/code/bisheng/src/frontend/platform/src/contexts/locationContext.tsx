@@ -65,26 +65,28 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   const [extraComponent, setExtraComponent] = useState(<></>);
   const [appConfig, setAppConfig] = useState<any>({
     libAccepts: [],
-    noFace: true
+    noFace: true,
   })
 
   const loadConfig = () => {
     getAppConfig()
       .then(res => {
         // Set all config values that come from getAppConfig
-        setAppConfig({
+        setAppConfig((prev) => ({
+          ...prev,
           isDev: res.env === 'dev',
           libAccepts: res.uns_support,
           officeUrl: res.office_url,
           dialogTips: res.dialog_tips,
           dialogQuickSearch: res.dialog_quick_search,
-          websocketHost: res.websocket_url || window.location.host,
+          websocketHost: res.websocket_url,
           isPro: !!res.pro,
           chatPrompt: !!res.application_usage_tips,
           noFace: !res.show_github_and_help,
           register: !!res.enable_registration,
-          uploadFileMaxSize: res.uploaded_files_maximum_size || 50,
-        });
+          uploadFileMaxSize: res.uploaded_files_maximum_size || 200,
+          enableEtl4lm: res.enable_etl4lm
+        }));
 
         // backend version
         res.version && console.log(
@@ -99,7 +101,8 @@ export function LocationProvider({ children }: { children: ReactNode }) {
             // Only update the benchMenu property
             setAppConfig(prev => ({
               ...prev,
-              benchMenu: bench?.menuShow || false
+              benchMenu: bench?.menuShow ?? true,
+              worksapceIcon: bench?.assistantIcon?.image ?? '',
             }));
           })
           .catch(error => {

@@ -1,7 +1,6 @@
-from bisheng.cache import InMemoryCache
-from bisheng.cache.redis import redis_client
-from bisheng.settings import settings
-from bisheng.utils.minio_client import MinioClient
+from bisheng.core.cache import InMemoryCache
+from bisheng.core.cache.redis_manager import get_redis_client_sync, get_redis_client
+from bisheng.core.storage.minio.minio_manager import get_minio_storage_sync, get_minio_storage
 
 
 class BaseService:
@@ -9,28 +8,52 @@ class BaseService:
 
     @classmethod
     def get_logo_share_link(cls, logo_path: str):
+
+        redis_client = get_redis_client_sync()
         if not logo_path:
             return ''
-        cache_key = f'logo_cache:{logo_path}'
-        # 先从内存中获取
+        cache_key = f'logo_cache_new:{logo_path}'
+        # Fetch from memory first
         share_url = cls.LogoMemoryCache.get(cache_key)
         if share_url:
             return share_url
 
-        # 再从redis缓存中获取
+        # Then fromredisFetch in cache
         share_url = redis_client.get(cache_key)
         if share_url:
             cls.LogoMemoryCache.set(cache_key, share_url)
             return share_url
 
-        minio_client = MinioClient()
-        share_url = minio_client.get_share_link(logo_path)
-        # 去除前缀通过nginx访问，防止访问不到文件
-        # TODO 去掉此解决方案，改为minio生成的share_link就是可访问的https或者http的
-        minio_share = settings.get_knowledge().get('minio', {}).get('MINIO_SHAREPOIN', '')
-        share_url = share_url.replace(f"http://{minio_share}", "")
+        minio_client = get_minio_storage_sync()
+        share_url = minio_client.get_share_link_sync(logo_path)
 
-        # 缓存5天， 临时链接有效期为7天
+        # Ceacle5Day. Temporary link is valid for7 days
         redis_client.set(cache_key, share_url, 3600 * 120)
+        cls.LogoMemoryCache.set(cache_key, share_url)
+        return share_url
+
+    @classmethod
+    async def get_logo_share_link_async(cls, logo_path: str):
+
+        redis_client = await get_redis_client()
+        if not logo_path:
+            return ''
+        cache_key = f'logo_cache_new:{logo_path}'
+        # Fetch from memory first
+        share_url = cls.LogoMemoryCache.get(cache_key)
+        if share_url:
+            return share_url
+
+        # Then fromredisFetch in cache
+        share_url = await redis_client.aget(cache_key)
+        if share_url:
+            cls.LogoMemoryCache.set(cache_key, share_url)
+            return share_url
+
+        minio_client = await get_minio_storage()
+        share_url = await minio_client.get_share_link(logo_path)
+
+        # Ceacle5Day. Temporary link is valid for7 days
+        await redis_client.aset(cache_key, share_url, 3600 * 120)
         cls.LogoMemoryCache.set(cache_key, share_url)
         return share_url

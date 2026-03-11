@@ -4,17 +4,30 @@ import { Button } from "@/components/bs-ui/button";
 import { Textarea } from "@/components/bs-ui/input";
 import { useToast } from "@/components/bs-ui/toast/use-toast";
 import { locationContext } from "@/contexts/locationContext";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 // import GuideQuestions from "./GuideQuestions";
 // import { useMessageStore } from "./messageStore";
+import Tip from "@/components/bs-ui/tooltip/tip";
+import { useAudioStore } from "@/components/voiceFunction/audioPlayerStore";
+import SpeechToTextComponent from "@/components/voiceFunction/speechToText";
+import { useLinsightConfig } from "@/pages/ModelPage/manage/tabs/WorkbenchModel";
 import { RefreshCw } from "lucide-react";
-import GuideQuestions from "./GuideQuestions";
-import InputForm from "./InputForm";
-import { useMessageStore } from "./messageStore";
 import useFlowStore from "../flowStore";
+import ChatFiles from "./ChatFiles";
+import GuideQuestions from "./GuideQuestions";
+import { useMessageStore } from "./messageStore";
+import DragDropOverlay from "./DragDropOverlay";
+import { useFileDropAndPaste } from "./useFileDropAndPaste";
+const GuideQuestionsAny = GuideQuestions as any;
 
-export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, onLoad }) {
+export const FileTypes = {
+    ALL: ['.PNG', '.JPEG', '.JPG', '.BMP', '.PDF', '.TXT', '.MD', '.HTML', '.XLS', '.XLSX', '.CSV', '.DOC', '.DOCX', '.PPT', '.PPTX'],
+    IMAGE: ['.PNG', '.JPEG', '.JPG', '.BMP'],
+    FILE: ['.PDF', '.TXT', '.MD', '.HTML', '.XLS', '.XLSX', '.CSV', '.DOC', '.DOCX', '.PPT', '.PPTX'],
+}
+
+export default function ChatInput({ autoRun, version, clear, form, wsUrl, onBeforSend, onLoad }) {
     const { toast } = useToast()
     const { t } = useTranslation()
     const { appConfig } = useContext(locationContext)
@@ -23,19 +36,37 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
     const questionsRef = useRef(null)
     const inputNodeIdRef = useRef('') // 当前输入框节点id
     const messageIdRef = useRef('') // 当前输入框节点messageId
-    const [inputForm, setInputForm] = useState(null) // input表单
+    const [accepts, setAccepts] = useState('*') // 接受文件类型
+    const [uploadLock, setUploadLock] = useState(false) // 上传锁
+    const { data: linsightConfig, isLoading: loading, refetch: refetchConfig, error } = useLinsightConfig();
+
+    const { isLoading: audioOpening } = useAudioStore()
 
     const [showWhenLocked, setShowWhenLocked] = useState(false) // 强制开启表单按钮，不限制于input锁定
 
-    const { messages, hisMessages, chatId, createSendMsg, createWsMsg, streamWsMsg, insetSeparator, destory, insetNodeRun, setShowGuideQuestion } = useMessageStore()
-    console.log('ui messages :>> ', messages);
+    const __store: any = useMessageStore() as any
+    const {
+        messages,
+        hisMessages,
+        chatId,
+        createSendMsg,
+        createWsMsg,
+        overWsMsg,
+        inputForm,
+        setInputForm,
+        streamWsMsg,
+        insetSeparator,
+        destory,
+        insetNodeRun,
+        setShowGuideQuestion
+    } = __store
 
     const currentChatIdRef = useRef(null)
     const inputRef = useRef(null)
     const continueRef = useRef(false)
     // 停止状态
     const [stop, setStop] = useState({
-        show: false,
+        show: true,
         disable: false
     })
     /**
@@ -85,6 +116,7 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
     }, [])
 
     const handleSendClick = async () => {
+        if (fileUploading) return
         // 解除锁定状态下 form 按钮开放的状态
         // setShowWhenLocked(false)
         // 关闭引导词
@@ -92,9 +124,15 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
         // 收起表单
         // formShow && setFormShow(false)
         // setFormShow(false)
-
-        const value = inputRef.current.value
-        if (value.trim() === '') return
+        const [filePath, fileNames] = getFileIds().reduce((acc, cur) => {
+            acc[0].push(cur.path)
+            acc[1].push(cur.name)
+            return acc
+        }, [[], []])
+        // 文件拼接入消息
+        const _value = inputRef.current.value
+        if (_value.trim() === '' && filePath.length === 0) return
+        const value = fileNames.length > 0 ? fileNames.join('\n') + '\n' + _value : _value;
 
         const event = new Event('input', { bubbles: true, cancelable: true });
         inputRef.current.value = ''
@@ -104,6 +142,7 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
         const wsMsg = onBeforSend('input', {
             nodeId: inputNodeIdRef.current,
             msg: value,
+            files: filePath,
             category: "question",
             extra: '',
             message_id: messageIdRef.current,
@@ -121,25 +160,8 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
         if (messageDom) {
             messageDom.scrollTop = messageDom.scrollHeight;
         }
-    }
 
-    const handleSendForm = async ([data, msg]) => {
-        setInputForm(null)
-        createSendMsg(msg)
-        await createWebSocket()
-        sendWsMsg({
-            action: 'input',
-            data: {
-                [inputNodeIdRef.current]: {
-                    data,
-                    message: msg,
-                    message_id: messageIdRef.current,
-                    category: 'question',
-                    extra: '',
-                    source: 0
-                }
-            }
-        })
+        questionsRef.current.clear()
     }
 
     const sendWsMsg = async (msg) => {
@@ -155,6 +177,7 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
     }
 
     const wsRef = useRef(null)
+    const reRunStateRef = useRef(false)
     const createWebSocket = () => {
         // 单例
         if (wsRef.current) return Promise.resolve('ok');
@@ -172,12 +195,19 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
                 };
                 ws.onmessage = (event) => {
                     const data = JSON.parse(event.data);
-                    console.log('result message data :>> ', data);
+                    // 过滤一些不需要的数据
+                    if ((data.category === 'end_cover' && data.type !== 'end_cover')) {
+                        return
+                    }
 
                     if (data.type === 'begin') {
                         setStop({ show: true, disable: false })
-                    } else if (data.type === 'close') {
-                        setStop({ show: false, disable: false })
+                    } else if (data.type === 'close' && data.category === 'processing') {
+                        if (!reRunStateRef.current) {
+                            // 重试时阻止关闭stop
+                            setStop({ show: false, disable: false })
+                        }
+                        reRunStateRef.current = false
                     }
 
                     // const errorMsg = data.category === 'error' ? data.intermediate_steps : ''
@@ -197,18 +227,23 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
                     // console.error('链接手动断开 event :>> ', event);
                     // setStop({ show: false, disable: false })
 
-                    if ([1005, 1008, 1009].includes(event.code)) {
-                        setInputLock({ locked: true, reason: event.reason })
-                    } else {
-                        if (event.reason) {
-                            toast({
-                                title: t('prompt'),
-                                variant: 'error',
-                                description: event.reason
-                            });
-                        }
-                        setInputLock({ locked: true, reason: '' })
-                    }
+                    // if ([1005, 1008, 1009].includes(event.code)) {
+                    //     setInputLock({ locked: true, reason: event.reason })
+                    // } else {
+                    //     if (event.reason) {
+                    //         toast({
+                    //             title: t('prompt'),
+                    //             variant: 'error',
+                    //             description: event.reason
+                    //         });
+                    //     }
+                    //     setInputLock({ locked: true, reason: '' })
+                    // }
+                    // event.reason && addNotification({
+                    //     type: 'error',
+                    //     title: '运行异常',
+                    //     description: event.reason
+                    // })
                 };
                 ws.onerror = (ev) => {
                     wsRef.current = null
@@ -233,14 +268,30 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
     }
 
     const setRunCache = useFlowStore(state => state.setRunCache)
+    const addNotification = useFlowStore((state) => state.addNotification);
     // 接受 ws 消息
     const handleWsMessage = (data) => {
         if (data.category === 'error') {
-            const { code, message } = data.message
-            setInputLock({ locked: true, reason: '' })
+            const { status_code, status_message, data: params } = data.message
+            if (status_code === 500) {
+                setInputLock({ locked: true, reason: data.message.message })
+            } else {
+                // 特殊状态吗支持输入框展示reason
+                const reason = [10421, 13002, 13010].includes(status_code) ? t(`errors.${status_code}`, params) : ' '
+                setInputLock({ locked: true, reason })
+            }
+
+            // 记录
+            const errorMsg = status_code == 500 ? status_message || data.message.message : t(`errors.${status_code}`, params)
+            addNotification({
+                type: 'error',
+                title: 'runtime error',
+                description: errorMsg
+            })
+
             return toast({
                 variant: 'error',
-                description: code == 500 ? message : t(`errors.${code}`, { type: message })
+                description: errorMsg
             });
         } else if (data.category === 'node_run') {
             inputNodeIdRef.current = data.message.node_id
@@ -257,18 +308,40 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
             const { node_id, input_schema } = data.message
             inputNodeIdRef.current = node_id
             messageIdRef.current = data.message_id
+            // 限制文件类型
+            if (input_schema.tab === 'dialog_input') {
+                const schemaItem = input_schema.value?.find(el => el?.key === 'dialog_file_accept')
+                const uploadSwithItem = input_schema.value?.find(el => el?.key === 'user_input_file')
+                setUploadLock(uploadSwithItem ? uploadSwithItem.value : true)
+                const fileAccept = schemaItem?.value
+                if (fileAccept === 'image') {
+                    setAccepts(FileTypes.IMAGE.join(','))
+                } else if (fileAccept === 'file') {
+                    setAccepts(FileTypes.FILE.join(','))
+                } else {
+                    setAccepts(FileTypes.IMAGE.join(',') + ',' + FileTypes.FILE.join(','))
+                }
+            }
             // 待用户输入
             input_schema.tab === 'form_input' ? setInputForm(input_schema) : setInputLock({ locked: false, reason: '' })
+            setTimeout(() => {
+                inputRef.current.focus()
+            }, 60);
             return
         } else if (data.category === 'guide_question') {
             return questionsRef.current.updateQuestions(data.message.guide_question.filter(q => q))
         } else if (data.category === 'stream_msg') {
             streamWsMsg(data)
+        } else if (data.category === 'end_cover' && data.type === 'end_cover') {
+            setInputLock({ locked: true, reason: '' })
+            sendWsMsg({ "action": "stop" });
+            return overWsMsg(data)
+            // return handleRestartClick()
         }
 
-        if (data.type === 'close') {
+        if (data.type === 'close' && data.category === 'processing') {
             insetSeparator(t('chat.chatEndMessage'))
-            setInputLock({ locked: true, reason: '' })
+            setInputLock((prev) => (prev.reason ? prev : { locked: true, reason: '' }))
             // 重启会话按钮,接收close确认后端处理结束后重启会话
             if (restartCallBackRef.current[data.chat_id]) {
                 restartCallBackRef.current[data.chat_id]()
@@ -287,7 +360,7 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
             detail: {
                 nodeId: node_id,
                 action: isError ? '' : data.type === 'start' ? 'loading' : 'success',
-                data: isError ? { 'error': data.message.reason } : data.message.log_data // 缓存TODO
+                data: isError ? [[{ key: 'error', type: 'params', value: data.message.reason }]] : data.message.log_data // 缓存TODO
             }
         })
         window.dispatchEvent(event)
@@ -303,9 +376,12 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
         }
         const handleOutPutEvent = async (e) => {
             const { nodeId, data, message } = e.detail
+            const { flow_id, chat_id } = onBeforSend('flowInfo', {})
             await createWebSocket()
             sendWsMsg({
                 action: 'input',
+                flow_id,
+                chat_id,
                 data: {
                     [nodeId]: {
                         data,
@@ -319,9 +395,33 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
                 }
             })
         }
+        const handleSendForm = async (e) => {
+            const { data, msg } = e.detail
+            setInputForm(null)
+            createSendMsg(msg)
+            await createWebSocket()
+            const { flow_id, chat_id } = onBeforSend('flowInfo', {})
+            sendWsMsg({
+                action: 'input',
+                flow_id,
+                chat_id,
+                data: {
+                    [inputNodeIdRef.current]: {
+                        data,
+                        message: msg,
+                        message_id: messageIdRef.current,
+                        category: 'question',
+                        extra: '',
+                        source: 0
+                    }
+                }
+            })
+        }
+        document.addEventListener('inputFormEvent', handleSendForm)
         document.addEventListener('outputMsgEvent', handleOutPutEvent)
         document.addEventListener('userResendMsgEvent', handleCustomEvent)
         return () => {
+            document.removeEventListener('inputFormEvent', handleSendForm)
             document.removeEventListener('outputMsgEvent', handleOutPutEvent)
             document.removeEventListener('userResendMsgEvent', handleCustomEvent)
         }
@@ -343,23 +443,25 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
     }
 
     // stop click
-    const handleStopClick = () => {
-        if (stop.disable) return
-        setStop({ show: true, disable: true });
-        setInputLock({ locked: true, reason: '' })
-        sendWsMsg({ "action": "stop" });
-    }
+    // const handleStopClick = () => {
+    //     if (stop.disable) return
+    //     setStop({ show: true, disable: true });
+    //     setInputLock({ locked: true, reason: '' })
+    //     sendWsMsg({ "action": "stop" });
+    // }
     // restart
     const restartCallBackRef = useRef({})
     const [restarted, setRestarted] = useState(false)
     const handleRestartClick = () => {
         sendWsMsg({ "action": "stop" });
+        setInputForm(null)
         setRestarted(true)
         const chatId = currentChatIdRef.current.startsWith('test') ? '' : currentChatIdRef.current
         restartCallBackRef.current[chatId] = () => {
             createWebSocket().then(() => {
                 setRestarted(false)
-                sendWsMsg(onBeforSend('init_data', {}))
+                const data = onBeforSend('refresh_flow', {})
+                sendWsMsg(data)
             })
         }
         // wsRef.current?.close()
@@ -370,28 +472,62 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
         //         sendWsMsg(onBeforSend('init_data', {}))
         //     })
         // }, 300);
+        if (stop.show) {
+            reRunStateRef.current = true
+        }
     }
 
-    return <div className="absolute bottom-0 w-full pt-1 bg-[#fff] dark:bg-[#1B1B1B]">
+    const placholder = useMemo(() => {
+        // if (inputForm) {
+        //     return '      点击刷新按钮可开启新对话'
+        // }
+        const reason = inputLock.reason || ' '
+        return inputLock.locked ? reason : t('chat.inputPlaceholder')
+    }, [inputForm, inputLock])
+
+    // 文件上传状态
+    const { fileUploading, getFileIds, loadingChange } = useFileLoading(inputLock.locked)
+    const handleSpeechRecognition = (text) => {
+        console.log('text', text);
+
+        if (!showWhenLocked && inputLock.locked) return;
+        if (!inputRef.current) return;
+
+        // 将识别结果追加到当前输入框内容后
+        const currentValue = inputRef.current.value;
+        inputRef.current.value = currentValue + text;
+
+        // 触发input事件以更新UI（如自动调整高度）
+        const event = new Event('input', { bubbles: true, cancelable: true });
+        inputRef.current.dispatchEvent(event);
+    };
+
+    // handle drop and paste
+    const inputFilesRef = useRef(null)
+    const { isDragging, handlePaste } = useFileDropAndPaste({
+        enabled: !inputLock.locked,
+        onFilesReceived: (files) => {
+            inputFilesRef.current?.upload(files);
+        }
+    });
+
+    return <div className="absolute bottom-0 w-full pt-1 bg-[#fff] dark:bg-[#1B1B1B] z-10">
+        {isDragging && <DragDropOverlay />}
         <div className={`relative pr-4 ${clear && 'pl-9'}`}>
-            {/* form */}
-            {
-                inputForm && <div className="relative">
-                    <div className="absolute left-0 border bottom-2 bg-background-login px-4 py-2 rounded-md w-[50%] min-w-80 z-40">
-                        <InputForm data={inputForm} onSubmit={handleSendForm} />
-                    </div>
-                </div>
-            }
+
             {/* 引导问题 */}
-            <GuideQuestions
+            <GuideQuestionsAny
                 ref={questionsRef}
                 locked={inputLock.locked}
                 onClick={handleClickGuideWord}
             />
             {/* restart */}
             <div className="flex absolute left-0 top-3 z-10">
-                <Button className="rounded-full" disabled={restarted} variant="ghost" size="icon" onClick={handleRestartClick}><RefreshCw size={18} /></Button>
+                <Tip side={`${version === 'v2' ? 'right' : 'top-right'}`} content={"重新运行"}>
+                    <Button className="rounded-full" disabled={restarted} variant="ghost" size="icon" onClick={handleRestartClick}><RefreshCw size={18} /></Button>
+                </Tip>
             </div>
+
             {/* form switch */}
             <div className="flex absolute left-3 top-4 z-10">
                 {
@@ -401,32 +537,37 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
                     ><FormIcon className={!showWhenLocked && inputLock.locked ? 'text-muted-foreground' : 'text-foreground'}></FormIcon></div>
                 }
             </div>
+            {/* 语音转文字 */}
+            <div className={` ${!inputLock.locked && uploadLock && 'mr-4'}`}>
+                {linsightConfig?.asr_model?.id && <SpeechToTextComponent disabled={inputLock.locked} onChange={handleSpeechRecognition} />}
+            </div>
+
+            {/* 附件 */}
+            {!inputLock.locked && uploadLock && <ChatFiles
+                ref={inputFilesRef}
+                accepts={accepts}
+                disabled={audioOpening}
+                v={location.href.indexOf('/chat/flow/') === -1 ? 'v1' : 'v2'}
+                onChange={loadingChange} />}
             {/* send */}
             <div className="flex gap-2 absolute right-7 top-4 z-10">
                 <div
                     id="bs-send-btn"
                     className="w-6 h-6 rounded-sm hover:bg-gray-200 dark:hover:bg-gray-950 cursor-pointer flex justify-center items-center"
-                    onClick={() => { !inputLock.locked && handleSendClick() }}>
-                    <SendIcon className={`${inputLock.locked ? 'text-muted-foreground' : 'text-foreground'}`} />
+                    onClick={() => { !inputLock.locked && !fileUploading && !audioOpening && handleSendClick() }}>
+                    <SendIcon className={`${inputLock.locked || fileUploading || audioOpening ? 'text-muted-foreground' : 'text-foreground'}`} />
                 </div>
             </div>
             {/* stop & 重置 */}
-            <div className="absolute w-full flex justify-center bottom-32">
-                {stop.show ? null
-                    // <Button
-                    //     className="rounded-full"
-                    //     variant="outline"
-                    //     disabled={stop.disable}
-                    //     onClick={handleStopClick}><CirclePause className="mr-2" />Stop
-                    // </Button>
-                    : <Button
-                        className="rounded-full"
-                        variant="outline"
-                        disabled={restarted}
-                        onClick={handleRestartClick}>
-                        <RefreshCw className="mr-1" size={16} />
-                        {t('chat.runNewWorkflow')}
-                    </Button>
+            <div className="absolute w-full flex justify-center left-0 bottom-16">
+                {!stop.show && <Button
+                    className="rounded-full bg-[#fff] dark:bg-[#1B1B1B]"
+                    variant="outline"
+                    disabled={restarted}
+                    onClick={handleRestartClick}>
+                    <RefreshCw className="mr-1" size={16} />
+                    {t('chat.runNewWorkflow')}
+                </Button>
                 }
             </div>
             {/* question */}
@@ -437,7 +578,8 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
                 style={{ height: 56 }}
                 disabled={inputLock.locked}
                 onInput={handleTextAreaHeight}
-                placeholder={inputLock.locked ? inputLock.reason : t('chat.inputPlaceholder')}
+                onPaste={handlePaste}
+                placeholder={placholder}
                 className={"resize-none py-4 pr-10 text-md min-h-6 max-h-[200px] scrollbar-hide dark:bg-[#131415] text-gray-800" + (form && ' pl-10')}
                 onKeyDown={(event) => {
                     if (event.key === "Enter" && !event.shiftKey) {
@@ -450,3 +592,30 @@ export default function ChatInput({ autoRun, clear, form, wsUrl, onBeforSend, on
         <p className="text-center text-sm pt-2 pb-4 text-gray-400">{appConfig.dialogTips}</p>
     </div>
 };
+
+
+
+const useFileLoading = (locked) => {
+    const [loading, setLoading] = useState(false);
+    const filesRef = useRef([])
+    useEffect(() => {
+        if (locked) filesRef.current = []
+    }, [locked])
+    return {
+        fileUploading: loading,
+        getFileIds: () => filesRef.current,
+        loadingChange(files: string[] | null) {
+            if (files) {
+                setLoading(false)
+                filesRef.current = files
+            } else {
+                setLoading(true)
+                filesRef.current = []
+            }
+        },
+        clear() {
+            setLoading(false)
+            filesRef.current = []
+        }
+    }
+}

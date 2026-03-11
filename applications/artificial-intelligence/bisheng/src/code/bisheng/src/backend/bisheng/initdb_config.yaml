@@ -1,5 +1,11 @@
 knowledges: # 知识库相关配置
-  unstructured_api_url: ""  # 非必填，若要开启溯源能力则必填。使用毕昇官网提供的测试服务，可以填入地址：https://bisheng.dataelem.com/api/v1/etl4llm/predict，如果在私有环境部署了bisheng-unstructured服务，可以填入地址：http://ip:port/v1/etl4llm/predict。注意：添加地址后，需要手动刷新页面后在知识库中上传文档。
+  unstructured_api_url: "https://bisheng.dataelem.com/api/v1/etl4llm/predict" # 非必填，若要开启溯源能力则必填。使用毕昇官网提供的测试服务，可以填入地址：https://bisheng.dataelem.com/api/v1/etl4llm/predict，如果在私有环境部署了bisheng-unstructured服务，可以填入地址：http://ip:port/v1/etl4llm/predict。注意：添加地址后，需要手动刷新页面后在知识库中上传文档。
+  # etl4lm:
+  #   # 文档解析模型服务配置，包括OCR、版式分析、表格识别、公式识别等
+  #   url: "" # http://192.168.106.12:8180/v1/etl4llm/predict
+  #   timeout: 600
+  #   # OCR SDK服务地址，默认为空则使用ETL4LM自带的轻量OCR模型（速度快，对于困难场景效果一般），若填写OCR SDK服务地址则使用高精度的OCR模型。
+  #   ocr_sdk_url: ""
 
 llm_request:
   # 控制技能 LLM 组件模型访问的超时配置, 以下是默认值
@@ -31,8 +37,7 @@ system_login_method:
 use_captcha: True
 
 # 会话窗口底部提示文案
-dialog_tips:
-  "内容由AI生成，仅供参考！"
+dialog_tips: "内容由AI生成，仅供参考！"
 
 env:
   # 聊天窗口快捷搜索功能使用的搜索引擎，默认为百度，可以配置为内部文档搜索
@@ -44,9 +49,32 @@ env:
   show_github_and_help: true
   # 是否开启注册
   enable_registration: true
+  # 前端上传文件的最大限制，单位MB
+  uploaded_files_maximum_size: 50
 
 workflow:
   # 节点运行最大步数
   max_steps: 50
   # 等待用户输入的超时时间，单位分钟
   timeout: 5
+
+# 灵思模块相关配置
+linsight:
+  # 历史记录中工具消息的最大token，超过后需要总结下历史记录
+  tool_buffer: 100000
+  # 单个任务最大执行步骤数，防止死循环
+  max_steps: 200
+  # 灵思任务执行过程中模型调用重试次数
+  retry_num: 3
+  # 灵思任务执行过程中模型调用重试间隔时间（秒）
+  retry_sleep: 5
+  # 生成SOP时，prompt里放的用户上传文件信息的数量
+  max_file_num: 5
+  # 生成SOP时，prompt里放的组织知识库的最大数量
+  max_knowledge_num: 20
+  # 拆分二级任务时读取文件内容的字符数，超过后会截断
+  file_content_length: 5000
+  # 灵思模型默认温度
+  default_temperature: 0
+  # 模型json格式失败重试时的温度
+  retry_temperature: 1

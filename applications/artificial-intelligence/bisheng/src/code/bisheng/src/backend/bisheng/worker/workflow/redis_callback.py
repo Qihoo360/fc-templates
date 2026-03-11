@@ -1,46 +1,49 @@
 import asyncio
 import json
+import os
 import time
 import uuid
-from typing import AsyncIterator
+from typing import AsyncIterator, Iterator, Dict, List
 
-from cachetools import TTLCache
 from langchain_core.documents import Document
 from loguru import logger
 
-from bisheng.api.errcode.flow import WorkFlowNodeRunMaxTimesError, WorkFlowWaitUserTimeoutError, \
-    WorkFlowNodeUpdateError, WorkFlowVersionUpdateError, WorkFlowTaskBusyError
 from bisheng.api.v1.schema.workflow import WorkflowEventType
 from bisheng.api.v1.schemas import ChatResponse
-from bisheng.cache.redis import redis_client
 from bisheng.chat.utils import sync_judge_source, sync_process_source_document
+from bisheng.common.constants.enums.telemetry import BaseTelemetryTypeEnum, ApplicationTypeEnum
+from bisheng.common.errcode.flow import WorkFlowNodeRunMaxTimesError, WorkFlowWaitUserTimeoutError, \
+    WorkFlowNodeUpdateError, WorkFlowVersionUpdateError, WorkFlowTaskBusyError, WorkFlowTaskOtherError
+from bisheng.common.errcode.http_error import ServerError
+from bisheng.common.schemas.telemetry.event_data_schema import NewMessageSessionEventData
+from bisheng.common.services import telemetry_service
+from bisheng.common.services.config_service import settings
+from bisheng.core.cache.redis_manager import get_redis_client_sync
+from bisheng.core.logger import trace_id_var
 from bisheng.database.models.flow import FlowDao, FlowType
 from bisheng.database.models.message import ChatMessageDao, ChatMessage
 from bisheng.database.models.session import MessageSessionDao, MessageSession
-from bisheng.settings import settings
+from bisheng.utils.threadpool import thread_pool
 from bisheng.workflow.callback.base_callback import BaseCallback
 from bisheng.workflow.callback.event import NodeStartData, NodeEndData, UserInputData, GuideWordData, GuideQuestionData, \
     OutputMsgData, StreamMsgData, StreamMsgOverData, OutputMsgChooseData, OutputMsgInputData
 from bisheng.workflow.common.workflow import WorkflowStatus
 
 
-
 class RedisCallback(BaseCallback):
 
-    def __init__(self, unique_id: str, workflow_id: str, chat_id: str, user_id: str):
+    def __init__(self, unique_id: str, workflow_id: str, chat_id: str, user_id: int, **kwargs):
         super(RedisCallback, self).__init__()
-        # 异步任务的唯一ID
+        # Unique for asynchronous tasksID
         self.unique_id = unique_id
         self.workflow_id = workflow_id
         self.chat_id = chat_id
         self.user_id = user_id
         self.workflow = None
         self.create_session = False
+        self.source = kwargs.get('source', 'platform')  # only platform or api
 
-        # workflow status cache in memory 10 seconds
-        self.workflow_cache: TTLCache = TTLCache(maxsize=1024, ttl=10)
-
-        self.redis_client = redis_client
+        self.redis_client = get_redis_client_sync()
         self.workflow_data_key = f'workflow:{unique_id}:data'
         self.workflow_status_key = f'workflow:{unique_id}:status'
         self.workflow_event_key = f'workflow:{unique_id}:event'
@@ -48,27 +51,63 @@ class RedisCallback(BaseCallback):
         self.workflow_stop_key = f'workflow:{unique_id}:stop'
         self.workflow_expire_time = settings.get_workflow_conf().timeout * 60 + 60
 
-    def set_workflow_data(self, data: dict):
+    def set_workflow_data(self, data: Dict, override: Dict = None):
+        data = self.override_nodes_params(data, override)
         self.redis_client.set(self.workflow_data_key, data, expiration=self.workflow_expire_time)
+
+    @staticmethod
+    def override_nodes_params(data: Dict, override: Dict = None) -> Dict:
+        if not override:
+            return data
+
+        def replace_param(one_params: List[Dict], one_node_id: str):
+            for param in one_params:
+                param_key = param.get('key')
+                if param_key not in override[node_id]:
+                    continue
+                param['value'] = override[one_node_id][param_key]
+
+        nodes = data.get('nodes', [])
+        for node in nodes:
+            node_data = node.get('data', {})
+            node_id = node_data.get('id')
+            if node_id not in override:
+                continue
+            group_params = node_data.get('group_params', [])
+            for group_param in group_params:
+                replace_param(group_param.get('params', []), node_id)
+        return data
+
+    async def async_set_workflow_data(self, data: dict):
+        await self.redis_client.aset(self.workflow_data_key, data, expiration=self.workflow_expire_time)
 
     def get_workflow_data(self) -> dict:
         return self.redis_client.get(self.workflow_data_key)
 
-    def set_workflow_status(self, status: int, reason: str = None):
+    def set_workflow_status(self, status: str, reason: str = None):
         self.redis_client.set(self.workflow_status_key,
                               {'status': status, 'reason': reason, 'time': time.time()},
-                              expiration=None)
-        self.workflow_cache.clear()
+                              expiration=3600 * 24 * 7)
         if status in [WorkflowStatus.FAILED.value, WorkflowStatus.SUCCESS.value]:
-            # 消息事件和状态key可能还需要消费
+            # Message Events and StatuskeyConsumption may also be required
             self.redis_client.delete(self.workflow_data_key)
             self.redis_client.delete(self.workflow_input_key)
 
-    def get_workflow_status(self, user_cache: bool = True) -> dict | None:
-        # if user_cache and self.workflow_cache.get(self.workflow_status_key):
-        #     return self.workflow_cache.get(self.workflow_status_key)
+    async def async_set_workflow_status(self, status: str, reason: str = None):
+        await self.redis_client.aset(self.workflow_status_key,
+                                     {'status': status, 'reason': reason, 'time': time.time()},
+                                     expiration=3600 * 24 * 7)
+        if status in [WorkflowStatus.FAILED.value, WorkflowStatus.SUCCESS.value]:
+            # Message Events and StatuskeyConsumption may also be required
+            await self.redis_client.adelete(self.workflow_data_key)
+            await self.redis_client.adelete(self.workflow_input_key)
+
+    def get_workflow_status(self) -> dict | None:
         workflow_status = self.redis_client.get(self.workflow_status_key)
-        self.workflow_cache.setdefault(self.workflow_status_key, workflow_status)
+        return workflow_status
+
+    async def async_get_workflow_status(self) -> dict | None:
+        workflow_status = await self.redis_client.aget(self.workflow_status_key)
         return workflow_status
 
     def clear_workflow_status(self):
@@ -76,19 +115,30 @@ class RedisCallback(BaseCallback):
         self.redis_client.delete(self.workflow_stop_key)
         self.redis_client.delete(self.workflow_data_key)
 
+    async def async_clear_workflow_status(self):
+        await self.redis_client.adelete(self.workflow_status_key)
+        await self.redis_client.adelete(self.workflow_stop_key)
+        await self.redis_client.adelete(self.workflow_data_key)
+
     def insert_workflow_response(self, event: dict):
         self.redis_client.rpush(self.workflow_event_key, json.dumps(event), expiration=self.workflow_expire_time)
 
     def get_workflow_response(self) -> ChatResponse | None:
         response = self.redis_client.lpop(self.workflow_event_key)
+        if self.get_workflow_stop():
+            self.redis_client.delete(self.workflow_event_key)
+            return None
         if response:
             response = ChatResponse(**json.loads(response))
-            if ((response.category == WorkflowEventType.NodeRun.value and response.type == 'end'
-                 and response.message and response.message.get('node_id', '').startswith('end_')) or
-                    (response.category in [WorkflowEventType.UserInput.value, WorkflowEventType.OutputWithChoose.value
-                        , WorkflowEventType.OutputWithInput.value])):
-                # 如果是结束节点或者输入事件，清空状态缓存
-                self.workflow_cache.clear()
+        return response
+
+    async def async_get_workflow_response(self) -> ChatResponse | None:
+        response = await self.redis_client.alpop(self.workflow_event_key)
+        if await self.async_get_workflow_stop():
+            await self.redis_client.adelete(self.workflow_event_key)
+            return None
+        if response:
+            response = ChatResponse(**json.loads(response))
         return response
 
     def build_chat_response(self, category, category_type, message, extra=None, files=None):
@@ -106,33 +156,33 @@ class RedisCallback(BaseCallback):
     def parse_workflow_failed(self, status_info: dict) -> ChatResponse | None:
         if status_info['reason'].find('-- has run more than the maximum number of times') != -1:
             return self.build_chat_response(WorkflowEventType.Error.value, 'over',
-                                            {'code': WorkFlowNodeRunMaxTimesError.Code,
-                                             'message': status_info['reason'].split('--')[0]})
+                                            message=WorkFlowNodeRunMaxTimesError(
+                                                exception=status_info['reason'].split('--')[0]).to_dict())
         elif status_info['reason'].find('workflow wait user input timeout') != -1:
             return self.build_chat_response(WorkflowEventType.Error.value, 'over',
-                                            {'code': WorkFlowWaitUserTimeoutError.Code, 'message': ''})
+                                            message=WorkFlowWaitUserTimeoutError().to_dict())
         elif status_info['reason'].find('-- node params is error') != -1:
             return self.build_chat_response(WorkflowEventType.Error.value, 'over',
-                                            {'code': WorkFlowNodeUpdateError.Code,
-                                             'message': status_info['reason'].split('--')[0]})
+                                            message=WorkFlowNodeUpdateError(
+                                                exception=status_info['reason'].split('--')[0]).to_dict())
         elif status_info['reason'].find('-- workflow node is update') != -1:
             return self.build_chat_response(WorkflowEventType.Error.value, 'over',
-                                            {'code': WorkFlowVersionUpdateError.Code,
-                                             'message': status_info['reason'].split('--')[0]})
+                                            message=WorkFlowVersionUpdateError(
+                                                exception=status_info['reason'].split('--')[0]).to_dict())
         elif status_info['reason'].find('stop by user') != -1:
             return None
         else:
             return self.build_chat_response(WorkflowEventType.Error.value, 'over',
-                                            {'code': 500, 'message': status_info['reason']})
+                                            WorkFlowTaskOtherError(exception=status_info['reason']).to_dict())
 
-    async def get_response_until_break(self) -> AsyncIterator[ChatResponse]:
-        """ 不断获取workflow的response，直到遇到运行结束或者待输入 """
+    def sync_get_response_until_break(self) -> Iterator[ChatResponse]:
         while True:
             # get workflow status
             status_info = self.get_workflow_status()
             if not status_info:
                 yield self.build_chat_response(WorkflowEventType.Error.value, 'over',
-                                               {'code': 500, 'message': 'workflow status not found'})
+                                               message=WorkFlowTaskOtherError(
+                                                   exception=Exception("workflow status not found")).to_dict())
                 break
             elif status_info['status'] in [WorkflowStatus.FAILED.value, WorkflowStatus.SUCCESS.value]:
                 while True:
@@ -152,63 +202,178 @@ class RedisCallback(BaseCallback):
                         break
                     yield chat_response
                 break
-            elif status_info['status'] == WorkflowStatus.WAITING.value and time.time() - status_info['time'] > 10:
-                # 10秒内没有收到状态更新，说明workflow没有启动，可能是celery worker线程数已满
+            elif status_info['status'] in [WorkflowStatus.WAITING.value,
+                                           WorkflowStatus.INPUT_OVER.value] and time.time() - status_info['time'] > 10:
+                # 10No status update received in seconds, descriptionworkflowNot started, could becelery workerThreads full
                 self.set_workflow_status(WorkflowStatus.FAILED.value, 'workflow task execute busy')
                 yield self.build_chat_response(WorkflowEventType.Error.value, 'over',
-                                               {'code': WorkFlowTaskBusyError.Code,
-                                                'message': WorkFlowTaskBusyError.Msg})
+                                               message=WorkFlowTaskBusyError().to_dict())
                 break
             elif time.time() - status_info['time'] > 86400:
                 yield self.build_chat_response(WorkflowEventType.Error.value, 'over',
-                                               {'code': 500, 'message': 'workflow status not update over 1 day'})
+                                               WorkFlowTaskOtherError(
+                                                   exception=Exception(
+                                                       "workflow status not update over 1 day")).to_dict())
                 self.set_workflow_status(WorkflowStatus.FAILED.value, 'workflow status not update over 1 day')
                 self.set_workflow_stop()
                 break
             else:
                 chat_response = self.get_workflow_response()
                 if not chat_response:
-                    await asyncio.sleep(1)
+                    time.sleep(1)
                     continue
                 yield chat_response
 
-    def set_user_input(self, data: dict, message_id: int = None, message_content: str = None):
+    async def get_response_until_break(self) -> AsyncIterator[ChatResponse]:
+        """ Continuous accessworkflowright of privacyresponseuntil the end of the run is encountered or pending entry """
+        while True:
+            # get workflow status
+            status_info = await self.async_get_workflow_status()
+            if not status_info:
+                yield self.build_chat_response(WorkflowEventType.Error.value, 'over',
+                                               message=WorkFlowTaskOtherError(
+                                                   exception=Exception("workflow status not found")).to_dict())
+                break
+            elif status_info['status'] in [WorkflowStatus.FAILED.value, WorkflowStatus.SUCCESS.value]:
+                while True:
+                    chat_response = await self.async_get_workflow_response()
+                    if not chat_response:
+                        break
+                    yield chat_response
+                if status_info['status'] == WorkflowStatus.FAILED.value:
+                    error_resp = self.parse_workflow_failed(status_info)
+                    if error_resp:
+                        yield error_resp
+                break
+            elif status_info['status'] == WorkflowStatus.INPUT.value:
+                while True:
+                    chat_response = await self.async_get_workflow_response()
+                    if not chat_response:
+                        break
+                    yield chat_response
+                break
+            elif status_info['status'] in [WorkflowStatus.WAITING.value,
+                                           WorkflowStatus.INPUT_OVER.value] and time.time() - status_info['time'] > 10:
+                # 10No status update received in seconds, descriptionworkflowNot started, could becelery workerThreads full
+                await self.async_set_workflow_status(WorkflowStatus.FAILED.value, 'workflow task execute busy')
+                yield self.build_chat_response(WorkflowEventType.Error.value, 'over',
+                                               message=WorkFlowTaskBusyError().to_dict())
+                break
+            elif time.time() - status_info['time'] > 86400:
+                yield self.build_chat_response(WorkflowEventType.Error.value, 'over',
+                                               message=WorkFlowTaskOtherError(exception=Exception(
+                                                   "workflow status not update over 1 day")).to_dict())
+                await self.async_set_workflow_status(WorkflowStatus.FAILED.value,
+                                                     'workflow status not update over 1 day')
+                await self.async_set_workflow_stop()
+                break
+            else:
+                chat_response = await self.async_get_workflow_response()
+                if not chat_response:
+                    await asyncio.sleep(0.01)
+                    continue
+                yield chat_response
+
+    def set_user_input(self, data: dict, message_id: int = None, message_content: str = None,
+                       verify_input: bool = False):
         if self.chat_id and message_id:
             message_db = ChatMessageDao.get_message_by_id(message_id)
-            if message_db:
-                self.update_old_message(data, message_db, message_content)
-        # 通知异步任务用户输入
+            self.update_old_message(data, message_db, message_content, verify_input)
+        # Notify Asynchronous Task User Input
         self.redis_client.set(self.workflow_input_key, data, expiration=self.workflow_expire_time)
         return
 
-    def update_old_message(self, user_input: dict, message_db: ChatMessage, message_content: str):
-        # 更新输出待输入消息里用户的输入和选择
+    async def async_set_user_input(self, data: dict, message_id: int = None, message_content: str = None,
+                                   verify_input: bool = False):
+        if self.chat_id and message_id:
+            message_db = await ChatMessageDao.aget_message_by_id(message_id)
+            await self.async_update_old_message(data, message_db, message_content, verify_input)
+        # Notify Asynchronous Task User Input
+        await self.redis_client.aset(self.workflow_input_key, data, expiration=self.workflow_expire_time)
+        return
+
+    @staticmethod
+    def _verify_input_schema(input_schema_message: Dict, user_input: Dict):
+        """ Verify that the user input matches the input schema """
+        node_id = input_schema_message['node_id']
+        if node_id not in user_input:
+            raise ServerError(msg="node_id not found in user input")
+        user_input = user_input[node_id]
+        input_schema = input_schema_message['input_schema']
+        if input_schema["tab"] == "form_input":
+            user_input_keys = {one: None for one in user_input.keys()}
+            for key_info in input_schema['value']:
+                key = key_info['key']
+                if key not in user_input:
+                    raise ServerError(msg=f"key {key} not found in user input")
+                user_input_keys.pop(key)
+            if user_input_keys:
+                raise ServerError(msg=f"extra key {list(user_input_keys.keys())} found in user input")
+        else:
+            if input_schema["key"] not in user_input:
+                raise ServerError(msg=f"key {input_schema['key']} not found in user input")
+
+    @classmethod
+    def _update_old_message(cls, user_input: dict, message_db: ChatMessage, message_content: str,
+                            verify_input: bool = False):
+        """
+        if ChatResponse is not None: add new message
+        if ChatMessage is not None: update old message
+        return ChatResponse | None, ChatMessage | None
+        """
+        if not message_db:
+            if verify_input:
+                raise ServerError(msg="message info not found by message id")
+            return None
+        # Update the input and selection of the user in the output to be entered message
         old_message = json.loads(message_db.message)
         if message_db.category == WorkflowEventType.OutputWithInput.value:
             old_message['hisValue'] = user_input[old_message['node_id']][old_message['key']]
         elif message_db.category == WorkflowEventType.OutputWithChoose.value:
             old_message['hisValue'] = user_input[old_message['node_id']][old_message['key']]
         elif message_db.category == WorkflowEventType.UserInput.value:
+            if verify_input:
+                cls._verify_input_schema(old_message, user_input)
             user_input = user_input[old_message['node_id']]
 
-            # 前端传了用户输入内容则使用前端的内容
+            # If the front-end passes user input, the front-end content is used.
             if message_content:
                 user_input_message = message_content
-            # 说明是表单输入
+            # Instructions are form inputs
             elif old_message['input_schema']['tab'] == 'form_input':
                 user_input_message = ''
                 for key_info in old_message['input_schema']['value']:
                     user_input_message += f"{key_info['value']}:{user_input.get(key_info['key'], '')}\n"
             else:
-                # 说明对话框输入
+                # Description Dialog Input, Uploaded file information needs to be added, It is related to the data structure of the input node.
                 user_input_message = user_input[old_message['input_schema']['key']]
-            self.save_chat_message(ChatResponse(
+                dialog_files_content = user_input.get('dialog_files_content', [])
+                for one in dialog_files_content:
+                    user_input_message += f"\n{os.path.basename(one).split('?')[0]}"
+            return ChatResponse(
                 message=user_input_message,
                 category='question',
-            ))
-            return
+            ), None
         message_db.message = json.dumps(old_message, ensure_ascii=False)
-        ChatMessageDao.update_message_model(message_db)
+        return None, message_db
+
+    def update_old_message(self, user_input: dict, message_db: ChatMessage, message_content: str,
+                           verify_input: bool = False):
+        chat_response, message = self._update_old_message(user_input, message_db, message_content, verify_input)
+        if chat_response:
+            self.save_chat_message(chat_response)
+            return
+        if message:
+            ChatMessageDao.update_message_model(message)
+
+    async def async_update_old_message(self, user_input: dict, message_db: ChatMessage, message_content: str,
+                                       verify_input: bool = False):
+        chat_response, message = self._update_old_message(user_input, message_db, message_content, verify_input)
+        if chat_response:
+            self.save_chat_message(chat_response)
+            return
+        if message:
+            await ChatMessageDao.aupdate_message_model(message)
 
     def get_user_input(self) -> dict | None:
         ret = self.redis_client.get(self.workflow_input_key)
@@ -217,17 +382,28 @@ class RedisCallback(BaseCallback):
         return ret
 
     def set_workflow_stop(self):
-        self.redis_client.set(self.workflow_stop_key, 1, expiration=self.workflow_expire_time)
+        from bisheng.worker.workflow.tasks import stop_workflow
+        self.redis_client.set(self.workflow_stop_key, 1, expiration=3600 * 24)
+        stop_workflow.delay(self.unique_id, self.workflow_id, self.chat_id, self.user_id)
+
+    async def async_set_workflow_stop(self):
+        from bisheng.worker.workflow.tasks import stop_workflow
+        await self.redis_client.aset(self.workflow_stop_key, 1, expiration=3600 * 24)
+        stop_workflow.delay(self.unique_id, self.workflow_id, self.chat_id, self.user_id)
 
     def get_workflow_stop(self) -> bool | None:
-        """ 为了可以及时停止workflow，不做内存的缓存 """
+        """ In order to stop in timeworkflow, Do not cache memory """
         return self.redis_client.get(self.workflow_stop_key) == 1
 
+    async def async_get_workflow_stop(self) -> bool | None:
+        """ In order to stop in timeworkflow, Do not cache memory """
+        return await self.redis_client.aget(self.workflow_stop_key) == 1
+
     def send_chat_response(self, chat_response: ChatResponse):
-        """ 发送聊天消息 """
+        """ Send a chat message """
         self.insert_workflow_response(chat_response.dict())
 
-        # 判断下是否需要停止workflow, 流式输出时不判断，查询太频繁，而且也停不掉workflow
+        # Determine if it needs to be stoppedworkflow, Don't judge when streaming, queries are too frequent and can't be stoppedworkflow
         if chat_response.category == WorkflowEventType.StreamMsg.value:
             return
         if self.workflow and self.get_workflow_stop():
@@ -238,10 +414,10 @@ class RedisCallback(BaseCallback):
         return message id
         """
         if not self.chat_id:
-            # 生成一个假的消息id防止前端消息渲染重复
+            # Generate a fake messageidPrevent duplicate front-end message rendering
             return uuid.uuid4().hex
 
-        # 判断溯源
+        # Judgment traceability
         if source_documents:
             result = {}
             extra = {}
@@ -259,19 +435,22 @@ class RedisCallback(BaseCallback):
 
             is_bot=chat_response.is_bot,
             source=chat_response.source,
-            message=json.dumps(chat_response.message, ensure_ascii=False),
+            message=chat_response.message if isinstance(chat_response.message, str) else json.dumps(
+                chat_response.message, ensure_ascii=False),
             extra=chat_response.extra,
             category=chat_response.category,
             files=json.dumps(chat_response.files, ensure_ascii=False)
         ))
 
-        # 如果是文档溯源，处理召回的chunk
+        # If the document is traceable, handle the recallchunk
         if chat_response.source not in [0, 4]:
-            sync_process_source_document(source_documents, self.chat_id, message.id, chat_response.message.get('msg'))
+            thread_pool.submit(f"workflow_source_document_{self.chat_id}",
+                               sync_process_source_document,
+                               source_documents, self.chat_id, message.id, chat_response.message.get('msg'))
 
-        # 判断是否需要新建会话
+        # Determine if a new session is needed
         if not self.create_session and chat_response.category != WorkflowEventType.UserInput.value:
-            # 没有会话数据则新插入一个会话
+            # Insert a new session without session data
             if not MessageSessionDao.get_one(self.chat_id):
                 db_workflow = FlowDao.get_flow_by_id(self.workflow_id)
                 MessageSessionDao.insert_one(MessageSession(
@@ -281,6 +460,20 @@ class RedisCallback(BaseCallback):
                     flow_type=FlowType.WORKFLOW.value,
                     user_id=self.user_id,
                 ))
+
+                # RecordTelemetryJournal
+                telemetry_service.log_event_sync(user_id=self.user_id,
+                                                 event_type=BaseTelemetryTypeEnum.NEW_MESSAGE_SESSION,
+                                                 trace_id=trace_id_var.get(),
+                                                 event_data=NewMessageSessionEventData(
+                                                     session_id=self.chat_id,
+                                                     app_id=self.workflow_id,
+                                                     source=self.source,
+                                                     app_name=db_workflow.name,
+                                                     app_type=ApplicationTypeEnum.WORKFLOW
+                                                 )
+                                                 )
+
             self.create_session = True
 
         return message.id
@@ -364,8 +557,8 @@ class RedisCallback(BaseCallback):
 
     def on_stream_over(self, data: StreamMsgOverData):
         logger.debug(f'stream over: {data}')
-        # 替换掉minio的share前缀，通过nginx转发  ugly solve
-        minio_share = settings.get_knowledge().get('minio', {}).get('MINIO_SHAREPOIN', '')
+        # Replaceminioright of privacysharePrefix bynginxShare  ugly solve
+        minio_share = settings.get_minio_conf().sharepoint
         data.msg = data.msg.replace(f"http://{minio_share}", "")
         chat_response = ChatResponse(message=data.dict(exclude={'source_documents'}),
                                      category=WorkflowEventType.StreamMsg.value,

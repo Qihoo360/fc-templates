@@ -1,43 +1,47 @@
 from typing import Any
 
-from bisheng.api.services.llm import LLMService
-from bisheng.workflow.callback.llm_callback import LLMNodeCallbackHandler
-from bisheng.workflow.nodes.base import BaseNode
-from bisheng.workflow.nodes.prompt_template import PromptTemplateParser
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.runnables import RunnableConfig
 from loguru import logger
+
+from bisheng.common.constants.enums.telemetry import ApplicationTypeEnum
+from bisheng.llm.domain.services import LLMService
+from bisheng.workflow.callback.llm_callback import LLMNodeCallbackHandler
+from bisheng.workflow.nodes.base import BaseNode
+from bisheng.workflow.nodes.prompt_template import PromptTemplateParser
 
 
 class LLMNode(BaseNode):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # 判断是单次还是批量
+        # Determine if it is a single or batch
         self._tab = self.node_data.tab['value']
 
-        # 是否输出结果给用户
+        # Whether to output the results to the user
         self._output_user = self.node_params.get('output_user', False)
 
-        # 初始化prompt
+        self._image_prompt = self.node_params.get('image_prompt', [])
+
+        # Inisialisasiprompt
         self._system_prompt = PromptTemplateParser(template=self.node_params['system_prompt'])
         self._system_variables = self._system_prompt.extract()
         self._user_prompt = PromptTemplateParser(template=self.node_params['user_prompt'])
         self._user_variables = self._user_prompt.extract()
 
-        # 存储日志所需数据
+        # Data required to store logs
         self._system_prompt_list = []
         self._user_prompt_list = []
         self._batch_variable_list = []
         self._log_reasoning_content = []
 
-        # 初始化llm对象
-        self._stream = True
-        self._llm = LLMService.get_bisheng_llm(model_id=self.node_params['model_id'],
-                                               temperature=self.node_params.get(
-                                                   'temperature', 0.3),
-                                               params={'stream': self._stream},
-                                               cache=False)
+        # InisialisasillmObjects
+        self._llm = LLMService.get_bisheng_llm_sync(model_id=self.node_params['model_id'],
+                                                    temperature=self.node_params.get('temperature', 0.3),
+                                                    app_id=self.workflow_id,
+                                                    app_name=self.workflow_name,
+                                                    app_type=ApplicationTypeEnum.WORKFLOW,
+                                                    user_id=self.user_id)
 
     def _run(self, unique_id: str):
         self._system_prompt_list = []
@@ -70,10 +74,11 @@ class LLMNode(BaseNode):
                 {"key": "user_prompt", "value": self._user_prompt_list[index], "type": "params"},
             ]
             if self._log_reasoning_content[index]:
-                one_ret.append({"key": "思考内容", "value": self._log_reasoning_content[index], "type": "params"})
+                one_ret.append({"key": "Thinking about content", "value": self._log_reasoning_content[index], "type": "params"})
             one_ret.append({"key": f'{self.id}.{k}', "value": v, "type": "variable"})
             if self._batch_variable_list:
-                one_ret.insert(0, {"key": f"{self.id}.batch_variable", "value": self._batch_variable_list[index], "type": "variable"})
+                one_ret.insert(0, {"key": f"{self.id}.batch_variable", "value": self._batch_variable_list[index],
+                                   "type": "variable"})
             index += 1
             ret.append(one_ret)
         return ret
@@ -82,7 +87,7 @@ class LLMNode(BaseNode):
                   input_variable: str = None,
                   unique_id: str = None,
                   output_key: str = None) -> (str, str):
-        # 说明是引用了批处理的变量, 需要把变量的值替换为用户选择的变量
+        # Description is a variable that references a batch, The value of the variable needs to be replaced with the variable selected by the user
         special_variable = f'{self.id}.batch_variable'
         variable_map = {}
         for one in self._system_variables:
@@ -107,13 +112,22 @@ class LLMNode(BaseNode):
         llm_callback = LLMNodeCallbackHandler(callback=self.callback_manager,
                                               unique_id=unique_id,
                                               node_id=self.id,
+                                              node_name=self.name,
                                               output=self._output_user,
                                               output_key=output_key)
         config = RunnableConfig(callbacks=[llm_callback])
         inputs = []
         if system:
             inputs.append(SystemMessage(content=system))
-        inputs.append(HumanMessage(content=user))
+
+        human_message = HumanMessage(content=[{
+            'type': 'text',
+            'text': user
+        }])
+        human_message = self.contact_file_into_prompt(human_message, self._image_prompt)
+        inputs.append(human_message)
+
+        logger.debug(f'llm invoke chat_history: {inputs} {self._image_prompt}')
 
         result = self._llm.invoke(inputs, config=config)
 

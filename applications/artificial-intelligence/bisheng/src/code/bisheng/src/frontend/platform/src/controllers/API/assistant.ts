@@ -26,7 +26,7 @@ export const getAssistantsApi = async (page, limit, name, tag_id): Promise<Assis
 export const createAssistantsApi = async (name, prompt, url) => {
     if (url) {
         // logo保存相对路径
-        url = url.match(/(icon.*)\?/)?.[1]
+        url = url.replace('/bisheng', '')
     }
     return await axios.post(`/api/v1/assistant`, { name, prompt, logo: url })
 };
@@ -50,10 +50,6 @@ export const changeAssistantStatusApi = async (id, status) => {
 export const saveAssistanttApi = async (
     data: Omit<AssistantDetail, 'flow_list' | 'tool_list' | 'knowledge_list'> & { flow_list: string[], tool_list: number[], knowledge_list: number[] }
 ): Promise<any> => {
-    if (data.logo) {
-        // logo保存相对路径
-        data.logo = data.logo.match(/(icon.*)\?/)?.[1]
-    }
     return await axios.put(`/api/v1/assistant`, data)
 };
 
@@ -78,20 +74,9 @@ export const getChatOnlineApi = async (page, keyword, tag_id) => {
 //     return await axios.get(`/api/v1/chat/online?${tagStr}`)
 // };
 
-
-// 获取工具集合
-export const getAssistantToolsApi = async (type: 'all' | 'default' | 'custom'): Promise<any> => {
-    const queryStr = {
-        all: '',
-        default: '?is_preset=true',
-        custom: '?is_preset=false'
-    }
-    return await axios.get(`/api/v1/assistant/tool_list${queryStr[type]}`)
-};
-
-// 修改内置工具配置
-export const updateAssistantToolApi = async (tool_id, extra) => {
-    return await axios.post(`/api/v1/assistant/tool/config`, { tool_id, extra })
+// 刷新mcp服务
+export const refreshMcpApi = async (): Promise<any> => {
+    return await axios.post(`/api/v1/tool/mcp/refresh`)
 }
 
 // 获取自动优化任务taskid

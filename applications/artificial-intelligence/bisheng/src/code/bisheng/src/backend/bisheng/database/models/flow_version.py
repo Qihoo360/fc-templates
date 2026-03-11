@@ -3,35 +3,35 @@
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from sqlalchemy import func
-
-from bisheng.database.base import session_getter
-from bisheng.database.models.base import SQLModelSerializable
 # if TYPE_CHECKING:
-from pydantic import validator
+from pydantic import field_validator
+from sqlalchemy import func, String
 from sqlmodel import JSON, Field, select, update, text, Column, DateTime
 
+from bisheng.core.database import get_sync_db_session, get_async_db_session
+from bisheng.common.models.base import SQLModelSerializable
 from bisheng.database.models.flow import Flow
 
 
 class FlowVersionBase(SQLModelSerializable):
     id: Optional[int] = Field(default=None, primary_key=True, unique=True)
-    flow_id: str = Field(index=True, max_length=32, description="所属的技能ID")
-    name: str = Field(index=True, description="版本的名字")
-    data: Optional[Dict] = Field(default=None, description="版本的数据")
-    description: Optional[str] = Field(index=False, description="版本的描述")
-    user_id: Optional[int] = Field(index=True, description="创建者")
-    flow_type: Optional[int] = Field(default=1, description="版本的类型")
-    is_current: Optional[int] = Field(default=0, description="是否为正在使用版本")
-    is_delete: Optional[int] = Field(default=0, description="是否删除")
-    original_version_id: Optional[int] = Field(default=None, description="来源版本的ID")
-    create_time: Optional[datetime] = Field(sa_column=Column(
+    flow_id: str = Field(index=True, max_length=32, description="Belonging SkillsID")
+    name: str = Field(index=True, description="Version Name")
+    data: Optional[Dict] = Field(default=None, description="Version Data")
+    description: Optional[str] = Field(default=None, sa_column=Column(String(length=1000)))
+    user_id: Optional[int] = Field(default=None, index=True, description="creator")
+    flow_type: Optional[int] = Field(default=1, description="Type of version")
+    is_current: Optional[int] = Field(default=0, description="Is version in use")
+    is_delete: Optional[int] = Field(default=0, description="whether delete")
+    original_version_id: Optional[int] = Field(default=None, description="Source Version ofID")
+    create_time: Optional[datetime] = Field(default=None, sa_column=Column(
         DateTime, nullable=False, index=True, server_default=text('CURRENT_TIMESTAMP')))
-    update_time: Optional[datetime] = Field(sa_column=Column(
+    update_time: Optional[datetime] = Field(default=None, sa_column=Column(
         DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')))
 
-    @validator('data')
-    def validate_json(v):
+    @field_validator('data')
+    @classmethod
+    def validate_json(cls, v):
         # dict_keys(['description', 'name', 'id', 'data'])
         if not v:
             return v
@@ -47,21 +47,21 @@ class FlowVersionBase(SQLModelSerializable):
 
 
 class FlowVersion(FlowVersionBase, table=True):
-    data: Optional[Dict] = Field(default=None, sa_column=Column(JSON), description="版本的数据")
+    data: Optional[Dict] = Field(default=None, sa_column=Column(JSON), description="Version Data")
 
 
 class FlowVersionRead(FlowVersionBase):
     pass
 
 
-class FlowVersionDao(FlowVersion):
+class FlowVersionDao(FlowVersionBase):
 
     @classmethod
     def create_version(cls, version: FlowVersion) -> FlowVersion:
         """
-        创建新版本
+        Create New Version
         """
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             session.add(version)
             session.commit()
             session.refresh(version)
@@ -70,14 +70,14 @@ class FlowVersionDao(FlowVersion):
     @classmethod
     def update_version(cls, version: FlowVersion) -> FlowVersion:
         """
-        更新版本信息，同时更新技能表里的data数据
+        Update the version information while updating the Skill SheetdataDATA
         """
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             session.add(version)
             session.commit()
-            # 如果是当前版本，则更新技能表里的数据
+            # Update the data in the skill sheet if it is the current version
             if version.is_current == 1:
-                # 更新技能表里的data数据
+                # Update Skill SheetdataDATA
                 update_flow = update(Flow).where(Flow.id == version.flow_id).values(data=version.data)
                 session.exec(update_flow)
                 session.commit()
@@ -85,11 +85,28 @@ class FlowVersionDao(FlowVersion):
             return version
 
     @classmethod
+    async def aupdate_version(cls, version: FlowVersion) -> FlowVersion:
+        """
+        Update version information asynchronously while updating the Skill SheetdataDATA
+        """
+        async with get_async_db_session() as session:
+            session.add(version)
+            await session.commit()
+            # Update the data in the skill sheet if it is the current version
+            if version.is_current == 1:
+                # Update Skill SheetdataDATA
+                update_flow = update(Flow).where(Flow.id == version.flow_id).values(data=version.data)
+                await session.exec(update_flow)
+                await session.commit()
+            await session.refresh(version)
+            return version
+
+    @classmethod
     def get_version_by_name(cls, flow_id: str, name: str) -> Optional[FlowVersion]:
         """
-        根据技能ID和版本名字获取版本的信息
+        By SkillIDand version name for version information
         """
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             statement = select(FlowVersion).where(FlowVersion.flow_id == flow_id,
                                                   FlowVersion.name == name,
                                                   FlowVersion.is_delete == 0)
@@ -98,20 +115,32 @@ class FlowVersionDao(FlowVersion):
     @classmethod
     def get_version_by_id(cls, version_id: int, include_delete: bool = False) -> Optional[FlowVersion]:
         """
-        根据版本ID获取技能版本的信息
+        According to versionIDGet information on the skill version
         """
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             statement = select(FlowVersion).where(FlowVersion.id == version_id)
             if not include_delete:
                 statement = statement.where(FlowVersion.is_delete == 0)
             return session.exec(statement).first()
 
     @classmethod
+    async def aget_version_by_id(cls, version_id: int, include_delete: bool = False) -> Optional[FlowVersion]:
+        """
+        According to versionIDGet skill version information (asynchronous)
+        """
+        async with get_async_db_session() as session:
+            statement = select(FlowVersion).where(FlowVersion.id == version_id)
+            if not include_delete:
+                statement = statement.where(FlowVersion.is_delete == 0)
+            result = await session.exec(statement)
+            return result.first()
+
+    @classmethod
     def get_version_by_flow(cls, flow_id: str) -> Optional[FlowVersion]:
         """
-        根据技能ID获取当前技能版本的信息
+        By SkillIDGet information on the current skill version
         """
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             statement = select(FlowVersion).where(FlowVersion.flow_id == flow_id,
                                                   FlowVersion.is_current == 1,
                                                   FlowVersion.is_delete == 0)
@@ -120,18 +149,18 @@ class FlowVersionDao(FlowVersion):
     @classmethod
     def get_list_by_ids(cls, ids: List[int]) -> List[FlowVersion]:
         """
-        根据ID列表获取所有版本详情
+        accordingIDList for all version details
         """
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             statement = select(FlowVersion).where(FlowVersion.id.in_(ids))
             return session.exec(statement).all()
 
     @classmethod
     def get_list_by_flow(cls, flow_id: str) -> List[FlowVersionRead]:
         """
-        根据技能ID 获取所有的技能版本
+        By SkillID Get all skill versions
         """
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             statement = select(FlowVersion.id, FlowVersion.flow_id, FlowVersion.name, FlowVersion.description,
                                FlowVersion.is_current, FlowVersion.create_time, FlowVersion.update_time).where(
                 FlowVersion.flow_id == flow_id, FlowVersion.is_delete == 0).order_by(FlowVersion.id.desc())
@@ -141,9 +170,9 @@ class FlowVersionDao(FlowVersion):
     @classmethod
     def count_list_by_flow(cls, flow_id: str, include_delete: bool = False) -> int:
         """
-        根据技能ID 技能版本的数量
+        By SkillID Number of Skill Versions
         """
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             count_statement = session.query(func.count()).where(FlowVersion.flow_id == flow_id)
             if not include_delete:
                 count_statement = count_statement.where(FlowVersion.is_delete == 0)
@@ -152,9 +181,9 @@ class FlowVersionDao(FlowVersion):
     @classmethod
     def get_list_by_flow_ids(cls, flow_ids: List[str]) -> List[FlowVersionRead]:
         """
-        根据技能ID列表 获取所有的技能的所有版本信息
+        By SkillIDVertical Get all versions of all skills
         """
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             statement = select(FlowVersion.id, FlowVersion.flow_id, FlowVersion.name, FlowVersion.description,
                                FlowVersion.is_current, FlowVersion.create_time, FlowVersion.update_time).where(
                 FlowVersion.flow_id.in_(flow_ids), FlowVersion.is_delete == 0).order_by(FlowVersion.id.desc())
@@ -164,44 +193,44 @@ class FlowVersionDao(FlowVersion):
     @classmethod
     def delete_flow_version(cls, version_id: int) -> None:
         """
-        删除某个版本，正在使用的版本不能删除
+        Deleting a version, the version in use cannot be deleted
         """
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             update_statement = update(FlowVersion).where(
                 FlowVersion.id == version_id, FlowVersion.is_current == 0).values(is_delete=1)
             session.exec(update_statement)
             session.commit()
 
     @classmethod
-    def change_current_version(cls, flow_id: str, new_version_info: FlowVersion) -> bool:
+    async def change_current_version(cls, flow_id: str, new_version_info: FlowVersion) -> bool:
         """
-        修改技能的当前版本, 判断当前版本是否存在
-        同时修改技能表里的data数据
+        Modify the current version of the skill, Determine if the current version exists
+        Also modify the Skill SheetdataDATA
         """
-        with session_getter() as session:
-            # 设置当前版本
+        async with get_async_db_session() as session:
+            # Set current version
             set_statement = update(FlowVersion).where(
                 FlowVersion.flow_id == flow_id,
                 FlowVersion.id == new_version_info.id,
                 FlowVersion.is_delete == 0,
             ).values(is_current=1)
-            update_ret = session.exec(set_statement)
+            update_ret = await session.exec(set_statement)
             if update_ret.rowcount == 0:
-                # 未更新成功则不取消之前设置的当前版本
+                # If the update is not successful, the current version of the previous setting is not canceled
                 return False
 
-            # 更新技能表里的data数据
+            # Update Skill SheetdataDATA
             update_flow = update(Flow).where(Flow.id == flow_id).values(data=new_version_info.data)
-            session.exec(update_flow)
-            session.commit()
+            await session.exec(update_flow)
+            await session.commit()
 
-            # 把其他版本修改为非当前版本
+            # Modify another version to not the current version
             statement = update(FlowVersion).where(
                 FlowVersion.flow_id == flow_id,
                 FlowVersion.id != new_version_info.id,
                 FlowVersion.is_current == 1).values(
                 is_current=0)
-            session.exec(statement)
-            session.commit()
+            await session.exec(statement)
+            await session.commit()
 
             return True

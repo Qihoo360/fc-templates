@@ -1,18 +1,20 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 import { useToast } from "@/components/bs-ui/toast/use-toast";
-import { updateAssistantToolApi } from "@/controllers/API/assistant";
-import { captureAndAlertRequestErrorHoc } from "@/controllers/request";
+import { updateToolApi } from "@/controllers/API/tools";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import BingToolForm from "./builtInTool/BingSearch";
-import JinaApiKeyForm from "./builtInTool/JinaConfig";
-import TianyanchaToolForm from "./builtInTool/Tianyancha";
-import Dalle3ToolForm from "./builtInTool/Dalle3";
-import FeishuConfigForm from "./builtInTool/FeishuConfig";
-import SiliconFlowApiKeyForm from "./builtInTool/SiliconFlowApiKey";
-import EmailConfigForm from "./builtInTool/EmailConfig";
+import CodeExecutor from "./builtInTool/CodeExecutor";
 import CrawlerConfigForm from "./builtInTool/CrawlerConfig";
-
+import Dalle3ToolForm from "./builtInTool/Dalle3";
+import EmailConfigForm from "./builtInTool/EmailConfig";
+import FeishuConfigForm from "./builtInTool/FeishuConfig";
+import JinaApiKeyForm from "./builtInTool/JinaConfig";
+import SiliconFlowApiKeyForm from "./builtInTool/SiliconFlowApiKey";
+import TianyanchaToolForm from "./builtInTool/Tianyancha";
+import WebSearchForm from "./builtInTool/WebSearchFrom";
+import { useWebSearchStore } from './webSearchStore';
+import FinancialDataToolForm from "./builtInTool/FinancialData";
 const ToolSet = forwardRef(function ToolSet({ onChange }, ref) {
     const [open, setOpen] = useState(false);
     const { t } = useTranslation();
@@ -32,27 +34,24 @@ const ToolSet = forwardRef(function ToolSet({ onChange }, ref) {
     // });
     const idRef = useRef('');
     const [name, setName] = useState('');
+    const { setConfig } = useWebSearchStore()
 
     useImperativeHandle(ref, () => ({
+
         edit: (item) => {
+
             setName(item.name);
             idRef.current = item.id;
-            const configStr = item.children[0]?.extra;
-            if (configStr) {
-                const config = JSON.parse(configStr);
-                // config.provider = config.azure_deployment ? 'azure' : 'openai';
-                // const apiKey = config.openai_api_key;
-                // if (config.provider === 'openai') {
-                //     config.openai_api_key = apiKey;
-                //     config.azure_api_key = '';
-                // } else {
-                //     config.openai_api_key = '';
-                //     config.azure_api_key = apiKey;
-                // }
-                setFormData(config);
-            } else {
-                setFormData({});
+            let config = {};
+            try {
+                if (item.extra) {
+                    config = JSON.parse(item.extra);
+                    console.log('Parsed extra config:', config);
+                }
+            } catch (e) {
+                console.error('api error');
             }
+            setFormData(config);
             setOpen(true);
         }
     }));
@@ -60,11 +59,11 @@ const ToolSet = forwardRef(function ToolSet({ onChange }, ref) {
 
 
     const handleSubmit = async (formdata) => {
-        await captureAndAlertRequestErrorHoc(updateAssistantToolApi(idRef.current, formdata));
-        setOpen(false);
-        message({ variant: 'success', description: t('build.saveSuccess') });
-        onChange();
-    };
+        await updateToolApi(idRef.current, formdata)
+        setConfig(formdata)
+        setOpen(false)
+        onChange()
+    }
 
     // const getFieldsToSubmit = () => {
     //     const fields = {};
@@ -111,6 +110,12 @@ const ToolSet = forwardRef(function ToolSet({ onChange }, ref) {
                 return <BingToolForm formData={formData} onSubmit={handleSubmit} />;
             case '天眼查':
                 return <TianyanchaToolForm formData={formData} onSubmit={handleSubmit} />;
+            case '联网搜索':
+                return <WebSearchForm formData={formData} onSubmit={handleSubmit} />;
+            case '代码执行器':
+                return <CodeExecutor formData={formData} onSubmit={handleSubmit} />;
+            case '经济金融数据':
+                return <FinancialDataToolForm formData={formData} onSubmit={handleSubmit} />;
             default:
                 return null;
         }

@@ -11,24 +11,26 @@ class Workflow:
 
     def __init__(self,
                  workflow_id: str,
-                 user_id: str = None,
+                 workflow_name: str = '',
+                 user_id: int = None,
                  workflow_data: Dict = None,
                  async_mode: bool = False,
                  max_steps: int = 0,
                  timeout: int = 0,
                  callback: BaseCallback = None):
 
-        # 运行的唯一标识，保存到数据库的唯一ID
+        # Unique identifier of the run, unique saved to the databaseID
         self.workflow_id = workflow_id
         self.user_id = user_id
 
-        # 超时时间，多久没有接收到用户输入终止workflow运行（单位：分钟）
+        # Timeout, how long has the user input not been received terminatedworkflowRun (in minutes)
         self.timeout = timeout
         self.current_time = None
 
         self.graph_engine = GraphEngine(user_id=user_id,
                                         async_mode=async_mode,
                                         workflow_id=workflow_id,
+                                        workflow_name=workflow_name or workflow_id,
                                         workflow_data=workflow_data,
                                         max_steps=max_steps,
                                         callback=callback)
@@ -38,7 +40,7 @@ class Workflow:
             return
         user_input_str = ''
         for _, msg in input_data.items():
-            # 会话输入特殊处理下，将key去掉
+            # Under the special handling of session input,keyRemove
             if len(msg) == 1 and 'user_input' in msg:
                 user_input_str += msg['user_input']
                 continue
@@ -48,15 +50,14 @@ class Workflow:
     def run(self, input_data: dict = None) -> (str, str):
         """
         params:
-            input_data: user input data 不为空则执行continue
+            input_data: user input data If not empty, executecontinue
         return: workflow_status, reason
         """
-        # 执行workflow
+        # Implementationworkflow
         if input_data is not None:
-            self.save_user_input_history(input_data)
             self.graph_engine.continue_run(input_data)
         else:
-            # 首次运行时间
+            # First run time
             self.current_time = time.time()
             self.graph_engine.run()
         while self.graph_engine.status == WorkflowStatus.RUNNING.value:
@@ -66,14 +67,14 @@ class Workflow:
     async def arun(self, input_data: dict = None) -> (str, str):
         """
         params:
-            input_data: user input data 不为空则执行continue
+            input_data: user input data If not empty, executecontinue
         return: workflow_status, reason
         """
-        # 执行workflow
+        # Implementationworkflow
         if input_data is not None:
             await self.graph_engine.acontinue_run(input_data)
         else:
-            # 首次运行时间
+            # First run time
             self.current_time = time.time()
             await self.graph_engine.arun()
         while self.graph_engine.status == WorkflowStatus.RUNNING.value:
@@ -85,3 +86,6 @@ class Workflow:
 
     def status(self):
         return self.graph_engine.status
+
+    def reason(self):
+        return self.graph_engine.reason

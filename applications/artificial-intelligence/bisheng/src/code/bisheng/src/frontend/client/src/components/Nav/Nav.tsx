@@ -72,6 +72,7 @@ const Nav = ({
       },
       { enabled: isAuthenticated },
     );
+
   useEffect(() => {
     // When a tag is selected, refetch the list of conversations related to that tag
     refetch();
@@ -115,7 +116,7 @@ const Nav = ({
       <div
         data-testid="nav"
         className={
-          'nav active max-w-[320px] flex-shrink-0 overflow-x-hidden bg-surface-primary-alt md:max-w-[260px]'
+          'nav active max-w-[320px] flex-shrink-0 overflow-x-hidden md:max-w-[260px] bg-[#F9FBFF]'
         }
         style={{
           width: navVisible ? navWidth : '0px',
@@ -141,6 +142,11 @@ const Nav = ({
                   aria-label={localize('com_ui_chat_history')}
                   className="flex h-full w-full flex-col px-3 pb-3.5"
                 >
+                  {/* 新建 */}
+                  <NewChat
+                    toggleNav={itemToggleNav}
+                    isSmallScreen={isSmallScreen}
+                  />
                   <div
                     className={cn(
                       '-mr-2 flex-1 flex-col overflow-y-auto pr-2 transition-opacity duration-500',
@@ -150,11 +156,6 @@ const Nav = ({
                     onMouseLeave={handleMouseLeave}
                     ref={containerRef}
                   >
-                    {/* 新建 */}
-                    <NewChat
-                      toggleNav={itemToggleNav}
-                      isSmallScreen={isSmallScreen}
-                    />
                     {/* 会话列表 */}
                     <Conversations
                       conversations={conversations}

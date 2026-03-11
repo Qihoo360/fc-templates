@@ -1,20 +1,15 @@
 import base64
-import datetime
-import functools
-import inspect
 import json
 import os
 import re
 from io import BytesIO
 
 import yaml
-
-from bisheng.cache.redis import redis_client
-from bisheng.chat.config import ChatConfig
-from bisheng.settings import settings
-from bisheng.utils.logger import logger
-from langchain.base_language import BaseLanguageModel
 from PIL.Image import Image
+from langchain.base_language import BaseLanguageModel
+
+from bisheng.chat.config import ChatConfig
+from bisheng.common.services.config_service import settings
 
 
 def load_file_into_dict(file_path: str) -> dict:
@@ -65,65 +60,3 @@ def try_setting_streaming_options(langchain_object, websocket):
 def extract_input_variables_from_prompt(prompt: str) -> list[str]:
     """Extract input variables from prompt."""
     return re.findall(r'{(.*?)}', prompt)
-
-
-def setup_llm_caching():
-    """Setup LLM caching."""
-
-    from bisheng.settings import settings
-
-    try:
-        set_langchain_cache(settings)
-    except ImportError:
-        logger.warning(f'Could not import {settings.cache}. ')
-    except Exception as exc:
-        logger.warning(f'Could not setup LLM caching. Error: {exc}')
-
-
-# TODO Rename this here and in `setup_llm_caching`
-def set_langchain_cache(settings):
-    import langchain
-    from bisheng.interface.importing.utils import import_class
-
-    cache_type = os.getenv('bisheng_LANGCHAIN_CACHE')
-    cache_class = import_class(f'langchain_community.cache.{cache_type or settings.cache}')
-
-    logger.debug(f'Setting up LLM caching with {cache_class.__name__}')
-    langchain.llm_cache = cache_class()
-    logger.info(f'LLM caching setup with {cache_class.__name__}')
-
-
-def bisheng_model_limit_check(self: 'BishengLLM | BishengEmbedding'):
-    now = datetime.datetime.now().strftime("%Y-%m-%d")
-    if self.server_info.limit_flag:
-        # 开启了调用次数检查
-        cache_key = f"model_limit:{now}:{self.server_info.id}"
-        use_num = redis_client.incr(cache_key)
-        if use_num > self.server_info.limit:
-            raise Exception(f'额度已用完')
-
-
-def wrapper_bisheng_model_limit_check_async(func):
-    """
-    调用次数检查的装饰器
-    """
-
-    @functools.wraps(func)
-    async def wrapper(*args, **kwargs):
-        bisheng_model_limit_check(args[0])
-        return await func(*args, **kwargs)
-
-    return wrapper
-
-
-def wrapper_bisheng_model_limit_check(func):
-    """
-    调用次数检查的装饰器
-    """
-
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        bisheng_model_limit_check(args[0])
-        return func(*args, **kwargs)
-
-    return wrapper

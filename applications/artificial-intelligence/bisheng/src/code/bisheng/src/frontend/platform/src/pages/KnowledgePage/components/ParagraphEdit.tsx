@@ -8,8 +8,10 @@ import { Crosshair, Info, X } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
+import DocxPreview from "./DocxFileViewer";
 import Guide from "./Guide";
 import Markdown from './Markdown';
+import TxtFileViewer from "./TxtFileViewer";
 
 // 上传预览时携带chunks
 const ParagraphEdit = ({
@@ -19,6 +21,7 @@ const ParagraphEdit = ({
     oriFilePath = '',
     isUns = true,
     filePath = '',
+    parseType = '',
     fileId,
     chunkId,
     onClose,
@@ -29,52 +32,51 @@ const ParagraphEdit = ({
     const [data, setData] = useState([]);
     const prevOvergapData = useRef(null);
     const { t } = useTranslation('knowledge')
+    const labelTextRef = useRef<any>(partitions);
 
-    const labelTextRef = useLabelTexts(fileId, partitions)
     const [previewFileUrl, setFileUrl] = useState('')
     useEffect(() => {
         chunks ? setFileUrl(filePath) : getFilePathApi(fileId).then(setFileUrl)
     }, [fileId, filePath, chunks])
 
     const [fileName, setFileName] = useState('')
-    const initData = (res) => {
-        let labelsData = []
+    const suffix = useMemo(() => {
+        return fileName.split('.').pop().toLowerCase()
+    }, [fileName])
+
+    const initData = async (res) => {
+
+        if (!partitions) {
+            await getFileBboxApi(fileId).then(res => {
+                labelTextRef.current = res
+            })
+        }
+
         let value = ''
-        const arrData = [...res.data]
-        // 优先遍历prioritizedItem（放数组前面）
-        // const prioritizedItem = arrData.find(item => item.metadata.chunk_index === chunkId);
-        // if (prioritizedItem) {
-        //     arrData.splice(arrData.indexOf(prioritizedItem), 1);
-        //     arrData.unshift(prioritizedItem);
-        // }
+        const allLabels = convertJsonData(labelTextRef.current)
 
-        const seenIds = new Set()
-        arrData.forEach(chunk => {
+        const activeIds = new Set()
+        res.data.forEach(chunk => {
             const { bbox, chunk_index } = chunk.metadata
-            const labels = bbox && JSON.parse(bbox).chunk_bboxes || []
+            if (chunk_index === chunkId) {
+                const labels = bbox && JSON.parse(bbox).chunk_bboxes || []
+                labels.forEach(label => {
+                    const id = [label.page, ...label.bbox].join('-');
+                    activeIds.add(id)
+                })
 
-            const active = chunk_index === chunkId
-            const resData = labels.reduce((acc, label) => {
-                const id = [label.page, ...label.bbox].join('-');
-                if (!seenIds.has(id)) {
-                    seenIds.add(id);
-                    acc.push({
-                        id: id,
-                        page: label.page,
-                        label: label.bbox,
-                        active: active,
-                        txt: chunk.text
-                    });
-                }
-                return acc;
-            }, []);
-
-            labelsData = [...labelsData, ...resData]
-
-            if (active) {
                 value = chunk.text
             }
         })
+
+        const labelsData = allLabels.map((label) => {
+            return {
+                ...label,
+                active: activeIds.has(label.id)
+            }
+        })
+
+
         setFileName(res.data[0].metadata.source)
         setData(labelsData)
         prevOvergapData.current = labelsData
@@ -212,6 +214,52 @@ const ParagraphEdit = ({
         }))
     }
 
+    const fileView = () => {
+        const newVersion = ['etl4lm', 'un_etl4lm'].includes(parseType)
+        if (!newVersion) return previewFileUrl && <FileView
+            select
+            fileUrl={previewFileUrl}
+            labels={labels}
+            scrollTo={postion}
+            onSelectLabel={handleSelectLabels}
+            onPageChange={handlePageChange}
+        />
+        switch (suffix) {
+            case 'ppt':
+            case 'pptx':
+            case 'pdf':
+                return previewFileUrl && <FileView
+                    select
+                    startIndex={0}
+                    fileUrl={previewFileUrl}
+                    labels={labels}
+                    scrollTo={postion}
+                    onSelectLabel={handleSelectLabels}
+                    onPageChange={handlePageChange}
+                />
+            case 'txt': return <TxtFileViewer filePath={previewFileUrl} />
+            case 'md': return <TxtFileViewer markdown filePath={previewFileUrl} />
+            case 'html': return <TxtFileViewer html filePath={previewFileUrl} />
+            case 'doc':
+            case 'docx': return <DocxPreview filePath={previewFileUrl} />
+            case 'png':
+            case 'jpg':
+            case 'jpeg':
+            case 'bmp': return <img
+                className="border"
+                src={previewFileUrl.replace(/https?:\/\/[^\/]+/, __APP_ENV__.BASE_URL)} alt="" />
+            default:
+                return <div className="flex justify-center items-center h-full text-gray-400">
+                    <div className="text-center">
+                        <img
+                            className="size-52 block"
+                            src={__APP_ENV__.BASE_URL + "/assets/knowledge/damage.svg"} alt="" />
+                        <p>此文件类型不支持预览</p>
+                    </div>
+                </div>
+        }
+    }
+
     return (
         <div className="flex px-4 py-2 select-none">
             {/* left */}
@@ -232,7 +280,7 @@ const ParagraphEdit = ({
                     ></div>
                 </div>
                 {/* right */}
-                <div className="flex-1">
+                <div className="flex-1 min-w-0 w-0">
                     {/* head */}
                     <div className="flex justify-between items-center relative h-10 mb-2 text-sm">
                         <span>{fileName}</span>
@@ -249,16 +297,15 @@ const ParagraphEdit = ({
                     </div>
                     {/* file view */}
                     <div className="bg-gray-100 relative">
-                        {showPos && value && Object.keys(labels).length !== 0 && <Button className="absolute top-2 right-2 z-10 bg-background" variant="outline" onClick={() => setRandom(Math.random() / 10000)}><Crosshair className="mr-1" />{t('backToPosition')}</Button>}
-                        <div className="h-[calc(100vh-104px)]">
-                            {previewFileUrl && <FileView
-                                select
-                                fileUrl={previewFileUrl}
-                                labels={labels}
-                                scrollTo={postion}
-                                onSelectLabel={handleSelectLabels}
-                                onPageChange={handlePageChange}
-                            />}
+                        {showPos && value && Object.keys(labels).length !== 0 && <Button className="absolute top-2 right-2 z-10 bg-background" variant="outline" onClick={() => setRandom(Math.random() / 10000)}><Crosshair className="mr-1" size={16} />{t('backToPosition')}</Button>}
+                        <div className="h-[calc(100vh-104px)] overflow-auto"
+                            style={{
+                                width: 'calc(100vh - 104px)',
+                                minWidth: '100%',
+                            }}>
+                            {
+                                fileView()
+                            }
                         </div>
                     </div>
                 </div>
@@ -311,20 +358,38 @@ const useDragSize = (full) => {
     return { leftPanelWidth, handleMouseDown };
 }
 
-// 标注文本数据
-const useLabelTexts = (fileId: string, partitions: any) => {
-    const labelTextRef = useRef<any>({});
-    useEffect(() => {
-        if (partitions) {
-            labelTextRef.current = partitions
-        } else {
-            getFileBboxApi(fileId).then(res => {
-                labelTextRef.current = res
+// JSON数据转换函数
+export const convertJsonData = (inputObj: Record<string, any>) => {
+    try {
+        const result = []
+
+        // 遍历输入对象的每个键值对
+        for (const [key, value] of Object.entries(inputObj)) {
+            // 解析 key 获取 page 和 label
+            const keyParts = key.split('-')
+            const page = parseInt(keyParts[0])
+            const label = keyParts.slice(1).map(num => parseInt(num))
+
+            result.push({
+                id: key,
+                label: label,
+                page: page,
+                txt: value.text,
+                part_id: value.part_id // 保留用于排序
             })
         }
-    }, [])
 
-    return labelTextRef;
+        // 按 part_id 从小到大排序
+        result.sort((a, b) => a.part_id - b.part_id)
+
+        // 移除临时的 part_id 字段
+        const finalResult = result.map(({ part_id, ...rest }) => rest)
+
+        return finalResult
+    } catch (error) {
+        console.error('数据转换错误:', error)
+        return []
+    }
 }
 
 export default ParagraphEdit;

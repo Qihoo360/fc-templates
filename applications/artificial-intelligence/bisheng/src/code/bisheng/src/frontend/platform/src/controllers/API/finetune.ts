@@ -127,11 +127,25 @@ export const getModelListApi = async (): Promise<any> => {
 
 // 添加模型
 export const addLLmServer = async (data: any) => {
+    // 删除前端生成的id (id: string )
+    data.models = data.models.map((item) => {
+        const { id, ...other } = item
+        return typeof id === 'string' ? {
+            ...other
+        } : item
+    })
     return await axios.post(`/api/v1/llm`, data)
 };
 
 // 修改模型
 export const updateLLmServer = async (data: any) => {
+    // 删除前端生成的id (id: string )
+    data.models = data.models.map((item) => {
+        const { id, ...other } = item
+        return typeof id === 'string' ? {
+            ...other
+        } : item
+    })
     return await axios.put(`/api/v1/llm`, data)
 }
 
@@ -159,7 +173,14 @@ export const getKnowledgeModelConfig = async (): Promise<any> => {
 export const updateKnowledgeModelConfig = async (data: any): Promise<any> => {
     return await axios.post(`/api/v1/llm/knowledge`, data)
 }
-
+// 获取灵思模型配置
+export const getLinsightModelConfig = async (): Promise<any> => {
+    return await axios.get(`/api/v1/llm/workbench`)
+}
+// 更新灵思模型配置
+export const updateLinsightModelConfig = async (data: any): Promise<any> => {
+    return await axios.post(`/api/v1/llm/workbench`, data)
+}
 // 获取助手模型配置
 export const getAssistantModelConfig = async (): Promise<any> => {
     return await axios.get(`/api/v1/llm/assistant`)

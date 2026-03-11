@@ -3,21 +3,22 @@ import json
 from pathlib import Path
 from typing import Any, Coroutine, Dict, List, Optional, Tuple, Union
 
-from bisheng.database.base import session_getter
+from langchain.chains.base import Chain
+from langchain.schema import AgentAction, Document
+from langchain.vectorstores.base import VectorStore
+from loguru import logger
+from pydantic import BaseModel
+from sqlmodel import select
+
+from bisheng.core.database import get_sync_db_session
+from bisheng.core.storage.minio.minio_manager import get_minio_storage_sync
 from bisheng.database.models.message import ChatMessage
 from bisheng.database.models.report import Report as ReportModel
 from bisheng.interface.run import build_sorted_vertices, get_memory_key, update_memory_keys
 from bisheng.services.deps import get_session_service
 from bisheng.template.field.base import TemplateField
 from bisheng.utils.docx_temp import test_replace_string
-from bisheng.utils.logger import logger
-from bisheng.utils.minio_client import MinioClient
 from bisheng_langchain.input_output import Report
-from langchain.chains.base import Chain
-from langchain.schema import AgentAction, Document
-from langchain.vectorstores.base import VectorStore
-from pydantic import BaseModel
-from sqlmodel import select
 
 
 def fix_memory_inputs(langchain_object):
@@ -116,7 +117,7 @@ def process_inputs(inputs: Optional[dict], artifacts: Dict[str, Any], input_key:
             continue
         elif key not in inputs or not inputs[key]:
             inputs[key] = value
-    # 针对api设置default input，防止技能变更后，输入变化
+    # For 7mmx7mmx10mm of blood clot,apiPengaturandefault inputto prevent the entry of changes after skill changes
     if input_key not in inputs and 'default_input' in inputs:
         inputs[input_key] = inputs.pop('default_input')
     elif 'default_input' in inputs:
@@ -146,17 +147,17 @@ def generate_result(langchain_object: Union[Chain, VectorStore], inputs: dict):
 
 
 class Result(BaseModel):
-    result: Any
+    result: Any = None
     session_id: str
 
 
 async def process_graph_cached(
-    data_graph: Dict[str, Any],
-    inputs: Optional[dict] = None,
-    clear_cache=False,
-    session_id=None,
-    flow_id=None,
-    history_count=10,
+        data_graph: Dict[str, Any],
+        inputs: Optional[dict] = None,
+        clear_cache=False,
+        session_id=None,
+        flow_id=None,
+        history_count=10,
 ) -> Result:
     session_service = get_session_service()
     if clear_cache:
@@ -178,12 +179,12 @@ async def process_graph_cached(
     # memery input
     if hasattr(built_object, 'memory') and built_object.memory is not None:
         fix_memory_inputs(built_object)
-        with session_getter() as session:
+        with get_sync_db_session() as session:
             history = session.exec(
                 select(ChatMessage).where(
                     ChatMessage.chat_id == session_id,
                     ChatMessage.category.in_(['question', 'answer'])).order_by(
-                        ChatMessage.id.desc()).limit(history_count)).all()
+                    ChatMessage.id.desc()).limit(history_count)).all()
         history = list(reversed(history))
         next_loop = -1
         for index, chat_message in enumerate(history):
@@ -202,24 +203,24 @@ async def process_graph_cached(
         processed_inputs = process_inputs(inputs, artifacts or {}, input_key_object)
         result = generate_result(built_object, processed_inputs)
         # build report
-        with session_getter() as db_session:
+        with get_sync_db_session() as db_session:
             template = db_session.exec(
                 select(ReportModel).where(ReportModel.flow_id == flow_id).order_by(
                     ReportModel.id.desc())).first()
         if not template:
             logger.error('template not found flow_id={}', flow_id)
             raise ValueError(f'template not found flow_id={flow_id}')
-        minio_client = MinioClient()
-        template_muban = minio_client.get_share_link(template.object_name)
+        minio_client = get_minio_storage_sync()
+        template_muban = await minio_client.get_share_link(template.object_name, clear_host=False)
         report_name = built_object.report_name
         report_name = report_name if report_name.endswith('.docx') else f'{report_name}.docx'
         result = (result.get(built_object.output_keys[0]) if isinstance(result, dict) else result)
         test_replace_string(template_muban, result, report_name)
-        result = {built_object.output_keys[0]: minio_client.get_share_link(report_name)}
+        result = {built_object.output_keys[0]: await minio_client.get_share_link(report_name, clear_host=False)}
     elif any(
-        (vertex.id.startswith('InputNode')
-         for vertex in graph.vertices)) and (not inputs
-                                             or all(len(ins) == 0 for ins in inputs.values())):
+            (vertex.id.startswith('InputNode')
+             for vertex in graph.vertices)) and (not inputs
+                                                 or all(len(ins) == 0 for ins in inputs.values())):
         input_batch = []
         for vertex in graph.vertices:
             if vertex.id.startswith('InputNode'):
@@ -329,7 +330,7 @@ def apply_tweaks(node: Dict[str, Any], node_tweaks: Dict[str, Any]) -> None:
 
 
 def process_tweaks(graph_data: Dict[str, Any], tweaks: Dict[str, Dict[str,
-                                                                      Any]]) -> Dict[str, Any]:
+Any]]) -> Dict[str, Any]:
     """
     This function is used to tweak the graph data using the node id and the tweaks dict.
 

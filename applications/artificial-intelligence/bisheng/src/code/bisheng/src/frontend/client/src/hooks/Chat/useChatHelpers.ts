@@ -1,22 +1,25 @@
-import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { QueryKeys } from '~/data-provider/data-provider/src';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRecoilState, useResetRecoilState, useSetRecoilState } from 'recoil';
-import { useGetMessagesByConvoId } from '~/data-provider/data-provider/src/react-query';
+import { checkFileParseStatus } from '~/api/linsight';
 import type { TMessage } from '~/data-provider/data-provider/src';
+import { QueryKeys } from '~/data-provider/data-provider/src';
+import { useLocalize } from '~/hooks';
 import useChatFunctions from '~/hooks/Chat/useChatFunctions';
-import { useAuthContext } from '~/hooks/AuthContext';
 import useNewConvo from '~/hooks/useNewConvo';
+import { useToastContext } from '~/Providers';
 import store from '~/store';
+import { filesByIndex } from '~/store/linsight';
 
 // this to be set somewhere else
-export default function useChatHelpers(index = 0, paramId?: string) {
+export default function useChatHelpers(index = 0, paramId?: string, isLingsight = false) {
   const clearAllSubmissions = store.useClearSubmissionState();
   const [files, setFiles] = useRecoilState(store.filesByIndex(index));
+  const [linsightFiles, setLinsightFiles] = useLinsighFiles(index);
+
   const [filesLoading, setFilesLoading] = useState(false);
 
   const queryClient = useQueryClient();
-  const { isAuthenticated } = useAuthContext();
 
   const { newConversation } = useNewConvo(index);
   const { useCreateConversationAtom } = store;
@@ -24,12 +27,6 @@ export default function useChatHelpers(index = 0, paramId?: string) {
   const { conversationId } = conversation ?? {};
 
   const queryParam = paramId === 'new' ? paramId : conversationId ?? paramId ?? '';
-
-  /* Messages: here simply to fetch, don't export and use `getMessages()` instead */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data: _messages } = useGetMessagesByConvoId(conversationId ?? '', {
-    enabled: isAuthenticated,
-  });
 
   const resetLatestMessage = useResetRecoilState(store.latestMessageFamily(index));
   const [isSubmitting, setIsSubmitting] = useRecoilState(store.isSubmittingFamily(index));
@@ -75,8 +72,8 @@ export default function useChatHelpers(index = 0, paramId?: string) {
 
   const { ask, regenerate } = useChatFunctions({
     index,
-    files,
-    setFiles,
+    files: isLingsight ? linsightFiles : files,
+    setFiles: isLingsight ? setLinsightFiles : setFiles,
     getMessages,
     setMessages,
     isSubmitting,
@@ -169,9 +166,87 @@ export default function useChatHelpers(index = 0, paramId?: string) {
     setOptionSettings,
     showAgentSettings,
     setShowAgentSettings,
-    files,
-    setFiles,
+    files: isLingsight ? linsightFiles : files,
+    setFiles: isLingsight ? setLinsightFiles : setFiles,
+    dailyFiles: files,
+    setDailyFiles: setFiles,
     filesLoading,
-    setFilesLoading,
+    setFilesLoading
   };
+}
+
+
+
+const useLinsighFiles = (index) => {
+  const [files, setLinsightFiles] = useRecoilState(filesByIndex(index));
+  const filesRef = useRef(new Map()); // 用于跟踪文件状态
+
+  const { showToast } = useToastContext();
+  const localize = useLocalize();
+
+  const newFiles = useMemo(() => {
+    const newFiles = new Map(files);
+
+    newFiles.forEach((value, key) => {
+      newFiles.set(key, {
+        ...value,
+        progress: value.parsing_status === 'completed' ? 1 : 0.9,
+        parsing_status: value.parsing_status ?? 'pending'
+      });
+    });
+
+    filesRef.current = newFiles;
+    return newFiles;
+  }, [files]);
+
+
+  // 解析状态检查定时器
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      const currentFiles = new Map(filesRef.current);
+      const filesToCheck = [];
+
+      // 收集需要检查的文件：上传完成但未解析完成的文件
+      currentFiles.forEach(file => {
+        if (!['failed', 'completed'].includes(file.parsing_status)) {
+          file.file_id.indexOf('-') === -1 && filesToCheck.push(file.file_id);
+        }
+      });
+
+      if (filesToCheck.length === 0) return;
+
+      try {
+        const res = await checkFileParseStatus(filesToCheck);
+        const statusMap = new Map(res.data.map(item => [item.file_id, item.parsing_status]));
+
+        setLinsightFiles(_updatedFiles => {
+          const updatedFiles = new Map(_updatedFiles);
+          // 遍历 updatedFiles，找到匹配 fileId 的文件
+          updatedFiles.forEach((file, key) => {
+            const fileId = file.file_id; // 假设 file 对象中有 file_id 字段
+            if (statusMap.has(fileId)) {
+              const status = statusMap.get(fileId);
+              if (status === 'completed' && file.parsing_status !== 'completed') {
+                updatedFiles.set(key, {
+                  ...file,
+                  parsing_status: 'completed',
+                  // 可添加其他解析完成后的元数据
+                });
+              } else if (status === 'failed') {
+                updatedFiles.delete(key);
+                showToast({ message: localize('com_file_parse_failed_auto_removed', { 0: file.filename }), status: 'error' });
+              }
+            }
+          });
+
+          return updatedFiles
+        })
+      } catch (error) {
+        console.error('文件解析状态检查失败:', error);
+      }
+    }, 2000)
+    return () => clearInterval(intervalId);
+  }, []);
+
+  return [newFiles, setLinsightFiles]
 }

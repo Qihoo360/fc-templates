@@ -1,29 +1,35 @@
+import ast
 import json
+import re
 from enum import Enum
 from typing import Dict, List
 from urllib.parse import unquote, urlparse
 
-from bisheng.api.services.llm import LLMService
-from bisheng.api.v1.schemas import ChatMessage
-from bisheng.database.base import session_getter
-from bisheng.database.models.recall_chunk import RecallChunk
-from bisheng.interface.utils import try_setting_streaming_options
-from bisheng.processing.base import get_result_and_steps
-from bisheng.utils.logger import logger
 from fastapi import WebSocket
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.schema.document import Document
+from loguru import logger
+
+from bisheng.api.v1.schemas import ChatMessage
+from bisheng.core.database import get_sync_db_session, get_async_db_session
+from bisheng.database.models.message import ChatMessageDao
+from bisheng.database.models.recall_chunk import RecallChunk
+from bisheng.interface.utils import try_setting_streaming_options
+from bisheng.llm.domain.services import LLMService
+from bisheng.processing.base import get_result_and_steps
+
 
 class SourceType(Enum):
     """
     source type
     """
-    NOT_SUPPORT = 0  # 不支持溯源
-    FILE = 1  # 通过源文件溯源，支持bbox那种形式
-    NO_PERMISSION = 2  # 无权限访问溯源信息
-    LINK = 3  # 带链接的chunk内容
-    QA = 4  # 命中了QA知识库
+    NOT_SUPPORT = 0  # Traceability is not supported
+    FILE = 1  # Trace back to the source file to supportbboxin that form.
+    NO_PERMISSION = 2  # No permission to access traceability information
+    LINK = 3  # LinkedchunkContents
+    QA = 4  # HitsQAThe knowledge base upon
+
 
 async def process_graph(langchain_object,
                         chat_inputs: ChatMessage,
@@ -62,11 +68,11 @@ async def process_graph(langchain_object,
         raise e
 
 
-prompt_template = '''分析给定Question，提取Question中包含的KeyWords，输出列表形式
+prompt_template = '''Analyze givenQuestionEkstrakQuestionContained inKeyWords, output list format
 
 Examples:
-Question: 达梦公司在过去三年中的流动比率如下：2021年：3.74倍；2020年：2.82倍；2019年：2.05倍。
-KeyWords: ['过去三年', '流动比率', '2021', '3.74', '2020', '2.82', '2019', '2.05']
+Question: The current ratios of Damon over the past three years are as follows:2021Year:3.74x2020Year:2.82x2019Year:2.05x
+KeyWords: ['Past three years', 'Current ratio', '2021', '3.74', '2020', '2.82', '2019', '2.05']
 
 ----------------
 Question: {question}'''
@@ -74,17 +80,37 @@ Question: {question}'''
 
 def extract_answer_keys(answer, llm):
     """
-    提取answer中的关键词
+    EkstrakanswerKeywords in
     """
     llm_chain = None
     if llm:
         llm_chain = LLMChain(llm=llm, prompt=PromptTemplate.from_template(prompt_template))
     try:
         keywords_str = llm_chain.run(answer)
-        keywords = eval(keywords_str[9:])
+        keywords_str = re.sub('<think>.*</think>', '', keywords_str, flags=re.S).strip()
+        keywords = ast.literal_eval(keywords_str[9:])
     except Exception:
         import jieba.analyse
-        logger.warning(f'llm {llm} extract_not_support, change to jieba')
+        logger.warning(f'llm extract_not_support, change to jieba')
+        keywords = jieba.analyse.extract_tags(answer, topK=100, withWeight=False)
+
+    return keywords
+
+
+async def extract_answer_keys_async(answer, llm):
+    """
+    EkstrakanswerKeywords in
+    """
+    llm_chain = None
+    if llm:
+        llm_chain = LLMChain(llm=llm, prompt=PromptTemplate.from_template(prompt_template))
+    try:
+        keywords_str = await llm_chain.arun(answer)
+        keywords_str = re.sub('<think>.*</think>', '', keywords_str, flags=re.S).strip()
+        keywords = ast.literal_eval(keywords_str[9:])
+    except Exception:
+        import jieba.analyse
+        logger.warning(f'llm extract_not_support, change to jieba')
         keywords = jieba.analyse.extract_tags(answer, topK=100, withWeight=False)
 
     return keywords
@@ -93,30 +119,33 @@ def extract_answer_keys(answer, llm):
 def sync_judge_source(result, source_document, chat_id, extra: Dict):
     source = SourceType.NOT_SUPPORT.value
     if isinstance(result, Document):
-        # 返回的是Document
+        # ReturnsDocument
         metadata = result.metadata
         question = result.page_content
         result = json.loads(metadata.get('extra', '{}')).get('answer')
-        source = SourceType.QA.value
-        extra.update({
-            'qa': f'本答案来源于已有问答库: {question}',
-            'url': json.loads(metadata.get('extra', '{}')).get('url')
-        })
-    elif source_document and chat_id:
+        if result:
+            source = SourceType.QA.value
+            extra.update({
+                'qa': question,
+                'url': json.loads(metadata.get('extra', '{}')).get('url')
+            })
+            return source, result
+        source_document = [source_document]
+    if source_document and chat_id:
         if any(not doc.metadata.get('right', True) for doc in source_document):
             source = SourceType.NO_PERMISSION.value
         elif all(
-                doc.metadata.get('extra') and json.loads(doc.metadata.get('extra')).get('url')
+                doc.metadata.get('user_metadata') and doc.metadata.get('user_metadata', {}).get('url')
                 for doc in source_document):
             source = SourceType.LINK.value
             repeat_doc = {}
             doc = []
-            # 来源文档做去重，不能改变原有的顺序
+            # The source document should be de-emphasized and the original order cannot be changed.
             for one in source_document:
-                title = one.metadata.get('source')
-                url = json.loads(one.metadata.get('extra', '{}')).get('url')
+                title = one.metadata.get('source') or one.metadata.get('document_name')
+                url = one.metadata.get('user_metadata', {}).get('url')
                 repeat_key = (title, url)
-                # 重复的丢掉，不返回
+                # Repeatedly discarded, do not return
                 if repeat_doc.get(repeat_key):
                     continue
                 doc.append({'title': title, 'url': url})
@@ -125,13 +154,20 @@ def sync_judge_source(result, source_document, chat_id, extra: Dict):
         else:
             source = SourceType.FILE.value
 
-    if source == SourceType.FILE.value:
-        for doc in source_document:
-            # 确保每个chunk 都可溯源
-            if 'bbox' not in doc.metadata or not doc.metadata['bbox'] or not json.loads(
-                    doc.metadata['bbox'])['chunk_bboxes']:
-                source = SourceType.NOT_SUPPORT.value
-                break
+            # Determine if all files are in the Knowledge Base, If one is not, traceability is not supported
+            for one in source_document:
+                # If there is no knowledge baseidand documentsiddoes not support traceability
+                if not one.metadata.get('knowledge_id') or not one.metadata.get('document_id'):
+                    source = SourceType.NOT_SUPPORT.value
+                    break
+                # Knowledge Base Under Judgmentidand documentsidWhether it is in numeric format, because temporary documents uploaded by the workflow are alsoknowledge_idand documentsid
+                try:
+                    int(one.metadata.get('knowledge_id'))
+                    int(one.metadata.get('file_id') or one.metadata.get('document_id'))
+                except Exception:
+                    source = SourceType.NOT_SUPPORT.value
+                    break
+
     return source, result
 
 
@@ -140,37 +176,66 @@ async def judge_source(result, source_document, chat_id, extra: Dict):
 
 
 def sync_process_source_document(source_document: List[Document], chat_id, message_id, answer):
-    if not source_document:
+    if not source_document or not message_id:
         return
 
-    # 使用大模型进行关键词抽取，模型配置临时方案
-    llm = LLMService.get_knowledge_source_llm()
+    message_info = ChatMessageDao.get_message_by_id(message_id)
+    if not message_info:
+        return
+    # Use a large model for keyword extraction, and configure a temporary solution for the model
+    llm = LLMService.get_knowledge_source_llm(message_info.user_id)
 
     answer_keywords = extract_answer_keys(answer, llm)
 
     batch_insert = []
     for doc in source_document:
         if 'bbox' in doc.metadata:
-            # 表示支持溯源
+            # Indicates support for traceability
             content = doc.page_content
             recall_chunk = RecallChunk(chat_id=chat_id,
                                        keywords=json.dumps(answer_keywords),
                                        chunk=content,
-                                       file_id=doc.metadata.get('file_id'),
+                                       file_id=doc.metadata.get('file_id') or doc.metadata.get('document_id'),
                                        meta_data=json.dumps(doc.metadata),
                                        message_id=message_id)
             batch_insert.append(recall_chunk)
     if batch_insert:
-        with session_getter() as db_session:
+        with get_sync_db_session() as db_session:
             db_session.add_all(batch_insert)
             db_session.commit()
 
 
 async def process_source_document(source_document: List[Document], chat_id, message_id, answer):
-    sync_process_source_document(source_document, chat_id, message_id, answer)
+    if not source_document or not message_id:
+        return
+
+    message_info = await ChatMessageDao.aget_message_by_id(message_id)
+    if not message_info:
+        return
+    # Use a large model for keyword extraction, and configure a temporary solution for the model
+    llm = await LLMService.get_knowledge_source_llm_async(message_info.user_id)
+
+    answer_keywords = await extract_answer_keys_async(answer, llm)
+
+    batch_insert = []
+    for doc in source_document:
+        if 'bbox' in doc.metadata:
+            # Indicates support for traceability
+            content = doc.page_content
+            recall_chunk = RecallChunk(chat_id=chat_id,
+                                       keywords=json.dumps(answer_keywords),
+                                       chunk=content,
+                                       file_id=doc.metadata.get('file_id') or doc.metadata.get('document_id'),
+                                       meta_data=json.dumps(doc.metadata),
+                                       message_id=message_id)
+            batch_insert.append(recall_chunk)
+    if batch_insert:
+        async with get_async_db_session() as db_session:
+            db_session.add_all(batch_insert)
+            await db_session.commit()
 
 
-# 将需要额外输入的节点数据，转为tweak
+# Convert node data that requires additional input totweak
 def process_node_data(node_data: List[Dict]) -> Dict:
     tweak = {}
     for nd in node_data:

@@ -1,9 +1,9 @@
 import json
 from typing import Any
 
-from bisheng.database.models.user import UserDao
 from bisheng.interface.initialize.loading import instantiate_vectorstore
 from bisheng.interface.vector_store.custom import MilvusWithPermissionCheck
+from bisheng.user.domain.models.user import UserDao
 from bisheng.workflow.nodes.base import BaseNode
 from bisheng_langchain.chains.retrieval.retrieval_chain import RetrievalChain
 
@@ -13,18 +13,18 @@ class QARetrieverNode(BaseNode):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # 初始化输入
+        # Initialize input
         self._user_question = self.node_params.get('user_question', '')
         self._qa_knowledge_id = self.node_params.get('qa_knowledge_id', [])
         self._score = self.node_params.get('score', 0.6)
 
-        # 初始化retriever，运行中初始化
+        # Inisialisasiretriever, Running Initialization
         self._retriever = None
 
     def _init_retriever(self):
         if self._retriever:
             return
-        # 向量数据库客户端初始化，当前使用Milvus，更合理的使用更通用的工厂方法
+        # Vector database client initialization, currently usingMilvus, more rational use of more generic factory methods
         params = {}
         params['search_kwargs'] = {'k': 1, 'score_threshold': self._score}
         params['search_type'] = 'similarity_score_threshold'
@@ -43,13 +43,14 @@ class QARetrieverNode(BaseNode):
         self._init_retriever()
         question = self.get_other_node_variable(self._user_question)
         result = self._retriever.invoke({'query': question})
-        # qa 结果是document
+        # qa have a result; turn out to bedocument
         if result['result']:
-            # 存检索结果的源文档，key左右加上$作为来源文档key去查询
+            # the source documents that store the retrieval results,keyLeft and right plus$As source documentkeyGo to inquiry
             self.graph_state.set_variable(self.id, '$retrieved_result$', result['result'][0])
             result_str = json.loads(result['result'][0].metadata['extra'])['answer']
         else:
             result_str = ''
+            self.graph_state.set_variable(self.id, '$retrieved_result$', None)
 
         return {
             'retrieved_result': result_str

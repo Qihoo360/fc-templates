@@ -1,8 +1,8 @@
 import { Button } from '@/components/bs-ui/button';
 import { DialogClose, DialogFooter } from "@/components/bs-ui/dialog";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from "react-i18next";
-import {InputField, SelectField} from "./InputField";
+import { InputField } from "./InputField";
 
 const temp = {
     bing_subscription_key: '',
@@ -42,14 +42,13 @@ const BingToolForm = ({ formData, onSubmit }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4" autoComplete="off">
             <InputField
                 required
                 label="Bing Subscription Key"
                 type="password"
                 id="bing_subscription_key"
                 name="bing_subscription_key"
-                placeholder={t('build.enterSubscriptionKey')}
                 value={localFormData.bing_subscription_key}
                 onChange={handleChange}
                 error={errors.bing_subscription_key}
@@ -59,13 +58,12 @@ const BingToolForm = ({ formData, onSubmit }) => {
                 label="Bing Search URL"
                 id="bing_search_url"
                 name="bing_search_url"
-                placeholder={t('build.enterSearchUrl')}
                 value={localFormData.bing_search_url}
                 onChange={handleChange}
                 error={errors.bing_search_url}
             />
 
-            {/* 这里是 DialogFooter */}
+            {/*  DialogFooter */}
             <DialogFooter>
                 <DialogClose>
                     <Button variant="outline" className="px-11" type="button">

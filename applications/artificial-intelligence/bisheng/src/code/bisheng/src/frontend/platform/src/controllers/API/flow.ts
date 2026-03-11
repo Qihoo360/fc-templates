@@ -119,6 +119,13 @@ export async function getFlowApi(flowId: string, version: string = 'v1'): Promis
 }
 
 /**
+ * 删除的技能 工作流详情
+ */
+export async function getDeleteFlowApi(chatId: string): Promise<FlowType> {
+    return await axios.get(`/api/v1/chat/info?chat_id=${chatId}`)
+}
+
+/**
  * Saves a new flow to the database.
  *
  * @param {FlowType} newFlow - The flow data to save.
@@ -155,16 +162,18 @@ export async function readFlowsFromDatabase(page: number = 1, pageSize: number =
 }
 
 /* app list */
-export async function getAppsApi({ page = 1, pageSize = 20, keyword, tag_id = -1, type }) {
+export async function getAppsApi({ page = 1, pageSize = 20, keyword, tag_id = -1, type, managed }) {
     const tagIdStr = tag_id === -1 ? '' : `&tag_id=${tag_id}`
     const map = { assistant: 5, skill: 1, flow: 10 }
     const flowType = map[type] ? `&flow_type=${map[type]}` : ''
-    const { data, total }: { data: any[], total: number } = await axios.get(`/api/v1/workflow/list?page_num=${page}&page_size=${pageSize}&name=${keyword}${tagIdStr}${flowType}`);
+    const managedStr = (managed !== undefined && managed !== null && managed !== '')
+        ? `&managed=${managed}`
+        : '';
+    const { data, total }: { data: any[], total: number } = await axios.get(`/api/v1/workflow/list?page_num=${page}&page_size=${pageSize}&name=${keyword}${tagIdStr}${flowType}${managedStr}`);
     const newData = data.map(item => {
         if (item.flow_type !== 5) return item
         return {
             ...item,
-            description: item.desc,
             version_list: item.version_list || [],
         }
     })
@@ -195,7 +204,7 @@ export const createCustomFlowApi = async (params: {
 }, userName: string) => {
     if (params.logo) {
         // logo保存相对路径
-        params.logo = params.logo.match(/(icon.*)\?/)?.[1]
+        params.logo = params.logo.replace(/^\/\w+/, '')
     }
     const response: FlowType = await axios.post("/api/v1/flows/", {
         ...params,
@@ -222,7 +231,7 @@ export async function updateFlowApi(
 ): Promise<FlowType> {
     if (updatedFlow.logo) {
         // logo保存相对路径
-        updatedFlow.logo = updatedFlow.logo.match(/(icon.*)\?/)?.[1]
+        updatedFlow.logo = updatedFlow.logo.replace(/^\/\w+/, '')
     }
     return await axios.patch(`/api/v1/flows/${updatedFlow.id}`, {
         logo: updatedFlow.logo || '',
@@ -343,3 +352,35 @@ export async function runTestCase(data: { question_list, version_list, node_id, 
     return await axios.post(`/api/v1/flows/compare`, data);
 }
 
+/**
+ * 聊天窗上传文件
+ */
+export async function uploadChatFile(v, file: File, onProgress): Promise<any> {
+    const formData = new FormData();
+    formData.append("file", file);
+    return await axios.post(`/api/v1/knowledge/upload`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        },
+        onUploadProgress: (progressEvent) => {
+            // Calculate progress percentage
+            if (progressEvent.total) {
+                const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                onProgress(progress);
+            }
+        }
+    });
+}
+
+
+/**
+ * 检查是否有编辑app权限
+ */
+export async function checkAppEditPermission(flowId, flowType) {
+    return await axios.get(`/api/v1/workflow/write/auth`, {
+        params: { flow_id: flowId, flow_type: flowType }
+    }).catch(e => {
+        // console.error('error :>> ', e);
+        // location.href = __APP_ENV__.BASE_URL + '/404';
+    });
+}

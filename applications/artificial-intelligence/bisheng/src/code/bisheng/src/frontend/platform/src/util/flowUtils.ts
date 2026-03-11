@@ -1,3 +1,5 @@
+import { getAssistantModelConfig, getLlmDefaultModel } from "@/controllers/API/finetune";
+import { copyReportTemplate } from "@/controllers/API/workflow";
 import { Node } from "@xyflow/react";
 import i18next from "i18next";
 import { cloneDeep } from "lodash-es";
@@ -19,27 +21,54 @@ export function autoNodeName(nodes: Node[], name: string): string {
 }
 
 // 在节点初始化时，将node中的模板变量替换为界面中对应的变量key
-export function initNode(node) {
+export function initNode(node, nds, t) {
     const { id } = node;
-
+    if (node.type === "tool") {
+        if (node.is_preset) {
+            // 国际化工具节点
+            node.name = t(`tools.${node.tool_key}.name`, { ns: 'tool' })
+            node.description = t(`tools.${node.tool_key}.desc`, { ns: 'tool' })
+            return node;
+        }
+        return node;
+    }
+    const nodeMap = new Map(nds.map(n => [n.data.type, n.data]));
     node.group_params.forEach(group => {
         group.params.forEach(param => {
-            if (param.type === "var_textarea" && typeof param.value === "string") {
-                // Replace expressions by inserting the node id dynamically
-                param.value = param.value.replace(/{{#([^/]*\/)?(.*?)#}}/g, (match, prefix = '', expression) => {
-                    if (param.varZh) {
-                        param.varZh[`${prefix}${id}.${expression}`] = `${prefix}${expression}`
-                    } else {
-                        param.varZh = {
-                            [`${prefix}${id}.${expression}`]: `${prefix}${expression}`
-                        }
-                    }
-                    return `{{#${prefix}${id}.${expression}#}}`;
-                });
+            if (param.type !== "var_textarea" || typeof param.value !== "string" || !param.value) {
+                return;
             }
+
+            const translationKey = `node.${node.type}.${param.key}.value`;
+            param.value = t(translationKey);
+
+            // Replace expressions by inserting the node id dynamically
+            param.value = param.value.replace(/{{#([^/]*\/)?(.*?)#}}/g, (match, prefixMatch = '', expression) => {
+                let targetId = id;
+                let targetName = '';
+                if (prefixMatch) {
+                    const typePrefix = prefixMatch.replace('/', '');
+                    const targetNode = nodeMap.get(typePrefix);
+
+                    if (targetNode) {
+                        targetId = targetNode.id;
+                        targetName = `${targetNode.name}/`;
+                    } else {
+                        return match;
+                    }
+                }
+
+                param.varZh = param.varZh ?? {};
+                param.varZh[`${targetId}.${expression}`] = `${targetName}${expression}`;
+
+                return `{{#${targetId}.${expression}#}}`;
+            });
         });
     });
 
+    const newName = autoNodeName(nds, t(`node.${node.type}.name`))
+    node.name = newName
+    node.description = t(`node.${node.type}.description`)
     return node;
 }
 
@@ -47,7 +76,7 @@ export function initNode(node) {
 export function getToolTree(temp) {
     const children = temp.children.map(item => {
         return {
-            id: '',
+            id: item.id,
             tool_key: item.tool_key,
             type: 'tool',
             name: item.name,
@@ -81,8 +110,43 @@ export function getToolTree(temp) {
 
     return {
         name: temp.name,
+        is_preset: temp.is_preset,
         children: children
     }
+}
+
+// input特殊处理校验
+export function filterParamByinputCheck(group) {
+    if (group.groupKey === 'inputfile') {
+        const userInputFileParam = group.params.find(p => p.key === 'user_input_file');
+        if (userInputFileParam && userInputFileParam.value === false) {
+            return [];
+        }
+
+        const parseMode = group.params.find(p => p.key === 'file_parse_mode')?.value;
+        const acceptType = group.params.find(p => p.key === 'dialog_file_accept')?.value;
+
+        return group.params.filter(param => {
+            const { key } = param;
+
+            if (!Object.prototype.hasOwnProperty.call(param, 'global')) {
+                return false;
+            }
+
+            if (parseMode === 'extract_text' && ['dialog_image_files', 'dialog_file_paths'].includes(key)) {
+                return false;
+            }
+            if (parseMode === 'keep_raw' && key === 'dialog_files_content') {
+                return false;
+            }
+            if (acceptType === 'file' && key === 'dialog_image_files') {
+                return false;
+            }
+
+            return true;
+        });
+    }
+    return group.params
 }
 
 // 变量是否存在flow中
@@ -96,9 +160,15 @@ export function isVarInFlow(nodeId, nodes, varName, varNameCn) {
     const nodeName = nodes.find(node => node.id === nodeId).data.name
     const varNodeId = varName.match(/^([^.]+)/)[1]
     const res = nodes.some(node =>
-        varNodeId === node.id ? node.data.group_params.some(group =>
-            group.params.some(param => {
-                if (param.type === 'input_list' && varName.indexOf('preset_question') !== -1) {
+        varNodeId === node.id ? node.data.group_params.some(group => {
+            // input
+            const params = filterParamByinputCheck(group)
+            return params.some(param => {
+                if (param.key === 'custom_variables') {
+                    const questionId = varName.split('#')[1]
+                    const quwstionStr = varNameCn?.split('/')[1] || ''
+                    return param.value.some(item => item.key === questionId && item.label === quwstionStr)
+                } else if (param.type === 'input_list' && varName.indexOf('preset_question') !== -1) {
                     const questionId = varName.split('#')[1]
                     const quwstionStr = varNameCn?.split('/')[1] || ''
                     return param.value.some(item => item.key === questionId && item.value === quwstionStr) // id and name 必须一致
@@ -108,14 +178,22 @@ export function isVarInFlow(nodeId, nodes, varName, varNameCn) {
                     return false
                 } else if (param.type === 'form') {
                     return param.value.some(item => {
-                        if (item.multiple) return `${node.id}.${item.key}` === varName
-                        return [`${node.id}.${item.key}`, `${node.id}.${item.file_content}`, `${node.id}.${item.file_path}`].includes(varName)
+                        // 文本类型
+                        if (item.type === 'text' && `${node.id}.${item.key}` !== varName) return false
+                        // if (item.multiple) return `${node.id}.${item.key}` === varName
+                        // 文件类型
+                        const vars = [`${node.id}.${item.key}`, `${node.id}.${item.file_content}`, `${node.id}.${item.file_path}`]
+                        // 图片类型追加校验变量
+                        item.file_type !== 'file' && vars.push(`${node.id}.${item.image_file}`)
+                        return vars.includes(varName)
                     })
+                } else if (param.hidden) {
+                    return false
                 } else {
                     return `${node.id}.${param.key}` === varName
                 }
             })
-        ) : false
+        }) : false
     )
     return res ? '' : i18next.t('nodeErrorMessage', { ns: 'flow', nodeName, varNameCn })
 }
@@ -242,4 +320,194 @@ export function filterUselessFlow(nodes, edges) {
         const targetNode = nodes.find(node => node.id === edge.target);
         return sourceNode && targetNode;
     })
+}
+
+// 导入工作流
+export function importFlow() {
+    return new Promise((resolve, reject) => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = ".json";
+        input.onchange = (e: Event) => {
+            if ((e.target as HTMLInputElement).files[0].type === "application/json") {
+                const currentfile = (e.target as HTMLInputElement).files[0];
+                currentfile.text().then(async (text) => {
+                    try {
+                        let flow = JSON.parse(text);
+
+                        if (!flow || !Array.isArray(flow.nodes)) {
+                            return reject("flow.nodes 不存在或不是数组");
+                        }
+                        // 使用 Promise.all 等待所有的 copyReportTemplate 完成
+                        await Promise.all(flow.nodes.map(async (node) => {
+                            await copyReportTemplate(node.data);
+                        }));
+
+                        // 夸环境模型自动更新为默认模型, 并清空知识库和工具
+                        if (flow.source !== location.host) {
+                            const [workflow, assistant] = await Promise.all([getLlmDefaultModel(), getAssistantModelConfig()])
+                            const workflowModelId = workflow.model_id
+                            const assistantModelId = assistant.llm_list.find(item => item.default).model_id
+                            delete flow.source
+
+                            flow.nodes.forEach(node => {
+                                if (['rag', 'llm', 'agent', 'qa_retriever'].includes(node.data.type)) {
+                                    node.data.group_params.forEach(group =>
+                                        group.params.forEach(param => {
+                                            if (param.type === 'bisheng_model') {
+                                                param.value = workflowModelId
+                                            } else if (param.type === 'agent_model') {
+                                                param.value = assistantModelId
+                                            } else if (param.type === 'knowledge_select_multi' && param.value.type !== 'tmp') {
+                                                param.value.value = []
+                                            } else if (param.type === 'qa_select_multi') {
+                                                param.value = []
+                                            } else if (param.type === 'add_tool') {
+                                                param.value = []
+                                            }
+                                        })
+                                    )
+                                }
+                            })
+                        }
+
+                        resolve(flow)
+                    } catch (error) {
+                        reject(error)
+                    }
+                });
+            }
+        };
+        input.onerror = reject
+        input.click();
+    })
+}
+
+// 计算复制后的节点目标位置
+export function calculatePosition(nodes, position) {
+    if (nodes.some(node => node.position.x === position.x && node.position.y === position.y)) {
+        return calculatePosition(nodes, { x: position.x + 50, y: position.y + 50 })
+    }
+    return position
+}
+
+/**
+ * Update node Preset Questions  or node name
+ * use for selet textarea
+ */
+const createReg = (id) => [
+    new RegExp(`^[\\w_]+\\.([\\w_]+)?preset_question#${id}$`),
+    new RegExp(`^[\\w_]+\\.([\\w_]+)?preset_question_${id}$`)
+]
+export function updateVariableName(paramItem, questions) {
+    const { node, question } = questions
+
+    if (question) {
+        const [regWell, regUnderline] = createReg(question.id)
+
+        return Object.keys(paramItem.varZh).reduce((change, _key) => {
+            if (regWell.test(_key)) {
+                paramItem.varZh[_key] = paramItem.varZh[_key].replace(/\/[^\/]+$/, '/' + question.name)
+                return true
+            } else if (regUnderline.test(_key)) {
+                paramItem.varZh[_key] = paramItem.varZh[_key].replace(/_[^_]+$/, '_' + question.name)
+                return true
+            }
+            return change
+        }, false)
+    }
+
+    if (node) { // output has no node name, so no need to update
+        return Object.keys(paramItem.varZh).reduce((change, _key) => {
+            if (_key.startsWith(node.id)) {
+                paramItem.varZh[_key] = paramItem.varZh[_key].replace(/^[^\/]+\//, node.name + '/')
+                return true
+            }
+            return change
+        }, false)
+    }
+    return false
+}
+
+/**
+ * Update node Preset Questions  or node name
+ * use for code
+ */
+export function updateVariableNameByCode(paramItem, questions) {
+    const { node, question } = questions
+
+    if (question) {
+        const [regWell, regUnderline] = createReg(question.id)
+        const newItems = paramItem.value.reduce((change, item) => {
+            if (regWell.test(item.value)) {
+                item.label = item.label.replace(/\/[^\/]+$/, '/' + question.name)
+                return paramItem.value
+            } else if (regUnderline.test(item.value)) {
+                item.label = item.label.replace(/_[^_]+$/, '_' + question.name)
+                return paramItem.value
+            }
+            return change
+        }, null)
+        return newItems && [...newItems]
+    }
+
+    if (node) { // output has no node name, so no need to update
+        const newItems = paramItem.value.map(item => {
+            if (item.value.startsWith(node.id)) {
+                item.label = item.label.replace(/^[^\/]+\//, node.name + '/')
+            }
+            return item
+        }, null)
+        return newItems && [...newItems]
+    }
+    return null
+}
+
+
+/**
+ * Update node Preset Questions  or node name
+ * use for condition
+ */
+export function updateVariableNameByCondition(paramItem, questions) {
+    const { node, question } = questions
+
+    if (question) {
+        const [regWell, regUnderline] = createReg(question.id)
+
+        const replaceLabel = (conditionm, key, label) => {
+            if (regWell.test(conditionm[key])) {
+                conditionm[label] = conditionm[label].replace(/\/[^\/]+$/, '/' + question.name)
+            } else if (regUnderline.test(conditionm[key])) {
+                conditionm[label] = conditionm[label].replace(/_[^_]+$/, '_' + question.name)
+            }
+        }
+
+        return paramItem.value.map((item) => {
+            item.conditions.forEach(condition => {
+                replaceLabel(condition, 'left_var', 'left_label')
+                replaceLabel(condition, 'right_value', 'right_label')
+            })
+
+            return item
+        })
+    }
+
+    if (node) { // output has no node name, so no need to update
+        const replaceLabel = (conditionm, key, label) => {
+            if (conditionm[key].startsWith(node.id)) {
+                conditionm[label] = conditionm[label].replace(/^[^\/]+\//, node.name + '/')
+                return paramItem.value
+            }
+        }
+
+        return paramItem.value.map((item) => {
+            item.conditions.forEach(condition => {
+                replaceLabel(condition, 'left_var', 'left_label')
+                replaceLabel(condition, 'right_value', 'right_label')
+            })
+
+            return item
+        })
+    }
+    return null
 }

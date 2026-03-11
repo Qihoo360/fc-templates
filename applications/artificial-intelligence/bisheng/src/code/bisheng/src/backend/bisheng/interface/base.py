@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Type, Union
 
-from bisheng.settings import settings
+from bisheng.common.services.config_service import settings
 from bisheng.template.field.base import TemplateField
 from bisheng.template.frontend_node.base import FrontendNode
 from bisheng.template.template.base import Template
-from bisheng.utils.logger import logger
+from loguru import logger
 from langchain.agents import AgentExecutor
 from langchain.chains.base import Chain
 from pydantic import BaseModel
@@ -101,7 +101,7 @@ class LangChainTypeCreator(BaseModel, ABC):
                 name=name,
             )
 
-        # #判断是否包含inputKeys
+        # #Determine if it containsinputKeys
         if signature.name not in skip_llm:
             if name in self.type_to_loader_dict:
                 class_tmp = self.type_to_loader_dict[name]

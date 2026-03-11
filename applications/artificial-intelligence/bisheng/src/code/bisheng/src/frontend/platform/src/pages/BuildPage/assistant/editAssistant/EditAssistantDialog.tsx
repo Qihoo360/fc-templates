@@ -1,22 +1,22 @@
-import { AssistantIcon } from "@/components/bs-icons";
+import AppAvator from "@/components/bs-comp/cardComponent/avatar";
 import { Button } from "@/components/bs-ui/button";
 import { DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/bs-ui/dialog";
 import { Input, Textarea } from "@/components/bs-ui/input";
 import Avator from "@/components/bs-ui/input/avator";
 import { useToast } from "@/components/bs-ui/toast/use-toast";
 import { uploadFileWithProgress } from "@/modals/UploadModal/upload";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function EditAssistantDialog({ logo, name, desc, onSave }) {
+export default function EditAssistantDialog({ logo, viewLogo, name, desc, onSave, loca }) {
 
     const { t } = useTranslation()
     // State for form fields
     const [formData, setFormData] = useState({ logo: '', name: '', desc: '' });
 
     useEffect(() => {
-        setFormData({ logo, name, desc })
-    }, [logo, name, desc])
+        setFormData({ logo, name, desc, viewLogo })
+    }, [logo, name, desc, viewLogo])
     // console.log(formData, name, desc);
 
     // State for errors
@@ -80,9 +80,13 @@ export default function EditAssistantDialog({ logo, name, desc, onSave }) {
 
     const uploadAvator = (file) => {
         uploadFileWithProgress(file, (progress) => { }, 'icon').then(res => {
-            setFormData(prev => ({ ...prev, logo: res.file_path }));
+            setFormData(prev => ({ ...prev, logo: res.relative_path, viewLogo: res.file_path }));
         })
     }
+
+    const previewAvatar = useMemo(() =>
+        formData.logo ? __APP_ENV__.BASE_URL + (formData.viewLogo || formData.logo) : '',
+        [formData.logo])
 
     return <DialogContent className="sm:max-w-[625px] bg-background-login">
         <DialogHeader>
@@ -92,10 +96,13 @@ export default function EditAssistantDialog({ logo, name, desc, onSave }) {
             <div className="">
                 <label htmlFor="name" className="bisheng-label">{t('build.assistantAvatar')}<span className="bisheng-tip">*</span></label>
                 <Avator
-                    value={formData.logo}
+                    value={previewAvatar}
                     className="mt-2"
                     onChange={uploadAvator}
-                ><AssistantIcon className="bg-primary w-9 h-9 rounded-sm" /></Avator>
+                >
+                    <AppAvator id={6} flowType={5} className="size-9"></AppAvator>
+                </Avator>
+
                 {errors.name && <p className="bisheng-tip mt-1">{errors.name}</p>}
             </div>
             <div className="">
@@ -105,6 +112,7 @@ export default function EditAssistantDialog({ logo, name, desc, onSave }) {
                     name="name"
                     placeholder={t('build.enterName')}
                     maxLength={50}
+                    showCount
                     className="mt-2"
                     value={formData.name}
                     onChange={handleChange}

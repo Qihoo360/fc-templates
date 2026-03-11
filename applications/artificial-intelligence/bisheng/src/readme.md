@@ -28,45 +28,12 @@ redis
 
 elasticsearch
 
-minio
-
 milvus
 
 # 应用的使用说明
 
 在控制台完成业务功能部署，完成会出现触发器url。
 此时，使用浏览器或者 curl 工具， 就可以对触发器url进行请求。
-
-## 配置
-
-### 密码加密
-mysql和redis的密码加密规则如下：
-
-```python
-1. 需要系统中有python3环境
-2. 需要在python3中安装cryptography模块，可执行：pip3 install cryptography -i https://pypi.tuna.tsinghua.edu.cn/simple
-3. 将以下python代码贴入一个文件，例如名为passwd.py的文件，将password_original后的1234修改为想要加密的密码：
-from cryptography.fernet import Fernet
-secret_key = 'TI31VYJ-ldAq-FXo5QNPKV_lqGTFfp-MIdbK2Hm5F1E='
-def encrypt_token(token: str):
-    return Fernet(secret_key).encrypt(token.encode()).decode()
-password_original = "1234"
-print(encrypt_token(password_original))
-4. 执行python3 passwd.py命令即可显示加密后的密码
-```
-
-### mysql连接地址配置
-
-连接地址格式如下所示，当前加密串的密码是1234
-
- "mysql+pymysql://root:gAAAAABlp4b4c59FeVGF_OQRVf6NOUIGdxq8246EBD-b0hdK_jVKRs1x4PoAn0A6C5S6IiFKmWn0Nm5eBUWu-7jxcqw6TiVjQA==@mysql:3306/bisheng?charset=utf8mb4"
-
-### redis连接地址配置
-
-地址格式：redis://[[username]:[password]]@localhost:6379/0
-
-若没有username， redis url 设置为 redis://redis-k8s.functions:6379/1 ， celery redis url 设置为 redis://redis-k8s.functions:6379/2
-
 
 
 ## 使用

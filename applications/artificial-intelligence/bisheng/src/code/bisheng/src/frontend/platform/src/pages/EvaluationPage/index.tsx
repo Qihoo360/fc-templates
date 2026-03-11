@@ -10,9 +10,12 @@ import {
 import { Tabs, TabsContent } from "@/components/bs-ui/tabs";
 import { useNavigate } from "react-router-dom";
 
+import { checkSassUrl } from "@/components/bs-comp/FileView";
+import { LoadingIcon } from "@/components/bs-icons/loading";
 import { bsConfirm } from "@/components/bs-ui/alertDialog/useConfirm";
 import { Badge } from "@/components/bs-ui/badge";
 import AutoPagination from "@/components/bs-ui/pagination/autoPagination";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/bs-ui/tooltip";
 import {
   Evaluation,
   deleteEvaluationApi,
@@ -23,6 +26,7 @@ import { captureAndAlertRequestErrorHoc } from "@/controllers/request";
 import { useTable } from "@/util/hook";
 import { downloadFile } from "@/util/utils";
 import { map } from "lodash-es";
+import { CircleHelpIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -33,8 +37,6 @@ import {
   EvaluationType,
   EvaluationTypeLabelMap,
 } from "./types";
-import { checkSassUrl } from "@/components/bs-comp/FileView";
-import { LoadingIcon } from "@/components/bs-icons/loading";
 
 export default function EvaluationPage() {
   const navigate = useNavigate();
@@ -56,7 +58,7 @@ export default function EvaluationPage() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       reload();
-    }, 6000); // 每 6 秒轮询一次
+    }, 6000); // Poll every 6 seconds
 
     return () => clearInterval(intervalId);
   }, [reload]);
@@ -132,10 +134,7 @@ export default function EvaluationPage() {
                     <TableCell>
                       <div className="flex items-center">
                         <Badge className="whitespace-nowrap">
-                          {
-                            t(EvaluationTypeLabelMap[EvaluationType[el.exec_type]]
-                              .label)
-                          }
+                          {t(EvaluationTypeLabelMap[EvaluationType[el.exec_type]]?.label ?? t("unknown"))}
                         </Badge>
                         &nbsp;
                         <span className="whitespace-nowrap text-medium-indigo">
@@ -147,30 +146,52 @@ export default function EvaluationPage() {
                         </span>
                       </div>
                     </TableCell>
+
                     <TableCell>
                       {!!el.status && (
-                        <Badge
-                          variant={EvaluationStatusLabelMap[el.status].variant}
-                          className={"whitespace-nowrap"}
-                        >
-                          {t(EvaluationStatusLabelMap[el.status].label)}
-                          {el.status === EvaluationStatusEnum.running
-                            ? ` ${el.progress}`
-                            : null}
-                        </Badge>
+                        <div className="flex items-center">
+                          <Badge
+                            variant={EvaluationStatusLabelMap[el.status]?.variant ?? "default"}
+                            className={"whitespace-nowrap min-w-[60px] justify-center"}
+                          >
+                            {t(EvaluationStatusLabelMap[el.status]?.label ?? t("unknown"))}
+                            {el.status === EvaluationStatusEnum.running
+                              ? ` ${el.progress}`
+                              : null}
+                            {el.status === EvaluationStatusEnum.failed && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span className="">
+                                      <CircleHelpIcon className="h-3.5 w-3.5" />
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent
+                                    className="max-w-[400px] whitespace-normal"
+                                    side="top"
+                                  >
+                                    <p className="break-words">
+                                      {el.description || t("description")}
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
+                          </Badge>
+
+
+                        </div>
                       )}
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap">
                         {el.result_score
                           ? map(el.result_score, (value, key) => {
+                            const labelKey = EvaluationScoreLabelMap[EvaluationScore[key]]?.label;
+                            const displayLabel = labelKey ? t(labelKey) : key;
                             return (
                               <span className="whitespace-nowrap">
-                                {
-                                  EvaluationScoreLabelMap[
-                                    EvaluationScore[key]
-                                  ].label
-                                }
+                                {displayLabel}
                                 :{value}&nbsp;
                               </span>
                             );
@@ -183,13 +204,13 @@ export default function EvaluationPage() {
                     </TableCell>
                     <TableCell className="flex justify-end">
                       <div className="flex">
-                        <Button
+                        {el.status !== EvaluationStatusEnum.failed && <Button
                           variant="link"
                           className="no-underline hover:underline"
                           onClick={() => handleDownload(el)}
                         >
                           {t("evaluation.download")}
-                        </Button>
+                        </Button>}
                         <Button
                           variant="link"
                           onClick={() => handleDelete(el.id)}

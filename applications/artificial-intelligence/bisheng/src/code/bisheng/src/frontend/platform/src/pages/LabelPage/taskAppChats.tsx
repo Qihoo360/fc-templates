@@ -13,8 +13,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import ChatMessages from "../BuildPage/flow/FlowChat/ChatMessages";
-import AddSimilarQuestions from "../LogPage/useAppLog/AddSimilarQuestions";
-import SaveQaLibForm from "../LogPage/useAppLog/SaveQaLibForm";
+import AddSimilarQuestions from "./AddSimilarQuestions";
+import SaveQaLibForm from "./SaveQaLibForm";
 
 const PageChange = () => {
     const { id, cid } = useParams()
@@ -136,7 +136,7 @@ export default function index() {
         <div className="bg-background-login px-4">
             <div className="flex justify-between items-center py-4">
                 <div className="flex items-center">
-                    <ShadTooltip content="back" side="top">
+                    <ShadTooltip content={t('back')} side="top">
                         <Button
                             className="w-[36px] px-2 rounded-full"
                             variant="outline"

@@ -1,11 +1,12 @@
+import copy
 from enum import Enum
 from typing import Optional, Any, List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class NodeType(Enum):
-    """ 节点类型 """
+    """ Node type """
     START = "start"
     END = "end"
     INPUT = "input"
@@ -19,20 +20,23 @@ class NodeType(Enum):
     RAG = "rag"
     REPORT = "report"
     TOOL = "tool"
+    KNOWLEDGE_RETRIEVER = "knowledge_retriever"
+
+    NOTE = 'note'  # Notes node Knowledge is used to display annotations, not actual execution nodes
 
 
 class NodeParams(BaseModel):
-    key: str = Field(default="", description="变量的key")
-    label: Optional[str] = Field("", description="变量描述文本")
-    value: Optional[Any] = Field(description="变量的值")
+    key: str = Field(default="", description="Variablekey")
+    label: Optional[str] = Field("", description="Variable description text")
+    value: Optional[Any] = Field(None, description="Value of the variable")
 
-    # 变量类型 -> 数据格式的详情参考 https://dataelem.feishu.cn/wiki/IfBvwwvfFiHjuQkjFJgcxzoGnxb
-    type: Optional[str] = Field("", description="变量类型")
-    help: Optional[str] = Field("", description="变量帮助文本")
-    tab: Optional[str] = Field("", description="变量所属的tab，为空则都展示")
-    placeholder: Optional[str] = Field("", description="变量的占位提示文本")
-    required: Optional[bool] = Field(False, description="是否必填")
-    options: Optional[Any] = Field(None, description="变量的选项")
+    # Variable type -> Detailed reference for data format https://dataelem.feishu.cn/wiki/IfBvwwvfFiHjuQkjFJgcxzoGnxb
+    type: Optional[str] = Field("", description="Variable type")
+    help: Optional[str] = Field("", description="Variable Help Text")
+    tab: Optional[str] = Field("", description="Variable belongs totab, empty to show all")
+    placeholder: Optional[str] = Field("", description="Variable placeholder text")
+    required: Optional[bool] = Field(False, description="Required?")
+    options: Optional[Any] = Field(None, description="Variable options")
 
 
 class NodeGroupParams(BaseModel):
@@ -49,11 +53,20 @@ class BaseNodeData(BaseModel):
     group_params: Optional[List[NodeGroupParams]] = Field(default=None, description="Node group params")
     tab: Optional[dict] = Field({}, description="tab config")
     tool_key: Optional[str] = Field("", description="unique tool id, only for tool node")
-    v: str = Field(default="", description="node version")
+    v: Optional[int] = Field(default=0, description="node version")
+
+    @field_validator('v', mode='before')
+    @classmethod
+    def convert_v_to_int(cls, v: str | int | None) -> int:
+        if isinstance(v, str):
+            return int(v)
+        elif v is None:
+            return 0
+        return v
 
     def get_variable_info(self, variable_key: str) -> NodeParams | None:
         for group_info in self.group_params:
             for one in group_info.params:
                 if one.key == variable_key:
-                    return one
-
+                    return copy.deepcopy(one)
+        return None

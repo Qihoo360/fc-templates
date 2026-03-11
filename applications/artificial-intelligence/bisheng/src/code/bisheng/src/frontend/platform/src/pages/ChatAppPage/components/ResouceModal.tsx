@@ -1,4 +1,5 @@
 import { checkSassUrl } from "@/components/bs-comp/FileView";
+import { LoadingIcon } from "@/components/bs-icons/loading";
 import { Dialog, DialogContent } from "@/components/bs-ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/bs-ui/tooltip";
 import Tip from "@/components/bs-ui/tooltip/tip";
@@ -7,11 +8,12 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "re
 import { useTranslation } from "react-i18next";
 import { getSourceChunksApi, splitWordApi } from "../../../controllers/API";
 import { downloadFile } from "../../../util/utils";
-import FileViewPanne from "./ FileViewPanne";
+import FileViewPanne from "./FileViewPanne";
 
 // 顶部答案区
 const Anwser = ({ id, msg, onInit, onAdd, fullScreen = false }) => {
     const [html, setHtml] = useState('')
+    const { t } = useTranslation()
     const pRef = useRef(null)
 
     // init
@@ -25,7 +27,7 @@ const Anwser = ({ id, msg, onInit, onAdd, fullScreen = false }) => {
                 onInit(res)
             }).catch(e => {
                 // 自动重试
-                e === '后台处理中，稍后再试' && setTimeout(() => {
+                e === t('errors.14001') && setTimeout(() => {
                     loadData()
                 }, 1800);
             })
@@ -103,8 +105,6 @@ const ResultPanne = ({ chatId, words, data, onClose, onAdd, children, fullScreen
             })
         }, 200);
     }
-    // console.log('files :>> ', files);
-
     useEffect(() => {
         loadFiles()
     }, [words])
@@ -169,7 +169,7 @@ const ResultPanne = ({ chatId, words, data, onClose, onAdd, children, fullScreen
                             <p className="text-sm break-all">{_file.fileName}</p>
                             <div className="absolute right-1 top-1 gap-2 hidden group-hover:flex">
                                 {
-                                    _file.fileUrl && <Tip content={t('chat.downloadPDFTooltip')}>
+                                    _file.parse_type === 'uns' && _file.fileUrl && <Tip content={t('chat.downloadPDFTooltip')}>
                                         <a href="javascript:;" onClick={(event) => { downloadFile(checkSassUrl(_file.fileUrl), _file.fileName.replace(/\.[\w\d]+$/, '.pdf')); event.stopPropagation() }} >
                                             <Import color="rgba(53,126,249,1)" size={22} strokeWidth={1.5}></Import>
                                         </a>
@@ -212,12 +212,26 @@ export const ResouceContent = ({ data, setOpen, fullScreen = false }) => {
         setKeywords(keywords.filter((wd, i) => i !== index))
     }
 
-    return <div>
+    const [loading, setLoading] = useState(true)
+    const handleAnwserInit = (words) => {
+        setKeywords(words)
+        if (words.length) {
+            setLoading(false)
+        }
+    }
+
+
+    return <div className="relative">
+        {
+            loading && <div className="absolute w-full h-full top-0 left-0 flex justify-center items-center z-10 bg-[rgba(255,255,255,0.6)] dark:bg-blur-shared">
+                <LoadingIcon />
+            </div>
+        }
         <Anwser
             id={data.messageId}
             fullScreen={fullScreen}
             msg={data.message}
-            onInit={setKeywords}
+            onInit={handleAnwserInit}
             onAdd={handleAddWord}></Anwser>
         <ResultPanne
             words={keywords}

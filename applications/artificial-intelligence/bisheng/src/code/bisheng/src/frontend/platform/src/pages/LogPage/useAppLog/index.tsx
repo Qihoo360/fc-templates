@@ -61,13 +61,13 @@ export default function AppUseLog() {
     const { t } = useTranslation()
     const { appConfig } = useContext(locationContext)
     const { message } = useToast()
-    // 20条每页
+    // 20 items per page
     const { page, pageSize, data: datalist, total, loading, setPage, filterData } = useTable({}, (param) => {
         const [start_date, end_date] = getStrTime(param.dateRange || [])
         return getAuditAppListApi({
             page: page,
             page_size: param.pageSize,
-            flow_ids: param.appName?.length ? param.appName.map(el => el.value) : undefined,
+            flow_ids: param.appName?.length ? param.appName : undefined,
             user_ids: param.userName?.[0]?.value || undefined,
             group_ids: param.userGroup || undefined,
             start_date,
@@ -81,7 +81,7 @@ export default function AppUseLog() {
             ...el,
             userGroupsString: el.user_groups.map(item => item.name).join(','),
         })),
-        [datalist] // 依赖 datalist
+        [datalist] // Dependency: datalist
     );
 
     const [filters, dispatch] = useReducer(filterReducer, {
@@ -104,7 +104,7 @@ export default function AppUseLog() {
             sensitive_status: ''
         })
     }
-    // 进详情页前缓存 page, 临时方案
+    // Cache page before entering detail page, temporary solution
     const handleCachePage = () => {
         window.LogPage = page
     }
@@ -133,7 +133,7 @@ export default function AppUseLog() {
 
         setAuditing(true);
 
-        // 处理时间范围逻辑
+        // Handle time range logic
         const dateRange = filters.dateRange || [];
         let originalStart = dateRange[0];
         let originalEnd = dateRange[1];
@@ -143,14 +143,14 @@ export default function AppUseLog() {
         let showToast = false;
         let toastMessage = '';
 
-        // 未选择时间范围
+        // No time range selected
         if (!originalStart && !originalEnd) {
             adjustedEnd = new Date();
-            adjustedStart = new Date(adjustedEnd.getTime() - 59 * 24 * 60 * 60 * 1000); // 最近60天
+            adjustedStart = new Date(adjustedEnd.getTime() - 59 * 24 * 60 * 60 * 1000); // Last 60 days
             showToast = true;
-            toastMessage = '未选择时间范围，已自动为你导出最近 60 天数据';
+            toastMessage = t('log.exportNoDateRange');
         }
-        // 部分选择时间（只选开始或结束）
+        // Partial time selection (only start or end selected)
         else if (!originalStart || !originalEnd) {
             if (originalStart) {
                 adjustedEnd = new Date(originalStart);
@@ -162,23 +162,23 @@ export default function AppUseLog() {
             showToast = true;
             const formattedStart = formatDate(adjustedStart, 'yyyy-MM-dd');
             const formattedEnd = formatDate(adjustedEnd, 'yyyy-MM-dd');
-            toastMessage = `未选择时间范围，已自动为你导出 ${formattedStart} - ${formattedEnd} 数据`;
+            toastMessage = t('log.exportCustomDateRange', { start: formattedStart, end: formattedEnd });
         }
-        // 已选择时间范围，检查跨度
+        // Time range selected, check span
         else {
             const diffTime = adjustedEnd.getTime() - adjustedStart.getTime();
-            const diffDays = Math.floor(diffTime / (24 * 60 * 60 * 1000)) + 1; // 包含起止日期的总天数
+            const diffDays = Math.floor(diffTime / (24 * 60 * 60 * 1000)) + 1; // Total days including start and end dates
             if (diffDays > 60) {
                 message({
                     variant: 'error',
-                    description: '导出时间范围不能超过 60 天，请缩小范围后重试',
+                    description: t('log.exportDateRangeExceed'),
                 })
                 setAuditing(false);
                 return;
             }
         }
 
-        // 显示提示信息
+        // Display toast message
         if (showToast) {
             message({
                 variant: 'warning',
@@ -186,11 +186,11 @@ export default function AppUseLog() {
             })
         }
 
-        // 生成请求参数
+        // Generate request parameters
         const [start_date, end_date] = getStrTime([adjustedStart, adjustedEnd])
 
         exportCsvDataApi({
-            flow_ids: filters.appName?.length ? filters.appName.map(el => el.value) : undefined,
+            flow_ids: filters.appName?.length ? filters.appName : undefined,
             user_ids: filters.userName?.[0]?.value || undefined,
             group_ids: filters.userGroup || undefined,
             start_date,
@@ -199,51 +199,63 @@ export default function AppUseLog() {
             sensitive_status: filters.sensitive_status || undefined,
         }).then(async res => {
             const data = [
-                ['会话ID', '应用名称', '会话创建时间', '用户名称', '消息角色', '消息发送时间', '消息文本内容', '点赞', '点踩', '复制', '是否命中内容安全审查']
+                [
+                    t('log.csvHeaders.sessionId'),
+                    t('log.csvHeaders.appName'),
+                    t('log.csvHeaders.sessionCreationTime'),
+                    t('log.csvHeaders.userName'),
+                    t('log.csvHeaders.messageRole'),
+                    t('log.csvHeaders.messageSendTime'),
+                    t('log.csvHeaders.messageContent'),
+                    t('log.csvHeaders.like'),
+                    t('log.csvHeaders.dislike'),
+                    t('log.csvHeaders.copy'),
+                    t('log.csvHeaders.sensitiveStatus')
+                ]
             ];
 
             const handleMessage = (msg, category, id) => {
                 try {
                     msg = msg && msg[0] === '{' ? JSON.parse(msg) : msg || ''
                 } catch (error) {
-                    console.log('error :>> ', `${id} 消息转换失败`);
+                    console.error('error :>> ', `${id} ${t('log.messageConversionFailed')}`);
                 }
                 // output
                 if ('output_with_input_msg' === category) return `${msg.msg} :${msg.hisValue}`
-                if ('output_with_choose_msg' === category) return `${msg.msg} :${msg.options.find(el => el.id === msg.hisValue).label}`
-                return typeof msg === 'string' ? msg : (msg.input || msg.msg)
+                if ('output_with_choose_msg' === category) return `${msg.msg} :${msg.options.find(el => el.id === msg.hisValue)?.label}`
+                const newMsg = typeof msg === 'string' ? msg : (msg.input || msg.msg)
+                return /^[=+\-@]/.test(newMsg) ? "'" + newMsg : newMsg
             }
-            
-            // 数据转换
+
+            // Data transformation
             res.data.forEach(item => {
                 item.messages.forEach(msg => {
                     const { message, category } = msg
                     const usefulMsg = !['flow', 'tool_call', 'tool_result'].includes(category) && message
                     usefulMsg && data.push([
                         item.chat_id,
-                        item.flow_name,
+                        item.flow_type === 15 ? t('log.workbench_daily') : item.flow_name,
                         item.create_time.replace('T', ' '),
                         item.user_name,
-                        msg.is_bot ? 'AI' : '用户',
+                        msg.category === 'question' ? t('log.userRole') : t('log.aiRole'),
                         msg.create_time.replace('T', ' '),
                         handleMessage(message, msg.category, item.flow_id + '_' + item.chat_id),
-                        msg.liked === 1 ? '是' : '否',
-                        msg.liked === 2 ? '是' : '否',
-                        msg.copied ? '是' : '否',
-                        msg.sensitive_status ? '是' : '否'
+                        msg.liked === 1 ? t('log.yes') : t('log.no'),
+                        msg.liked === 2 ? t('log.yes') : t('log.no'),
+                        msg.copied ? t('log.yes') : t('log.no'),
+                        msg.sensitive_status === 1 ? t('log.no') : t('log.yes')
                     ])
                 })
             })
-
-            // 导出excle
+            // Export to Excel
             const fileName = generateFileName(start_date, end_date, user.user_name);
-            exportCsv(data, fileName)
+            exportCsv(data, fileName, true)
 
             // await downloadFile(__APP_ENV__.BASE_URL + res.url, fileName);
             setAuditing(false);
         }).catch((error) => {
             setAuditing(false);
-            // 可选：处理错误情况
+            // Optional: handle error cases
         });
     };
 
@@ -254,20 +266,20 @@ export default function AppUseLog() {
         </div>}
         <div className="h-[calc(100vh-128px)] overflow-y-auto px-2 py-4 pb-20">
             <div className="flex flex-wrap gap-4">
-                <FilterByApp value={filters.appName} onChange={(value) => dispatch({ type: 'SET_FILTER', payload: { ['appName']: value } })} />
-                <FilterByUser value={filters.userName} onChange={(value) => dispatch({ type: 'SET_FILTER', payload: { ['userName']: value } })} />
-                <FilterByUsergroup value={filters.userGroup} onChange={(value) => dispatch({ type: 'SET_FILTER', payload: { ['userGroup']: value } })} />
-                <FilterByDate value={filters.dateRange} onChange={(value) => dispatch({ type: 'SET_FILTER', payload: { ['dateRange']: value } })} />
+                <FilterByApp value={filters.appName} placeholder={t('log.appName')} onChange={(value) => dispatch({ type: 'SET_FILTER', payload: { ['appName']: value } })} />
+                <FilterByUser value={filters.userName} placeholder={t('log.userName')} onChange={(value) => dispatch({ type: 'SET_FILTER', payload: { ['userName']: value } })} />
+                <FilterByUsergroup value={filters.userGroup} placeholder={t('log.userGroup')} onChange={(value) => dispatch({ type: 'SET_FILTER', payload: { ['userGroup']: value } })} />
+                <FilterByDate value={filters.dateRange} placeholders={[`${t('log.startDate')}`, `${t('log.endDate')}`]} onChange={(value) => dispatch({ type: 'SET_FILTER', payload: { ['dateRange']: value } })} />
                 <div className="w-[200px] relative">
                     <Select value={filters.feedback} onValueChange={(value) => dispatch({ type: 'SET_FILTER', payload: { ['feedback']: value } })}>
                         <SelectTrigger className="w-[200px]">
-                            <SelectValue placeholder="用户反馈" />
+                            <SelectValue placeholder={t('log.userFeedbackPlaceholder')} />
                         </SelectTrigger>
                         <SelectContent className="max-w-[200px] break-all">
                             <SelectGroup>
-                                <SelectItem value={'like'}>赞</SelectItem>
-                                <SelectItem value={'dislike'}>踩</SelectItem>
-                                <SelectItem value={'copied'}>复制</SelectItem>
+                                <SelectItem value={'like'}>{t('log.likeFeedback')}</SelectItem>
+                                <SelectItem value={'dislike'}>{t('log.dislikeFeedback')}</SelectItem>
+                                <SelectItem value={'copied'}>{t('log.copyFeedback')}</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -275,12 +287,12 @@ export default function AppUseLog() {
                 {appConfig.isPro && <div className="w-[200px] relative">
                     <Select value={filters.sensitive_status} onValueChange={(value) => dispatch({ type: 'SET_FILTER', payload: { ['sensitive_status']: value } })} >
                         <SelectTrigger className="w-[200px]">
-                            <SelectValue placeholder="实时内容安全审查结果" />
+                            <SelectValue placeholder={t('log.sensitiveReviewResult')} />
                         </SelectTrigger>
                         <SelectContent className="max-w-[200px] break-all">
                             <SelectGroup>
-                                <SelectItem value={'2'}>违规</SelectItem>
-                                <SelectItem value={'1'}>通过</SelectItem>
+                                <SelectItem value={'2'}>{t('log.sensitiveViolation')}</SelectItem>
+                                <SelectItem value={'1'}>{t('log.sensitivePass')}</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
@@ -298,20 +310,20 @@ export default function AppUseLog() {
                     }
 
                     filterData({ ...filters, dateRange: [adjustedStart, adjustedEnd] })
-                }} >查询</Button>
-                <Button onClick={resetClick} variant="outline">重置</Button>
+                }} >{t('log.searchButton')}</Button>
+                <Button onClick={resetClick} variant="outline">{t('log.resetButton')}</Button>
                 <Button onClick={handleExport} disabled={auditing}>
-                    {auditing && <LoadIcon className="mr-1" />}导出</Button>
+                    {auditing && <LoadIcon className="mr-1" />}{t('log.exportButton')}</Button>
             </div>
             <Table>
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[200px]">{t('log.appName')}</TableHead>
                         <TableHead>{t('log.userName')}</TableHead>
-                        <TableHead>用户组</TableHead>
+                        <TableHead>{t('log.userGroup')}</TableHead>
                         <TableHead>{t('createTime')}</TableHead>
                         <TableHead>{t('log.userFeedback')}</TableHead>
-                        {appConfig.isPro && <TableHead>实时内容安全审查结果</TableHead>}
+                        {appConfig.isPro && <TableHead>{t('log.sensitiveReviewResult')}</TableHead>}
                         <TableHead className="text-right">{t('operations')}</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -320,7 +332,10 @@ export default function AppUseLog() {
                     {processedData.map((el: any) => (
                         <TableRow key={el.id}>
                             <TableCell className="font-medium max-w-[200px]">
-                                <div className=" truncate-multiline">{el.flow_name}</div>
+                                {/* <div className=" truncate-multiline"></div> */}
+                                <div className="truncate-multiline">
+                                    {el.flow_type === 15 ? t('log.workbench_daily') : el.flow_name}
+                                </div>
                             </TableCell>
                             <TableCell>{el.user_name}</TableCell>
                             <TableCell>{el.userGroupsString}</TableCell>
@@ -349,18 +364,18 @@ export default function AppUseLog() {
                                 </div>
                             </TableCell>
                             {appConfig.isPro && <TableCell>
-                                {el.sensitive_status === 1 ? <Badge variant="outline" className="text-green-500">通过</Badge>
-                                    : <Badge variant="outline" className="text-red-500">违规</Badge>
+                                {el.sensitive_status === 1 ? <Badge variant="outline" className="text-green-500">{t('log.sensitivePass')}</Badge>
+                                    : <Badge variant="outline" className="text-red-500">{t('log.sensitiveViolation')}</Badge>
                                 }
                             </TableCell>}
                             <TableCell className="text-right" onClick={() => {
                                 // @ts-ignore
                                 // window.libname = el.name;
                             }}>
-                                {/* <Button variant="link" className="" onClick={() => setOpenData(true)}>添加到数据集</Button> */}
+                                {/* <Button variant="link" className="" onClick={() => setOpenData(true)}>Add to dataset</Button> */}
                                 {
                                     el.chat_id && <Link
-                                        to={`/log/chatlog/${el.flow_id}/${el.chat_id}/${el.flow_type}`}
+                                        to={el.flow_type === 15 ? `/log/chatlog/${el.chat_id}` : `/log/chatlog/${el.flow_id}/${el.chat_id}/${el.flow_type}`}
                                         className="no-underline hover:underline text-primary"
                                         onClick={handleCachePage}
                                     >{t('lib.details')}</Link>
@@ -378,6 +393,8 @@ export default function AppUseLog() {
                 <AutoPagination
                     page={page}
                     showJumpInput
+                    jumpToText={t('log.pagination.jumpTo')}
+                    pageText={t('log.pagination.page')}
                     pageSize={pageSize}
                     total={total}
                     onChange={(newPage) => setPage(newPage)}

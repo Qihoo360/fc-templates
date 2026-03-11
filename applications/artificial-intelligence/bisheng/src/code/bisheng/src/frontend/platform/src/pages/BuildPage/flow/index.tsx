@@ -1,10 +1,9 @@
-import { getFlowApi } from "@/controllers/API/flow";
-import { cloneDeep } from "lodash-es";
-import { useEffect, useMemo } from "react";
+import { checkAppEditPermission, getFlowApi } from "@/controllers/API/flow";
+import { flowVersionCompatible } from "@/util/flowCompatible";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import Panne from "./Panne";
 import useFlowStore from "./flowStore";
-import { flowVersionCompatible } from "@/util/flowCompatible";
 
 
 export default function FlowPage() {
@@ -18,12 +17,16 @@ export default function FlowPage() {
     //     }
     // }, [])
 
-    const { flow, setFlow, clearRunCache } = useFlowStore()
+    const { flow, setFlow, clearRunCache, clearNotifications } = useFlowStore()
+    const [checking, setChecking] = useState(true)
 
-    useEffect(() => {
+    const flowInit = async () => {
+        await checkAppEditPermission(id, 10)
+        
         getFlowApi(id).then(f => {
+            setChecking(false)
             clearRunCache();
-            
+
             if (f.data) {
                 const { data, ..._flow } = f
                 return setFlow({
@@ -46,9 +49,15 @@ export default function FlowPage() {
                 version_list: []
             });
         })
+    }
+
+    useEffect(() => {
+        flowInit()
+
         return () => {
             setFlow(null);
             clearRunCache();
+            clearNotifications()
         }
     }, [])
 
@@ -61,6 +70,8 @@ export default function FlowPage() {
         }
         return []
     }, [flow, id])
+
+    if (checking) return null
 
     return (
         <div className="flow-page-positioning">

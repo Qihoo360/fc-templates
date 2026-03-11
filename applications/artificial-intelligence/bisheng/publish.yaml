@@ -5,54 +5,56 @@ Type: Project
 Effective: Public
 Name: bisheng-backend
 Provider:
-- fc
+  - fc
 Version: 0.0.1
 Description: 这是一个专攻办公场景的 LLM 应用开发平台
 HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/bisheng-backend
 Tags:
-- AI
-- Custom Runtime
+  - AI
+  - Custom Runtime
 Category: 人工智能
 Service:
   FC:
     Authorities:
-    - 创建函数
+      - 创建函数
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
   required:
-  # 必填项
-  - region
-  - bishengOfficeFunctionName
-  - bishengOfficeDescription
-  - bishengBackendFunctionName
-  - bishengBackendDescription
-  - bishengFrontendFunctionName
-  - bishengFrontendDescription
-  - ELASTICSEARCH_HOST
-  - ELASTICSEARCH_PORT
-  - ELASTICSEARCH_USERNAME
-  - ELASTICSEARCH_PASSWORD
-  - VectorDB
-  - MILVUS_HOST
-  - MILVUS_PORT
-  - MILVUS_USERNAME
-  - MILVUS_PASSWORD
-  - milvusSecure
-  - milvusIsPartition
-  - milvusPartitionSuffiix
-  - ObjectStorage
-  - minioEndpoint
-  - minioAccessKey
-  - minioSecretKey
-  - minioCertCheck
-  - minioSchema
-  - minioSharePoin
-  - CacheDB
-  - REDIS_URL
-  - CELERY_REDIS_URL
-  - DatabaseType
-  - MYSQL_URL
+    # 必填项
+    - region
+    - bishengMinioFunctionName
+    - bishengMinioDescription
+    - bishengOfficeFunctionName
+    - bishengOfficeDescription
+    - bishengBackendFunctionName
+    - bishengBackendDescription
+    - bishengFrontendFunctionName
+    - bishengFrontendDescription
+    - workerNum
+    - ELASTICSEARCH_HOST
+    - ELASTICSEARCH_PORT
+    - ELASTICSEARCH_USERNAME
+    - ELASTICSEARCH_PASSWORD
+    - VectorDB
+    - MILVUS_HOST
+    - MILVUS_PORT
+    - MILVUS_USERNAME
+    - MILVUS_PASSWORD
+    - milvusSecure
+    - milvusIsPartition
+    - milvusPartitionSuffiix
+    - CacheDB
+    - REDIS_HOST
+    - REDIS_PORT
+    - REDIS_PASSWORD
+    - CELERY_REDIS_URL
+    - DataBase
+    - MYSQL_HOST
+    - MYSQL_PORT
+    - MYSQL_DATABASE
+    - MYSQL_USERNAME
+    - MYSQL_PASSWORD
   properties:
     region:
       title: 地域
@@ -60,13 +62,33 @@ Parameters:
       default: beijing
       description: 创建应用所在的地区
       enum:
-      - beijing
-      - test-3
+        - beijing
+        - test-3
       x-cate: resourceCate
       x-reaction-properties:
-      - functionPolefsVolumn
+        - functionPolefsVolumn
       x-formitem:
         type: select
+    bishengMinioFunctionName:
+      title: 函数名
+      type: string
+      default: bisheng-minio-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入 bisheng minio 函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    bishengMinioDescription:
+      title: 描述
+      type: string
+      default: "bisheng minio"
+      pattern: ".{0,255}$"
+      description: 最大长度为255个字符
+      x-placeholder: 请输入 bisheng minio 函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
     bishengOfficeFunctionName:
       title: 函数名
       type: string
@@ -127,6 +149,16 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
+    workerNum:
+      type: integer
+      default: 2
+      pattern: "^(?:[1-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
+      description: "worker 进程数"
+      x-cate: applicationCate
+      x-label: backend 配置
+      x-placeholder: 请输入 worker 进程数
+      x-formitem:
+        type: input
     ELASTICSEARCH_HOST:
       # title: Elasticsearch Host
       type: string
@@ -177,7 +209,7 @@ Parameters:
       default: milvus
       description: 选择数据库类型
       enum:
-      - milvus
+        - milvus
       x-cate: applicationCate
       x-label: 向量数据库配置
       x-restype: milvus
@@ -259,98 +291,48 @@ Parameters:
       x-placeholder: partition 后缀名称
       x-formitem:
         type: input
-    ObjectStorage:
-      # title: 对象存储配置
-      type: string
-      default: MinIO
-      description: 选择对象存储
-      enum:
-      - MinIO
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      # x-restype: s3
-      x-formitem:
-        type: select
-    minioEndpoint:
-      type: string
-      default: "minio-beijing.functions:9000"
-      description: ""
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      # x-restype: s3
-      x-placeholder: 请输入MinIO Endpoint
-      x-formitem:
-        type: input
-    minioAccessKey:
-      type: secret
-      default: "123456"
-      description: ""
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      # x-restype: s3
-      x-placeholder: 请输入MinIO AccessKey
-      x-formitem:
-        type: input
-    minioSecretKey:
-      type: secret
-      default: "123456"
-      description: ""
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      # x-restype: s3
-      x-placeholder: 请输入MinIO SecretKey
-      x-formitem:
-        type: input
-    minioCertCheck:
-      type: string
-      default: "false"
-      description: ""
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      # x-restype: s3
-      x-placeholder: 请输入MinIO 是否验证证书
-      x-formitem:
-        type: input
-    minioSchema:
-      type: string
-      default: "false"
-      description: ""
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      # x-restype: s3
-      x-placeholder: 请输入MinIO Schema
-      x-formitem:
-        type: input
-    minioSharePoin:
-      type: string
-      default: "minio-beijing.functions:9000"
-      description: ""
-      x-cate: applicationCate
-      x-label: 对象存储配置
-      # x-restype: s3
-      x-placeholder: 请输入MinIO SharePoin
-      x-formitem:
-        type: input
     CacheDB:
       type: string
       default: redis
       description: 选择缓存类型
       enum:
-      - redis
+        - redis
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
       x-formitem:
         type: select
-    REDIS_URL:
-      # title: DifyRedisUserName
+    REDIS_HOST:
+      # title: REDIS_HOST
       type: string
-      default: "redis://redis-k8s.functions:6379/1"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 缓存配置
       x-restype: redis
-      x-placeholder: 请输入 redis url
+      x-placeholder: 请输入Redis主机地址
+      x-formitem:
+        type: input
+    REDIS_PORT:
+      # title: REDIS_PORT
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入Redisd主机端口
+      x-formitem:
+        type: input
+    REDIS_DATABASE:
+      # title: REDIS_DATABASE
+      type: string
+      default: "0"
+      description: ""
+      x-cate: applicationCate
+      x-label: 缓存配置
+      x-restype: redis
+      x-placeholder: 请输入Redis数据库
       x-formitem:
         type: input
     CELERY_REDIS_URL:
@@ -364,28 +346,110 @@ Parameters:
       x-placeholder: 请输入 celery redis url
       x-formitem:
         type: input
-    DatabaseType:
+    DataBase:
+      # title: 数据库配置
       type: string
       default: mysql
-      description: 选择数据库类型
+      description: 请选择数据库类型
       enum:
-      - mysql
+        - mysql
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: mysql
       x-formitem:
         type: select
-    MYSQL_URL:
+    MYSQL_HOST:
       # title: 数据库名 Host
       type: string
-      default: "mysql://root:password123@127.0.0.1:3306/test_db"
+      default: ""
       description: ""
       x-cate: applicationCate
       x-label: 数据库配置
       x-restype: mysql
-      x-placeholder: 请输入数据库连接地址
+      x-placeholder: 请输入 mysql host
       x-formitem:
         type: input
+    MYSQL_PORT:
+      # title: 数据库名 Host
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入 mysql port
+      x-formitem:
+        type: input
+    MYSQL_DATABASE:
+      # title: 数据库名 Host
+      type: string
+      default: "bisheng"
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入 mysql database
+      x-formitem:
+        type: input
+    MYSQL_USERNAME:
+      # title: 数据库名 Host
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入 mysql user
+      x-formitem:
+        type: input
+    MYSQL_PASSWORD:
+      # title: 数据库名 Host
+      type: secret
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入 mysql password
+      x-formitem:
+        type: input
+
+    FileStorage:
+      type: string
+      default: Polefs
+      description: 文件存储类型
+      enum:
+        - Polefs
+      x-cate: applicationCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-formitem:
+        type: select
+
+    POLEFS_VOLUME:
+      type: string
+      description: |
+        保存应用数据的文件存储，如：'bjpdc-polefs/app/data'；注：复用存储时需要注意数据覆盖的问题
+      x-cate: applicationCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-placeholder: POLEFS 存储卷
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: POLEFS_VOLUME_CREATE_USER
+      x-formitem:
+        type: input
+        name: volume_unique_name
+    POLEFS_VOLUME_CREATE_USER:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-placeholder: 函数创建挂载卷的用户
+      x-hidden: true
+
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"

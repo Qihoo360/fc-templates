@@ -4,8 +4,21 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Sequence, Type
 
 import httpx
 import openai
-from bisheng.cache.utils import file_download
-from bisheng.database.models.knowledge import KnowledgeDao
+from langchain.agents import agent as agent_module
+from langchain.agents.agent import AgentExecutor
+from langchain.agents.agent_toolkits.base import BaseToolkit
+from langchain.agents.tools import BaseTool
+from langchain.chains.base import Chain
+from langchain.document_loaders.base import BaseLoader
+from langchain.vectorstores.base import VectorStore
+from langchain_community.utils.openai import is_openai_v1
+from loguru import logger
+from pydantic import SecretStr, ValidationError, create_model
+from pydantic.fields import FieldInfo
+
+from bisheng.common.constants.enums.telemetry import ApplicationTypeEnum
+from bisheng.common.services.config_service import settings
+from bisheng.core.cache.utils import file_download
 from bisheng.interface.agents.base import agent_creator
 from bisheng.interface.chains.base import chain_creator
 from bisheng.interface.custom_lists import CUSTOM_NODES
@@ -21,22 +34,11 @@ from bisheng.interface.retrievers.base import retriever_creator
 from bisheng.interface.toolkits.base import toolkits_creator
 from bisheng.interface.utils import load_file_into_dict
 from bisheng.interface.wrappers.base import wrapper_creator
-from bisheng.settings import settings
+from bisheng.knowledge.domain.models.knowledge import KnowledgeDao
+from bisheng.llm.domain import LLMService
 from bisheng.utils import validate
 from bisheng.utils.constants import NODE_ID_DICT, PRESET_QUESTION
-from bisheng.utils.embedding import decide_embeddings
 from bisheng_langchain.vectorstores import VectorStoreFilterRetriever
-from langchain.agents import agent as agent_module
-from langchain.agents.agent import AgentExecutor
-from langchain.agents.agent_toolkits.base import BaseToolkit
-from langchain.agents.tools import BaseTool
-from langchain.chains.base import Chain
-from langchain.document_loaders.base import BaseLoader
-from langchain.vectorstores.base import VectorStore
-from langchain_community.utils.openai import is_openai_v1
-from loguru import logger
-from pydantic import SecretStr, ValidationError, create_model
-from pydantic.fields import FieldInfo
 
 if TYPE_CHECKING:
     from bisheng import CustomComponent
@@ -172,7 +174,7 @@ def instantiate_input_output(node_type, class_object, params, id_dict):
             preset_question = params.pop(PRESET_QUESTION)
         chains = params.get('chains', [])
         chains_idlist = id_dict.get('chains', [])
-        # 需要对chains对象进行丰富处理
+        # Needs to be rightchainsObjects are enriched
         chain_list = []
         for index, id in enumerate(chains_idlist):
             chain_obj = {}
@@ -252,6 +254,7 @@ def instantiate_llm(node_type, class_object, params: Dict, user_llm_request: boo
     # This is a workaround so JinaChat works until streaming is implemented
     # if "openai_api_base" in params and "jina" in params["openai_api_base"]:
     # False if condition is True
+    params.pop('cache', None)
     if is_openai_v1() and params.get('openai_proxy'):
         params['http_client'] = httpx.Client(proxies=params.get('openai_proxy'))
         params['http_async_client'] = httpx.AsyncClient(proxies=params.get('openai_proxy'))
@@ -269,10 +272,14 @@ def instantiate_llm(node_type, class_object, params: Dict, user_llm_request: boo
             params['max_tokens'] = int(params['max_tokens'])
         elif not isinstance(params.get('max_tokens'), int):
             params.pop('max_tokens', None)
-
+    if node_type == 'BishengLLM':
+        params['app_id'] = "flow(will be deprecated)"
+        params['app_name'] = "flow(will be deprecated)"
+        params['app_type'] = ApplicationTypeEnum.SKILL
+        params['user_id'] = params.get('user_id', 0)
     llm = class_object(**params)
     llm_config = settings.get_from_db('llm_request')
-    # 支持request_timeout & max_retries
+    # Supportrequest_timeout & max_retries
     if hasattr(llm, 'request_timeout') and 'request_timeout' in llm_config:
         if isinstance(llm_config.get('request_timeout'), str):
             llm.request_timeout = int(llm_config.get('request_timeout'))
@@ -336,16 +343,16 @@ def instantiate_chains(node_type, class_object: Type[Chain], params: Dict, id_di
             params['retriever'] = vectorstore
     # sequence chain
     if node_type == 'SequentialChain':
-        # 改造sequence 支持自定义chain顺序
-        params.pop('input_node', '')  # sequential 不支持增加入参
+        # Modifikasisequence Supports customizationchainSequence
+        params.pop('input_node', '')  # sequential Adding input parameters is not supported
         try:
             chain_order = json.loads(params.pop('chain_order'))
         except Exception:
-            raise Exception('chain_order 不是标准数组')
+            raise Exception('chain_order Not a standard array')
         chains_origin = params.get('chains')
         chains_dict = {id: index for index, id in enumerate(id_dict.get('chains'))}
         params['chains'] = [chains_origin[chains_dict.get(id)] for id in chain_order]
-    # dict 转换
+    # dict Tukar
     if 'headers' in params and isinstance(params['headers'], str):
         params['headers'] = json.loads(params['headers'])
     if node_type == 'ConversationalRetrievalChain':
@@ -358,7 +365,7 @@ def instantiate_chains(node_type, class_object: Type[Chain], params: Dict, id_di
             k: v
             for k, v in params['combine_docs_chain_kwargs'].items() if v is not None
         }
-    # 人工组装MultiPromptChain
+    # Manual assemblyMultiPromptChain
     if node_type in {'MultiPromptChain', 'MultiRuleChain'}:
         destination_chain_name = params['destination_chain_name']
         llm_chains = params['LLMChains']
@@ -433,7 +440,7 @@ def instantiate_tool(node_type, class_object: Type[BaseTool], params: Dict):
     if args_schema and hasattr(tool, 'args_schema'):
         fields = {}
         for name, prop in args_schema.items():
-            # eval函数用于执行一个字符串表达式并返回结果
+            # evalFunction to execute a string expression and return the result
             import typing  # noqa
             if prop.get('type') == 'string':
                 field_type = str
@@ -464,7 +471,11 @@ def instantiate_embedding(class_object, params: Dict):
             del params['openai_proxy']
         if class_object.__name__ == 'OpenAIEmbeddings':
             params['check_embedding_ctx_length'] = False
-
+        elif class_object.__name__ == 'BishengEmbedding':
+            params['app_id'] = "flow(will be deprecated)"
+            params['app_name'] = "flow(will be deprecated)"
+            params['app_type'] = ApplicationTypeEnum.SKILL
+            params['user_id'] = params.get('user_id', 0)
         return class_object(**params)
     except ValidationError:
         params = {key: value for key, value in params.items() if key in class_object.__fields__}
@@ -478,14 +489,14 @@ def instantiate_vectorstore(node_type: str, class_object: Type[VectorStore], par
     if 'documents' not in params:
         params['documents'] = []
 
-    # 过滤掉用户没有权限的知识库
-    # TODO zgq 后续统一技能执行流程后将和业务有关的逻辑都迁移到初始化技能对象之前
+    # Filter knowledge bases for which the user does not have permission
+    # TODO zgq After the subsequent unified skill execution process, all business-related logic is migrated to before the initial skill object.
     if node_type == 'MilvusWithPermissionCheck' or node_type == 'ElasticsearchWithPermissionCheck':
         col_name = 'collection_name'
         if node_type == 'ElasticsearchWithPermissionCheck':
             col_name = 'index_name'
 
-        # 获取执行用户 有权限查看的知识库列表
+        # Get execution users List of knowledge bases with permission to view
         knowledge_ids = [one['key'] for one in params[col_name]]
         if params.pop('_is_check_auth', True):
             knowledge_list = KnowledgeDao.judge_knowledge_permission(user_name, knowledge_ids)
@@ -496,19 +507,21 @@ def instantiate_vectorstore(node_type: str, class_object: Type[VectorStore], par
         if not knowledge_list:
             logger.warning(f'{node_type}: after filter, get zero knowledge')
 
-        # 没有任何知识库的话，提供假的embedding和空的collection_name
+        # Fake if you don't have any knowledge baseembeddingand emptycollection_name
         if node_type == 'MilvusWithPermissionCheck':
             params[col_name] = []
             params['collection_embeddings'] = []
             params['partition_keys'] = []
             for knowledge in knowledge_list:
                 params[col_name].append(knowledge.collection_name)
-                params['collection_embeddings'].append(decide_embeddings(knowledge.model))
+                params['collection_embeddings'].append(
+                    LLMService.get_bisheng_knowledge_embedding_sync(0, model_id=int(knowledge.model)))
                 if knowledge.collection_name.startswith('partition'):
                     params['partition_keys'].append(knowledge.id)
                 else:
                     params['partition_keys'].append(None)
-            params['embedding'] = params['collection_embeddings'][0] if params['collection_embeddings'] else FakeEmbedding()
+            params['embedding'] = params['collection_embeddings'][0] if params[
+                'collection_embeddings'] else FakeEmbedding()
         else:
             params[col_name] = [
                 knowledge.index_name or knowledge.collection_name for knowledge in knowledge_list
@@ -524,7 +537,7 @@ def instantiate_vectorstore(node_type: str, class_object: Type[VectorStore], par
     # ! This might not work. Need to test
     if search_kwargs and hasattr(vecstore, 'as_retriever'):
         if settings.get_from_db('file_access'):
-            # need to verify file access / 只针对知识库
+            # need to verify file access / For Knowledge Base Only
             access_url = settings.get_from_db('file_access') + f'?username={user_name}'
             vecstore = VectorStoreFilterRetriever(vectorstore=vecstore,
                                                   search_type=search_type,
@@ -577,8 +590,8 @@ def instantiate_documentloader(class_object: Type[BaseLoader], params: Dict):
 
 
 def instantiate_textsplitter(
-    class_object,
-    params: Dict,
+        class_object,
+        params: Dict,
 ):
     try:
         documents = params.pop('documents')
@@ -589,7 +602,7 @@ def instantiate_textsplitter(
                          'Try changing the chunk_size of the Text Splitter.') from exc
 
     if ('separator_type' in params
-            and params['separator_type'] == 'Text') or 'separator_type' not in params:
+        and params['separator_type'] == 'Text') or 'separator_type' not in params:
         params.pop('separator_type', None)
         # separators might come in as an escaped string like \\n
         # so we need to convert it to a string
@@ -620,7 +633,7 @@ def replace_zero_shot_prompt_with_prompt_template(nodes):
             # Build Prompt Template
             tools = [
                 tool for tool in nodes if tool['type'] != 'chatOutputNode'
-                and 'Tool' in tool['data']['node']['base_classes']
+                                          and 'Tool' in tool['data']['node']['base_classes']
             ]
             node['data'] = build_prompt_template(prompt=node['data'], tools=tools)
             break

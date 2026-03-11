@@ -534,6 +534,9 @@ export type TStartupConfig = {
 };
 
 export type BsConfig = {
+  applicationCenterWelcomeMessage: string;
+  applicationCenterDescription: string;
+  enable_etl4lm: boolean;
   sidebarIcon: {
     enabled: boolean;
     image: string;
@@ -571,7 +574,10 @@ export type BsConfig = {
     enabled: boolean;
     prompt: string;
   };
-  host: ''
+  host: '',
+  linsight_invitation_code: boolean
+  linsight_cache_dir: string
+  waiting_list_url: string
 };
 
 export const configSchema = z.object({

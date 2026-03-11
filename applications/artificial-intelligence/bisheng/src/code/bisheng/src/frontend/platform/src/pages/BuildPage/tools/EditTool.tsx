@@ -10,40 +10,51 @@ import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/bs-ui/table"
 import { useToast } from "@/components/bs-ui/toast/use-toast"
 import { QuestionTooltip } from "@/components/bs-ui/tooltip"
+import { userContext } from "@/contexts/userContext"
 import { createTool, deleteTool, downloadToolSchema, testToolApi, updateTool } from "@/controllers/API/tools"
 import { captureAndAlertRequestErrorHoc } from "@/controllers/request"
 import { Plus } from "lucide-react"
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
+import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
-const TestDialog = forwardRef((props: any, ref) => {
+interface TestDialogProps {
+    tool: any;
+    formState: any;
+}
+
+export const TestDialog = forwardRef<{
+    open: (item, tool, formState) => void
+}, TestDialogProps>((props: any, ref) => {
     const { t } = useTranslation()
     const [testShow, setTestShow] = useState(false)
     const [apiData, setApiData] = useState<any>({})
     const toolRef = useRef<any>({})
-    const formRef = useRef<any>({})
-    const formRuleRef = useRef<any>({})
-    const formStateRef = useRef<any>({})
+
+    const formRef = useRef<{
+        values: Record<string, string>;
+        rules: Record<string, boolean>;
+        state?: any;
+    }>({ values: {}, rules: {} });
 
     useImperativeHandle(ref, () => ({
         open: (item, tool, formState) => {
             toolRef.current = tool
-            formStateRef.current = formState
+            formRef.current.state = formState
             setResult('')
             setApiData(item)
             setTestShow(true)
             // fill form
             item.api_params.forEach(param => {
-                formRef.current[param.name] = ''
-                formRuleRef.current[param.name] = param.required
+                formRef.current.values[param.name] = ''
+                formRef.current.rules[param.name] = param.required
             });
         }
     }))
-    // 重置
+    // reset
     useEffect(() => {
         if (!testShow) {
-            formRef.current = {}
-            formRuleRef.current = {}
+            formRef.current.values = {}
+            formRef.current.rules = {}
         }
     }, [testShow])
 
@@ -51,16 +62,15 @@ const TestDialog = forwardRef((props: any, ref) => {
     const [loading, setLoading] = useState(false)
     const [result, setResult] = useState('')
     const handleTest = async () => {
-        // 校验
+        // validation
         const errors = []
-        Object.keys(formRef.current).forEach(key => {
-            if (formRuleRef.current[key] && formRef.current[key] === '') {
-                errors.push(key + '为必填项')
+        Object.keys(formRef.current.values).forEach(key => {
+            if (formRef.current.rules[key] && formRef.current.values[key] === '') {
+                errors.push(key + t('report.isRequired'))
             }
         })
         if (errors.length > 0) {
             return message({
-                title: '提示',
                 description: errors,
                 variant: 'warning'
             })
@@ -68,16 +78,18 @@ const TestDialog = forwardRef((props: any, ref) => {
 
         setLoading(true)
 
-        const { server_host, children, auth_method, auth_type, api_key } = toolRef.current
+        const { server_host, children, auth_method, parameter_name } = toolRef.current
+        const { apiKey, apiLocation, authMethod, authType, parameter } = formRef.current.state
+
         await captureAndAlertRequestErrorHoc(testToolApi({
             server_host,
             extra: children.find(el => el.name === apiData.name).extra,
-            auth_method: formStateRef.current.authMethod === 'apikey' ? 1 : 0,
-            auth_type: formStateRef.current.authType,
-            api_key: formStateRef.current.apiKey,
-            request_params: formRef.current,
-            api_location: formStateRef.current.apiLocation,
-            parameter_name: formStateRef.current.parameter
+            auth_method: authMethod === 'apikey' ? 1 : 0,
+            auth_type: authType,
+            api_key: apiKey,
+            request_params: formRef.current.values,
+            api_location: apiLocation || 'query',
+            parameter_name: parameter || parameter_name
         }).then(setResult))
         setLoading(false)
     }
@@ -104,7 +116,7 @@ const TestDialog = forwardRef((props: any, ref) => {
                                         <TableCell>{param.name}{param.required && <span className="text-red-500">*</span>}</TableCell>
                                         <TableCell>
                                             <Input onChange={(e) => {
-                                                formRef.current[param.name] = e.target.value;
+                                                formRef.current.values[param.name] = e.target.value;
                                             }}></Input>
                                         </TableCell>
                                     </TableRow>
@@ -159,7 +171,7 @@ const EditTool = forwardRef((props: any, ref) => {
     const [editShow, setShow] = useState(false)
     const setEditShow = (bln) => {
         if (!bln) {
-            // 关闭弹窗初始化数据
+            // init data when close
             setFormState({ ...formData })
             setTableData([])
         }
@@ -169,10 +181,12 @@ const EditTool = forwardRef((props: any, ref) => {
 
     const schemaUrl = useRef('')
     const [formState, setFormState] = useState({ ...formData });
-    const fromDataRef = useRef<any>({}) // 与formState同步，fromDataRef属性更多，透传保存
+    const fromDataRef = useRef<any>({}) // same as formState
+    const { user } = useContext(userContext);
+    const [isSelf, setIsSelf] = useState(false);
 
-    // 表格数据（api接口列表）
     const [tableData, setTableData] = useApiTableData()
+    const [isWrite, setIsWrite] = useState(false)
 
     useImperativeHandle(ref, () => ({
         open: () => {
@@ -190,6 +204,9 @@ const EditTool = forwardRef((props: any, ref) => {
                 apiLocation: tool.api_location || "query",
                 parameter: tool.parameter_name || ""
             })
+            setIsWrite(tool.write)
+
+            setIsSelf(tool.user_id === user.user_id);
             setEditShow(true)
             setDelShow(true)
 
@@ -205,14 +222,14 @@ const EditTool = forwardRef((props: any, ref) => {
         }));
     };
 
-    // 发送请求给后端获取Schema
+    // sendRequest to backend to get Schema
     const handleImportSchema = () => {
         // http://192.168.106.120:3002/openapi-test.json
         captureAndAlertRequestErrorHoc(downloadToolSchema({ download_url: schemaUrl.current })).then(res => {
             schemaUrl.current = ''
             if (!res) return
             fromDataRef.current = { ...res, id: fromDataRef.current.id }
-            const fetchedSchema = res.openapi_schema; // 替换为后端返回的Schema
+            const fetchedSchema = res.openapi_schema; // replace with the template
             setFormState(prevState => ({
                 ...prevState,
                 schemaContent: fetchedSchema,
@@ -226,7 +243,7 @@ const EditTool = forwardRef((props: any, ref) => {
         })
     };
 
-    // 根据模板设置Schema内容
+    // set schemaContent
     const handleSelectTemplate = (key = '') => {
         if (!editShow) return
 
@@ -235,7 +252,7 @@ const EditTool = forwardRef((props: any, ref) => {
             schemaUrl.current = ''
             if (!res) return
             fromDataRef.current = { ...res, id: fromDataRef.current.id }
-            const fetchedSchema = res.openapi_schema; // 替换为后端返回的Schema
+            const fetchedSchema = res.openapi_schema; // replace with the template
             setFormState(prevState => ({
                 ...prevState,
                 schemaContent: fetchedSchema,
@@ -250,29 +267,28 @@ const EditTool = forwardRef((props: any, ref) => {
     };
 
     const { message } = useToast()
-    // 发送数据给后端保存
+    // save api
     const handleSave = () => {
-        // console.log("保存数据:", formState, fromDataRef.current);
         const errors = [];
 
         if (!formState.toolName) {
-            errors.push('工具名称不能为空');
+            errors.push(t('tools.toolNameCannotBeEmpty'));
         }
         if (!formState.schemaContent) {
-            errors.push('schema不能为空');
+            errors.push(t('tools.schemaCannotBeEmpty'));
         }
         if (formState.authMethod === "apikey") {
-            if (!formState.apiKey) {
-                errors.push('API Key不可为空');
+            if (!formState.apiKey?.trim()) {
+                errors.push(t('tools.apiKeyCannotBeEmpty'));
             } else if (formState.apiKey.length > 1000) {
-                errors.push('API Key不可大于1000字符');
+                errors.push(t('tools.apiKeyMaxLengthExceeded'));
             }
 
             if (formState.authType === 'custom') {
                 if (!formState.parameter) {
-                    errors.push('Parameter name 不可为空');
+                    errors.push(t('tools.parameterNameCannotBeEmpty'));
                 } else if (formState.parameter.length > 1000) {
-                    errors.push('Parameter name 不可大于1000字符');
+                    errors.push(t('tools.parameterNameMaxLengthExceeded'));
                 }
             }
         }
@@ -286,7 +302,7 @@ const EditTool = forwardRef((props: any, ref) => {
 
 
         const fromData = fromDataRef.current
-        // 参数合并
+        // merge formState
         const data = {
             ...fromData,
             api_key: formState.apiKey || fromData.api_key,
@@ -301,7 +317,7 @@ const EditTool = forwardRef((props: any, ref) => {
         const methodApi = delShow ? updateTool : createTool
         captureAndAlertRequestErrorHoc(methodApi(data)).then(res => {
             if (!res) return
-            // 保存成功
+            // save
             setEditShow(false)
             props.onReload()
             message({
@@ -311,7 +327,7 @@ const EditTool = forwardRef((props: any, ref) => {
         })
     };
 
-    // 删除工具
+    // del tool
     const handleDelete = () => {
         bsConfirm({
             title: t('prompt'),
@@ -424,10 +440,10 @@ const EditTool = forwardRef((props: any, ref) => {
                         {formState.authMethod === "apikey" && (<>
                             <div className="px-6 mb-4" >
                                 <Label htmlFor="open" className="bisheng-label flex items-center gap-1">
-                                    Auth Type
+                                    {t('tools.authTypeLabel')}
                                     <QuestionTooltip content={<div>
-                                        <p>Basic & Bearer：在 header 中使用 Authorization 传入 API key</p>
-                                        <p>Custom：自定义 API Key的参数名和参数位置</p>
+                                        <p>{t('tools.basicBearerDescription')}</p>
+                                        <p>{t('tools.customDescription')}</p>
                                     </div>} />
                                 </Label>
                                 <RadioGroup
@@ -439,25 +455,25 @@ const EditTool = forwardRef((props: any, ref) => {
                                 >
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="basic" id="r4" />
-                                        <Label htmlFor="r4">Basic</Label>
+                                        <Label htmlFor="r4">{t('tools.basic')}</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="bearer" id="r5" />
-                                        <Label htmlFor="r5">Bearer</Label>
+                                        <Label htmlFor="r5">{t('tools.bearer')}</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="custom" id="r6" />
-                                        <Label htmlFor="r6">Custom</Label>
+                                        <Label htmlFor="r6">{t('tools.custom')}</Label>
                                     </div>
                                 </RadioGroup>
                             </div>
                             {formState.authType === "custom" && <>
                                 <div className="px-6 mb-4" >
                                     <Label htmlFor="apiLocation" className="bisheng-label flex items-center gap-1">
-                                        API Key位置
+                                        {t('tools.apiLocationLabel')}
                                         <QuestionTooltip content={<div>
-                                            <p>header：API Key为请求头中的参数</p>
-                                            <p>query：API Key 为 URL中查询字符串中的参数</p>
+                                            <p>{t('tools.headerDescription')}</p>
+                                            <p>{t('tools.queryDescription')}</p>
                                         </div>} />
                                     </Label>
                                     <RadioGroup
@@ -465,31 +481,29 @@ const EditTool = forwardRef((props: any, ref) => {
                                         name="apiLocation"
                                         value={formState.apiLocation}
                                         className="flex mt-2 gap-4"
-                                        onValueChange={(value) => setFormState(prevState => {
-                                            // console.log('prevState :>> ', prevState, value);
-                                            return ({ ...prevState, apiLocation: value })
-                                        }
-                                        )}
+                                        onValueChange={(value) => setFormState(prevState => ({
+                                            ...prevState, apiLocation: value
+                                        }))}
                                     >
                                         <div className="flex items-center space-x-2">
                                             <RadioGroupItem value="header" id="r7" />
-                                            <Label htmlFor="r7">header</Label>
+                                            <Label htmlFor="r7">{t('tools.header')}</Label>
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <RadioGroupItem value="query" id="r8" />
-                                            <Label htmlFor="r8">query</Label>
+                                            <Label htmlFor="r8">{t('tools.query')}</Label>
                                         </div>
                                     </RadioGroup>
                                 </div>
                                 <div className="px-6 mb-4">
                                     <Label className="bisheng-label" htmlFor="parameter">
-                                        <span className="text-red-500">*</span> Parameter name
+                                        <span className="text-red-500">*</span> {t('tools.parameterName')}
                                     </Label>
                                     <Input
                                         id="parameter"
                                         name="parameter"
                                         className="mt-2"
-                                        placeholder="请输入自定义 API key 参数名"
+                                        placeholder={t('tools.parameterPlaceholder')}
                                         value={formState.parameter}
                                         onChange={handleInputChange}
                                     />
@@ -497,12 +511,13 @@ const EditTool = forwardRef((props: any, ref) => {
                             </>}
                             <div className="px-6 mb-4">
                                 <Label className="bisheng-label" htmlFor="apiKey">
-                                    <span className="text-red-500">*</span> API Key</Label>
+                                    <span className="text-red-500">*</span> {t('tools.apiKeyLabel')}
+                                </Label>
                                 <Input
                                     id="apiKey"
                                     name="apiKey"
                                     className="mt-2"
-                                    placeholder="请输入自定义 API key 参数值"
+                                    placeholder={t('tools.apiKeyPlaceholder')}
                                     value={formState.apiKey}
                                     onChange={handleInputChange}
                                 />
@@ -534,7 +549,10 @@ const EditTool = forwardRef((props: any, ref) => {
                                                     size="sm"
                                                     variant="outline"
                                                     className="dark:bg-[#666]"
-                                                    onClick={() => testDialogRef.current.open(item, fromDataRef.current, formState)}
+                                                    onClick={() => {
+                                                        testDialogRef.current.open(item, fromDataRef.current, formState)
+                                                    }
+                                                    }
                                                 >{t('test.test')}</Button>
                                             </TableCell>
                                         </TableRow>
@@ -582,12 +600,14 @@ const EditTool = forwardRef((props: any, ref) => {
                     )}
                 </div>
                 <SheetFooter className="absolute bottom-0 right-0 w-full px-6 py-4">
-                    {delShow && <Button
-                        size="sm"
-                        variant="destructive"
-                        className="absolute left-6"
-                        onClick={handleDelete}
-                    >{t('tools.delete')}</Button>}
+                    {delShow && (user.role === 'admin' || isSelf || isWrite) && (
+                        <Button
+                            size="sm"
+                            variant="destructive"
+                            className="absolute left-6"
+                            onClick={handleDelete}
+                        >{t('tools.delete')}</Button>
+                    )}
                     <Button size="sm" variant="outline" onClick={() => setEditShow(false)}>{t('tools.cancel')}</Button>
                     <Button size="sm" className="text-[white]" onClick={handleSave}>{t('tools.save')}</Button>
                 </SheetFooter>

@@ -41,6 +41,7 @@ export default function FormModal({
   setOpen: Function;
   flow: FlowType;
 }) {
+
   const { tabsState, setTabsState } = useContext(TabsContext);
   const [chatValue, setChatValue] = useState(() => {
     try {
@@ -533,6 +534,7 @@ export default function FormModal({
                       <ChatMessage
                         lockChat={lockChat}
                         chat={c}
+                        flowType={flow.flow_type}
                         lastMessage={
                           chatHistory.length - 1 === i ? true : false
                         }

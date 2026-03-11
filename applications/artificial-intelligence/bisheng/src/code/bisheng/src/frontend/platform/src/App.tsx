@@ -1,8 +1,9 @@
 import cloneDeep from "lodash-es/cloneDeep";
 import uniqueId from "lodash-es/uniqueId";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { Suspense, useContext, useEffect, useMemo, useState } from "react";
 import { RouterProvider } from "react-router-dom";
 import "./App.css";
+import "./style/vditor.css"
 
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
@@ -15,6 +16,7 @@ import { locationContext } from "./contexts/locationContext";
 import { userContext } from "./contexts/userContext";
 import { getAdminRouter, getPrivateRouter, publicRouter } from "./routes";
 import { LoadingIcon } from "./components/bs-icons/loading";
+import { useToast } from "./components/bs-ui/toast/use-toast";
 
 export default function App() {
   let { setCurrent, setShowSideBar, setIsStackedOpen } = useContext(locationContext);
@@ -155,20 +157,18 @@ export default function App() {
 
   // i18n title
   const { t } = useTranslation()
-  useEffect(() => {
-    document.title = t('title')
-  }, [t])
+
   // init language
   useEffect(() => {
-    const lang = user?.user_id ? localStorage.getItem('language-' + user.user_id) : null
+    const lang = user?.user_id ? localStorage.getItem('i18nextLng') : null
     if (lang) {
-      i18next.changeLanguage(lang)
+      i18next.changeLanguage(lang === 'zh' ? 'zh-Hans' : lang)
     }
   }, [user])
 
   // 免登录列表
   const noAuthPages = ['chat', 'resouce']
-  const path = location.pathname.split('/')?.[1] || ''
+  const path = location.pathname.replace(__APP_ENV__.BASE_URL, '').split('/')?.[1] || ''
 
   // 动态路由根据权限
   const router = useMemo(() => {
@@ -177,14 +177,36 @@ export default function App() {
     return user?.user_id ? getPrivateRouter(user.web_menu) : null
   }, [user])
 
+  // url error toast
+  const { toast } = useToast()
+  useEffect(() => {
+    if (window.url_error) {
+      toast({ description: t(`errors.${window.url_error}`), variant: 'error' });
+      delete window.url_error
+    }
+  }, [])
+
   return (
     //need parent component with width and height
     <div className="flex h-full flex-col">
-      {(user?.user_id || noAuthPages.includes(path)) && router ? <RouterProvider router={router} />
+      {(user?.user_id || noAuthPages.includes(path)) && router ?
+        <Suspense fallback={
+          <div className='absolute w-full h-full top-0 left-0 flex justify-center items-center z-10 bg-[rgba(255,255,255,0.6)] dark:bg-blur-shared'>
+            <LoadingIcon className="w-48 text-primary" />
+          </div>
+        }>
+          <RouterProvider router={router} />
+        </Suspense>
         : user ? <div className='absolute w-full h-full top-0 left-0 flex justify-center items-center z-10 bg-[rgba(255,255,255,0.6)] dark:bg-blur-shared'>
-          <LoadingIcon className="size-48 text-primary" />
+          <LoadingIcon className="w-48 text-primary" />
         </div>
-          : <RouterProvider router={publicRouter} />}
+          : <Suspense fallback={
+            <div className='absolute w-full h-full top-0 left-0 flex justify-center items-center z-10 bg-[rgba(255,255,255,0.6)] dark:bg-blur-shared'>
+              <LoadingIcon className="w-48 text-primary" />
+            </div>
+          }>
+            <RouterProvider router={publicRouter} />
+          </Suspense>}
       <div></div>
       <div className="app-div" style={{ zIndex: 1000 }}>
         {alertsList.map((alert) => (

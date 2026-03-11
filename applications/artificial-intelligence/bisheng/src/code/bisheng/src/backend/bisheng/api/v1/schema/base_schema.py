@@ -2,10 +2,10 @@ from typing import Generic, List, TypeVar
 
 from pydantic import BaseModel
 
-# 创建泛型变量
+# Create generic variables
 DataT = TypeVar('DataT')
 
 
-class PageList(Generic[DataT], BaseModel):
+class PageList(BaseModel, Generic[DataT]):
     list: List[DataT]
     total: int

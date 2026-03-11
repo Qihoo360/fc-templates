@@ -1,9 +1,9 @@
-from typing import Any, List, Optional, Dict
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field
 
 
-# 节点开始事件数据
+# Node start event data
 class NodeStartData(BaseModel):
     unique_id: str = Field(..., description='Unique execution id')
     node_id: str = Field(..., description='Node unique id')
@@ -18,28 +18,32 @@ class NodeEndData(NodeStartData):
 
 class UserInputData(BaseModel):
     node_id: str = Field(..., description='Node unique id')
+    name: str = Field(..., description='Node name')
     input_schema: Any = Field(..., description='Input schema')
 
 
 class GuideWordData(BaseModel):
     unique_id: Optional[str] = Field(..., description='Unique execution id')
     node_id: str = Field(..., description='Node unique id')
+    name: str = Field(..., description='Node name')
     guide_word: str = Field(..., description='Guide word')
 
 
 class GuideQuestionData(BaseModel):
     unique_id: Optional[str] = Field(..., description='Unique execution id')
     node_id: str = Field(..., description='Node unique id')
+    name: str = Field(..., description='Node name')
     guide_question: List[str] = Field(..., description='Guide question')
 
 
 class OutputMsgData(BaseModel):
     unique_id: str = Field(..., description='Unique execution id')
     node_id: str = Field(..., description='Node unique id')
-    msg: str = Field('', description='Output msg')
-    files: List[dict] = Field([], description='Output files', exclude=True)
-    output_key: str = Field(..., description='Whether the message is stream')
-    source_documents: Optional[Any] = Field(None, description='Source documents')
+    name: str = Field(..., description='Node name')
+    msg: str = Field(default='', description='Output msg')
+    files: List[dict] = Field(default_factory=list, description='Output files', exclude=True)
+    output_key: str = Field(default="", description='Whether the message is stream')
+    source_documents: Optional[Any] = Field(default=None, description='Source documents')
 
 
 class OutputMsgInputData(OutputMsgData):
@@ -57,10 +61,11 @@ class OutputMsgChooseData(OutputMsgData):
 class StreamMsgData(BaseModel):
     unique_id: str = Field(..., description='Unique execution id')
     node_id: str = Field(..., description='Node unique id')
+    name: str = Field(..., description='Node name')
     msg: Optional[str] = Field('', description='Stream msg')
     reasoning_content: Optional[str] = Field(None, description='Reasoning content')
     output_key: str = Field(..., description='Whether the message is stream')
 
 
 class StreamMsgOverData(StreamMsgData):
-    source_documents: Optional[List[Any]] = Field([], description='Source documents')
+    source_documents: Optional[List[Any]] = Field(default=[], description='Source documents')

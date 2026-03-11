@@ -1,53 +1,38 @@
 import MessageButtons from "@/components/bs-comp/chatComponent/MessageButtons";
 import SourceEntry from "@/components/bs-comp/chatComponent/SourceEntry";
-import { AvatarIcon } from "@/components/bs-icons/avatar";
+import { ToastIcon } from "@/components/bs-icons";
 import { LoadIcon, LoadingIcon } from "@/components/bs-icons/loading";
-import { CodeBlock } from "@/modals/formModal/chatMessage/codeBlock";
+import { cname } from "@/components/bs-ui/utils";
 import { WorkflowMessage } from "@/types/flow";
 import { formatStrTime } from "@/util/utils";
 import { copyText } from "@/utils";
-import { useMemo, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeMathjax from "rehype-mathjax";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import ChatFile from "./ChatFileFile";
-import { useMessageStore } from "./messageStore";
 import { ChevronDown } from "lucide-react";
-import { cname } from "@/components/bs-ui/utils";
-import { ToastIcon } from "@/components/bs-icons";
+import { useMemo, useRef, useState } from "react";
+import ChatFile from "./ChatFileFile";
+import MessageMarkDown from "./MessageMarkDown";
+import { useMessageStore } from "./messageStore";
+import { useTranslation } from "react-i18next";
 
-// 颜色列表
-const colorList = [
-    "#111",
-    "#FF5733",
-    "#3498DB",
-    "#27AE60",
-    "#E74C3C",
-    "#9B59B6",
-    "#F1C40F",
-    "#34495E",
-    "#16A085",
-    "#E67E22",
-    "#95A5A6"
-]
 
 const ReasoningLog = ({ loading, msg = '' }) => {
     const [open, setOpen] = useState(true)
     // console.log('msg :>> ', msg);
+    const { t } = useTranslation('flow')
 
     if (!msg) return null
 
     return <div className="py-1">
         <div className="rounded-sm border">
             <div className="flex justify-between items-center px-4 py-2 cursor-pointer" onClick={() => setOpen(!open)}>
-                {loading ? <div className="flex items-center font-bold gap-2 text-sm">
-                    <LoadIcon className="text-primary duration-300" />
-                    <span>思考中</span>
-                </div>
-                    : <div className="flex items-center font-bold gap-2 text-sm">
+                {loading ?
+                    <div className="flex items-center font-bold gap-2 text-sm">
+                        <LoadIcon className="text-primary duration-300" />
+                        <span>{t('thinking')}</span>
+                    </div>
+                    :
+                    <div className="flex items-center font-bold gap-2 text-sm">
                         <ToastIcon type="success" />
-                        <span>已深度思考</span>
+                        <span>{t('thoughtCompleted')}</span>
                     </div>
                 }
                 <ChevronDown className={open && 'rotate-180'} />
@@ -61,57 +46,14 @@ const ReasoningLog = ({ loading, msg = '' }) => {
     </div>
 }
 
-export default function MessageBs({ mark = false, logo, data, onUnlike = () => { }, disableBtn = false, onSource, onMarkClick }: { logo: string, data: WorkflowMessage, onUnlike?: any, onSource?: any }) {
-    const avatarColor = colorList[
-        (data.sender?.split('').reduce((num, s) => num + s.charCodeAt(), 0) || 0) % colorList.length
-    ]
+
+export default function MessageBs({ debug, mark = false, logo, data, onUnlike = () => { }, onSource, version, onMarkClick }:
+    { debug?: boolean, ogo: string, data: WorkflowMessage, onUnlike?: any, onSource?: any }) {
+    const { t } = useTranslation('flow')
+
     const message = useMemo(() => {
-        const msg = typeof data.message === 'string' ? data.message : data.message.msg
-
-        return msg
-            .replaceAll('$$', '$') // latex
-            .replaceAll(/(\n\s{4,})/g, '\n   ') // 禁止4空格转代码
-            .replace(/(?<![\n\|])\n(?!\n)/g, '\n\n') // 单个换行符
+        return typeof data.message === 'string' ? data.message : data.message.msg
     }, [data.message])
-
-    const mkdown = useMemo(
-        () => (
-            <ReactMarkdown
-                remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[rehypeMathjax]}
-                linkTarget="_blank"
-                className="bs-mkdown inline-block break-all max-w-full text-sm text-text-answer "
-                components={{
-                    code: ({ node, inline, className, children, ...props }) => {
-                        if (children.length) {
-                            if (children[0] === "▍") {
-                                return (<span className="form-modal-markdown-span"> ▍ </span>);
-                            }
-                            if (typeof children[0] === "string") {
-                                children[0] = children[0].replace("▍", "▍");
-                            }
-                        }
-                        // className 区分代码语言 python json js 
-                        const match = /language-(\w+)/.exec(className || "");
-
-                        return !inline ? (
-                            <CodeBlock
-                                key={Math.random()}
-                                language={(match && match[1]) || ""}
-                                value={String(children).replace(/\n$/, "")}
-                                {...props}
-                            />
-                        ) : (
-                            <code className={className} {...props}> {children} </code>
-                        );
-                    },
-                }}
-            >
-                {message}
-            </ReactMarkdown>
-        ),
-        [message]
-    )
 
     const messageRef = useRef<HTMLDivElement>(null)
     const handleCopyMessage = () => {
@@ -119,27 +61,22 @@ export default function MessageBs({ mark = false, logo, data, onUnlike = () => {
         copyText(messageRef.current)
     }
     const chatId = useMessageStore(state => state.chatId)
-    return <div className="flex w-full">
+    return <div className="bisheng-message flex w-full">
         <div className="w-fit group max-w-[90%]">
             <ReasoningLog loading={!data.end && data.reasoning_log} msg={data.reasoning_log} />
             {!(data.reasoning_log && !message && !data.files.length) && <>
                 <div className="flex justify-between items-center mb-1">
                     {data.sender ? <p className="text-gray-600 text-xs">{data.sender}</p> : <p />}
                     <div className={`text-right group-hover:opacity-100 opacity-0`}>
-                        <span className="text-slate-400 text-sm">{formatStrTime(data.create_time, 'MM 月 dd 日 HH:mm')}</span>
+                        <span className="text-slate-400 text-sm">{formatStrTime(data.create_time, t('short'))}</span>
                     </div>
                 </div>
                 <div className="min-h-8 px-6 py-4 rounded-2xl bg-[#F5F6F8] dark:bg-[#313336]">
                     <div className="flex gap-2">
-                        {logo ? <div className="max-w-6 min-w-6 max-h-6 rounded-full overflow-hidden">
-                            <img className="w-6 h-6" src={logo} />
-                        </div>
-                            : <div className="w-6 h-6 min-w-6 flex justify-center items-center rounded-full" style={{ background: avatarColor }} >
-                                <AvatarIcon />
-                            </div>}
+                        {logo}
                         {message || data.files.length ?
-                            <div ref={messageRef} className="text-sm max-w-[calc(100%-24px)]">
-                                {message && mkdown}
+                            <div ref={messageRef} className="text-sm max-w-[calc(100%-24px)] overflow-x-auto">
+                                {message && <MessageMarkDown message={message} />}
                                 {data.files.length > 0 && data.files.map(file => <ChatFile key={file.path} fileName={file.name} filePath={file.path} />)}
                                 {/* @user */}
                                 {data.receiver && <p className="text-blue-500 text-sm">@ {data.receiver.user_name}</p>}
@@ -167,13 +104,15 @@ export default function MessageBs({ mark = false, logo, data, onUnlike = () => {
                             message,
                         })}
                     />
-                    {!disableBtn && <MessageButtons
+                    {!debug && <MessageButtons
                         mark={mark}
+                        version={version}
                         id={data.id || data.message_id}
                         data={data.liked}
                         onUnlike={onUnlike}
                         onCopy={handleCopyMessage}
                         onMarkClick={onMarkClick}
+                        text={data.message.msg || data.message}
                     ></MessageButtons>}
                 </div>
             }

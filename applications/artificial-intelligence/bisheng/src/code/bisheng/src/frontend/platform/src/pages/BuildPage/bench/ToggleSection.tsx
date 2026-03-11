@@ -7,17 +7,25 @@ export const ToggleSection = ({
     enabled,
     onToggle,
     children,
+    extra
 }: {
     title: string;
     enabled: boolean;
     onToggle: (enabled: boolean) => void;
     children: ReactNode;
+    extra?: ReactNode; // Optional prop
 }) => (
     <div className="mb-6">
-        <p className="text-lg font-bold mb-2">
-            <span>{title}</span>
-            <Switch className="ml-4" checked={enabled} onCheckedChange={onToggle} />
-        </p>
+        <div className="flex items-center mb-2">
+            <p className="text-lg font-bold flex items-center">
+                <span>{title}</span>
+            </p>
+            <div className="flex items-center gap-2 ml-2">
+
+                <Switch checked={enabled} onCheckedChange={onToggle} />
+                {extra} {/* Render extra content here */}
+            </div>
+        </div>
         {enabled && children}
     </div>
 );

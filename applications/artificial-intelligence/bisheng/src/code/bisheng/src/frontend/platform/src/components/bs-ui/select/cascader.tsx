@@ -23,7 +23,7 @@ interface Option {
 
 interface IProps {
     error?: boolean,
-    placholder?: string,
+    placeholder?: string,
     defaultValue?: Option[],
     options: Option[],
     close?: boolean,
@@ -35,17 +35,18 @@ interface IProps {
 
 const Item = (props: {
     isAsync: boolean,
-    value: string,
+    isSelected: boolean, // 新增选中状态
     option: Option,
+    isHovered: boolean,
     onHover: (o: Option, isLeaf: boolean) => void,
     onClick: (o: Option, isLeaf: boolean) => void
 }) => {
-    const { isAsync, value, option, onHover, onClick } = props
+    const { isAsync, isSelected, option, isHovered, onHover, onClick } = props
     const [loading, setLoading] = useState(false)
     const isLeaf = option.isLeaf === false ? option.isLeaf : !option.children || option.children.length === 0
 
     const handleClick = () => {
-        const _isAsync = isAsync && !(option.children && option.children.length !== 0) // 需要异步加载
+        const _isAsync = isAsync && !(option.children && option.children.length !== 0)
         _isAsync && !isLeaf && setLoading(true)
         onClick(option, isLeaf)
     }
@@ -55,8 +56,9 @@ const Item = (props: {
     }, [option.children])
 
     return <div
-        data-focus={value === option.value}
-        className="relative flex justify-between w-full select-none items-center rounded-sm p-1.5 text-sm outline-none cursor-pointer hover:bg-[#EBF0FF] data-[focus=true]:bg-[#EBF0FF] dark:hover:bg-gray-700 dark:data-[focus=true]:bg-gray-700 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+        data-focus={isSelected} // 使用选中状态
+        data-hovered={isHovered}
+        className="relative flex justify-between w-full select-none items-center rounded-sm p-1.5 text-sm outline-none cursor-pointer hover:bg-[#EBF0FF] data-[focus=true]:bg-[#EBF0FF] data-[hovered=true]:bg-[#EBF0FF] dark:hover:bg-gray-700 dark:data-[focus=true]:bg-gray-700 dark:data-[hovered=true]:bg-gray-700 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
         onMouseEnter={() => onHover(option, isLeaf)}
         onClick={handleClick}>
         <span className="w-28 overflow-hidden text-ellipsis">{option.label}</span>
@@ -66,18 +68,35 @@ const Item = (props: {
 
 const Col = (props: {
     isAsync: boolean,
-    value: string,
+    selectedValue: string | null, // 改为传递选中值
     options: Option[],
     onHover: (o: Option, isLeaf: boolean) => void,
     onClick: (o: Option, isLeaf: boolean) => void
 }) => {
-    const { options, ...opros } = props
+    const { options, selectedValue, ...opros } = props
+    const [hoveredOption, setHoveredOption] = useState<Option | null>(null)
+
+    const handleHover = (option: Option, isLeaf: boolean) => {
+        setHoveredOption(option)
+        props.onHover(option, isLeaf)
+    }
+
     return <div className="w-36 border-l first:border-none max-h-80 overflow-y-auto">
         {
-            options.map(option => <Item {...opros} option={option} key={option.value} />)
+            options.map(option => (
+                <Item
+                    {...opros}
+                    option={option}
+                    key={option.value}
+                    isSelected={selectedValue === option.value} // 传递选中状态
+                    isHovered={hoveredOption?.value === option.value}
+                    onHover={handleHover}
+                />
+            ))
         }
     </div>
 }
+
 
 const resetCols = (values, options) => {
     const vals = [options]
@@ -92,7 +111,7 @@ const resetCols = (values, options) => {
     return vals
 }
 
-export default function Cascader({ error = false, selectClass = '', close = false, placholder = '', defaultValue = [], options, loadData, onChange }: IProps) {
+export default function Cascader({ error = false, selectClass = '', close = false, placeholder = '', defaultValue = [], options, loadData, onChange }: IProps) {
 
     const [open, setOpen] = useState(false)
     const [values, setValues] = useState<any>(defaultValue)
@@ -103,12 +122,19 @@ export default function Cascader({ error = false, selectClass = '', close = fals
 
     const [cols, setCols] = useState(() => resetCols(defaultValue, options))
 
+    // 当defaultValue变化时，同步更新内部状态
+    useEffect(() => {
+        if (defaultValue && defaultValue.length > 0) {
+            setValues(defaultValue)
+            selectOptionsRef.current = [...defaultValue]
+        }
+        setCols(resetCols(defaultValue, options))
+    }, [defaultValue, options])
 
-    const selectOptionsRef = useRef(defaultValue)
+    const selectOptionsRef = useRef([])
     const handleHover = (option, isLeaf, colIndex) => {
         setIsHover(true)
-        // // setValues([]) // 从新选择清空值
-        const isAsync = loadData && !(option.children && option.children.length !== 0) // 需要异步加载
+        const isAsync = loadData && !(option.children && option.children.length !== 0)
         if (!(isAsync || isLeaf)) {
             setCols(cols => {
                 const newCols = [...cols].slice(0, colIndex + 1)
@@ -116,17 +142,15 @@ export default function Cascader({ error = false, selectClass = '', close = fals
                 return newCols
             })
         }
-        // 记录链
         selectOptionsRef.current.splice(colIndex + 1)
         selectOptionsRef.current[colIndex] = option
     }
 
-    // options -> cols
     useEffect(() => {
         updateCols.current?.(options)
         updateCols.current = null
     }, [options])
-    // 更新函数
+
     const updateCols = useRef(null)
     const handleClick = (option, isLeaf) => {
         if (!isLeaf) {
@@ -137,13 +161,9 @@ export default function Cascader({ error = false, selectClass = '', close = fals
             updateCols.current = (options) => {
                 setCols(resetCols(selectOptions, options))
             }
-            // 加载数据
             return loadData(option)
         }
         const vals = selectOptionsRef.current.map(el => el.value)
-        if (!selectOptionsRef.current[0]) {
-
-        }
         setValues([...selectOptionsRef.current])
         onChange?.(vals, selectOptionsRef.current)
         setOpen(false)
@@ -156,7 +176,7 @@ export default function Cascader({ error = false, selectClass = '', close = fals
 
     return <Select open={open} onOpenChange={setOpen}>
         <SelectTrigger className={`${error && 'border-red-500'} group data-[placeholder]:text-inherit ${selectClass}`}>
-            <Input className="border-none bg-transparent px-0 focus-visible:ring-0" placeholder={placholder} readOnly value={values.map(el => el.label).join('/')} />
+            <Input className="border-none bg-transparent px-0 focus-visible:ring-0" placeholder={placeholder} readOnly value={values.map(el => el.label).join('/')} />
             {close && values.length !== 0 && <X
                 className="hidden group-hover:block bg-border text-[#666] rounded-full p-0.5"
                 width={14}
@@ -164,27 +184,28 @@ export default function Cascader({ error = false, selectClass = '', close = fals
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={handleClearClick}
             />}
-            {/* <SelectValue placeholder={selectPlaceholder} >123</SelectValue> */}
         </SelectTrigger>
         <SelectContent auto>
-            <div className="flex ">
-                {
-                    cols.map((_options, index) => {
-                        return <Col
-                            isAsync={loadData}
-                            value={isHover ? '' : values[index]?.value || ''}
-                            options={_options}
-                            onHover={(op, isLeaf) => handleHover(op, isLeaf, index)}
-                            onClick={handleClick}
-                            key={index}
-                        />
-                    })
-                }
-            </div>
+            {cols.length
+                ? <div className="flex ">
+                    {
+                        cols.map((_options, index) => {
+                            return <Col
+                                isAsync={loadData}
+                                selectedValue={values[index]?.value || null} // 直接传递选中值
+                                options={_options}
+                                onHover={(op, isLeaf) => handleHover(op, isLeaf, index)}
+                                onClick={handleClick}
+                                key={index}
+                            />
+                        })
+                    }
+                </div>
+                : <div className="w-full flex justify-center items-center bisheng-label">空</div>
+            }
         </SelectContent>
     </Select>
 };
-
 
 
 // test

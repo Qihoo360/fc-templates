@@ -2,16 +2,21 @@ import { Button } from "@/components/bs-ui/button";
 import { DialogClose, DialogFooter } from "@/components/bs-ui/dialog";
 import { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
-import {InputField, SelectField} from "./InputField";
+import { InputField } from "./InputField";
 
 const TianyanchaToolForm = ({ formData, onSubmit }) => {
     const { t } = useTranslation();
-    const [localFormData, setLocalFormData] = useState(() => ({ api_key: '', ...formData }));
+
+    // Initialize with proxy field
+    const [localFormData, setLocalFormData] = useState(() => ({
+        api_key: '',
+        proxy: '',
+        ...formData
+    }));
     const [errors, setErrors] = useState({});
 
-    // 每当 formData 更新时，回显数据
     useEffect(() => {
-        setLocalFormData(formData);
+        setLocalFormData((prev) => ({ ...prev, ...formData }));
     }, [formData]);
 
     const handleChange = (e) => {
@@ -38,7 +43,7 @@ const TianyanchaToolForm = ({ formData, onSubmit }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4" autoComplete="off">
             <InputField
                 required
                 label="API Key"
@@ -51,9 +56,21 @@ const TianyanchaToolForm = ({ formData, onSubmit }) => {
                 error={errors.api_key}
             />
 
-            {/* 这里是 DialogFooter */}
+            <div className="relative">
+                <InputField
+                    id="proxy"
+                    label="proxy"
+                    name="proxy"
+                    tooltip={t('build.proxyDescription')}
+                    placeholder=''
+                    value={localFormData.proxy}
+                    onChange={handleChange}
+                // No 'label' prop here because we rendered a custom one with the icon above
+                />
+            </div>
+
             <DialogFooter>
-                <DialogClose>
+                <DialogClose asChild>
                     <Button variant="outline" className="px-11" type="button">
                         {t('build.cancel')}
                     </Button>
