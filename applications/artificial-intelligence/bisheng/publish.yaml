@@ -328,8 +328,8 @@ Parameters:
       default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 数据库配置
-      x-restype: mysql
+      x-label: 缓存配置
+      x-restype: redis
       x-placeholder: 请输入 redis password
       x-formitem:
         type: input
