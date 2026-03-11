@@ -48,7 +48,6 @@ Parameters:
     - REDIS_HOST
     - REDIS_PORT
     - REDIS_PASSWORD
-    - CELERY_REDIS_URL
     - DataBase
     - MYSQL_HOST
     - MYSQL_PORT
@@ -324,26 +323,14 @@ Parameters:
       x-placeholder: 请输入Redisd主机端口
       x-formitem:
         type: input
-    REDIS_DATABASE:
-      # title: REDIS_DATABASE
-      type: string
-      default: "0"
+    REDIS_PASSWORD:
+      type: secret
+      default: ""
       description: ""
       x-cate: applicationCate
-      x-label: 缓存配置
-      x-restype: redis
-      x-placeholder: 请输入Redis数据库
-      x-formitem:
-        type: input
-    CELERY_REDIS_URL:
-      # title: DifyRedisUserName
-      type: string
-      default: "redis://redis-k8s.functions:6379/2"
-      description: ""
-      x-cate: applicationCate
-      x-label: 缓存配置
-      x-restype: redis
-      x-placeholder: 请输入 celery redis url
+      x-label: 数据库配置
+      x-restype: mysql
+      x-placeholder: 请输入 redis password
       x-formitem:
         type: input
     DataBase:

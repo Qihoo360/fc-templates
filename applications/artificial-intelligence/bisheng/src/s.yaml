@@ -26,7 +26,6 @@ vars:
   REDIS_HOST: {{REDIS_HOST}}
   REDIS_PORT: {{REDIS_PORT}}
   REDIS_PASSWORD: {{REDIS_PASSWORD}}
-  CELERY_REDIS_URL: {{CELERY_REDIS_URL}}
   MYSQL_HOST: {{MYSQL_HOST}}
   MYSQL_PORT: {{MYSQL_PORT}}
   MYSQL_DATABASE: {{MYSQL_DATABASE}}
@@ -152,8 +151,8 @@ resources:
         BS_MILVUS_IS_PARTITION: ${vars.milvusIsPartition}
         BS_MILVUS_PARTITION_SUFFIX: ${vars.milvusPartitionSuffiix}
         BS_DATABASE_URL: "mysql+pymysql://${vars.MYSQL_USERNAME}:${vars.MYSQL_PASSWORD}@${vars.MYSQL_HOST}:${vars.MYSQL_PORT}/${vars.MYSQL_DATABASE}?charset=utf8mb4"
-        BS_REDIS_URL: "redis://:${vars.REDIS_HOST}@${vars.REDIS_PORT}:${vars.REDIS_PASSWORD}"
-        BS_CELERY_REDIS_URL: "redis://:${vars.REDIS_HOST}@${vars.REDIS_PORT}:${vars.REDIS_PASSWORD}"
+        BS_REDIS_URL: "redis://:${vars.REDIS_PASSWORD}@${vars.REDIS_HOST}:${vars.REDIS_PORT}"
+        BS_CELERY_REDIS_URL: "redis://:${vars.REDIS_PASSWORD}@${vars.REDIS_HOST}:${vars.REDIS_PORT}"
         BS_MINIO_ENDPOINT: "${resources.bishengMinio.output.http_trigger_url}"
         BS_MINIO_ACCESS_KEY: minioadmin
         BS_MINIO_SECRET_KEY: minioadmin
