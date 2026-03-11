@@ -153,13 +153,13 @@ resources:
         BS_DATABASE_URL: "mysql+pymysql://${vars.MYSQL_USERNAME}:${vars.MYSQL_PASSWORD}@${vars.MYSQL_HOST}:${vars.MYSQL_PORT}/${vars.MYSQL_DATABASE}?charset=utf8mb4"
         BS_REDIS_URL: "redis://:${vars.REDIS_PASSWORD}@${vars.REDIS_HOST}:${vars.REDIS_PORT}"
         BS_CELERY_REDIS_URL: "redis://:${vars.REDIS_PASSWORD}@${vars.REDIS_HOST}:${vars.REDIS_PORT}"
-        BS_MINIO_ENDPOINT: "${resources.bishengMinio.output.http_trigger_url}"
+        BS_MINIO_ENDPOINT: "${resources.bishengMinio.output.httpTriggerUrl}"
         BS_MINIO_ACCESS_KEY: minioadmin
         BS_MINIO_SECRET_KEY: minioadmin
         BS_MINIO_CERT_CHECK: false
         BS_MINIO_SCHEMA: false
-        BS_MINIO_SHAREPOINT: "${resources.bishengMinio.output.http_trigger_url}"
-        BS_OFFICE_URL: "http://${resources.bishengOffice.output.http_trigger_url}"
+        BS_MINIO_SHAREPOINT: "${resources.bishengMinio.output.httpTriggerUrl}"
+        BS_OFFICE_URL: "http://${resources.bishengOffice.output.httpTriggerUrl}"
         WORKER_NUM: ${vars.workerNum}
       triggers:
         - triggerName: httptrigger
@@ -207,8 +207,8 @@ resources:
         max: 300
       environmentVariables:
         TZ: Asia/Shanghai
-        BS_BACKEND_URL: "http://${resources.bishengBackend.output.http_trigger_url}"
-        BS_MINIO_ENDPOINT: "${resources.bishengMinio.output.http_trigger_url}"
+        BS_BACKEND_URL: "http://${resources.bishengBackend.output.httpTriggerUrl}"
+        BS_MINIO_ENDPOINT: "${resources.bishengMinio.output.httpTriggerUrl}"
       triggers:
         - triggerName: httptrigger
           triggerType: http
