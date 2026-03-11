@@ -208,7 +208,7 @@ resources:
       environmentVariables:
         TZ: Asia/Shanghai
         BS_BACKEND_URL: "http://${resources.bishengBackend.output.http_trigger_url}"
-        BS_MINIO_ENDPOINT: ${vars.minioEndpoint}
+        BS_MINIO_ENDPOINT: "${resources.bishengMinio.output.http_trigger_url}"
       triggers:
         - triggerName: httptrigger
           triggerType: http
