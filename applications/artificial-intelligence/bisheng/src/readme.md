@@ -35,6 +35,20 @@ milvus
 在控制台完成业务功能部署，完成会出现触发器url。
 此时，使用浏览器或者 curl 工具， 就可以对触发器url进行请求。
 
+## 配置
+
+### Elasticsearch配置
+
+需要预先添加授权索引：
+- mid_user_interact_dtl
+- mid_user_increment
+- base_telemetry_events
+- mid_app_increment
+- mid_knowledge_increment
+
+### Mysql配置
+
+- 确认是否把集群地址添加到白名单
 
 ## 使用
 
