@@ -31,7 +31,6 @@ Parameters:
     - bishengBackendDescription
     - bishengFrontendFunctionName
     - bishengFrontendDescription
-    - workerNum
     - ELASTICSEARCH_HOST
     - ELASTICSEARCH_PORT
     - ELASTICSEARCH_USERNAME

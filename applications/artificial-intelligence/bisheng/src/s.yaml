@@ -145,7 +145,7 @@ resources:
         min: 1
         max: 300
       environmentVariables:
-        BS_ELASTICSEARCH_SSL_VERIFY: '{"basic_auth": ("${vars.ELASTICSEARCH_USERNAME}", "${vars.ELASTICSEARCH_PASSWORD}")}'
+        BS_ELASTICSEARCH_SSL_VERIFY: '{"basic_auth": ("${vars.ELASTICSEARCH_USERNAME}", "${vars.ELASTICSEARCH_PASSWORD}"), "verify_certs": False}'
         BS_ELASTICSEARCH_URL: http://${vars.ELASTICSEARCH_HOST}:${vars.ELASTICSEARCH_PORT}/
         BS_MILVUS_CONNECTION_ARGS: '{"host":"${vars.MILVUS_HOST}","port":"${vars.MILVUS_PORT}","user":"${vars.MILVUS_USERNAME}","password":"${vars.MILVUS_PASSWORD}","secure":${vars.milvusSecure}}'
         BS_MILVUS_IS_PARTITION: ${vars.milvusIsPartition}
@@ -158,6 +158,7 @@ resources:
         BS_MINIO_SECRET_KEY: minioadmin
         BS_MINIO_CERT_CHECK: false
         BS_MINIO_SCHEMA: false
+        USER_AGENT: "${vars.bishengBackendFunctionName}"
         BS_MINIO_SHAREPOINT: "${resources.bishengMinio.output.httpTriggerUrl}"
         BS_OFFICE_URL: "http://${resources.bishengOffice.output.httpTriggerUrl}"
         WORKER_NUM: ${vars.workerNum}
