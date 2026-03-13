@@ -198,9 +198,9 @@ class CookieConf(BaseModel):
 
 class Etl4lmConf(BaseModel):
     """ Etl4lm Configure """
-    url: str = Field(default='', description='etl4lmService Address')
+    url: str = Field(default='https://bisheng.dataelem.com/api/v1/etl4llm/predict', description='etl4lmService Address')
     timeout: int = Field(default=600, description='etl4lmService Request Timeout (sec)')
-    ocr_sdk_url: str = Field(default='', description='etl4lm ocr sdkService Address')
+    ocr_sdk_url: str = Field(default='https://fake-ocr.com', description='etl4lm ocr sdkService Address')
 
 
 class KnowledgeConf(BaseModel):
