@@ -8,7 +8,7 @@ from bisheng.common.models.config import ConfigKeyEnum, Config
 from bisheng.common.repositories.implementations.config_repository_impl import ConfigRepositoryImpl
 from bisheng.core.cache.redis_manager import get_redis_client_sync
 from bisheng.core.config.settings import Settings, PasswordConf, SystemLoginMethod, \
-    WorkflowConf, LinsightConf, KnowledgeConf
+    WorkflowConf, LinsightConf, KnowledgeConf, Etl4lmConf
 from bisheng.core.database import get_sync_db_session, get_async_db_session
 
 config_file = os.getenv('config', 'config.yaml')
@@ -176,13 +176,15 @@ class ConfigService(Settings):
         # Due to distributed requirements, configurations that can be changed are stored inmysqlso each time the configuration is read from themysqlRead in
         all_config = self.get_all_config()
         ret = all_config.get('knowledges', {})
-        return KnowledgeConf(**ret)
+        # return KnowledgeConf(**ret)
+        return KnowledgeConf(etl4lm=Etl4lmConf())
 
     async def async_get_knowledge(self) -> KnowledgeConf:
         # Due to distributed requirements, configurations that can be changed are stored inmysqlso each time the configuration is read from themysqlRead in
         all_config = await self.aget_all_config()
         ret = all_config.get('knowledges', {})
-        return KnowledgeConf(**ret)
+        # return KnowledgeConf(**ret)
+        return KnowledgeConf(etl4lm=Etl4lmConf())
 
     def get_default_llm(self):
         # Due to distributed requirements, configurations that can be changed are stored inmysqlso each time the configuration is read from themysqlRead in

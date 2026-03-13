@@ -5,6 +5,8 @@ vars:
   region: {{region}}
   bishengMinioFunctionName: {{bishengMinioFunctionName}}
   bishengMinioDescription: {{bishengMinioDescription}}
+  bishengElasticsearchFunctionName: {{bishengElasticsearchFunctionName}}
+  bishengElasticsearchDescription: {{bishengElasticsearchDescription}}
   bishengOfficeFunctionName: {{bishengOfficeFunctionName}}
   bishengOfficeDescription: {{bishengOfficeDescription}}
   bishengBackendFunctionName: {{bishengBackendFunctionName}}
@@ -57,6 +59,52 @@ resources:
         scale_config: 2
         min: 1
         max: 300
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
+          mountDir: /minio_data
+          createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
+  bishengElasticsearch:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.bishengElasticsearchDescription}
+      runtime: custom
+      memorySize: 4096
+      cpu: 1
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 9200
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.bishengElasticsearchFunctionName}
+      sourceSubDir: code/bisheng/docker/elasticsearch
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        TZ: Asia/Shanghai
       triggers:
         - triggerName: httptrigger
           triggerType: http
@@ -145,8 +193,8 @@ resources:
         min: 1
         max: 300
       environmentVariables:
-        BS_ELASTICSEARCH_SSL_VERIFY: '{"basic_auth": ("${vars.ELASTICSEARCH_USERNAME}", "${vars.ELASTICSEARCH_PASSWORD}")}'
-        BS_ELASTICSEARCH_URL: http://${vars.ELASTICSEARCH_HOST}:${vars.ELASTICSEARCH_PORT}/
+        BS_ELASTICSEARCH_SSL_VERIFY: "{}"
+        BS_ELASTICSEARCH_URL: http://${resources.bishengElasticsearch.output.httpTriggerUrl}:80
         BS_MILVUS_CONNECTION_ARGS: '{"host":"${vars.MILVUS_HOST}","port":"${vars.MILVUS_PORT}","user":"${vars.MILVUS_USERNAME}","password":"${vars.MILVUS_PASSWORD}","secure":${vars.milvusSecure}}'
         BS_MILVUS_IS_PARTITION: ${vars.milvusIsPartition}
         BS_MILVUS_PARTITION_SUFFIX: ${vars.milvusPartitionSuffiix}
