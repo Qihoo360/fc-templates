@@ -124,7 +124,7 @@ resources:
             auth_config: ""
       nasConfig:
         - volumeUniqueName: ${vars.POLEFS_VOLUME}
-          mountDir: /minio_data
+          mountDir: /bitnami/elasticsearch/data
           createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
   bishengOffice:
     component: ${path('/utils/components/zfc')}
