@@ -51,6 +51,10 @@ Parameters:
     - MYSQL_DATABASE
     - MYSQL_USERNAME
     - MYSQL_PASSWORD
+    # 持久存储
+    - FileStorage
+    - POLEFS_VOLUME
+    - POLEFS_VOLUME_CREATE_USER
   properties:
     region:
       title: 地域
