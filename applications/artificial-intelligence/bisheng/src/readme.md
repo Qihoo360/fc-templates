@@ -26,8 +26,6 @@ mysql
 
 redis
 
-elasticsearch
-
 milvus
 
 # 应用的使用说明
@@ -35,29 +33,22 @@ milvus
 在控制台完成业务功能部署，完成会出现触发器url。
 此时，使用浏览器或者 curl 工具， 就可以对触发器url进行请求。
 
-## 配置
-
-### Elasticsearch配置
-
-需要预先添加授权索引：
-- mid_user_interact_dtl
-- mid_user_increment
-- base_telemetry_events
-- mid_app_increment
-- mid_knowledge_increment
-
-### Mysql配置
-
-- 确认是否把集群地址添加到白名单
 
 ## 使用
 
 应用部署成功后访问 bisheng-frontend 触发器地址进行注册和登陆。
 
+进入管理后台：
+
+![image_20260316_152914_425](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/bisheng/src/images/image_20260316_152914_425.png?raw=true)
+
 添加模型：
 
-![image-20250605182322296](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/bisheng/src/images/image-20250605182322296.png?raw=true)
+![image_20260316_153006_380](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/bisheng/src/images/image_20260316_153006_380.png?raw=true)
 
+设置系统模型：
+
+![image_20260316_153130_623](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/bisheng/src/images/image_20260316_153130_623.png?raw=true)
 
 添加应用：
 
@@ -69,3 +60,4 @@ milvus
 
 
 ![image-20250605182010618](https://github.com/Qihoo360/fc-templates/blob/feature/main/applications/artificial-intelligence/bisheng/src/images/image-20250605182010618.png?raw=true)
+
