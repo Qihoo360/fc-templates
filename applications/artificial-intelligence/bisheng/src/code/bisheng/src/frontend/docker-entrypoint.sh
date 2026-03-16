@@ -75,13 +75,16 @@ cat /etc/nginx/conf.d/default.conf
 
 # backend 启动很慢，等 backend 启动后再启动 frontend
 # 避免 frontend 提前报错退出
+echo 
 echo trying to test connection $bs_backend_url ...
 set +e
 for i in $(seq 1 100); do
     echo test count: $i
     curl -s $bs_backend_url
     if [ $? -eq 0 ]; then
+        echo
         echo $bs_backend_url is availble
+        sleep 6
         break
     fi
     sleep 6
