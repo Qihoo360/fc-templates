@@ -91,7 +91,7 @@ Parameters:
 
     OPENAI_URL:
       type: string
-      default: https://llm.api.zyuncs.com/
+      default: https://llm.api.zyuncs.com/v1
       description: 兼容 OpenAI 接口规范
       pattern: "https?://.*$"
       x-cate: applicationCate
