@@ -77,6 +77,15 @@ Parameters:
       x-formitem:
         type: input
 
+    SENSITIVE_MODE:
+      type: boolean
+      default: false
+      description: 安全须知：根据《360集团数据安全管理制度》要求，严禁将公司二级及以上数据出公网。数据敏感则模型配置仅支持部署在内网算力的模型！
+      x-cate: applicationCate
+      x-label: 数据是否敏感
+      x-formitem:
+        type: switch
+
     OPENCLAW_GATEWAY_TOKEN:
       title: OpenClaw 网关 Token
       type: secret
