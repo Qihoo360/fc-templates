@@ -71,7 +71,7 @@ resources:
               - PATCH
             disable_url_internet: true
             auth_config: ""
-      networkType: vpc
+      # networkType: vpc
       nasConfig:
         - volumeUniqueName: ${vars.POLEFS_VOLUME}
           mountDir: ${vars.VOLUME_MOUNT_PATH}
