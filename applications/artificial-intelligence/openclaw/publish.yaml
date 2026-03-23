@@ -89,9 +89,9 @@ Parameters:
     OPENCLAW_GATEWAY_TOKEN:
       title: OpenClaw 网关 Token
       type: secret
-      pattern: ".{5,64}$"
+      pattern: "^[^!].{4,64}$"
       description: |
-        OpenClaw AI 助手密钥，实例启动后需进入「概览」填入完成配对，请妥善保存；最少 5 个字符，最大长度为 64 个字符；
+        OpenClaw AI 助手密钥，实例启动后需进入「概览」填入完成配对，请妥善保存；最少 5 个字符，最大长度为 64 个字符，开头不能是 ! 字符；
       x-placeholder: 请输入 Token
       x-cate: applicationCate
       x-label: OpenClaw 设置
