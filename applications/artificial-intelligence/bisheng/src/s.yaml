@@ -36,6 +36,50 @@ vars:
   POLEFS_VOLUME: {{POLEFS_VOLUME}}
   POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
+  bishengFrontend:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.region}
+      description: ${vars.bishengFrontendDescription}
+      runtime: custom
+      memorySize: 4096
+      cpu: 2
+      diskSize: 512
+      timeout: 100
+      instanceConcurrency: 100
+      port: 3001
+      requestType: http
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      functionName: ${vars.bishengFrontendFunctionName}
+      sourceSubDir: code/bisheng/src/frontend
+      logConfig:
+        isOpen: false
+      scale:
+        scale_config: 2
+        min: 1
+        max: 300
+      environmentVariables:
+        TZ: Asia/Shanghai
+        BS_BACKEND_URL: "http://${resources.bishengBackend.output.httpTriggerUrl}"
+        BS_MINIO_ENDPOINT: "${resources.bishengMinio.output.httpTriggerUrl}"
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
   bishengMinio:
     component: ${path('/utils/components/zfc')}
     props:
@@ -231,47 +275,3 @@ resources:
         - volumeUniqueName: ${vars.POLEFS_VOLUME}
           mountDir: /app/data
           createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
-  bishengFrontend:
-    component: ${path('/utils/components/zfc')}
-    props:
-      region: ${vars.region}
-      description: ${vars.bishengFrontendDescription}
-      runtime: custom
-      memorySize: 4096
-      cpu: 2
-      diskSize: 512
-      timeout: 100
-      instanceConcurrency: 100
-      port: 3001
-      requestType: http
-      runtimeType: customize
-      cloudBuildType: Dockerfile
-      functionName: ${vars.bishengFrontendFunctionName}
-      sourceSubDir: code/bisheng/src/frontend
-      logConfig:
-        isOpen: false
-      scale:
-        scale_config: 2
-        min: 1
-        max: 300
-      environmentVariables:
-        TZ: Asia/Shanghai
-        BS_BACKEND_URL: "http://${resources.bishengBackend.output.httpTriggerUrl}"
-        BS_MINIO_ENDPOINT: "${resources.bishengMinio.output.httpTriggerUrl}"
-      triggers:
-        - triggerName: httptrigger
-          triggerType: http
-          disableURLInternet: true
-          funcVersion: LATEST
-          triggerConfig:
-            auth_type: None
-            methods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-              - HEAD
-              - PATCH
-            disable_url_internet: true
-            auth_config: ""
