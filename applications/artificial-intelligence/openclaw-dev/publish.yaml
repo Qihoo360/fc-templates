@@ -98,7 +98,7 @@ Parameters:
 
     TUITUI_APP_SECRET:
       title: 推推机器人 Secret
-      type: string
+      type: secret
       description: 推推机器人 Secret
       x-placeholder: 请输入「推推机器人 Secret」
       x-cate: applicationCate
