@@ -86,9 +86,41 @@ Parameters:
       x-formitem:
         type: switch
 
+    TUITUI_APP_ID:
+      title: 推推机器人 ID
+      type: string
+      description: 推推机器人 ID；如果没有可以在「推推」中搜索「推推机器人助手」申请个人使用的机器人，也仅限于自己私聊。
+      x-placeholder: 请输入「推推机器人 ID」
+      x-cate: applicationCate
+      x-label: 推推机器人
+      x-formitem:
+        type: input
+
+    TUITUI_APP_SECRET:
+      title: 推推机器人 Secret
+      type: string
+      description: 推推机器人 Secret
+      x-placeholder: 请输入「推推机器人 Secret」
+      x-cate: applicationCate
+      x-label: 推推机器人
+      x-formitem:
+        type: input
+
+    TUITUI_ALLOW_FROM:
+      title: 推推机器人 Owner ID
+      type: string
+      pattern: "^([^,]){1,20}$"
+      description: 推推机器人 Owner，默认允许通过推推与 Openclaw 私聊的推推账号 ID（如：「abc@xxx.xx」即 abc 视为 ID）；启动后会主动与该 ID 打招呼哦
+      x-placeholder: 请输入「推推账号 ID」
+      x-cate: applicationCate
+      x-label: 推推机器人
+      x-formitem:
+        type: input
+
     OPENCLAW_GATEWAY_TOKEN:
       title: 网关令牌
       type: secret
+      default: gw-${default-suffix}
       pattern: "^[^!\\d].{4,64}$"
       description: |
         OpenClaw AI 助手密钥，实例启动后在「网关令牌」处填入完成登录，请妥善保存；最少 5 个字符，最大长度为 64 个字符，开头不能是 ! 字符和数字；
