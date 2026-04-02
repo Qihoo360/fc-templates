@@ -89,7 +89,6 @@ Parameters:
     TUITUI_APP_ID:
       title: 推推机器人 ID
       type: string
-      default: ""
       description: 推推机器人 ID；如果没有可以在「推推」中搜索「推推机器人助手」申请个人使用的机器人，也仅限于自己私聊。
       x-placeholder: 请输入「推推机器人 ID」
       x-cate: applicationCate
@@ -100,7 +99,6 @@ Parameters:
     TUITUI_APP_SECRET:
       title: 推推机器人 Secret
       type: secret
-      default: ""
       description: 推推机器人 Secret
       x-placeholder: 请输入「推推机器人 Secret」
       x-cate: applicationCate
@@ -111,7 +109,6 @@ Parameters:
     TUITUI_ALLOW_FROM:
       title: 推推机器人 Owner ID
       type: string
-      default: ""
       pattern: "^([^,]){1,20}$"
       description: 推推机器人 Owner，默认允许通过推推与 Openclaw 私聊的推推账号 ID（如：「abc@xxx.xx」即 abc 视为 ID）
       x-placeholder: 请输入「推推账号 ID」
