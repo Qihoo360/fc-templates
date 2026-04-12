@@ -90,7 +90,7 @@ Parameters:
       title: 推推机器人 ID
       type: string
       pattern: "^\\d+$"
-      description: 推推机器人 ID；如果没有可以在「推推」中搜索「推推机器人助手」申请个人使用的机器人，也仅限于自己私聊。
+      description: 推推机器人 ID；如果没有可以在「推推」中搜索「推推机器人助手」申请个人使用的机器人，也仅限于自己私聊；
       x-placeholder: 请输入「推推机器人 ID」
       x-cate: applicationCate
       x-label: 推推机器人
@@ -111,7 +111,7 @@ Parameters:
       title: 推推机器人 Owner ID
       type: string
       pattern: "^([^,]){1,20}$"
-      description: 推推机器人 Owner，默认允许通过推推与 Openclaw 私聊的推推账号 ID（如：「abc@xxx.xx」即 abc 视为 ID）；启动后会主动与该 ID 打招呼哦
+      description: 推推机器人 Owner，默认允许通过推推与 Hermes 私聊的推推账号 ID（如：「abc@xxx.xx」即 abc 视为 ID）；启动后会主动与该 ID 打招呼哦
       x-placeholder: 请输入「推推账号 ID」
       x-cate: applicationCate
       x-label: 推推机器人
