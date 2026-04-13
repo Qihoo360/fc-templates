@@ -26,6 +26,11 @@ Parameters:
   - FunctionName
   - Description
 
+  # 推推设定
+  - TUITUI_APP_ID
+  - TUITUI_APP_SECRET
+  - TUITUI_ALLOWED_USERS
+
   # 应用设定
   - API_SERVER_KEY
 
@@ -111,7 +116,9 @@ Parameters:
       title: 推推机器人 Owner ID
       type: string
       pattern: "^([^,]){1,20}$"
-      description: 推推机器人 Owner，默认允许通过推推与 Hermes 私聊的推推账号 ID（如：「abc@xxx.xx」即 abc 视为 ID）；启动后会主动与该 ID 打招呼哦
+      description: >
+        推推机器人 Owner，默认允许通过推推与 Hermes 私聊的推推账号 ID（如：「abc@xxx.xx」即 abc 视为 ID）；
+        👀 注意： Hermes 目前无 UI 控制台，推推作为主要交流通道
       x-placeholder: 请输入「推推账号 ID」
       x-cate: applicationCate
       x-label: 推推机器人
