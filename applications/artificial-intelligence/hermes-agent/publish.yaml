@@ -117,7 +117,7 @@ Parameters:
       type: string
       pattern: "^([^,]){1,20}$"
       description: >
-        推推机器人 Owner，默认允许通过推推与 Hermes 私聊的推推账号 ID（如：「abc@xxx.xx」即 abc 视为 ID）；
+        推推机器人 Owner，默认允许通过推推与 Hermes 私聊的域账号（如：「abc@xxx.xx」邮箱的前缀「abc」）；
         👀 注意： Hermes 目前无 UI 控制台，推推作为主要交流通道
       x-placeholder: 请输入「推推账号 ID」
       x-cate: applicationCate
