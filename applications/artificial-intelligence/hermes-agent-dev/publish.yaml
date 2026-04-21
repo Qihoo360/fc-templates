@@ -135,6 +135,7 @@ Parameters:
       x-placeholder: 请输入 APIKEY
       x-cate: applicationCate
       x-label: 接口密钥
+      x-random: true
       x-formitem:
         type: input
 
