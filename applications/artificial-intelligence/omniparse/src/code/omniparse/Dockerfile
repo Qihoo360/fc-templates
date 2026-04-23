@@ -25,6 +25,9 @@ RUN apt-get update && \
     ffmpeg \
     git-lfs \
     xvfb \
+    python3-dev \
+    ninja-build \
+    build-essential \
     && ln -s /usr/bin/python3 /usr/bin/python \
     && curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
     && wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
@@ -42,41 +45,45 @@ RUN CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_R
     chmod +x /usr/local/bin/chromedriver && \
     rm /tmp/chromedriver_linux64.zip
 
-# Copy Chromedriver from the builder stage (if applicable)
-# COPY --from=builder /usr/local/bin/chromedriver /usr/local/bin/chromedriver
-
-# Install PyTorch and related packages
+# Install PyTorch
 RUN pip3 install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# 关键：在这里安装 flash-attn，因为这里有完整编译环境
+RUN pip install transformers==4.41.2
+RUN pip install --no-cache-dir flash-attn==2.6.3
 
 COPY . /app
 WORKDIR /app
-# Install Python package (assuming it has a setup.py)
 RUN pip3 install --no-cache-dir -e .
 RUN rm -rf /app/*
 
+# 第二阶段（运行时）
 FROM wfwqjs-eventing-zevent-pub/omniparse:v1 AS ready-stage
-# Set up working directory and copy application code
+
+# 从第一阶段把编译好的依赖复制过来！
+COPY --from=prepare-stage /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages
+COPY --from=prepare-stage /usr/local/bin /usr/local/bin
+COPY --from=prepare-stage /usr/bin/google-chrome /usr/bin/google-chrome
+COPY --from=prepare-stage /usr/local/bin/chromedriver /usr/local/bin/chromedriver
+
+# 复制代码
 COPY . /app
 WORKDIR /app
 
-# Install Python package (assuming it has a setup.py)
-#RUN pip3 install --no-cache-dir -e .
+# 运行时不需要再编译任何东西！
+# 下面这两行全部删掉，不需要！
+# RUN apt-get update && apt-get install -y python3-dev python3.10-dev build-essential ninja-build && rm -rf /var/lib/apt/lists/*
+# RUN pip install transformers==4.41.2 && pip install --no-cache-dir flash-attn==2.6.3 --no-build-isolation
 
-RUN pip install transformers==4.41.2 flash-attn==2.6.3
-
-# Set environment variables
+# 环境变量
 ENV CHROME_BIN=/usr/bin/google-chrome \
     CHROMEDRIVER=/usr/local/bin/chromedriver \
     DISPLAY=:99 \
     DBUS_SESSION_BUS_ADDRESS=/dev/null \
     PYTHONUNBUFFERED=1
 
-# Ensure the PATH environment variable includes the location of the installed packages
 ENV PATH=/usr/local/bin:$PATH
 
-# Expose the desired port
 EXPOSE 8000
 
-# Run the server
 CMD ["python", "server.py", "--host", "0.0.0.0", "--port", "8000", "--documents", "--media", "--web"]
-

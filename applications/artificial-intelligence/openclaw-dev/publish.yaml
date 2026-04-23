@@ -110,7 +110,7 @@ Parameters:
     TUITUI_ALLOW_FROM:
       title: 推推机器人 Owner ID
       type: string
-      pattern: "^([^,@]){1,20}$"
+      pattern: "^[a-z0-9_-]{1,20}$"
       description: >
         推推机器人 Owner，默认允许通过推推与 Openclaw 私聊的域账号（如：「abc@xxx.xx」邮箱的前缀「abc」）；
         启动后会主动与您打招呼哦
