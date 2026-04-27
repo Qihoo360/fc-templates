@@ -85,7 +85,10 @@ Parameters:
     SENSITIVE_MODE:
       type: boolean
       default: false
-      description: 安全须知：根据《360集团数据安全管理制度》要求，严禁将公司二级及以上数据出公网。数据敏感则模型配置仅支持部署在内网算力的模型！
+      description: |
+        安全须知：根据《360集团数据安全管理制度》要求，严禁将公司二级及以上数据出公网。
+        开启该选项才能通过 ACL 打通内网/办公网基础服务，
+        并且数据敏感则模型配置仅支持部署在内网的大模型！
       x-cate: applicationCate
       x-label: 数据是否敏感
       x-formitem:
