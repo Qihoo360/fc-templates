@@ -6,7 +6,7 @@ vars:
   grafanaFunctionName: {{grafanaFunctionName}}
   grafanaDescribe: {{grafanaDescription}}
 resources:
-    grafana:
+  grafana:
     component: ${path('/utils/components/zfc')}
     props:
       region: ${vars.region}

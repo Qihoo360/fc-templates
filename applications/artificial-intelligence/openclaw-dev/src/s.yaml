@@ -29,6 +29,7 @@ resources:
       runtime: custom
       memorySize: 4096
       cpu: 4
+      requestCpu: 2
       diskSize: 512
       timeout: 72000
       instanceConcurrency: 100
