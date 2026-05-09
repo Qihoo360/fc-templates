@@ -6,10 +6,9 @@ vars:
   FunctionName: {{FunctionName}}
   Description: {{Description}}
 
-  OD_API_PROVIDER: "{{OD_API_PROVIDER}}"
-  OD_API_BASE_URL: "{{OD_API_BASE_URL}}"
-  OD_API_MODEL: "{{OD_API_MODEL}}"
-  OD_API_KEY: "{{OD_API_KEY}}"
+  OPENAI_URL: "{{OPENAI_URL}}"
+  OPENAI_MODELNAME: "{{OPENAI_MODELNAME}}"
+  OPENAI_API_KEY: "{{OPENAI_API_KEY}}"
 
   POLEFS_VOLUME: {{POLEFS_VOLUME}}
   VOLUME_MOUNT_PATH: /data
@@ -33,10 +32,10 @@ resources:
       port: 7456
       functionName: ${vars.FunctionName}
       environmentVariables:
-        OD_API_PROVIDER: ${vars.OD_API_PROVIDER}
-        OD_API_BASE_URL: ${vars.OD_API_BASE_URL}
-        OD_API_MODEL: ${vars.OD_API_MODEL}
-        OD_API_KEY: ${vars.OD_API_KEY}
+        OD_API_PROVIDER: appmkt
+        OD_API_BASE_URL: ${vars.OPENAI_URL}
+        OD_API_MODEL: ${vars.OPENAI_MODELNAME}
+        OD_API_KEY: ${vars.OPENAI_API_KEY}
       logConfig:
         isOpen: true
       scale:

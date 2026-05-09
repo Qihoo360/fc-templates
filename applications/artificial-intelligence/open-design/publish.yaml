@@ -27,9 +27,9 @@ Parameters:
   - Description
 
   # 大语言模型
-  - OD_API_BASE_URL
-  - OD_API_MODEL
-  - OD_API_KEY
+  - OPENAI_URL
+  - OPENAI_MODELNAME
+  - OPENAI_API_KEY
 
   # 持久存储
   - FileStorage
@@ -55,7 +55,7 @@ Parameters:
     FunctionName:
       title: 函数名
       type: string
-      default: hermes-${default-suffix}
+      default: open-design-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 名称只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
       x-placeholder: 请输入函数名
@@ -66,7 +66,7 @@ Parameters:
     Description:
       title: 函数描述
       type: string
-      default: "Hermes-Agent AI 助手"
+      default: "Open Design AI 设计"
       pattern: ".{0,255}$"
       description: 最大长度为 255 个字符
       x-placeholder: 请输入函数描述
@@ -86,7 +86,7 @@ Parameters:
       x-formitem:
         type: switch
         
-    OD_API_BASE_URL:
+    OPENAI_URL:
       type: string
       default: https://llm.api.zyuncs.com/v1
       description: 兼容 OpenAI 接口规范
@@ -97,7 +97,8 @@ Parameters:
       x-placeholder: 请输入 BaseURL
       x-formitem:
         type: input
-    OD_API_MODEL:
+
+    OPENAI_MODELNAME:
       type: string
       default: 360-glm-4.7
       description: "语言模型名称"
@@ -108,7 +109,7 @@ Parameters:
       x-formitem:
         type: input
 
-    OD_API_KEY:
+    OPENAI_API_KEY:
       type: secret
       default: ""
       description: "OpenAI API 密钥"
