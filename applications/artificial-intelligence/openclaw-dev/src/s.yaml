@@ -6,6 +6,9 @@ vars:
   FunctionName: {{FunctionName}}
   Description: {{Description}}
 
+  FUNCTION_CPU_CORES: {{FUNCTION_CPU_CORES || 4}}
+  FUNCTION_MEMORY_SIZE: {{FUNCTION_MEMORY_SIZE || 4096}}
+
   OPENCLAW_GATEWAY_TOKEN: {{OPENCLAW_GATEWAY_TOKEN}}
   OPENCLAW_UI_ALLOW_INSECURE_AUTH: true
 
@@ -18,6 +21,7 @@ vars:
   OPENAI_API_KEY: {{OPENAI_API_KEY}}
 
   POLEFS_VOLUME: {{POLEFS_VOLUME}}
+  POLEFS_VOLUME_CAPACITY: {{POLEFS_VOLUME_CAPACITY || 50}}
   VOLUME_MOUNT_PATH: /data
   POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
@@ -27,8 +31,8 @@ resources:
       region: ${vars.Region}
       description: ${vars.Description}
       runtime: custom
-      memorySize: 4096
-      cpu: 4
+      memorySize: ${vars.FUNCTION_MEMORY_SIZE}
+      cpu: ${vars.FUNCTION_CPU_CORES}
       requestCpu: 2
       diskSize: 512
       timeout: 72000

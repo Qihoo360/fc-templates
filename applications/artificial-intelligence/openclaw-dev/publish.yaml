@@ -37,6 +37,7 @@ Parameters:
   # 持久存储
   - FileStorage
   - POLEFS_VOLUME
+  - POLEFS_VOLUME_CAPACITY
   - POLEFS_VOLUME_CREATE_USER
 
   properties:
@@ -76,6 +77,32 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
+
+    FUNCTION_CPU_CORES:
+      title: CPU 规格
+      description: CPU 核心数
+      type: integer
+      default: 4
+      maximum: 8
+      minimum: 2
+      x-placeholder: 请输入 CPU 核心数
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+      x-hidden: true
+
+    FUNCTION_MEMORY_SIZE:
+      title: 内存规格
+      description: 内存大小，单位 MB
+      type: integer
+      default: 4096
+      maximum: 16384
+      minimum: 4096
+      x-placeholder: 请输入内存大小，单位 MB
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+      x-hidden: true
 
     SENSITIVE_MODE:
       type: boolean
@@ -196,6 +223,18 @@ Parameters:
       x-formitem:
         type: input
         name: volume_unique_name
+    POLEFS_VOLUME_CAPACITY:
+      type: integer
+      default: 50
+      description: |
+        存储卷容量，单位 GB；注：创建新的存储卷时需要指定容量大小，复用存储卷时该配置项不生效
+      x-cate: applicationCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-placeholder: POLEFS 存储卷
+      x-formitem:
+        type: input
+      x-hidden: true
     POLEFS_VOLUME_CREATE_USER:
       type: string
       default: ""
