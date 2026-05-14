@@ -5,8 +5,8 @@ vars:
   region: {{region}}
   describe: {{description}}
   functionName: {{functionName}}
-  functionPolefsVolumn: {{POLEFS_VOLUME}}
-  afunctionVolCreateUser: {{afunctionVolCreateUser}}
+  POLEFS_VOLUME: {{POLEFS_VOLUME}}
+  POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
   framework:
     component: ${path('/utils/components/zfc')}
@@ -53,6 +53,6 @@ resources:
             disable_url_internet: true
             auth_config: ""
       nasConfig:
-        - volumeUniqueName: ${vars.functionPolefsVolumn}
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
           mountDir: "/mnt/ComfyUI/models"
-          createUserName: ${vars.afunctionVolCreateUser}
+          createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
