@@ -35,7 +35,7 @@ resources:
       runtimeType: customize
       sourceSubDir: hermes-agent
       cloudBuildType: Dockerfile
-      port: 8642
+      port: 3002
       functionName: ${vars.FunctionName}
       environmentVariables:
         TUITUI_APP_ID: "${vars.TUITUI_APP_ID}"
