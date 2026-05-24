@@ -6,4 +6,4 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 EXPOSE 8000
 ENTRYPOINT [ "/app/entrypoint.sh" ]
-CMD ["/app/startup.sh"]
+CMD ["/app/startup-all.sh"]
