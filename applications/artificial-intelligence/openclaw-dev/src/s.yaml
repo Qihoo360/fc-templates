@@ -41,7 +41,7 @@ resources:
       runtimeType: customize
       sourceSubDir: openclaw
       cloudBuildType: Dockerfile
-      port: 18789
+      port: 8000
       functionName: ${vars.FunctionName}
       environmentVariables:
         APPDATA: ${vars.VOLUME_MOUNT_PATH}
