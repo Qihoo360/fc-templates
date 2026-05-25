@@ -4,5 +4,5 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /opt/hermes
 
-EXPOSE 8642
+EXPOSE 3002
 ENTRYPOINT [ "/opt/hermes/docker/entrypoint.sh" ]
