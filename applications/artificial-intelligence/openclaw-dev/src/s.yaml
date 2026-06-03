@@ -6,7 +6,7 @@ vars:
   FunctionName: {{FunctionName}}
   Description: {{Description}}
 
-  FUNCTION_CPU_CORES: {{FUNCTION_CPU_CORES || 4}}
+  FUNCTION_CPU_CORES: {{FUNCTION_CPU_CORES || 2}}
   FUNCTION_MEMORY_SIZE: {{FUNCTION_MEMORY_SIZE || 4096}}
 
   OPENCLAW_GATEWAY_TOKEN: "{{OPENCLAW_GATEWAY_TOKEN}}"
@@ -34,7 +34,8 @@ resources:
       runtime: custom
       memorySize: ${vars.FUNCTION_MEMORY_SIZE}
       cpu: ${vars.FUNCTION_CPU_CORES}
-      requestCpu: 2
+      requestCpu: 0.5
+      requestMemory: 1024
       diskSize: 512
       timeout: 72000
       instanceConcurrency: 100
