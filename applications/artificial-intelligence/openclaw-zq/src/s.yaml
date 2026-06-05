@@ -1,0 +1,96 @@
+edition: 3.0.0
+name: openclaw
+access: default
+vars:
+  Region: {{region}}
+  FunctionName: {{FunctionName}}
+  Description: {{Description}}
+
+  FUNCTION_CPU_CORES: {{FUNCTION_CPU_CORES || 2}}
+  FUNCTION_MEMORY_SIZE: {{FUNCTION_MEMORY_SIZE || 4096}}
+
+  OPENCLAW_GATEWAY_TOKEN: "{{OPENCLAW_GATEWAY_TOKEN}}"
+  OPENCLAW_UI_ALLOW_INSECURE_AUTH: true
+  SENSITIVE_MODE: "{{SENSITIVE_MODE}}"
+
+  TUITUI_APP_ID: "{{TUITUI_APP_ID || ''}}"
+  TUITUI_APP_SECRET: "{{TUITUI_APP_SECRET || ''}}"
+  TUITUI_ALLOW_FROM: "{{TUITUI_ALLOW_FROM || ''}}"
+
+  OPENAI_URL: {{OPENAI_URL}}
+  OPENAI_MODELNAME: {{OPENAI_MODELNAME}}
+  OPENAI_API_KEY: {{OPENAI_API_KEY}}
+
+  POLEFS_VOLUME: {{POLEFS_VOLUME}}
+  POLEFS_VOLUME_CAPACITY: {{POLEFS_VOLUME_CAPACITY || 50}}
+  VOLUME_MOUNT_PATH: /data
+  POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
+resources:
+  openclaw:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.Region}
+      description: ${vars.Description}
+      runtime: custom
+      memorySize: ${vars.FUNCTION_MEMORY_SIZE}
+      cpu: ${vars.FUNCTION_CPU_CORES}
+      requestCpu: 0.5
+      requestMemory: 1024
+      diskSize: 512
+      timeout: 72000
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      sourceSubDir: openclaw
+      cloudBuildType: Dockerfile
+      port: 8000
+      functionName: ${vars.FunctionName}
+      environmentVariables:
+        APPDATA: ${vars.VOLUME_MOUNT_PATH}
+
+        TUITUI_APP_ID: "${vars.TUITUI_APP_ID}"
+        TUITUI_APP_SECRET: "${vars.TUITUI_APP_SECRET}"
+        TUITUI_ALLOW_FROM: "${vars.TUITUI_ALLOW_FROM}"
+
+        ENABLE_ADMIN_RESTART: true
+        APIMKT_SENSTIVE_MODE: "${vars.SENSITIVE_MODE}"
+
+        OPENCLAW_GATEWAY_TOKEN: "${vars.OPENCLAW_GATEWAY_TOKEN}"
+        OPENCLAW_UI_ALLOW_INSECURE_AUTH: ${vars.OPENCLAW_UI_ALLOW_INSECURE_AUTH}
+
+        OPENAI_PROVIDER: appmkt
+        OPENAI_URL: ${vars.OPENAI_URL}
+        OPENAI_MODELNAME: ${vars.OPENAI_MODELNAME}
+        OPENAI_API_KEY: ${vars.OPENAI_API_KEY}
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 2
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      networkType: vpc
+      nasConfig:
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
+          mountDir: ${vars.VOLUME_MOUNT_PATH}
+          createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
