@@ -117,7 +117,7 @@ Parameters:
         type: switch
 
     TUITUI_APP_ID:
-      title: 推推机器人 ID
+      title: 机器人 ID
       type: string
       pattern: "^\\d+$"
       description: 推推机器人 ID；如果没有可以在「推推」中搜索「推推机器人助手」申请个人使用的机器人，也仅限于自己私聊。
@@ -128,7 +128,7 @@ Parameters:
         type: input
 
     TUITUI_APP_SECRET:
-      title: 推推机器人 Secret
+      title: 机器人 Secret
       type: string
       description: 推推机器人 Secret
       x-placeholder: 请输入「推推机器人 Secret」
@@ -138,11 +138,11 @@ Parameters:
         type: input
 
     TUITUI_ALLOW_FROM:
-      title: 推推机器人 Owner ID
+      title: 机器人 Owner ID
       type: string
       pattern: "^[a-z0-9_-]+(@agt\\.cn)?$"
       description: >
-        推推机器人 Owner，默认允许通过推推与 Openclaw 私聊的域账号（如：「abc@xxx.xx」邮箱的前缀「abc」）；
+        推推机器人 Owner，默认允许通过推推与 Openclaw 私聊的域账号（如：「abc@xxx.xx」邮箱的前缀「abc」， 生态员工需填写手机号）；
         启动后会主动与您打招呼哦
       x-placeholder: 请输入「推推账号 ID」
       x-cate: applicationCate
@@ -165,6 +165,7 @@ Parameters:
         type: input
 
     OPENAI_URL:
+      title: 模型服务地址
       type: string
       default: https://llm.api.zyuncs.com/v1
       description: 兼容 OpenAI 接口规范
@@ -176,6 +177,7 @@ Parameters:
       x-formitem:
         type: input
     OPENAI_MODELNAME:
+      title: 语言模型名称
       type: string
       default: 360-glm-4.7
       description: "语言模型名称"
@@ -187,6 +189,7 @@ Parameters:
         type: input
 
     OPENAI_API_KEY:
+      title: 模型调用密钥
       type: secret
       default: ""
       description: "OpenAI API 密钥"
