@@ -6,6 +6,9 @@ vars:
   FunctionName: {{FunctionName}}
   Description: {{Description}}
 
+  FUNCTION_CPU_CORES: {{FUNCTION_CPU_CORES || 2}}
+  FUNCTION_MEMORY_SIZE: {{FUNCTION_MEMORY_SIZE || 4096}}
+
   API_SERVER_KEY: "{{API_SERVER_KEY}}"
 
   TUITUI_APP_ID: "{{TUITUI_APP_ID || ''}}"
@@ -26,8 +29,10 @@ resources:
       region: ${vars.Region}
       description: ${vars.Description}
       runtime: custom
-      memorySize: 4096
-      cpu: 4
+      memorySize: ${vars.FUNCTION_MEMORY_SIZE}
+      cpu: ${vars.FUNCTION_CPU_CORES}
+      requestCpu: 0.5
+      requestMemory: 1024
       diskSize: 512
       timeout: 72000
       instanceConcurrency: 100
