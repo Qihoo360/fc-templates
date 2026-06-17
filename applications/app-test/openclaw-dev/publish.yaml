@@ -50,6 +50,7 @@ Parameters:
       - beijing
       - test-2
       - test-3
+      - test-5
       x-cate: resourceCate
       x-reaction-properties:
       - POLEFS_VOLUME
