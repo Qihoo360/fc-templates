@@ -75,7 +75,7 @@ resources:
         isOpen: true
       scale:
         scale_config: 2
-        min: 1
+        min: 0
         max: 1
       buildProgramEntry: ""
       requestEntry: ""
