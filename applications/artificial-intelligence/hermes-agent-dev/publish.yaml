@@ -155,15 +155,15 @@ Parameters:
         type: input
 
     API_SERVER_KEY:
-      title: 接口密钥
+      title: 网关令牌
       type: secret
       default: gw-${default-suffix}
       pattern: "^[^!\\d].{4,64}$"
       description: |
-        Hermes-Agent 接口密钥，请妥善保存；最少 5 个字符，最大长度为 64 个字符，开头不能是 ! 字符和数字；
-      x-placeholder: 请输入 APIKEY
+        Hermes-Agent 登录密钥，请妥善保存；最少 5 个字符，最大长度为 64 个字符，开头不能是 ! 字符和数字；
+      x-placeholder: 请输入 TOKEN
       x-cate: applicationCate
-      x-label: 接口密钥
+      x-label: 网关令牌
       x-random: true
       x-formitem:
         type: input
