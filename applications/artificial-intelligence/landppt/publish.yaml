@@ -84,6 +84,7 @@ Parameters:
         type: select
 
     POLEFS_VOLUME:
+      title: 卷名称
       type: string
       description: "POLEFS 存储卷"
       x-cate: applicationCate

@@ -248,7 +248,7 @@ Parameters:
       x-formitem:
         type: select
     POLEFS_VOLUME:
-      title: 存储卷名称
+      title: 卷名称
       type: string
       default: ""
       description: 用于存储运行时日志、文件的存储卷

@@ -83,6 +83,7 @@ Parameters:
         type: select
 
     POLEFS_VOLUME:
+      title: 卷名称
       type: string
       description: |
         保存应用数据的文件存储，如：'bjpdc-polefs/app/data'；注：复用存储时需要注意数据覆盖的问题

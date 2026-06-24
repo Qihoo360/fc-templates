@@ -457,6 +457,7 @@ Parameters:
       x-formitem:
         type: select
     POLEFS_VOLUME:
+      title: 卷名称
       # title: 函数挂载 PoleFS 卷名称
       type: string
       default: ""
