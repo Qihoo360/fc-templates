@@ -238,6 +238,30 @@ Parameters:
       x-placeholder: 函数创建挂载卷的用户
       x-hidden: true
 
+    APPMKT_APP_OWNER:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 应用信息
+      x-hidden: true
+
+    APPMKT_APP_NAME:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 应用信息
+      x-hidden: true
+
+    APPMKT_APP_UUID:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 应用信息
+      x-hidden: true
+
 PropertyDescription:
   resourceCate:
     title: "资源创建配置"

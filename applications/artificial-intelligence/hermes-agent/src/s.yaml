@@ -11,6 +11,10 @@ vars:
 
   API_SERVER_KEY: "{{API_SERVER_KEY}}"
 
+  APPMKT_APP_OWNER: "{{APPMKT_APP_OWNER || ''}}"
+  APPMKT_APP_NAME: "{{APPMKT_APP_NAME || ''}}"
+  APPMKT_APP_UUID: "{{APPMKT_APP_UUID || ''}}"
+
   TUITUI_APP_ID: "{{TUITUI_APP_ID || ''}}"
   TUITUI_APP_SECRET: "{{TUITUI_APP_SECRET || ''}}"
   TUITUI_ALLOWED_USERS: "{{TUITUI_ALLOWED_USERS || ''}}"
@@ -43,6 +47,10 @@ resources:
       port: 3002
       functionName: ${vars.FunctionName}
       environmentVariables:
+        APPMKT_APP_OWNER: "${vars.APPMKT_APP_OWNER}"
+        APPMKT_APP_NAME: "${vars.APPMKT_APP_NAME}"
+        APPMKT_APP_UUID: "${vars.APPMKT_APP_UUID}"
+
         TUITUI_APP_ID: "${vars.TUITUI_APP_ID}"
         TUITUI_APP_SECRET: "${vars.TUITUI_APP_SECRET}"
         TUITUI_ALLOWED_USERS: "${vars.TUITUI_ALLOWED_USERS}"
