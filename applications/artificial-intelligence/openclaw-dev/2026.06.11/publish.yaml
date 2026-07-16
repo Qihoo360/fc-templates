@@ -1,0 +1,282 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: Moltbot
+Organization: 函数计算 (FC)
+Provider:
+  - fc
+Version: 1.0.0
+Description: OpenClaw 是一款开源、自托管的个人 AI 助手，可以通过插件和 Skill 扩展更多能力。
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/openclaw
+Tags:
+  - AI
+Category: 人工智能
+Service:
+  FC:
+    Authorities:
+    - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required:
+  # 函数设置
+  - region
+  - FunctionName
+  - Description
+
+  # 应用设定
+  - OPENCLAW_GATEWAY_TOKEN
+
+  # 大语言模型
+  - OPENAI_URL
+  - OPENAI_MODELNAME
+  - OPENAI_API_KEY
+
+  # 持久存储
+  - FileStorage
+  - POLEFS_VOLUME
+  - POLEFS_VOLUME_CAPACITY
+  - POLEFS_VOLUME_CREATE_USER
+
+  properties:
+    region:
+      title: 部署区域
+      type: string
+      default: beijing
+      description: 应用将部署到所选择的区域
+      enum:
+      - beijing
+      - test-2
+      - test-3
+      x-cate: resourceCate
+      x-reaction-properties:
+      - POLEFS_VOLUME
+      x-formitem:
+        type: select
+
+    FunctionName:
+      title: 函数名
+      type: string
+      default: openclaw-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 名称只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+
+    Description:
+      title: 函数描述
+      type: string
+      default: "OpenClaw AI 助手"
+      pattern: ".{0,255}$"
+      description: 最大长度为 255 个字符
+      x-placeholder: 请输入函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+
+    FUNCTION_CPU_CORES:
+      title: CPU 规格
+      description: CPU 核心数
+      type: integer
+      default: 4
+      maximum: 8
+      minimum: 2
+      x-placeholder: 请输入 CPU 核心数
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+      x-hidden: true
+
+    FUNCTION_MEMORY_SIZE:
+      title: 内存规格
+      description: 内存大小，单位 MB
+      type: integer
+      default: 4096
+      maximum: 16384
+      minimum: 4096
+      x-placeholder: 请输入内存大小，单位 MB
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+      x-hidden: true
+
+    SENSITIVE_MODE:
+      type: boolean
+      default: false
+      description: |
+        安全须知：根据《360集团数据安全管理制度》要求，严禁将公司二级及以上数据出公网。
+        开启该选项才能通过 ACL 打通内网/办公网基础服务，
+        并且数据敏感则模型配置仅支持部署在内网的大模型！
+      x-cate: applicationCate
+      x-label: 数据是否敏感
+      x-formitem:
+        type: switch
+
+    TUITUI_APP_ID:
+      title: 机器人 ID
+      type: string
+      pattern: "^\\d+$"
+      description: 推推机器人 ID；如果没有可以在「推推」中搜索「推推机器人助手」申请个人使用的机器人，也仅限于自己私聊。
+      x-placeholder: 请输入「推推机器人 ID」
+      x-cate: applicationCate
+      x-label: 推推机器人
+      x-formitem:
+        type: input
+
+    TUITUI_APP_SECRET:
+      title: 机器人 Secret
+      type: string
+      description: 推推机器人 Secret
+      x-placeholder: 请输入「推推机器人 Secret」
+      x-cate: applicationCate
+      x-label: 推推机器人
+      x-formitem:
+        type: input
+
+    TUITUI_ALLOW_FROM:
+      title: 机器人 Owner ID
+      type: string
+      pattern: "^[a-z0-9_-]+(@agt\\.cn)?$"
+      description: >
+        推推机器人 Owner，默认允许通过推推与 Openclaw 私聊的域账号（如：「abc@xxx.xx」邮箱的前缀「abc」， 生态员工需填写手机号）；
+        启动后会主动与您打招呼哦
+      x-placeholder: 请输入「推推账号 ID」
+      x-cate: applicationCate
+      x-label: 推推机器人
+      x-formitem:
+        type: input
+
+    OPENCLAW_GATEWAY_TOKEN:
+      title: 网关令牌
+      type: secret
+      default: gw-${default-suffix}
+      pattern: "^[^!\\d].{4,64}$"
+      description: |
+        OpenClaw AI 助手密钥，实例启动后在「网关令牌」处填入完成登录，请妥善保存；最少 5 个字符，最大长度为 64 个字符，开头不能是 ! 字符和数字；
+      x-placeholder: 请输入 Token
+      x-cate: applicationCate
+      x-random: true
+      x-label: 网关令牌
+      x-formitem:
+        type: input
+
+    OPENAI_URL:
+      title: 模型服务地址
+      type: string
+      default: https://llm.api.zyuncs.com/v1
+      description: 兼容 OpenAI 接口规范
+      pattern: "https?://.*$"
+      x-cate: applicationCate
+      x-label: 大语言模型
+      x-restype: openai
+      x-placeholder: 请输入 BaseURL
+      x-formitem:
+        type: input
+    OPENAI_MODELNAME:
+      title: 语言模型名称
+      type: string
+      default: 360-glm-4.7
+      description: "语言模型名称"
+      x-cate: applicationCate
+      x-label: 大语言模型
+      x-restype: openai
+      x-placeholder: 请输入语言模型名称
+      x-formitem:
+        type: input
+
+    OPENAI_API_KEY:
+      title: 模型调用密钥
+      type: secret
+      default: ""
+      description: "OpenAI API 密钥"
+      x-cate: applicationCate
+      x-label: 大语言模型
+      x-restype: openai
+      x-placeholder: 请输入 OpenAI APIKEY
+      x-formitem:
+        type: input
+
+    FileStorage:
+      type: string
+      default: Polefs
+      description: 文件存储类型
+      enum:
+      - Polefs
+      x-cate: applicationCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-formitem:
+        type: select
+
+    POLEFS_VOLUME:
+      title: 卷名称
+      type: string
+      description: |
+        保存应用数据的文件存储，如：'bjpdc-polefs/app/data'；注：复用存储时需要注意数据覆盖的问题
+      x-cate: applicationCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-placeholder: POLEFS 存储卷
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: POLEFS_VOLUME_CREATE_USER
+      x-formitem:
+        type: input
+        name: volume_unique_name
+    POLEFS_VOLUME_CAPACITY:
+      type: integer
+      default: 50
+      description: |
+        存储卷容量，单位 GB；注：创建新的存储卷时需要指定容量大小，复用存储卷时该配置项不生效
+      x-cate: applicationCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-placeholder: POLEFS 存储卷
+      x-formitem:
+        type: input
+      x-hidden: true
+    POLEFS_VOLUME_CREATE_USER:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-placeholder: 函数创建挂载卷的用户
+      x-hidden: true
+
+    APPMKT_APP_OWNER:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 应用信息
+      x-hidden: true
+
+    APPMKT_APP_NAME:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 应用信息
+      x-hidden: true
+
+    APPMKT_APP_UUID:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 应用信息
+      x-hidden: true
+
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
