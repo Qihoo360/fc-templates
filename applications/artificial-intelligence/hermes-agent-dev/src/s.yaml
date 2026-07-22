@@ -44,7 +44,7 @@ resources:
       runtimeType: customize
       sourceSubDir: hermes-agent
       cloudBuildType: Dockerfile
-      port: 3002
+      port: 8080
       functionName: ${vars.FunctionName}
       environmentVariables:
         APPMKT_APP_OWNER: "${vars.APPMKT_APP_OWNER}"
