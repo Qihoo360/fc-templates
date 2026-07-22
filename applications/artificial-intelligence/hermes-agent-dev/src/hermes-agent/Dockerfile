@@ -1,8 +1,8 @@
-FROM wfwqjs-eventing-zevent-pub/hermes-agent:2026.5.16.4 AS hermes-agent
+FROM wfwqjs-eventing-zevent-pub/hermes-agent:2026.5.29.2.0 AS hermes-agent
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /opt/hermes
 
-EXPOSE 3002
+EXPOSE 8080
 ENTRYPOINT [ "/opt/hermes/docker/entrypoint.sh" ]
