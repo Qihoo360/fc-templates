@@ -45,8 +45,8 @@ resources:
       instanceConcurrency: 100
       requestType: http
       coldStartOpt: true
-      nas_access_mode: ReadWriteOncePod
-      business-sleep-enabled: true
+      nasAccessMode: ReadWriteOncePod
+      businessSleepEnabled: true
       runtimeType: customize
       sourceSubDir: openclaw
       cloudBuildType: Dockerfile
