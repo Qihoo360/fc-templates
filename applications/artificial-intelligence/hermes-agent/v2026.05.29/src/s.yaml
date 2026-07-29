@@ -2,12 +2,12 @@ edition: 3.0.0
 name: hermes-agent
 access: default
 vars:
-  Region: { { region } }
-  FunctionName: { { FunctionName } }
-  Description: { { Description } }
+  Region: {{region}}
+  FunctionName: {{FunctionName}}
+  Description: {{Description}}
 
-  FUNCTION_CPU_CORES: { { FUNCTION_CPU_CORES || 2 } }
-  FUNCTION_MEMORY_SIZE: { { FUNCTION_MEMORY_SIZE || 4096 } }
+  FUNCTION_CPU_CORES: {{FUNCTION_CPU_CORES || 2}}
+  FUNCTION_MEMORY_SIZE: {{FUNCTION_MEMORY_SIZE || 4096}}
 
   API_SERVER_KEY: "{{API_SERVER_KEY}}"
 
@@ -23,9 +23,9 @@ vars:
   OPENAI_MODELNAME: "{{OPENAI_MODELNAME}}"
   OPENAI_API_KEY: "{{OPENAI_API_KEY}}"
 
-  POLEFS_VOLUME: { { POLEFS_VOLUME } }
+  POLEFS_VOLUME: {{POLEFS_VOLUME}}
   VOLUME_MOUNT_PATH: /data
-  POLEFS_VOLUME_CREATE_USER: { { POLEFS_VOLUME_CREATE_USER } }
+  POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
   hermes-agent:
     component: ${path('/utils/components/zfc')}
