@@ -5,4 +5,4 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /opt/hermes
 
 EXPOSE 8080
-ENTRYPOINT [ "/opt/hermes/docker/entrypoint.appmkt.sh" ]
+ENTRYPOINT [ "/opt/hermes/docker/entrypoint.zq.sh" ]
