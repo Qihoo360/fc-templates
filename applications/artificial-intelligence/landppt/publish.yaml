@@ -76,7 +76,7 @@ Parameters:
       description: ""
       enum:
       - Polefs
-      x-cate: applicationCate
+      x-cate: resourceCate
       x-label: 文件存储配置
       x-restype: polefs
       x-placeholder: 请选择文件存储类型
@@ -87,7 +87,7 @@ Parameters:
       title: 卷名称
       type: string
       description: "POLEFS 存储卷"
-      x-cate: applicationCate
+      x-cate: resourceCate
       x-label: 文件存储配置
       x-restype: polefs
       x-placeholder: 请输入挂载卷名称
@@ -101,7 +101,7 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: applicationCate
+      x-cate: resourceCate
       x-label: 文件存储配置
       x-restype: polefs
       x-placeholder: 函数创建挂载卷的用户
