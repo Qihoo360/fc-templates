@@ -165,6 +165,133 @@
       "description": "应用所属类型；用于分类展示",
       "examples": ["开发平台"]
     },
+    "ResourceSpecs": {
+      "type": "array",
+      "description": "应用资源规格；用于应用部署时选择资源规格",
+      "items": {
+        "type": "string",
+        "enum": ["micro", "light", "shared", "dedicated"]
+      },
+      "examples": ["micro", "light", "shared", "dedicated"],
+      "minItems": 1
+    },
+    "AccessControl": {
+      "type": "object",
+      "title": "访问控制",
+      "description": "最小权限 Scope、角色定义、API 鉴权策略集合，支持策略优先级匹配规则",
+      "additionalProperties": false,
+      "properties": {
+        "Scopes": {
+          "type": "array",
+          "title": "最小权限单元集合",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "title": "Scope 唯一标识",
+                "description": "权限标识符，格式规范：xxx:yyy:zzz，支持通配符 *；仅允许小写字母、数字、下划线、中划线、冒号与星号"
+              },
+              "name": {
+                "type": "string",
+                "title": "权限名称"
+              },
+              "description": {
+                "type": "string",
+                "title": "权限描述"
+              }
+            }
+          }
+        },
+        "Roles": {
+          "type": "array",
+          "title": "角色定义，Scope 组合封装",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "scopes"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "title": "角色唯一 ID"
+              },
+              "name": {
+                "type": "string",
+                "title": "角色名称"
+              },
+              "description": {
+                "type": "string",
+                "title": "角色描述"
+              },
+              "scopes": {
+                "type": "array",
+                "title": "绑定 Scope 列表",
+                "items": {
+                  "type": "string",
+                  "title": "Scope ID",
+                  "description": "权限标识符，格式规范：xxx:yyy:zzz，支持通配符 *"
+                }
+              }
+            }
+          }
+        },
+        "RoutePolicies": {
+          "type": "array",
+          "title": "API 路由访问策略",
+          "description": "运行时匹配策略：\n1. priority：数值越小优先级越高；请求匹配多条策略时，按优先级升序遍历\n2. 候选筛选：同时匹配请求 Http Method + Path 路由模板才纳入候选策略\n3. 鉴权判定：按优先级顺序校验用户是否拥有 policy 绑定 scope；命中第一条具备权限策略即放行\n4. 兜底逻辑：无匹配策略 / 匹配策略但不具备对应 scope → 拒绝访问",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "priority", "methods", "paths", "scope"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "title": "策略唯一 ID"
+              },
+              "priority": {
+                "type": "integer",
+                "title": "匹配优先级",
+                "description": "数值越小优先级越高；多条策略匹配请求时，按优先级升序校验"
+              },
+              "methods": {
+                "type": "array",
+                "title": "HTTP 请求方法",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "GET",
+                    "HEAD",
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "DELETE",
+                    "OPTIONS"
+                  ]
+                }
+              },
+              "paths": {
+                "type": "array",
+                "title": "路由模板列表，支持 {param} 路径变量",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "scope": {
+                "type": "string",
+                "title": "绑定的权限 Scope ID",
+                "description": "权限标识符，格式规范：xxx:yyy:zzz，支持通配符 *"
+              },
+              "description": {
+                "type": "string",
+                "title": "策略说明"
+              }
+            }
+          }
+        }
+      }
+    },
     "Parameters": {
       "type": "object",
       "description": "应用参数；设计应用部署所需要的参数",

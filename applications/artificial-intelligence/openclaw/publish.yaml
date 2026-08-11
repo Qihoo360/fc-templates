@@ -17,6 +17,13 @@ Service:
   FC:
     Authorities:
     - 创建函数
+
+ResourceSpecs:
+- micro
+- light
+- shared
+- dedicated
+
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
