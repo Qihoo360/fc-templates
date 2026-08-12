@@ -17,6 +17,13 @@ Service:
   FC:
     Authorities:
     - 创建函数
+
+ResourceSpecs:
+- micro
+- light
+- shared
+- dedicated
+
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
@@ -66,6 +73,7 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
+      x-hidden: true
 
     Description:
       title: 函数描述
@@ -77,6 +85,8 @@ Parameters:
       x-cate: resourceCate
       x-formitem:
         type: input
+      x-hidden: true
+
 
     FUNCTION_CPU_CORES:
       title: CPU 规格
@@ -206,7 +216,7 @@ Parameters:
       description: 文件存储类型
       enum:
       - Polefs
-      x-cate: applicationCate
+      x-cate: resourceCate
       x-label: 文件存储
       x-restype: polefs
       x-formitem:
@@ -217,7 +227,7 @@ Parameters:
       type: string
       description: |
         保存应用数据的文件存储，如：'bjpdc-polefs/app/data'；注：复用存储时需要注意数据覆盖的问题
-      x-cate: applicationCate
+      x-cate: resourceCate
       x-label: 文件存储
       x-restype: polefs
       x-placeholder: POLEFS 存储卷
@@ -232,7 +242,7 @@ Parameters:
       default: 50
       description: |
         存储卷容量，单位 GB；注：创建新的存储卷时需要指定容量大小，复用存储卷时该配置项不生效
-      x-cate: applicationCate
+      x-cate: resourceCate
       x-label: 文件存储
       x-restype: polefs
       x-placeholder: POLEFS 存储卷
@@ -243,7 +253,7 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: applicationCate
+      x-cate: resourceCate
       x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数创建挂载卷的用户
