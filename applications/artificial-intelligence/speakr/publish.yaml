@@ -168,7 +168,7 @@ Parameters:
       description: ""
       enum:
       - Polefs
-      x-cate: resourceCate
+      x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs
       x-placeholder: 请选择文件存储类型
@@ -180,7 +180,7 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: resourceCate
+      x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs
       x-placeholder: 函数挂载 PoleFS 卷名称
@@ -195,7 +195,7 @@ Parameters:
       type: string
       description: ""
       default: "/data/instance"
-      x-cate: resourceCate
+      x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs
       x-placeholder: 函数挂载路径
@@ -206,7 +206,7 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: resourceCate
+      x-cate: applicationCate
       x-label: 文件存储配置
       x-restype: polefs
       x-placeholder: 函数挂载的创建用户
