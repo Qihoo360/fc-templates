@@ -87,6 +87,7 @@ Parameters:
       description: 创建应用所在的地区
       enum:
       - beijing
+      - test-2
       x-cate: resourceCate
       x-formitem:
         type: select
