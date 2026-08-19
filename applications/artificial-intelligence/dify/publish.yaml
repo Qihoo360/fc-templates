@@ -18,6 +18,30 @@ Service:
   FC:
     Authorities:
     - 创建函数
+Authorizations:
+  roles:
+    - id: owner
+      name: 所有者
+      description: |-
+        完整的工作空间控制权。每个工作空间只有一个所有者。
+        控制所有团队成员、模型供应商，并可以删除工作空间。无法将所有权转让给其他成员。
+      scopes: []
+    - id: admin
+      name: 管理员
+      description: |-
+        团队和资源管理。
+        可以添加/移除团队成员、配置模型供应商、管理所有应用并管理集成。无法更改成员角色。
+      scopes: []
+    - id: editor
+      name: 编辑者
+      description: |-
+        应用开发。可以创建、编辑和删除应用，管理知识库，并使用所有工作空间工具。无法管理团队成员或配置供应商。
+      scopes: []
+    - id: normal
+      name: 普通成员
+      description: |-
+        仅使用应用。可以使用已发布的应用和有权访问的工具。无法创建或修改应用。
+      scopes: []
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性

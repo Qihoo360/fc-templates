@@ -17,6 +17,14 @@ Service:
   FC:
     Authorities:
     - 创建函数
+
+Authorizations:
+  roles:
+    - id: admin
+      name: admin
+      description: 应用管理员
+      scopes: []
+
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
