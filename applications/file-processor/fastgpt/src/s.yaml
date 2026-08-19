@@ -43,7 +43,7 @@ resources:
         MONGODB_URI: ${vars.MONGO_URL}
         MILVUS_ADDRESS: ${vars.MILVUS_URL}
         MILVUS_TOKEN: ${vars.MILVUS_TOKEN}
-        SANDBOX_URL: "http://${resources.sandbox.output.http_trigger_url}"
+        SANDBOX_URL: "http://${resources.sandbox.output.httpTriggerUrl}"
         DB_MAX_LINK: 5
         DEFAULT_ROOT_PSW: 123456
         FE_DOMAIN: http://localhost:3000

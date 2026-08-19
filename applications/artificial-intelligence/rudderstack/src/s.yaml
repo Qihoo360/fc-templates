@@ -147,7 +147,7 @@ resources:
         POSTGRES_PASSWORD: ${vars.PGPassword}
         POSTGRES_USER: ${vars.PGUser}
         POSTGRES_DB: ${vars.PGDbName}
-        DEST_TRANSFORM_URL: http://${resources.DTransformer.output.http_trigger_url}
+        DEST_TRANSFORM_URL: http://${resources.DTransformer.output.httpTriggerUrl}
         CONFIG_BACKEND_URL: https://api.rudderstack.com
         WORKSPACE_TOKEN: ${vars.WORKSPACE_TOKEN}
         STATSD_SERVER_URL: ${vars.MetricsExporterHOST}:${vars.MetricsExporterPORT}

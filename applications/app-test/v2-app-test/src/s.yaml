@@ -87,7 +87,7 @@ resources:
         templated_files:
           - code/service-b/main.go
       environmentVariables:
-        SERVICE_A_URL: ${resources.service-a.output.http_trigger_url}
+        SERVICE_A_URL: ${resources.service-a.output.httpTriggerUrl}
       logConfig:
         isOpen: false
       scale:

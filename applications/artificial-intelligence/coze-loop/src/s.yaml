@@ -122,7 +122,7 @@ resources:
         min: 1
         max: 300
       environmentVariables:
-        COZE_LOOP_APP_URL: "http://${resources.cozeloopBackend.output.http_trigger_url}"
+        COZE_LOOP_APP_URL: "http://${resources.cozeloopBackend.output.httpTriggerUrl}"
         COZE_LOOP_S3_ENDPOINT: ${vars.s3Endpoint}
       triggers:
       - triggerName: httptrigger

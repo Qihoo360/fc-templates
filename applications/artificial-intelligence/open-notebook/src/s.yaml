@@ -103,7 +103,7 @@ resources:
         min: 1
         max: 300
       environmentVariables:
-        SURREAL_URL: "ws://${resources.surrealdb.output.http_trigger_url}/rpc"
+        SURREAL_URL: "ws://${resources.surrealdb.output.httpTriggerUrl}/rpc"
         SURREAL_COMMANDS_MAX_TASKS: ${vars.SURREAL_COMMANDS_MAX_TASKS}
         OPENAI_COMPATIBLE_BASE_URL_LLM: ${vars.OPENAI_COMPATIBLE_BASE_URL_LLM}
         OPENAI_COMPATIBLE_API_KEY_LLM: ${vars.OPENAI_COMPATIBLE_API_KEY_LLM}
@@ -168,9 +168,9 @@ resources:
       environmentVariables:
         TZ: Asia/Shanghai
         API_CLIENT_TIMEOUT: 33
-        API_URL: "http://${resources.openNodebookBackend.output.http_trigger_url}"
-        INTERNAL_API_URL: "http://${resources.openNodebookBackend.output.http_trigger_url}"
-        NEXT_PUBLIC_API_URL: "http://${resources.openNodebookBackend.output.http_trigger_url}"
+        API_URL: "http://${resources.openNodebookBackend.output.httpTriggerUrl}"
+        INTERNAL_API_URL: "http://${resources.openNodebookBackend.output.httpTriggerUrl}"
+        NEXT_PUBLIC_API_URL: "http://${resources.openNodebookBackend.output.httpTriggerUrl}"
       triggers:
         - triggerName: httptrigger
           triggerType: http

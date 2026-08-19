@@ -124,7 +124,7 @@ resources:
         LIGHTDASH_QUERY_MAX_LIMIT: 5000
         LIGHTDASH_MAX_PAYLOAD: "5mb"
         DBT_PROJECT_DIR: "."
-        HEADLESS_BROWSER_HOST: ${resources.HeadlessBrowser.output.http_trigger_url}
+        HEADLESS_BROWSER_HOST: ${resources.HeadlessBrowser.output.httpTriggerUrl}
         HEADLESS_BROWSER_PORT: 80
         USE_SECURE_BROWSER: ""
         RUDDERSTACK_WRITE_KEY: ${vars.RUDDERSTACK_WRITE_KEY}

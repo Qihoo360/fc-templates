@@ -149,8 +149,8 @@ resources:
       environmentVariables:
         testkey: "testvalue"
         TZ: "Asia/Shanghai"
-        CRAWLER_ENDPOINT: "http://${resources.chatwikiCrawler.output.http_trigger_url}"
-        CONVERTER_ENDPOINT: "http://${resources.chatwikiConverter.output.http_trigger_url}"
+        CRAWLER_ENDPOINT: "http://${resources.chatwikiCrawler.output.httpTriggerUrl}"
+        CONVERTER_ENDPOINT: "http://${resources.chatwikiConverter.output.httpTriggerUrl}"
       logConfig:
         isOpen: true
       scale:
