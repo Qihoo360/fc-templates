@@ -39,7 +39,7 @@ vars:
   DifyMilvusPassword: {{MILVUS_PASSWORD}}
   PolefsVolume: {{POLEFS_VOLUME}}
   MountDir: {{POLEFS_MOUNT_PATH}}
-  VolCreateUser: {{PolefsVolumeCreateUser}}
+  VolCreateUser: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
   difySandbox:
     component: ${path('/utils/components/zfc')}
