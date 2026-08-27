@@ -1,0 +1,71 @@
+edition: 3.0.0
+name: open-design
+access: default
+vars:
+  Region: {{region}}
+  FunctionName: {{FunctionName}}
+  Description: {{Description}}
+
+  OPENAI_URL: "{{OPENAI_URL}}"
+  OPENAI_MODELNAME: "{{OPENAI_MODELNAME}}"
+  OPENAI_API_KEY: "{{OPENAI_API_KEY}}"
+
+  POLEFS_VOLUME: {{POLEFS_VOLUME}}
+  VOLUME_MOUNT_PATH: /data
+  POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
+resources:
+  open-design:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.Region}
+      description: ${vars.Description}
+      runtime: custom
+      memorySize: 4096
+      cpu: 4
+      diskSize: 512
+      timeout: 72000
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      sourceSubDir: open-design
+      cloudBuildType: Dockerfile
+      port: 7456
+      functionName: ${vars.FunctionName}
+      environmentVariables:
+        OD_ALLOWED_ORIGINS: https://*.fc.zyunapp.cn
+        OD_API_PROVIDER: appmkt
+        OD_API_BASE_URL: ${vars.OPENAI_URL}
+        OD_API_MODEL: ${vars.OPENAI_MODELNAME}
+        OD_API_KEY: ${vars.OPENAI_API_KEY}
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 2
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      networkType: vpc
+      nasConfig:
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
+          mountDir: ${vars.VOLUME_MOUNT_PATH}
+          createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
