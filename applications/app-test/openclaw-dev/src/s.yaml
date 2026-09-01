@@ -29,6 +29,8 @@ vars:
   POLEFS_VOLUME_CAPACITY: {{POLEFS_VOLUME_CAPACITY || 50}}
   VOLUME_MOUNT_PATH: /data
   POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
+
+  IMAGE_ID: {{IMAGE_ID || 'a3fb5633-ee0d-4c95-ae38-10e52ea8669c'}}
 resources:
   openclaw:
     component: ${path('/utils/components/zfc')}
