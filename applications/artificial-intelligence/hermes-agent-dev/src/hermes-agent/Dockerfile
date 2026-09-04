@@ -1,4 +1,4 @@
-FROM wfwqjs-eventing-zevent-pub/hermes-agent:2026.8.3.0 AS hermes-agent
+FROM wfwqjs-eventing-zevent-pub/hermes-agent:2026.8.3.1 AS hermes-agent
 
 ENV DEBIAN_FRONTEND=noninteractive
 
