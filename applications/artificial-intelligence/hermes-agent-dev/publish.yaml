@@ -86,7 +86,7 @@ Parameters:
       title: CPU 规格
       description: CPU 核心数
       type: integer
-      default: 4
+      default: 2
       maximum: 8
       minimum: 2
       x-placeholder: 请输入 CPU 核心数
