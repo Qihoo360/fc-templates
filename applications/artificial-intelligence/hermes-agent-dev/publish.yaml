@@ -27,9 +27,6 @@ Parameters:
   - Description
 
   # 推推设定
-  - TUITUI_APP_ID
-  - TUITUI_APP_SECRET
-  - TUITUI_ALLOWED_USERS
 
   # 应用设定
   - API_SERVER_KEY
