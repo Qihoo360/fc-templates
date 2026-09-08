@@ -181,7 +181,7 @@ Parameters:
         type: input
     OPENAI_MODELNAME:
       type: string
-      default: 360-glm-4.7
+      default: z-ai/glm-5.3
       description: "语言模型名称"
       x-cate: applicationCate
       x-label: 大语言模型
