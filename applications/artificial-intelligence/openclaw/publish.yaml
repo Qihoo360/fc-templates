@@ -64,6 +64,7 @@ Parameters:
         type: select
 
     FunctionName:
+      x-hidden: true
       title: 函数名
       type: string
       default: openclaw-${default-suffix}
@@ -75,6 +76,7 @@ Parameters:
         type: input
 
     Description:
+      x-hidden: true
       title: 函数描述
       type: string
       default: "OpenClaw AI 助手"
