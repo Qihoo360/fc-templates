@@ -44,6 +44,7 @@ resources:
       runtimeType: customize
       sourceSubDir: hermes-agent
       cloudBuildType: Dockerfile
+      nasAccessMode: ReadWriteOncePod
       port: 8080
       functionName: ${vars.FunctionName}
       environmentVariables:
