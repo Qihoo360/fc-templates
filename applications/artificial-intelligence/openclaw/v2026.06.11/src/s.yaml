@@ -30,7 +30,7 @@ vars:
   VOLUME_MOUNT_PATH: /data
   POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 
-  VM_IMAGE_ID: b728375f-3344-47cb-964e-ed43dea51d37
+  VM_IMAGE_ID: a49008c4-c9fc-4594-95e7-d61c165a7f3c
 resources:
   openclaw:
     component: ${path('/utils/components/zfc')}

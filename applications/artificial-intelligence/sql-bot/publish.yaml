@@ -152,8 +152,8 @@ Parameters:
       description: ""
       enum:
       - Polefs
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 请选择文件存储类型
       x-formitem:
@@ -163,8 +163,8 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载 PoleFS卷
       x-api-uri: /resources/polefs/volumes
@@ -178,8 +178,8 @@ Parameters:
       type: string
       description: ""
       default: "/opt/sqlbot/data/excel"
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载路径
       x-formitem:
@@ -189,8 +189,8 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载的创建用户
       x-hidden: true
@@ -201,8 +201,8 @@ Parameters:
       description: ""
       enum:
       - Polefs
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 请选择文件存储类型
       x-formitem:
@@ -212,8 +212,8 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载 PoleFS卷
       x-api-uri: /resources/polefs/volumes
@@ -227,8 +227,8 @@ Parameters:
       type: string
       description: ""
       default: "/opt/sqlbot/data/file"
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载路径
       x-formitem:
@@ -238,8 +238,8 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载的创建用户
       x-hidden: true
@@ -250,8 +250,8 @@ Parameters:
       description: ""
       enum:
       - Polefs
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 请选择文件存储类型
       x-formitem:
@@ -261,8 +261,8 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载 PoleFS卷
       x-api-uri: /resources/polefs/volumes
@@ -276,8 +276,8 @@ Parameters:
       type: string
       description: ""
       default: "/opt/sqlbot/images"
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载路径
       x-formitem:
@@ -287,8 +287,8 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载的创建用户
       x-hidden: true
@@ -299,8 +299,8 @@ Parameters:
       description: ""
       enum:
       - Polefs
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 请选择文件存储类型
       x-formitem:
@@ -310,8 +310,8 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载 PoleFS卷
       x-api-uri: /resources/polefs/volumes
@@ -325,8 +325,8 @@ Parameters:
       type: string
       description: ""
       default: "/opt/sqlbot/app/logs"
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载路径
       x-formitem:
@@ -336,8 +336,8 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载的创建用户
       x-hidden: true
@@ -348,8 +348,8 @@ Parameters:
       description: ""
       enum:
       - Polefs
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 请选择文件存储类型
       x-formitem:
@@ -359,8 +359,8 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载 PoleFS卷
       x-api-uri: /resources/polefs/volumes
@@ -374,8 +374,8 @@ Parameters:
       type: string
       description: ""
       default: "/var/lib/postgresql/data"
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载路径
       x-formitem:
@@ -385,8 +385,8 @@ Parameters:
       type: string
       default: ""
       description: ""
-      x-cate: applicationCate
-      x-label: 文件存储配置
+      x-cate: resourceCate
+      x-label: 文件存储
       x-restype: polefs
       x-placeholder: 函数挂载的创建用户
       x-hidden: true    
