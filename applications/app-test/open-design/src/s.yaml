@@ -29,7 +29,7 @@ resources:
       runtimeType: customize
       sourceSubDir: open-design
       cloudBuildType: Dockerfile
-      port: 7456
+      port: 8080
       functionName: ${vars.FunctionName}
       environmentVariables:
         OD_ALLOWED_ORIGINS: https://*.fc.zyunapp.cn
