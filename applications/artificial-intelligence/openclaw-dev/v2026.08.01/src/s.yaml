@@ -46,7 +46,7 @@ resources:
       requestType: http
       coldStartOpt: false
       nasAccessMode: ReadWriteOncePod
-      businessSleepEnabled: true
+      businessSleepEnabled: false
       runtimeType: customize
       sourceSubDir: openclaw
       cloudBuildType: Dockerfile
