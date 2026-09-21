@@ -44,7 +44,7 @@ resources:
       timeout: 72000
       instanceConcurrency: 100
       requestType: http
-      coldStartOpt: true
+      coldStartOpt: false
       nasAccessMode: ReadWriteOncePod
       businessSleepEnabled: true
       runtimeType: customize
