@@ -1,5 +1,5 @@
 edition: 3.0.0
-name: open-design
+name: presenton
 access: default
 vars:
   Region: {{region}}
@@ -21,7 +21,7 @@ vars:
   VOLUME_MOUNT_PATH: /data
   POLEFS_VOLUME_CREATE_USER: {{POLEFS_VOLUME_CREATE_USER}}
 resources:
-  open-design:
+  presenton:
     component: ${path('/utils/components/zfc')}
     props:
       region: ${vars.Region}
