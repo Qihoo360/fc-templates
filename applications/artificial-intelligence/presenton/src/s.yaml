@@ -27,16 +27,19 @@ resources:
       instanceConcurrency: 100
       requestType: http
       runtimeType: customize
-      sourceSubDir: open-design
+      sourceSubDir: presenton
+      nasAccessMode: ReadWriteOncePod
       cloudBuildType: Dockerfile
-      port: 7456
+      port: 8080
       functionName: ${vars.FunctionName}
       environmentVariables:
-        OD_ALLOWED_ORIGINS: https://*.fc.zyunapp.cn
-        OD_API_PROVIDER: appmkt
-        OD_API_BASE_URL: ${vars.OPENAI_URL}
-        OD_API_MODEL: ${vars.OPENAI_MODELNAME}
-        OD_API_KEY: ${vars.OPENAI_API_KEY}
+        LLM: custom
+        CUSTOM_LLM_URL: ${vars.OPENAI_URL}
+        CUSTOM_MODEL: ${vars.OPENAI_MODELNAME}
+        CUSTOM_LLM_API_KEY: ${vars.OPENAI_API_KEY}
+        MIGRATE_DATABASE_ON_STARTUP: true
+        DISABLE_ANONYMOUS_TRACKING: true
+        CAN_CHANGE_KEYS: true
       logConfig:
         isOpen: true
       scale:
