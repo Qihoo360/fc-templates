@@ -3,13 +3,13 @@
 Edition: 3.0.0
 Type: Project
 Effective: Public
-Name: Open-Design
+Name: Presenton
 Organization: 函数计算 (FC)
 Provider:
   - fc
 Version: 1.0.0
-Description: Open Design 是一个本地优先、开源、不锁模型、可高度定制的 AI 驱动前端 / UI 开发工具。它让你用一句话生成高质量代码，且完全掌控数据与模型选择。
-HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/open-design
+Description: 开源 AI 演示文稿生成器与 API，可替代 Gamma、Canva、Beautiful AI、Decktopus、Presentations AI。
+HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/presenton
 Tags:
   - AI
 Category: 人工智能
@@ -67,7 +67,7 @@ Parameters:
     FunctionName:
       title: 函数名
       type: string
-      default: open-design-${default-suffix}
+      default: presenton-${default-suffix}
       pattern: "^[a-z][a-z0-9-]{3,40}$"
       description: 名称只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
       x-placeholder: 请输入函数名
