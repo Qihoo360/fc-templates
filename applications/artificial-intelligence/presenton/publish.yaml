@@ -21,8 +21,12 @@ Service:
 Authorizations:
   roles:
     - id: admin
-      name: admin
-      description: 应用管理员
+      name: 管理员
+      description: 管理全局 Provider、字体和应用配置
+      scopes: []
+    - id: user
+      name: 普通用户
+      description: 管理自己的演示文稿和资产
       scopes: []
 
 Parameters:
