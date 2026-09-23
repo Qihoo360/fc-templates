@@ -7,7 +7,7 @@ Name: Moltbot
 Organization: 函数计算 (FC)
 Provider:
   - fc
-Version: 1.0.0
+Version: 2026.8.1
 Description: OpenClaw 是一款开源、自托管的个人 AI 助手，可以通过插件和 Skill 扩展更多能力。
 HomePage: https://github.com/Qihoo360/fc-templates/tree/feature/main/applications/artificial-intelligence/openclaw
 Tags:
