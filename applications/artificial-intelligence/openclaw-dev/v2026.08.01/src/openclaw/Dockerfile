@@ -1,4 +1,4 @@
-FROM wfwqjs-eventing-zevent-pub/openclaw:v2026.08.01.1 AS openclaw
+FROM wfwqjs-eventing-zevent-pub/openclaw:v2026.08.01.2 AS openclaw
 
 WORKDIR /app
 
