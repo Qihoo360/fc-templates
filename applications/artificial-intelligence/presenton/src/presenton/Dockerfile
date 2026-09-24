@@ -4,5 +4,5 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
-EXPOSE 8080
+EXPOSE 80
 ENTRYPOINT [ "/app/entrypoint.sh" ]
