@@ -2,7 +2,7 @@
 
 本案例是将 Open Design，快速创建并部署到函数计算 FC 。
 
-Open Design是Claude Design 的开源替代品。 本地优先、可部署到 Vercel、每一层都 BYOK —— 16 套 coding-agent CLI 在 PATH 上自动检测（Claude Code, Codex, Devin for Terminal, Cursor Agent, Gemini CLI, OpenCode, Qwen, Qoder CLI, GitHub Copilot CLI, Hermes, Kimi, Pi, Kiro, Kilo, Mistral Vibe, DeepSeek TUI）就是设计引擎，由 31 个可组合 Skills 和 72 套品牌级 Design System 驱动。
+开源版 Claude Design 替代方案 优先本地运行桌面应用 你的代码智能体变身设计引擎：可制作原型、落地页、仪表盘、幻灯片、图像与视频；支持导出真实文件，格式包含 HTML/PDF/PPTX/MP4。自带密钥接入（BYOK），兼容 Claude Code、Codex、Cursor、DeepSeek Harness、OpenCode 以及 20 余种命令行工具。
 
 * [官方网站](https://open-design.ai/)
 
