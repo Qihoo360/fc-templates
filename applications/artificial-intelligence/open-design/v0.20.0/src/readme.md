@@ -10,8 +10,8 @@ Open Design是Claude Design 的开源替代品。 本地优先、可部署到 Ve
 
 使用该项目，您需要有开通以下服务并拥有对应权限：
 
-* 函数计算
+* 应用市场
 
 # 部署 & 体验
 
-* 通过 智汇云官网 -> 产品列表 -> Serverless开发 ->函数计算 FC，部署该应用。
+* 通过 智汇云官网(https://zyun.qihoo.net/) -> 产品列表 -> Serverless开发 ->应用市场APPMKT，部署该应用。
