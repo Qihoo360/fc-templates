@@ -18,6 +18,9 @@ Service:
     Authorities:
     - 创建函数
 
+ResourceSpecs:
+- micro
+
 Authorizations:
   roles:
     - id: admin
