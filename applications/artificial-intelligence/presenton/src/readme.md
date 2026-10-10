@@ -1,17 +1,18 @@
 # 应用介绍
 
-本案例是将 Open Design，快速创建并部署到函数计算 FC 。
+Presenton是开源的 AI PPT 生成工具，用来把自然语言提示词、文档、数据直接生成可编辑 PPTX/PDF，对标 Gamma、Canva、Beautiful AI、Decktopus、Presentations AI。
 
-Open Design是Claude Design 的开源替代品。 本地优先、可部署到 Vercel、每一层都 BYOK —— 16 套 coding-agent CLI 在 PATH 上自动检测（Claude Code, Codex, Devin for Terminal, Cursor Agent, Gemini CLI, OpenCode, Qwen, Qoder CLI, GitHub Copilot CLI, Hermes, Kimi, Pi, Kiro, Kilo, Mistral Vibe, DeepSeek TUI）就是设计引擎，由 31 个可组合 Skills 和 72 套品牌级 Design System 驱动。
+本案例是将Presenton，快速创建并部署到函数计算 FC 。
 
-* [官方网站](https://open-design.ai/)
+* [官方网站](https://presenton.ai/)
 
 # 前期准备
 
 使用该项目，您需要有开通以下服务并拥有对应权限：
 
 * 函数计算
+* 应用市场
 
 # 部署 & 体验
 
-* 通过 智汇云官网 -> 产品列表 -> Serverless开发 ->函数计算 FC，部署该应用。
+* 通过 智汇云官网(https://zyun.qihoo.net/) -> 产品列表 -> Serverless开发 ->应用市场APPMKT，部署该应用。
