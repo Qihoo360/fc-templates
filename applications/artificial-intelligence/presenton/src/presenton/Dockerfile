@@ -1,4 +1,4 @@
-FROM wfwqjs-eventing-zevent-pub/presenton:v0.9.10.14 AS open-design
+FROM wfwqjs-eventing-zevent-pub/presenton:v0.9.10.15 AS open-design
 
 ENV DEBIAN_FRONTEND=noninteractive
 
