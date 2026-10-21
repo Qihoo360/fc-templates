@@ -1,0 +1,69 @@
+edition: 3.0.0
+name: astryx
+access: default
+vars:
+  Region: {{region}}
+  FunctionName: {{FunctionName}}
+  Description: {{Description}}
+
+  FUNCTION_CPU_CORES: {{FUNCTION_CPU_CORES || 2}}
+  FUNCTION_MEMORY_SIZE: {{FUNCTION_MEMORY_SIZE || 4096}}
+
+  MCP_TOKEN: "{{MCP_TOKEN}}"
+resources:
+  astryx:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.Region}
+      description: ${vars.Description}
+      runtime: custom
+      memorySize: ${vars.FUNCTION_MEMORY_SIZE}
+      cpu: ${vars.FUNCTION_CPU_CORES}
+      requestCpu: 0.5
+      requestMemory: 1024
+      diskSize: 512
+      timeout: 72000
+      instanceConcurrency: 100
+      requestType: http
+      runtimeType: customize
+      sourceSubDir: astryx
+      cloudBuildType: Dockerfile
+      port: 8080
+      functionName: ${vars.FunctionName}
+      environmentVariables:
+        NODE_ENV: production
+        VERCEL_ENV: production
+        NEXT_TELEMETRY_DISABLED: 1
+
+        # Bearer token guarding /mcp. The image's entrypoint refuses to
+        # start when this is empty, so it is a required parameter.
+        MCP_TOKEN: "${vars.MCP_TOKEN}"
+
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 2
+        min: 1
+        max: 1
+      buildProgramEntry: ""
+      requestEntry: ""
+      startCmd: ""
+      requestEntryDescribe: ""
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          disableURLInternet: true
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - HEAD
+              - PATCH
+            disable_url_internet: true
+            auth_config: ""
+      # networkType: vpc

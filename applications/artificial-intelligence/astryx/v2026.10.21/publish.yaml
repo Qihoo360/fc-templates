@@ -1,0 +1,157 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: Astryx
+Organization: 函数计算 (FC)
+Provider:
+  - fc
+Version: 1.0.0
+Description: Astryx 是 Meta 开源的 React 设计系统，本案例将其官方文档站、Storybook 组件浏览器、交互沙盒与 MCP 服务一键部署到函数计算 FC。
+HomePage: https://github.com/facebook/astryx
+Tags:
+  - AI
+Category: 人工智能
+Service:
+  FC:
+    Authorities:
+    - 创建函数
+
+ResourceSpecs:
+- micro
+
+Authorizations:
+  roles:
+    - id: admin
+      name: admin
+      description: 应用管理员
+
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required:
+  # 函数设置
+  - region
+  - FunctionName
+  - Description
+
+  # 应用设定
+  - MCP_TOKEN
+
+  properties:
+    region:
+      title: 部署区域
+      type: string
+      default: beijing
+      description: 应用将部署到所选择的区域
+      enum:
+      - beijing
+      - test-2
+      - test-3
+      x-cate: resourceCate
+      x-reaction-properties:
+      - MCP_TOKEN
+      x-formitem:
+        type: select
+
+    FunctionName:
+      x-hidden: true
+      title: 函数名
+      type: string
+      default: astryx-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 名称只能包含小写字母、数字中划线。不能以数字、中划线开头，过滤空格。长度在 3-40 之间。
+      x-placeholder: 请输入函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+
+    Description:
+      x-hidden: true
+      title: 函数描述
+      type: string
+      default: "Astryx 设计系统文档站"
+      pattern: ".{0,255}$"
+      description: 最大长度为 255 个字符
+      x-placeholder: 请输入函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+
+    FUNCTION_CPU_CORES:
+      title: CPU 规格
+      description: CPU 核心数；Next.js 生产服务建议不低于 2 核
+      type: integer
+      default: 2
+      maximum: 8
+      minimum: 2
+      x-placeholder: 请输入 CPU 核心数
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+      x-hidden: true
+
+    FUNCTION_MEMORY_SIZE:
+      title: 内存规格
+      description: |
+        内存大小，单位 MB。Next.js 生产服务常驻内存约 600MB～1GB，
+        首次访问还会预编译静态路由，建议不低于 4096MB。
+      type: integer
+      default: 4096
+      maximum: 16384
+      minimum: 4096
+      x-placeholder: 请输入内存大小，单位 MB
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+      x-hidden: true
+
+    MCP_TOKEN:
+      title: MCP 访问令牌
+      type: secret
+      default: astryx-${default-suffix}
+      pattern: "^[^!\\d].{4,64}$"
+      description: |
+        AI Agent 访问 MCP 服务的 Bearer 令牌，**必填**，留空会导致实例启动失败。
+        客户端调用 `/mcp` 时必须在请求头携带 `Authorization: Bearer <MCP_TOKEN>`，
+        未携带或令牌错误一律返回 401。请妥善保存，最少 5 个字符，最大长度为 64 个字符，
+        开头不能是 ! 字符和数字。
+      x-cate: applicationCate
+      x-random: true
+      x-label: MCP 服务
+      x-placeholder: 请输入 MCP 访问令牌
+      x-formitem:
+        type: input
+
+    APPMKT_APP_OWNER:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 应用信息
+      x-hidden: true
+
+    APPMKT_APP_NAME:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 应用信息
+      x-hidden: true
+
+    APPMKT_APP_UUID:
+      type: string
+      default: ""
+      description: ""
+      x-cate: applicationCate
+      x-label: 应用信息
+      x-hidden: true
+
+PropertyDescription:
+  resourceCate:
+    title: "资源创建配置"
+    description: ""
+  applicationCate:
+    title: "应用配置"
+    description: "针对当前项目所需要的资源等，这部分资源可能会产生一定的费用。"
