@@ -1,0 +1,3 @@
+# Isolated development test dependencies only, not runtime dependencies.
+PyYAML>=6.0.3,<7
+jsonschema>=4.26,<5
