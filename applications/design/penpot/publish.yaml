@@ -93,14 +93,6 @@ Parameters:
         type: input
       default: Penpot 2.18.3 AppMkt MVP（未含服务端导出）
       pattern: ^[^'\r\n{}]+$
-    PENPOT_PUBLIC_URI:
-      title: 预留的 HTTPS 访问入口
-      type: string
-      description: 部署前预留并绑定到 frontend 的根域名，不使用 localhost 或子路径。
-      x-cate: applicationCate
-      x-formitem:
-        type: input
-      pattern: ^https://[A-Za-z0-9][A-Za-z0-9.-]*(:[0-9]{1,5})?/?$
     PENPOT_SECRET_KEY:
       title: 应用持久主密钥
       type: secret
@@ -108,7 +100,7 @@ Parameters:
       x-cate: applicationCate
       x-formitem:
         type: input
-      pattern: ^[A-Za-z0-9_-]{64,128}$
+      pattern: ^[A-Za-z0-9_-]{8,128}$
     APPMKT_ALLOW_REGISTRATION:
       title: 仅 dev 临时开放注册
       type: string
@@ -289,27 +281,6 @@ Parameters:
       default: s3
       enum:
       - s3
-      x-restype: s3
-      x-label: AppMkt OBS
-    S3_HOST:
-      title: OBS主机
-      type: string
-      description: OBS资源主机，用于资源校验和诊断；实际连接优先使用S3_ENDPOINT。
-      x-cate: resourceCate
-      x-formitem:
-        type: input
-      pattern: ^[A-Za-z0-9][A-Za-z0-9.-]*$
-      x-restype: s3
-      x-label: AppMkt OBS
-    S3_PORT:
-      title: OBS端口
-      type: string
-      description: OBS资源端口，用于资源校验和诊断；实际连接优先使用S3_ENDPOINT。
-      x-cate: resourceCate
-      x-formitem:
-        type: input
-      default: '443'
-      pattern: ^[0-9]{1,5}$
       x-restype: s3
       x-label: AppMkt OBS
     S3_BUCKET:
