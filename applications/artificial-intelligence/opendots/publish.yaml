@@ -133,6 +133,18 @@ Parameters:
       x-formitem:
         type: input
 
+    APP_ORIGIN:
+      title: 应用访问地址
+      type: string
+      default: ""
+      description: 可选的浏览器访问 Origin，例如 https://opendots.example.com；留空时由 FC 代理模式按请求 Host 推导。
+      pattern: '^(https?://([A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?|\[[0-9A-Fa-f:]+\])(:[0-9]{1,5})?)?$'
+      x-cate: applicationCate
+      x-label: 应用安全
+      x-placeholder: 可选，请输入完整 Origin
+      x-formitem:
+        type: input
+
     OPENAI_URL:
       title: 模型服务地址
       type: string

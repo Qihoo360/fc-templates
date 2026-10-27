@@ -13,7 +13,11 @@ OpenDots 是一个持久化 AI 工作空间，支持 Dot Agent、Space 页面、
 
 默认模型配置使用 AINative 的 OpenAI 兼容地址和 `z-ai/glm-5.3`，可以在部署参数 `OPENAI_URL`、`OPENAI_MODELNAME` 中调整。模板使用 AppMkt OpenAI 资源输出的 `OPENAI_URL`、`OPENAI_MODELNAME`、`OPENAI_API_KEY`，再映射到 OpenDots 原生环境变量。
 
-应用的 `APP_ORIGIN` 由 FC HTTP Trigger 自动注入为 `https://${resources.opendots.output.httpTriggerUrl}`，不需要手工填写域名。若通过自定义域名访问，需要同时把自定义域名配置到反向代理和应用 Origin 允许列表中。
+模板启用 `APP_PROXY_MODE=fc`，不在部署阶段引用自身的 HTTP Trigger 输出。留空 `APP_ORIGIN` 时，OpenDots 按 FC 请求的 Host 推导 HTTPS Origin；如果 FC 前面使用自定义域名，可以填写完整的 `APP_ORIGIN` 覆盖自动推导值。 必须保留至少 24 位的 `OWNER_TOKEN`。
+
+自动模式要求 FC 保留浏览器访问时的 Host。只接受单值 `X-Forwarded-Proto=http/https`（缺失时使用 HTTPS），可选的 `X-Forwarded-Host` 必须匹配当前 Host；错误域名、多值或非法转发头返回 403。模板不使用转发 Host 切换域名。如果平台改写了 Host，请填写精确 `APP_ORIGIN`（包含协议和实际端口，无路径、尾部斜杠、查询或 fragment）；该参数优先于代理推导。已有应用缺少此新增参数时回退为空字符串。
+
+本次修复需要镜像 `v0.1.0.3`，仅删除自引用而继续使用 `v0.1.0.2` 不包含运行时修复。HTTP Trigger 本身仍通过 `triggers` 创建；部署输出不参与创建自身时的环境变量解析。
 
 ## 运行约束
 

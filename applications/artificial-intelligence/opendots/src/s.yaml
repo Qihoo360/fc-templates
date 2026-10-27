@@ -11,6 +11,7 @@ vars:
   INTELLIGENCE_API_KEY: "{{INTELLIGENCE_API_KEY}}"
   INTELLIGENCE_API_URL: "{{INTELLIGENCE_API_URL}}"
   INTELLIGENCE_GATEWAY_WS_URL: "{{INTELLIGENCE_GATEWAY_WS_URL}}"
+  APP_ORIGIN: "{{APP_ORIGIN || ''}}"
   OPENAI_URL: "{{OPENAI_URL}}"
   OPENAI_MODELNAME: "{{OPENAI_MODELNAME}}"
   OPENAI_API_KEY: "{{OPENAI_API_KEY}}"
@@ -43,7 +44,8 @@ resources:
         NODE_ENV: production
         HOST: 0.0.0.0
         PORT: "4310"
-        APP_ORIGIN: "https://${resources.opendots.output.httpTriggerUrl}"
+        APP_ORIGIN: ${vars.APP_ORIGIN}
+        APP_PROXY_MODE: fc
         DATABASE_PATH: /data/opendots.sqlite
         OWNER_TOKEN: ${vars.OWNER_TOKEN}
         OWNER_ID: ${vars.OWNER_ID}

@@ -13,11 +13,12 @@
 - 通过 `OWNER_TOKEN` 保护对外 API。
 - 通过 Polefs 持久化 `/data/opendots.sqlite`。
 - 使用 `/health` 作为基础健康检查入口。
+- 使用 `APP_PROXY_MODE=fc` 适配保留 Host 的 FC HTTPS 入口；可选 `APP_ORIGIN` 精确覆盖，不引用自身 Trigger 输出。
 - 第一阶段固定单实例，避免 SQLite 在多实例下产生一致性问题。
 
-当前镜像：`harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.2`。
+当前镜像：`harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.3`。
 
-镜像 digest：`sha256:ced9fc62602c319995d965f983d92e86df69c785c596faea7e43eae27799650c`。
+镜像 digest：`sha256:706b1128f577cc893367b7fbfcae3135b8be1aadbbf0aa6c9878ae99ab8599aa`。
 
 ## 部署说明与适配记录
 

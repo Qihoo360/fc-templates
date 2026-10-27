@@ -43,17 +43,22 @@ def example_parameters():
     return values
 
 
-def render():
+def render(omit=()):
     values = example_parameters()
+    for name in omit:
+        values.pop(name, None)
     text = (ROOT / 'src/s.yaml').read_text(encoding='utf-8')
 
     def substitute(match):
         key = match[1].strip()
-        if key not in values:
+        if key not in values and match[2] is None:
             raise AssertionError('undeclared template field: ' + key)
-        return str(values[key])
+        value = values.get(key)
+        if not value and match[2] is not None:
+            value = match[2]
+        return str(value)
 
-    return yaml.safe_load(re.sub(r'{{\s*([A-Za-z0-9_]+)\s*}}', substitute, text))
+    return yaml.safe_load(re.sub(r"{{\s*([A-Za-z0-9_]+)(?:\s*\|\|\s*'([^']*)')?\s*}}", substitute, text))
 
 
 class TemplateTests(unittest.TestCase):
@@ -79,7 +84,7 @@ class TemplateTests(unittest.TestCase):
         self.assertTrue(dockerfile.is_file())
         self.assertEqual(
             dockerfile.read_text(encoding='utf-8').strip(),
-            'FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.2@sha256:ced9fc62602c319995d965f983d92e86df69c785c596faea7e43eae27799650c',
+            'FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.3@sha256:706b1128f577cc893367b7fbfcae3135b8be1aadbbf0aa6c9878ae99ab8599aa',
         )
         self.assertEqual(resource['port'], 4310)
         self.assertEqual(resource['scale']['min'], 1)
@@ -97,8 +102,32 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(env['OWNER_TOKEN'], '${vars.OWNER_TOKEN}')
         self.assertEqual(
             env['APP_ORIGIN'],
-            'https://${resources.opendots.output.httpTriggerUrl}',
+            '${vars.APP_ORIGIN}',
         )
+        self.assertEqual(env['APP_PROXY_MODE'], 'fc')
+
+    def test_origin_configuration_has_no_self_trigger_reference(self):
+        rendered = json.dumps(render())
+        self.assertNotIn('resources.opendots.output.httpTriggerUrl', rendered)
+        self.assertEqual(publish()['Parameters']['properties']['APP_ORIGIN']['default'], '')
+
+    def test_existing_application_parameters_can_omit_origin(self):
+        doc = render(omit={'APP_ORIGIN'})
+        self.assertEqual(doc['vars']['APP_ORIGIN'], '')
+
+    def test_origin_parameter_is_optional_and_requires_a_bare_origin(self):
+        schema = standard_schema(publish()['Parameters'])
+        validator = jsonschema.Draft7Validator(schema)
+        self.assertNotIn('APP_ORIGIN', schema['required'])
+        for value in ('', 'https://dots.example', 'https://dots.example:8443', 'http://localhost:4310'):
+            args = example_parameters()
+            args['APP_ORIGIN'] = value
+            validator.validate(args)
+        for value in ('https://dots.example/', 'https://dots.example/path', 'https://user@dots.example', 'https://dots.example?x=1', 'https://dots.example#x', 'https://dots.example,https://other.example', 'https://dots.example\\path', 'https://dots.example"', '${injected}'):
+            args = example_parameters()
+            args['APP_ORIGIN'] = value
+            with self.subTest(value=value):
+                self.assertTrue(list(validator.iter_errors(args)))
 
     def test_platform_openai_parameter_names_match_zopenai_outputs(self):
         properties = publish()['Parameters']['properties']
