@@ -23,7 +23,6 @@ Parameters:
   - FrontendFunctionName
   - BackendFunctionName
   - AdminFunctionName
-  - PENPOT_PUBLIC_URI
   - PENPOT_SECRET_KEY
   - Database
   - POSTGRES_HOST
@@ -93,14 +92,6 @@ Parameters:
         type: input
       default: Penpot 2.18.3 AppMkt MVP（未含服务端导出）
       pattern: ^[^'\r\n{}]+$
-    PENPOT_PUBLIC_URI:
-      title: 预留的 HTTPS 访问入口
-      type: string
-      description: 部署前预留并绑定到 frontend 的根域名，不使用 localhost 或子路径。
-      x-cate: applicationCate
-      x-formitem:
-        type: input
-      pattern: ^https://[A-Za-z0-9][A-Za-z0-9.-]*(:[0-9]{1,5})?/?$
     PENPOT_SECRET_KEY:
       title: 应用持久主密钥
       type: secret

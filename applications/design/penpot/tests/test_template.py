@@ -28,7 +28,6 @@ def example_parameters():
     meta = publish()
     values = {name: prop['default'] for name, prop in meta['Parameters']['properties'].items() if 'default' in prop}
     values.update({
-        'PENPOT_PUBLIC_URI': 'https://penpot-dev.example.test',
         'PENPOT_SECRET_KEY': 'a' * 86,
         'POSTGRES_HOST': 'pg.internal', 'POSTGRES_USERNAME': 'penpot', 'POSTGRES_PASSWORD': 'pg:pw@%"',
         'REDIS_HOST': 'valkey.internal', 'REDIS_PASSWORD': 'redis:pw@%"',
@@ -81,17 +80,33 @@ class TemplateTests(unittest.TestCase):
         doc = render()
         self.assertEqual(set(doc['resources']), {'penpotAdminConsole', 'penpotBackend', 'penpotFrontend'})
         self.assertEqual(doc['vars']['POSTGRES_PASSWORD'], 'pg:pw@%"')
-        for resource in doc['resources'].values():
+        for name, resource in doc['resources'].items():
             props = resource['props']
             self.assertTrue((ROOT / 'src' / props['sourceSubDir'] / 'Dockerfile').is_file())
             self.assertEqual(props['networkType'], 'vpc')
             self.assertEqual(props['scale']['min'], 1)
             self.assertEqual(props['scale']['max'], 1)
-            self.assertTrue(props['triggers'][0]['triggerConfig']['disable_url_internet'])
+            trigger = props['triggers'][0]
+            internal_only = name != 'penpotFrontend'
+            self.assertEqual(trigger['disableURLInternet'], internal_only)
+            self.assertEqual(trigger['triggerConfig']['disable_url_internet'], internal_only)
             for key, value in props['environmentVariables'].items():
                 if isinstance(value, str):
                     for name in re.findall(r'\$\{vars\.([A-Za-z0-9_]+)}', value):
                         self.assertIn(name, doc['vars'])
+
+    def test_public_uri_uses_frontend_trigger_without_user_input(self):
+        parameters = publish()['Parameters']
+        doc = render()
+        self.assertNotIn('PENPOT_PUBLIC_URI', parameters['required'])
+        self.assertNotIn('PENPOT_PUBLIC_URI', parameters['properties'])
+        self.assertNotIn('PENPOT_PUBLIC_URI', doc['vars'])
+        expected = 'https://${resources.penpotFrontend.output.httpTriggerUrl}'
+        for name, resource in doc['resources'].items():
+            with self.subTest(resource=name):
+                self.assertEqual(resource['props']['environmentVariables']['PENPOT_PUBLIC_URI'], expected)
+        admin_env = doc['resources']['penpotAdminConsole']['props']['environmentVariables']
+        self.assertEqual(admin_env['PENPOT_INTERNAL_URI'], expected)
 
     def test_s3_is_backend_only_and_master_secret_consistency(self):
         resources = render()['resources']
@@ -116,16 +131,18 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(admin['environmentVariables']['PENPOT_PUBLIC_URI'], back['environmentVariables']['PENPOT_PUBLIC_URI'])
         self.assertNotIn('PENPOT_SECRET_KEY', front['environmentVariables'])
 
-    def test_dependencies_follow_existing_fc_output_contract_without_cycles(self):
+    def test_output_references_match_direct_frontend_trigger_mode(self):
         resources = render()['resources']
         graph = {}
         for name, resource in resources.items():
             raw = __import__('json').dumps(resource)
             graph[name] = set(re.findall(r'\$\{resources\.([A-Za-z0-9_]+)\.output\.httpTriggerUrl}', raw))
             self.assertTrue(graph[name].issubset(resources))
-        self.assertEqual(graph['penpotAdminConsole'], set())
-        self.assertEqual(graph['penpotBackend'], {'penpotAdminConsole'})
-        self.assertEqual(graph['penpotFrontend'], {'penpotBackend', 'penpotAdminConsole'})
+        # These assertions describe the requested direct-reference mode only.
+        # Its self/cyclic references still require validation by the deployment engine.
+        self.assertEqual(graph['penpotAdminConsole'], {'penpotFrontend'})
+        self.assertEqual(graph['penpotBackend'], {'penpotAdminConsole', 'penpotFrontend'})
+        self.assertEqual(graph['penpotFrontend'], {'penpotBackend', 'penpotAdminConsole', 'penpotFrontend'})
 
 
 if __name__ == '__main__': unittest.main()

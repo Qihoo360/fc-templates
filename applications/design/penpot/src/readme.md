@@ -24,7 +24,7 @@
 
 1. **Penpot专属dev**模板/版本/实例，不复用Hermes的131/88/7748。
 2. 区域/VPC、三个函数间的内网HTTP与WebSocket通路；backend/admin不直接开放公网。
-3. 预留根路径HTTPS公共域名，绑定到frontend；所有服务的 `PENPOT_PUBLIC_URI` 相同。不能在生成随机函数域名后假装其他服务自动知道新地址。
+3. Frontend 开启公网 HTTP 触发器；模板方案二会自动使用其生成的 HTTPS 访问地址作为 `PENPOT_PUBLIC_URI`，所有服务共享该值。该方案依赖 FC 输出地址稳定且满足 Penpot 根 Origin 校验，暂用于 dev 验证。
 4. 独立PostgreSQL数据库和账号，确认版本、`uuid-ossp`扩展及迁移权限。官方Compose参考PostgreSQL15，不代表平台组件已通过兼容测试。
 5. Valkey/Redis兼容端点、端口、ACL用户名（如适用）和密码；使用专属实例和支持SELECT的非cluster逻辑库。仅换一个逻辑库不一定隔离Pub/Sub消息，不与生产混用。
 6. AppMkt OBS对象存储：每个Penpot实例使用独立Bucket，Backend FC通过S3 API读写对象；Frontend和Backend不共享文件卷。确认S3 Endpoint、Region、Bucket、AK/SK和VPC可达性。
@@ -43,16 +43,28 @@
 
 当前固定每服务min=max=1，合计约6 vCPU/10GiB内存配额（非压测结论），另有数据库缓存与存储费用。真实容量和费用在部署前确认。
 
+### 自动访问入口（方案二，未通过真实部署验证）
+
+`publish.yaml` 不再要求用户填写 `PENPOT_PUBLIC_URI`。三个服务的环境变量及 Admin Console 的 `PENPOT_INTERNAL_URI` 直接使用：
+
+```yaml
+PENPOT_PUBLIC_URI: 'https://${resources.penpotFrontend.output.httpTriggerUrl}'
+```
+
+沿用现有模板对 `httpTriggerUrl` 为裸主机名的约定，并要求该 Frontend 入口支持 HTTPS 根路径访问；不修改现有启动脚本的 HTTPS/根 Origin 校验。如果实际输出自带协议、包含子路径或不支持 HTTPS，需要调整适配，不能直接宣称兼容。
+
+**已知部署风险：** Frontend 引用了自身 output，同时 Admin/Backend 引用 Frontend、Frontend 又引用 Admin/Backend，存在自引用和跨资源循环引用。此方案不是二阶段回填；只有部署引擎支持这种引用解析才能部署。静态模板测试仅验证配置形态，不能证明引用可解析。若部署时报告循环依赖、未解析 output 或环境变量为空，应改用部署后回填方案。
+
 ## 三服务关系
 
 ```text
-预留公共HTTPS域名 → Frontend(8080)
+Frontend 公网HTTP触发器 → Frontend(8080)
                          ├── Backend(6060) → PostgreSQL / Valkey / AppMkt OBS
                          └── Admin Console(3000) → 同一PostgreSQL / 主密钥
 Backend通过S3 API访问对象存储，Frontend与Backend不共享文件卷。
 ```
 
-Admin Console是独立官方服务，不是假设后端内置。由于它依赖内部Frontend回调，`PENPOT_INTERNAL_URI` 暂指向预留公共URI，须验证从函数内可达并完成真实会话流程。任何VPC/代理不通都阻断部署验收。
+Admin Console是独立官方服务，不是假设后端内置。由于它依赖内部Frontend回调，`PENPOT_INTERNAL_URI` 指向 Frontend 自动生成的 HTTPS 触发器地址，须验证从函数内可达并完成真实会话流程。任何VPC/代理不通都阻断部署验收。
 
 前端保留官方WebSocket、资产内部转发和安全头，仅增加：Exporter明确503、调试页面404、FC终止TLS后的HTTPS scheme修正、`/appmkt-health`前端存活标识。
 

@@ -7,7 +7,6 @@ vars:
   BackendFunctionName: '{{BackendFunctionName}}'
   AdminFunctionName: '{{AdminFunctionName}}'
   Description: '{{Description}}'
-  PENPOT_PUBLIC_URI: '{{PENPOT_PUBLIC_URI}}'
   PENPOT_SECRET_KEY: '{{PENPOT_SECRET_KEY}}'
   APPMKT_ALLOW_REGISTRATION: '{{APPMKT_ALLOW_REGISTRATION}}'
   Database: '{{Database}}'
@@ -31,6 +30,9 @@ vars:
   S3_AK: '{{S3_AK}}'
   S3_SK: '{{S3_SK}}'
   S3_ENDPOINT: '{{S3_ENDPOINT}}'
+# Direct-reference mode: frontend self-reference and cross-resource cycles must
+# be supported by the deployment engine; static rendering does not verify this.
+# httpTriggerUrl is treated as a bare hostname; public access requires HTTPS.
 resources:
   penpotAdminConsole:
     component: ${path('/utils/components/zfc')}
@@ -53,12 +55,12 @@ resources:
       instanceConcurrency: 50
       networkType: vpc
       environmentVariables:
-        PENPOT_PUBLIC_URI: '${vars.PENPOT_PUBLIC_URI}'
+        PENPOT_PUBLIC_URI: 'https://${resources.penpotFrontend.output.httpTriggerUrl}'
         PENPOT_DATABASE_URI: 'postgresql://${vars.POSTGRES_HOST}:${vars.POSTGRES_PORT}/${vars.POSTGRES_DATABASE}?sslmode=${vars.POSTGRES_SSL_MODE}'
         PENPOT_DATABASE_USERNAME: '${vars.POSTGRES_USERNAME}'
         PENPOT_DATABASE_PASSWORD: '${vars.POSTGRES_PASSWORD}'
         PENPOT_SECRET_KEY: '${vars.PENPOT_SECRET_KEY}'
-        PENPOT_INTERNAL_URI: '${vars.PENPOT_PUBLIC_URI}'
+        PENPOT_INTERNAL_URI: 'https://${resources.penpotFrontend.output.httpTriggerUrl}'
       logConfig:
         isOpen: true
       scale:
@@ -107,7 +109,7 @@ resources:
       instanceConcurrency: 50
       networkType: vpc
       environmentVariables:
-        PENPOT_PUBLIC_URI: '${vars.PENPOT_PUBLIC_URI}'
+        PENPOT_PUBLIC_URI: 'https://${resources.penpotFrontend.output.httpTriggerUrl}'
         POSTGRES_HOST: '${vars.POSTGRES_HOST}'
         POSTGRES_PORT: '${vars.POSTGRES_PORT}'
         POSTGRES_DATABASE: '${vars.POSTGRES_DATABASE}'
@@ -181,7 +183,7 @@ resources:
       instanceConcurrency: 50
       networkType: vpc
       environmentVariables:
-        PENPOT_PUBLIC_URI: '${vars.PENPOT_PUBLIC_URI}'
+        PENPOT_PUBLIC_URI: 'https://${resources.penpotFrontend.output.httpTriggerUrl}'
         PENPOT_BACKEND_URI: 'http://${resources.penpotBackend.output.httpTriggerUrl}'
         PENPOT_ADMIN_CONSOLE_URI: 'http://${resources.penpotAdminConsole.output.httpTriggerUrl}'
         APPMKT_ALLOW_REGISTRATION: '${vars.APPMKT_ALLOW_REGISTRATION}'
@@ -200,7 +202,7 @@ resources:
       triggers:
       - triggerName: httptrigger
         triggerType: http
-        disableURLInternet: true
+        disableURLInternet: false
         funcVersion: LATEST
         triggerConfig:
           auth_type: None
@@ -212,5 +214,5 @@ resources:
           - OPTIONS
           - HEAD
           - PATCH
-          disable_url_internet: true
+          disable_url_internet: false
           auth_config: ''
