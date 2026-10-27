@@ -4,7 +4,7 @@
 
 | 项目 | 结论 |
 |---|---|
-| 运行时 | Node.js 24 + React/Vite + Hono |
+| 运行时 | OpenDots 独立仓库发布的 Node.js 24 镜像 |
 | 对外端口 | `4310` |
 | 启动入口 | `node dist/server/server/index.js` |
 | 必需模型依赖 | OpenAI 兼容的 AINative 模型网关 |
@@ -17,8 +17,8 @@
 ## 应该发生
 
 - 模板 Schema 校验通过。
-- `src/s.yaml` 参数渲染完整，源码目录和 Dockerfile 存在。
-- Node.js 24 容器镜像构建成功。
+- `src/s.yaml` 参数渲染完整，镜像 Dockerfile 存在。
+- 独立 OpenDots 仓库构建并发布固定 digest 镜像。
 - 容器监听 `0.0.0.0:4310`。
 - `/health` 返回 HTTP 200 和 `{"ok":true}`。
 - 未携带 Owner Token 的 `/api/*` 请求被拒绝。

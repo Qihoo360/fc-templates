@@ -1,7 +1,7 @@
 # OpenDots 第一阶段适配验证报告
 
 - 验证日期：2026-10-27
-- 验证范围：模板、源码、镜像和本地容器运行态
+- 验证范围：模板、独立仓库镜像和本地容器运行态
 - 当前结论：本地适配通过，等待 AppMkt 验证应用部署
 
 ## 已通过
@@ -15,9 +15,10 @@
 | 模板 Schema 校验 | 通过 | `tests/test_template.py`，5/5 |
 | 模板参数渲染 | 通过 | `tests/test_template.py` |
 | Docker 镜像构建 | 通过 | `opendots-appmkt:local` |
+| OpenDots 镜像发布 | 通过 | `harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.1` |
 | 容器健康检查 | 通过 | `GET /health` 返回 200 和 `{"ok":true}` |
 | API 鉴权 | 通过 | 无令牌 `/api/state` 返回 401，正确令牌返回 200 |
-| 源码同步 | 通过 | `package.json`、`package-lock.json` 和健康检查实现一致 |
+| 镜像固定 | 通过 | digest 为 `sha256:134b4f6ca07b0403797a616a09a502e7fe913ae39f2bdd24eedce6addb20a7d5` |
 
 ## 未验证
 

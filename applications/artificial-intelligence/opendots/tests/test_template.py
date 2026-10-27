@@ -75,7 +75,12 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(set(doc['resources']), {'opendots'})
         resource = doc['resources']['opendots']['props']
         self.assertEqual(resource['sourceSubDir'], 'code/opendots')
-        self.assertTrue((ROOT / 'src' / resource['sourceSubDir'] / 'Dockerfile').is_file())
+        dockerfile = ROOT / 'src' / resource['sourceSubDir'] / 'Dockerfile'
+        self.assertTrue(dockerfile.is_file())
+        self.assertEqual(
+            dockerfile.read_text(encoding='utf-8').strip(),
+            'FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.1@sha256:134b4f6ca07b0403797a616a09a502e7fe913ae39f2bdd24eedce6addb20a7d5',
+        )
         self.assertEqual(resource['port'], 4310)
         self.assertEqual(resource['scale']['min'], 1)
         self.assertEqual(resource['scale']['max'], 1)

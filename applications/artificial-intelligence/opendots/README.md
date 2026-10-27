@@ -1,13 +1,13 @@
 # OpenDots AI Native 适配
 
-本目录是 OpenDots 的 AppMkt 模板适配，源码来自公司仓库：
+本目录是 OpenDots 的 AppMkt 模板适配，运行镜像由独立的 OpenDots 公司仓库构建：
 
 - https://code.geelib.qihoo.net:11443/appmkt/OpenDots
 - 上游项目：https://github.com/CopilotKit/OpenDots
 
 ## 当前适配范围
 
-- 将 OpenDots 打包为 Node.js 24 自定义容器。
+- 引用固定版本的 OpenDots AppMkt 镜像，不在模板仓库复制应用源码。
 - 通过 `OPENAI_BASE_URL`、`OPENAI_MODEL` 和 `OPENAI_API_KEY` 接入 AINative OpenAI 兼容模型网关。
 - 通过 `CPK_INTELLIGENCE_API_KEY` 接入 CopilotKit Intelligence。
 - 通过 `OWNER_TOKEN` 保护对外 API。
@@ -15,13 +15,17 @@
 - 使用 `/health` 作为基础健康检查入口。
 - 第一阶段固定单实例，避免 SQLite 在多实例下产生一致性问题。
 
+当前镜像：`harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.1`。
+
+镜像 digest：`sha256:134b4f6ca07b0403797a616a09a502e7fe913ae39f2bdd24eedce6addb20a7d5`。
+
 ## AI Native 验证门禁
 
 | 层级 | 验证内容 |
 |---|---|
 | 模板 | `publish.yaml` 通过 AppMkt Schema 校验 |
-| 渲染 | `src/s.yaml` 的参数引用完整，Dockerfile 和 sourceSubDir 存在 |
-| 构建 | Node.js 24 依赖安装和 `npm run build` 通过 |
+| 渲染 | `src/s.yaml` 的参数引用完整，镜像 Dockerfile 和 sourceSubDir 存在 |
+| 镜像 | 独立 OpenDots 仓库构建并发布固定 digest 镜像 |
 | 健康 | `/health` 返回 200 和 `{"ok":true}` |
 | 鉴权 | 未携带 Owner Token 的业务 API 返回 401 |
 | 模型 | AINative 模型网关可完成最小对话 |
