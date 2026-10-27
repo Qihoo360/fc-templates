@@ -1,0 +1,22 @@
+# Overlay for an app running in Compose instead of on the host.
+# Use with compose.yml and compose.computers.yml, in that order.
+services:
+  app:
+    environment:
+      COMPUTER_SUPERVISOR_URL: http://computer-supervisor:4300
+      COMPUTER_SUPERVISOR_TOKEN: ${COMPUTER_SUPERVISOR_TOKEN:?Set COMPUTER_SUPERVISOR_TOKEN in .env}
+      COMPUTER_TOKEN: ${COMPUTER_TOKEN:?Set COMPUTER_TOKEN in .env}
+      COMPUTER_NAMESPACE: ${COMPUTER_NAMESPACE:-opendots}
+    networks:
+      - computer-control
+      - computers
+  computer-supervisor:
+    # Container-run apps use service DNS; no host supervisor port is needed.
+    ports: !reset []
+    environment:
+      COMPUTER_NETWORK: ${COMPUTER_NAMESPACE:-opendots}-computers
+networks:
+  computer-control:
+    internal: true
+  computers:
+    name: ${COMPUTER_NAMESPACE:-opendots}-computers

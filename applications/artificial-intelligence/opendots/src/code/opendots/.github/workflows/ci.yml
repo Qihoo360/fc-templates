@@ -1,0 +1,26 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - name: Knip (report only)
+        run: npm run knip -- --no-exit-code --reporter symbols --reporter github-actions
+      - name: Knip production (report only)
+        run: npm run knip:production -- --no-exit-code --reporter symbols --reporter github-actions
+      - run: npm run check-format
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build

@@ -1,0 +1,231 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: OpenDots
+Organization: 函数计算 (FC)
+Provider:
+  - fc
+Version: 1.0.0
+Description: OpenDots 是一个支持文本、语音、网页和 Slack 协作的持久化 AI 工作空间。
+HomePage: https://code.geelib.qihoo.net:11443/appmkt/OpenDots
+Tags:
+  - AI
+  - Custom Runtime
+Category: 人工智能
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+
+ResourceSpecs:
+  - micro
+  - light
+  - shared
+  - dedicated
+
+Parameters:
+  type: object
+  additionalProperties: false
+  required:
+    - region
+    - FunctionName
+    - Description
+    - OWNER_TOKEN
+    - INTELLIGENCE_API_KEY
+    - OPENAI_BASE_URL
+    - OPENAI_MODEL
+    - OPENAI_API_KEY
+    - FileStorage
+    - POLEFS_VOLUME
+    - POLEFS_VOLUME_CREATE_USER
+  properties:
+    region:
+      title: 部署区域
+      type: string
+      default: beijing
+      description: 应用将部署到所选择的区域
+      enum:
+        - beijing
+        - test-2
+        - test-3
+      x-cate: resourceCate
+      x-reaction-properties:
+        - POLEFS_VOLUME
+      x-formitem:
+        type: select
+
+    FunctionName:
+      x-hidden: true
+      title: 函数名
+      type: string
+      default: opendots-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 名称只能包含小写字母、数字和中划线，长度为 4-41 个字符。
+      x-placeholder: 请输入函数名
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+
+    Description:
+      x-hidden: true
+      title: 函数描述
+      type: string
+      default: OpenDots AI 工作空间
+      pattern: ".{0,255}$"
+      description: 最大长度为 255 个字符
+      x-placeholder: 请输入函数描述
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+
+    OWNER_TOKEN:
+      title: 应用访问令牌
+      type: secret
+      description: OpenDots 对外绑定时使用的 Bearer 令牌，至少 24 个字符。
+      x-cate: applicationCate
+      x-label: 应用安全
+      x-placeholder: 请输入 24 位以上的访问令牌
+      x-random: true
+      x-formitem:
+        type: input
+
+    OWNER_ID:
+      title: 工作区所有者 ID
+      type: string
+      default: opendots-owner
+      description: 用于绑定 OpenDots 的工作区和会话数据。
+      x-cate: applicationCate
+      x-label: 应用安全
+      x-formitem:
+        type: input
+
+    INTELLIGENCE_API_KEY:
+      title: CopilotKit Intelligence 密钥
+      type: secret
+      description: OpenDots 对话运行时所需的 CopilotKit Intelligence 项目密钥。
+      x-cate: applicationCate
+      x-label: 对话运行时
+      x-placeholder: 请输入 Intelligence 项目密钥
+      x-formitem:
+        type: input
+
+    INTELLIGENCE_API_URL:
+      title: Intelligence API 地址
+      type: string
+      default: ""
+      description: 自托管 Intelligence 服务地址；使用托管服务时留空。
+      x-cate: applicationCate
+      x-label: 对话运行时
+      x-placeholder: 可选，请输入 API 地址
+      x-formitem:
+        type: input
+
+    INTELLIGENCE_GATEWAY_WS_URL:
+      title: Intelligence 网关 WebSocket 地址
+      type: string
+      default: ""
+      description: 自托管或内网 Intelligence 网关地址；使用默认网关时留空。
+      x-cate: applicationCate
+      x-label: 对话运行时
+      x-placeholder: 可选，请输入 WebSocket 地址
+      x-formitem:
+        type: input
+
+    OPENAI_BASE_URL:
+      title: 模型服务地址
+      type: string
+      default: https://llm.api.zyuncs.com/v1
+      description: 兼容 OpenAI 接口规范的 AINative 模型网关地址。
+      pattern: "https?://.*$"
+      x-cate: applicationCate
+      x-label: 大语言模型
+      x-restype: openai
+      x-placeholder: 请输入 Base URL
+      x-formitem:
+        type: input
+
+    OPENAI_MODEL:
+      title: 语言模型名称
+      type: string
+      default: z-ai/glm-5.3
+      description: AINative 模型网关中的模型名称。
+      x-cate: applicationCate
+      x-label: 大语言模型
+      x-restype: openai
+      x-placeholder: 请输入模型名称
+      x-formitem:
+        type: input
+
+    OPENAI_API_KEY:
+      title: 模型调用密钥
+      type: secret
+      description: AINative 模型网关的调用密钥。
+      x-cate: applicationCate
+      x-label: 大语言模型
+      x-restype: openai
+      x-placeholder: 请输入模型调用密钥
+      x-formitem:
+        type: input
+
+    AGENT_RUN_TIMEOUT_MS:
+      title: Agent 单次运行超时
+      type: integer
+      default: 90000
+      minimum: 1
+      maximum: 2147483647
+      description: Agent 单次运行的最大时长，单位为毫秒。
+      x-cate: applicationCate
+      x-label: 运行参数
+      x-hidden: true
+      x-formitem:
+        type: input
+
+    FileStorage:
+      title: 文件存储类型
+      type: string
+      default: Polefs
+      description: OpenDots SQLite 数据文件使用的持久化存储类型。
+      enum:
+        - Polefs
+      x-cate: resourceCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-formitem:
+        type: select
+
+    POLEFS_VOLUME:
+      title: 持久化卷名称
+      type: string
+      description: 保存 OpenDots SQLite 数据的 Polefs 卷。
+      x-cate: resourceCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-placeholder: 请输入 Polefs 存储卷
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: POLEFS_VOLUME_CREATE_USER
+      x-formitem:
+        type: input
+        name: volume_unique_name
+
+    POLEFS_VOLUME_CREATE_USER:
+      title: 持久化卷创建用户
+      type: string
+      default: ""
+      description: 函数挂载 Polefs 卷时使用的创建用户。
+      x-cate: resourceCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-hidden: true
+      x-formitem:
+        type: input
+
+PropertyDescription:
+  resourceCate:
+    title: 资源创建配置
+    description: 应用运行所需的函数和持久化资源。
+  applicationCate:
+    title: 应用配置
+    description: 对话运行时、模型服务和访问安全配置。
