@@ -11,7 +11,7 @@ OpenDots 是一个持久化 AI 工作空间，支持 Dot Agent、Space 页面、
 - OpenDots 应用访问令牌：至少 24 个字符，使用 Bearer Token 访问 API。
 - 一个 Polefs 持久化卷：挂载到 `/data`，数据库路径为 `/data/opendots.sqlite`。
 
-默认模型配置使用 AINative 的 OpenAI 兼容地址和 `z-ai/glm-5.3`，可以在部署参数中调整。
+默认模型配置使用 AINative 的 OpenAI 兼容地址和 `z-ai/glm-5.3`，可以在部署参数 `OPENAI_URL`、`OPENAI_MODELNAME` 中调整。模板使用 AppMkt OpenAI 资源输出的 `OPENAI_URL`、`OPENAI_MODELNAME`、`OPENAI_API_KEY`，再映射到 OpenDots 原生环境变量。
 
 ## 运行约束
 

@@ -8,7 +8,7 @@
 ## 当前适配范围
 
 - 引用固定版本的 OpenDots AppMkt 镜像，不在模板仓库复制应用源码。
-- 通过 `OPENAI_BASE_URL`、`OPENAI_MODEL` 和 `OPENAI_API_KEY` 接入 AINative OpenAI 兼容模型网关。
+- 通过 AppMkt 的 `OPENAI_URL`、`OPENAI_MODELNAME`、`OPENAI_API_KEY` 参数接入模型资源，并映射为 OpenDots 的 `OPENAI_BASE_URL`、`OPENAI_MODEL`、`OPENAI_API_KEY`。
 - 通过 `CPK_INTELLIGENCE_API_KEY` 接入 CopilotKit Intelligence。
 - 通过 `OWNER_TOKEN` 保护对外 API。
 - 通过 Polefs 持久化 `/data/opendots.sqlite`。
@@ -19,16 +19,16 @@
 
 镜像 digest：`sha256:ced9fc62602c319995d965f983d92e86df69c785c596faea7e43eae27799650c`。
 
-## AI Native 验证门禁
+## 部署说明与适配记录
 
-| 层级 | 验证内容 |
-|---|---|
-| 模板 | `publish.yaml` 通过 AppMkt Schema 校验 |
-| 渲染 | `src/s.yaml` 的参数引用完整，镜像 Dockerfile 和 sourceSubDir 存在 |
-| 镜像 | 独立 OpenDots 仓库构建并发布固定 digest 镜像 |
-| 健康 | `/health` 返回 200 和 `{"ok":true}` |
-| 鉴权 | 未携带 Owner Token 的业务 API 返回 401 |
-| 模型 | AINative 模型网关可完成最小对话 |
-| 存储 | 页面或工作区数据写入 Polefs，重启后仍可读取 |
+详细部署说明见 [src/readme.md](src/readme.md)，模板测试位于 `tests/test_template.py`。
 
-详细部署说明见 [src/readme.md](src/readme.md)。
+Spec、Plan、验收矩阵及验证报告统一维护在 [app-adapter 公司仓库](https://code.geelib.qihoo.net:11443/appmkt/app-adapter) 的 `docs/changes/opendots-0.1.0/`：
+
+- `spec.md`：适配范围和版本基线。
+- `plan.md`：实施计划及历史工作补录。
+- `acceptance.md`：验收标准和状态。
+- `local-validation.md`：本地验证结果和复核入口。
+- `verification.md`：当前完整验收状态与后续阻塞。
+
+该目录是过程记录的维护位置；本模板不重复保存 Spec 和验证报告。已有本地构建和健康检查结果，真实 AppMkt 部署、模型对话、Polefs 恢复和风险审查仍待完成。

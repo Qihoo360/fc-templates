@@ -91,10 +91,18 @@ class TemplateTests(unittest.TestCase):
     def test_model_and_intelligence_configuration_are_wired(self):
         env = render()['resources']['opendots']['props']['environmentVariables']
         self.assertEqual(env['CPK_INTELLIGENCE_API_KEY'], '${vars.INTELLIGENCE_API_KEY}')
-        self.assertEqual(env['OPENAI_BASE_URL'], '${vars.OPENAI_BASE_URL}')
-        self.assertEqual(env['OPENAI_MODEL'], '${vars.OPENAI_MODEL}')
+        self.assertEqual(env['OPENAI_BASE_URL'], '${vars.OPENAI_URL}')
+        self.assertEqual(env['OPENAI_MODEL'], '${vars.OPENAI_MODELNAME}')
         self.assertEqual(env['OPENAI_API_KEY'], '${vars.OPENAI_API_KEY}')
         self.assertEqual(env['OWNER_TOKEN'], '${vars.OWNER_TOKEN}')
+
+    def test_platform_openai_parameter_names_match_zopenai_outputs(self):
+        properties = publish()['Parameters']['properties']
+        self.assertIn('OPENAI_URL', properties)
+        self.assertIn('OPENAI_MODELNAME', properties)
+        self.assertIn('OPENAI_API_KEY', properties)
+        self.assertNotIn('OPENAI_BASE_URL', properties)
+        self.assertNotIn('OPENAI_MODEL', properties)
 
     def test_all_template_variables_are_declared(self):
         doc = render()

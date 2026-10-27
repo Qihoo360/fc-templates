@@ -34,8 +34,8 @@ Parameters:
     - Description
     - OWNER_TOKEN
     - INTELLIGENCE_API_KEY
-    - OPENAI_BASE_URL
-    - OPENAI_MODEL
+    - OPENAI_URL
+    - OPENAI_MODELNAME
     - OPENAI_API_KEY
     - FileStorage
     - POLEFS_VOLUME
@@ -133,7 +133,7 @@ Parameters:
       x-formitem:
         type: input
 
-    OPENAI_BASE_URL:
+    OPENAI_URL:
       title: 模型服务地址
       type: string
       default: https://llm.api.zyuncs.com/v1
@@ -146,7 +146,7 @@ Parameters:
       x-formitem:
         type: input
 
-    OPENAI_MODEL:
+    OPENAI_MODELNAME:
       title: 语言模型名称
       type: string
       default: z-ai/glm-5.3
