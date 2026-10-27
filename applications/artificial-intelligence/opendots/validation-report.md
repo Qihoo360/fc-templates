@@ -15,10 +15,10 @@
 | 模板 Schema 校验 | 通过 | `tests/test_template.py`，5/5 |
 | 模板参数渲染 | 通过 | `tests/test_template.py` |
 | Docker 镜像构建 | 通过 | `opendots-appmkt:local` |
-| OpenDots 镜像发布 | 通过 | `harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.1` |
+| OpenDots 镜像发布 | 通过 | `harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.2` |
 | 容器健康检查 | 通过 | `GET /health` 返回 200 和 `{"ok":true}` |
 | API 鉴权 | 通过 | 无令牌 `/api/state` 返回 401，正确令牌返回 200 |
-| 镜像固定 | 通过 | digest 为 `sha256:134b4f6ca07b0403797a616a09a502e7fe913ae39f2bdd24eedce6addb20a7d5` |
+| 镜像固定 | 通过 | digest 为 `sha256:ced9fc62602c319995d965f983d92e86df69c785c596faea7e43eae27799650c` |
 
 ## 未验证
 

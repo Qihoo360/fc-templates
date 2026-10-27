@@ -15,9 +15,9 @@
 - 使用 `/health` 作为基础健康检查入口。
 - 第一阶段固定单实例，避免 SQLite 在多实例下产生一致性问题。
 
-当前镜像：`harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.1`。
+当前镜像：`harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.2`。
 
-镜像 digest：`sha256:134b4f6ca07b0403797a616a09a502e7fe913ae39f2bdd24eedce6addb20a7d5`。
+镜像 digest：`sha256:ced9fc62602c319995d965f983d92e86df69c785c596faea7e43eae27799650c`。
 
 ## AI Native 验证门禁
 

@@ -79,7 +79,7 @@ class TemplateTests(unittest.TestCase):
         self.assertTrue(dockerfile.is_file())
         self.assertEqual(
             dockerfile.read_text(encoding='utf-8').strip(),
-            'FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.1@sha256:134b4f6ca07b0403797a616a09a502e7fe913ae39f2bdd24eedce6addb20a7d5',
+            'FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/opendots:v0.1.0.2@sha256:ced9fc62602c319995d965f983d92e86df69c785c596faea7e43eae27799650c',
         )
         self.assertEqual(resource['port'], 4310)
         self.assertEqual(resource['scale']['min'], 1)
