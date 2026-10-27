@@ -13,6 +13,8 @@ OpenDots 是一个持久化 AI 工作空间，支持 Dot Agent、Space 页面、
 
 默认模型配置使用 AINative 的 OpenAI 兼容地址和 `z-ai/glm-5.3`，可以在部署参数 `OPENAI_URL`、`OPENAI_MODELNAME` 中调整。模板使用 AppMkt OpenAI 资源输出的 `OPENAI_URL`、`OPENAI_MODELNAME`、`OPENAI_API_KEY`，再映射到 OpenDots 原生环境变量。
 
+应用的 `APP_ORIGIN` 由 FC HTTP Trigger 自动注入为 `https://${resources.opendots.output.httpTriggerUrl}`，不需要手工填写域名。若通过自定义域名访问，需要同时把自定义域名配置到反向代理和应用 Origin 允许列表中。
+
 ## 运行约束
 
 本阶段固定单实例运行，因为 OpenDots 的工作区元数据保存在 SQLite 中。扩展到多实例前，需要先完成共享数据库或会话路由方案。模板已提供 `/health` 健康检查入口；业务 API 仍然要求 `OWNER_TOKEN`。

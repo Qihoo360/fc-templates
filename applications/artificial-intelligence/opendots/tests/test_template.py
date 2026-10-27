@@ -95,6 +95,10 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(env['OPENAI_MODEL'], '${vars.OPENAI_MODELNAME}')
         self.assertEqual(env['OPENAI_API_KEY'], '${vars.OPENAI_API_KEY}')
         self.assertEqual(env['OWNER_TOKEN'], '${vars.OWNER_TOKEN}')
+        self.assertEqual(
+            env['APP_ORIGIN'],
+            'https://${resources.opendots.output.httpTriggerUrl}',
+        )
 
     def test_platform_openai_parameter_names_match_zopenai_outputs(self):
         properties = publish()['Parameters']['properties']

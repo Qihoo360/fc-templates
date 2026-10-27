@@ -43,6 +43,7 @@ resources:
         NODE_ENV: production
         HOST: 0.0.0.0
         PORT: "4310"
+        APP_ORIGIN: "https://${resources.opendots.output.httpTriggerUrl}"
         DATABASE_PATH: /data/opendots.sqlite
         OWNER_TOKEN: ${vars.OWNER_TOKEN}
         OWNER_ID: ${vars.OWNER_ID}
