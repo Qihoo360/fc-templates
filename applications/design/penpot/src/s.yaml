@@ -3,9 +3,7 @@ name: penpot-app
 access: default
 vars:
   region: '{{region}}'
-  FrontendFunctionName: '{{FrontendFunctionName}}'
-  BackendFunctionName: '{{BackendFunctionName}}'
-  AdminFunctionName: '{{AdminFunctionName}}'
+  PenpotFunctionName: '{{PenpotFunctionName}}'
   Description: '{{Description}}'
   PENPOT_SECRET_KEY: '{{PENPOT_SECRET_KEY}}'
   APPMKT_ALLOW_REGISTRATION: '{{APPMKT_ALLOW_REGISTRATION}}'
@@ -30,86 +28,31 @@ vars:
   S3_AK: '{{S3_AK}}'
   S3_SK: '{{S3_SK}}'
   S3_ENDPOINT: '{{S3_ENDPOINT}}'
-# Direct-reference mode: frontend self-reference and cross-resource cycles must
-# be supported by the deployment engine; static rendering does not verify this.
-# httpTriggerUrl is treated as a bare hostname; public access requires HTTPS.
 resources:
-  penpotAdminConsole:
+  penpot:
     component: ${path('/utils/components/zfc')}
     props:
       region: ${vars.region}
-      functionName: ${vars.AdminFunctionName}
+      functionName: ${vars.PenpotFunctionName}
       description: ${vars.Description}
       runtime: custom
       runtimeType: customize
       requestType: http
       cloudBuildType: Dockerfile
-      sourceSubDir: admin-console
-      port: 3000
-      cpu: 1
-      memorySize: 1024
-      requestCpu: 0.5
-      requestMemory: 512
-      diskSize: 1024
+      sourceSubDir: combined
+      port: 8080
+      cpu: 6
+      memorySize: 10240
+      requestCpu: 1
+      requestMemory: 1024
+      diskSize: 2048
       timeout: 300
       instanceConcurrency: 50
       networkType: vpc
       environmentVariables:
-        PENPOT_PUBLIC_URI: 'https://${resources.penpotFrontend.output.httpTriggerUrl}'
-        PENPOT_DATABASE_URI: 'postgresql://${vars.POSTGRES_HOST}:${vars.POSTGRES_PORT}/${vars.POSTGRES_DATABASE}?sslmode=${vars.POSTGRES_SSL_MODE}'
-        PENPOT_DATABASE_USERNAME: '${vars.POSTGRES_USERNAME}'
-        PENPOT_DATABASE_PASSWORD: '${vars.POSTGRES_PASSWORD}'
-        PENPOT_SECRET_KEY: '${vars.PENPOT_SECRET_KEY}'
-        PENPOT_INTERNAL_URI: 'https://${resources.penpotFrontend.output.httpTriggerUrl}'
-      logConfig:
-        isOpen: true
-      scale:
-        scale_config: 2
-        min: 1
-        max: 1
-      buildProgramEntry: ''
-      requestEntry: ''
-      startCmd: ''
-      requestEntryDescribe: ''
-      triggers:
-      - triggerName: httptrigger
-        triggerType: http
-        disableURLInternet: true
-        funcVersion: LATEST
-        triggerConfig:
-          auth_type: None
-          methods:
-          - GET
-          - POST
-          - PUT
-          - DELETE
-          - OPTIONS
-          - HEAD
-          - PATCH
-          disable_url_internet: true
-          auth_config: ''
-  penpotBackend:
-    component: ${path('/utils/components/zfc')}
-    props:
-      region: ${vars.region}
-      functionName: ${vars.BackendFunctionName}
-      description: ${vars.Description}
-      runtime: custom
-      runtimeType: customize
-      requestType: http
-      cloudBuildType: Dockerfile
-      sourceSubDir: backend
-      port: 6060
-      cpu: 4
-      memorySize: 8192
-      requestCpu: 0.5
-      requestMemory: 512
-      diskSize: 1024
-      timeout: 300
-      instanceConcurrency: 50
-      networkType: vpc
-      environmentVariables:
-        PENPOT_PUBLIC_URI: 'https://${resources.penpotFrontend.output.httpTriggerUrl}'
+        PENPOT_INTERNAL_URI: 'http://127.0.0.1:8080'
+        PENPOT_BACKEND_URI: 'http://127.0.0.1:6060'
+        PENPOT_ADMIN_CONSOLE_URI: 'http://127.0.0.1:3000'
         POSTGRES_HOST: '${vars.POSTGRES_HOST}'
         POSTGRES_PORT: '${vars.POSTGRES_PORT}'
         POSTGRES_DATABASE: '${vars.POSTGRES_DATABASE}'
@@ -129,66 +72,11 @@ resources:
         S3_SK: '${vars.S3_SK}'
         S3_ENDPOINT: '${vars.S3_ENDPOINT}'
         PENPOT_SECRET_KEY: '${vars.PENPOT_SECRET_KEY}'
-        PENPOT_ADMIN_CONSOLE_URI: 'http://${resources.penpotAdminConsole.output.httpTriggerUrl}'
         APPMKT_ALLOW_REGISTRATION: '${vars.APPMKT_ALLOW_REGISTRATION}'
         PENPOT_FILE_DATA_BACKEND: 'db'
         PENPOT_TELEMETRY_ENABLED: 'false'
         PENPOT_HTTP_SERVER_MAX_BODY_SIZE: '33554432'
         JVM_OPTS: -Xms256m -Xmx4096m
-      logConfig:
-        isOpen: true
-      scale:
-        scale_config: 2
-        min: 1
-        max: 1
-      buildProgramEntry: ''
-      requestEntry: ''
-      startCmd: ''
-      requestEntryDescribe: ''
-      triggers:
-      - triggerName: httptrigger
-        triggerType: http
-        disableURLInternet: true
-        funcVersion: LATEST
-        triggerConfig:
-          auth_type: None
-          methods:
-          - GET
-          - POST
-          - PUT
-          - DELETE
-          - OPTIONS
-          - HEAD
-          - PATCH
-          disable_url_internet: true
-          auth_config: ''
-  penpotFrontend:
-    component: ${path('/utils/components/zfc')}
-    props:
-      region: ${vars.region}
-      functionName: ${vars.FrontendFunctionName}
-      description: ${vars.Description}
-      runtime: custom
-      runtimeType: customize
-      requestType: http
-      cloudBuildType: Dockerfile
-      sourceSubDir: frontend
-      port: 8080
-      cpu: 1
-      memorySize: 1024
-      requestCpu: 0.5
-      requestMemory: 512
-      diskSize: 1024
-      timeout: 300
-      instanceConcurrency: 50
-      networkType: vpc
-      environmentVariables:
-        PENPOT_PUBLIC_URI: 'https://${resources.penpotFrontend.output.httpTriggerUrl}'
-        PENPOT_BACKEND_URI: 'http://${resources.penpotBackend.output.httpTriggerUrl}'
-        PENPOT_ADMIN_CONSOLE_URI: 'http://${resources.penpotAdminConsole.output.httpTriggerUrl}'
-        APPMKT_ALLOW_REGISTRATION: '${vars.APPMKT_ALLOW_REGISTRATION}'
-        PENPOT_DISABLE_IPV6_LISTEN: 'true'
-        PENPOT_HTTP_SERVER_MAX_BODY_SIZE: '33554432'
       logConfig:
         isOpen: true
       scale:

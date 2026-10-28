@@ -20,9 +20,7 @@ Parameters:
   additionalProperties: false
   required:
   - region
-  - FrontendFunctionName
-  - BackendFunctionName
-  - AdminFunctionName
+  - PenpotFunctionName
   - PENPOT_SECRET_KEY
   - Database
   - POSTGRES_HOST
@@ -56,32 +54,14 @@ Parameters:
       - beijing
       - test-2
       - test-3
-    FrontendFunctionName:
-      title: Frontend 函数名
+    PenpotFunctionName:
+      title: Penpot 函数名
       type: string
-      description: ''
+      description: 单容器同时运行 Frontend、Backend 和 Admin Console。
       x-cate: resourceCate
       x-formitem:
         type: input
-      default: penpot-frontend-${default-suffix}
-      pattern: ^[a-z][a-z0-9-]{3,40}$
-    BackendFunctionName:
-      title: Backend 函数名
-      type: string
-      description: ''
-      x-cate: resourceCate
-      x-formitem:
-        type: input
-      default: penpot-backend-${default-suffix}
-      pattern: ^[a-z][a-z0-9-]{3,40}$
-    AdminFunctionName:
-      title: Admin 函数名
-      type: string
-      description: ''
-      x-cate: resourceCate
-      x-formitem:
-        type: input
-      default: penpot-admin-${default-suffix}
+      default: penpot-${default-suffix}
       pattern: ^[a-z][a-z0-9-]{3,40}$
     Description:
       title: 描述
@@ -280,6 +260,26 @@ Parameters:
       default: s3
       enum:
       - s3
+      x-restype: s3
+      x-label: AppMkt OBS
+    S3_HOST:
+      title: OBS S3主机
+      type: string
+      description: AppMkt OBS 的主机地址；与 S3_ENDPOINT 使用同一对象存储服务。
+      x-cate: applicationCate
+      x-formitem:
+        type: input
+      pattern: ^[A-Za-z0-9][A-Za-z0-9.-]*$
+      x-restype: s3
+      x-label: AppMkt OBS
+    S3_PORT:
+      title: OBS S3端口
+      type: string
+      description: AppMkt OBS 的服务端口。
+      x-cate: applicationCate
+      x-formitem:
+        type: input
+      pattern: ^[0-9]{1,5}$
       x-restype: s3
       x-label: AppMkt OBS
     S3_BUCKET:

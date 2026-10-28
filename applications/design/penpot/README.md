@@ -1,11 +1,11 @@
-# Penpot 2.18.3 AppMkt 适配草案
+# Penpot 2.18.3 AppMkt 单容器适配
 
-**仅供隔离Dev评估；三张本地适配镜像已构建，尚未部署或上线；不含Exporter/MCP。**
+Penpot Frontend、Backend、Admin Console 由一张 combined 镜像在同一个 FC 函数内运行。Frontend/Nginx 对外监听 8080，Backend 和 Admin Console 只监听容器回环地址 6060/3000。
 
-适配方式、资源参数、限制、测试和验收见 [部署说明](/Users/zhangyi/xss/workspace/360/appmkt/fc-templates/applications/design/penpot/src/readme.md)。
+- 模板：[`publish.yaml`](publish.yaml)
+- FC 资源：[`src/s.yaml`](src/s.yaml)
+- 部署说明：[`src/readme.md`](src/readme.md)
+- 镜像引用：[`src/combined/Dockerfile`](src/combined/Dockerfile)
+- 适配文档：[`app-adapter/docs/changes/penpot-single-container-2.18.3/`](../../../../app-adapter/docs/changes/penpot-single-container-2.18.3/)
 
-设计材料：
-
-- [Spec](/Users/zhangyi/xss/workspace/360/appmkt/app-adapter/docs/changes/penpot-2.18.3/spec.md)
-- [Plan](/Users/zhangyi/xss/workspace/360/appmkt/app-adapter/docs/changes/penpot-2.18.3/plan.md)
-- [测试和发布清单](/Users/zhangyi/xss/workspace/360/appmkt/app-adapter/docs/changes/penpot-2.18.3/acceptance.md)
+当前仅供隔离 dev 验证，不代表真实平台部署或正式上线已通过。`PENPOT_PUBLIC_URI` 由容器从 `K_LATEST_TRIGGER_IDC` 自动派生。Redis 的 `neuralredis` 注入问题属于 app-store 平台阻塞，本模板不修改 app-store。

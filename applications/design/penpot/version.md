@@ -1,1 +1,1 @@
-- v2.18.3 (MVP draft; not deployed or released)
+- v2.18.3 (single-container AppMkt dev draft; combined image required; public URI derived from K_LATEST_TRIGGER_IDC; not deployed or released)
