@@ -4,56 +4,56 @@ Effective: Public
 Name: Penpot（MVP预览，未验收）
 Organization: 函数计算 (FC)
 Provider:
-- fc
+  - fc
 Version: 2.18.3
 Description: Penpot 2.18.3设计协作MVP：Frontend/Backend/Admin Console，外接PostgreSQL、Valkey和AppMkt OBS；未含Exporter/MCP，仅供隔离dev验证，未通过正式上线验收。
 HomePage: https://github.com/penpot/penpot/releases/tag/2.18.3
 Tags:
-- Custom Runtime
+  - Custom Runtime
 Category: 设计协作
 Service:
   FC:
     Authorities:
-    - 创建函数
+      - 创建函数
 Parameters:
   type: object
   additionalProperties: false
   required:
-  - region
-  - PenpotFunctionName
-  - PENPOT_SECRET_KEY
-  - Database
-  - POSTGRES_HOST
-  - POSTGRES_PORT
-  - POSTGRES_DATABASE
-  - POSTGRES_USERNAME
-  - POSTGRES_PASSWORD
-  - Cache
-  - REDIS_HOST
-  - REDIS_PORT
-  - REDIS_PASSWORD
-  - REDIS_DATABASE
-  - FileStorage
-  - S3_HOST
-  - S3_PORT
-  - S3_BUCKET
-  - S3_REGION
-  - S3_AK
-  - S3_SK
-  - S3_ENDPOINT
+    - region
+    - PenpotFunctionName
+    - PENPOT_SECRET_KEY
+    - Database
+    - POSTGRES_HOST
+    - POSTGRES_PORT
+    - POSTGRES_DATABASE
+    - POSTGRES_USERNAME
+    - POSTGRES_PASSWORD
+    - Cache
+    - REDIS_HOST
+    - REDIS_PORT
+    - REDIS_PASSWORD
+    - REDIS_DATABASE
+    - FileStorage
+    - S3_HOST
+    - S3_PORT
+    - S3_BUCKET
+    - S3_REGION
+    - S3_AK
+    - S3_SK
+    - S3_ENDPOINT
   properties:
     region:
       title: 部署区域
       type: string
-      description: ''
+      description: ""
       x-cate: resourceCate
       x-formitem:
         type: select
       default: beijing
       enum:
-      - beijing
-      - test-2
-      - test-3
+        - beijing
+        - test-2
+        - test-3
     PenpotFunctionName:
       title: Penpot 函数名
       type: string
@@ -66,7 +66,7 @@ Parameters:
     Description:
       title: 描述
       type: string
-      description: ''
+      description: ""
       x-cate: applicationCate
       x-formitem:
         type: input
@@ -87,26 +87,26 @@ Parameters:
       x-cate: applicationCate
       x-formitem:
         type: select
-      default: 'false'
+      default: "false"
       enum:
-      - 'false'
-      - 'true'
+        - "false"
+        - "true"
     Database:
       title: 数据库组件
       type: string
-      description: ''
+      description: ""
       x-cate: applicationCate
       x-formitem:
         type: select
       default: postgresql
       enum:
-      - postgresql
+        - postgresql
       x-restype: postgresql
       x-label: PostgreSQL
     POSTGRES_HOST:
       title: 数据库主机
       type: string
-      description: ''
+      description: ""
       x-cate: applicationCate
       x-formitem:
         type: input
@@ -116,18 +116,18 @@ Parameters:
     POSTGRES_PORT:
       title: 数据库端口
       type: string
-      description: ''
+      description: ""
       x-cate: applicationCate
       x-formitem:
         type: input
-      default: '5432'
+      default: "5432"
       pattern: ^[0-9]{1,5}$
       x-restype: postgresql
       x-label: PostgreSQL
     POSTGRES_DATABASE:
       title: 独立数据库
       type: string
-      description: ''
+      description: ""
       x-cate: applicationCate
       x-formitem:
         type: input
@@ -138,7 +138,7 @@ Parameters:
     POSTGRES_USERNAME:
       title: 数据库账号
       type: string
-      description: ''
+      description: ""
       x-cate: applicationCate
       x-formitem:
         type: input
@@ -148,7 +148,7 @@ Parameters:
     POSTGRES_PASSWORD:
       title: 数据库密码
       type: secret
-      description: ''
+      description: ""
       x-cate: applicationCate
       x-formitem:
         type: input
@@ -164,9 +164,9 @@ Parameters:
         type: select
       default: require
       enum:
-      - disable
-      - require
-      - verify-full
+        - disable
+        - require
+        - verify-full
       x-restype: postgresql
       x-label: PostgreSQL
     Cache:
@@ -178,13 +178,13 @@ Parameters:
         type: select
       default: redis
       enum:
-      - redis
+        - redis
       x-restype: redis
       x-label: Valkey / Redis
     REDIS_HOST:
       title: Valkey/Redis主机
       type: string
-      description: ''
+      description: ""
       x-cate: applicationCate
       x-formitem:
         type: input
@@ -194,29 +194,29 @@ Parameters:
     REDIS_PORT:
       title: 缓存端口
       type: string
-      description: ''
+      description: ""
       x-cate: applicationCate
       x-formitem:
         type: input
-      default: '6379'
+      default: "6379"
       pattern: ^[0-9]{1,5}$
       x-restype: redis
       x-label: Valkey / Redis
     REDIS_USERNAME:
       title: ACL用户名（无ACL则留空）
       type: string
-      description: ''
+      description: ""
       x-cate: applicationCate
       x-formitem:
         type: input
-      default: ''
+      default: ""
       pattern: ^[^'\r\n{}]*$
       x-restype: redis
       x-label: Valkey / Redis
     REDIS_PASSWORD:
       title: 缓存密码
       type: secret
-      description: ''
+      description: ""
       x-cate: applicationCate
       x-formitem:
         type: input
@@ -230,24 +230,24 @@ Parameters:
       x-cate: applicationCate
       x-formitem:
         type: select
-      default: '0'
+      default: "0"
       enum:
-      - '0'
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
-      - '6'
-      - '7'
-      - '8'
-      - '9'
-      - '10'
-      - '11'
-      - '12'
-      - '13'
-      - '14'
-      - '15'
+        - "0"
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+        - "6"
+        - "7"
+        - "8"
+        - "9"
+        - "10"
+        - "11"
+        - "12"
+        - "13"
+        - "14"
+        - "15"
       x-restype: redis
       x-label: Valkey / Redis
     FileStorage:
@@ -259,7 +259,7 @@ Parameters:
         type: select
       default: s3
       enum:
-      - s3
+        - s3
       x-restype: s3
       x-label: AppMkt OBS
     S3_HOST:
