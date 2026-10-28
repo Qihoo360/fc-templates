@@ -34,8 +34,6 @@ Parameters:
     - REDIS_PASSWORD
     - REDIS_DATABASE
     - FileStorage
-    - S3_HOST
-    - S3_PORT
     - S3_BUCKET
     - S3_REGION
     - S3_AK
@@ -254,88 +252,90 @@ Parameters:
       title: 文件存储组件
       type: string
       description: AppMkt OBS/S3兼容对象存储；仅由Backend FC访问，不使用Frontend/Backend共享文件卷。
-      x-cate: resourceCate
+      x-cate: applicationCate
       x-formitem:
         type: select
       default: s3
       enum:
         - s3
       x-restype: s3
-      x-label: AppMkt OBS
+      x-label: OBS
     S3_HOST:
       title: OBS S3主机
       type: string
       description: AppMkt OBS 的主机地址；与 S3_ENDPOINT 使用同一对象存储服务。
-      x-cate: resourceCate
+      default: ''
+      x-cate: applicationCate
       x-formitem:
         type: input
       pattern: ^[A-Za-z0-9][A-Za-z0-9.-]*$
       x-restype: s3
-      x-label: AppMkt OBS
+      x-label: OBS
     S3_PORT:
       title: OBS S3端口
       type: string
       description: AppMkt OBS 的服务端口。
-      x-cate: resourceCate
+      default: ''
+      x-cate: applicationCate
       x-formitem:
         type: input
       pattern: ^[0-9]{1,5}$
       x-restype: s3
-      x-label: AppMkt OBS
+      x-label: OBS
     S3_BUCKET:
       title: Penpot独立Bucket
       type: string
       description: 每个Penpot实例使用独立Bucket，不能把Bucket名拼到S3_ENDPOINT路径中。
-      x-cate: resourceCate
+      x-cate: applicationCate
       x-formitem:
         type: input
       pattern: ^[A-Za-z0-9][A-Za-z0-9._-]{1,61}[A-Za-z0-9]$
       x-restype: s3
-      x-label: AppMkt OBS
+      x-label: OBS
     S3_REGION:
       title: OBS区域
       type: string
       description: 必须与Bucket实际区域和S3签名配置一致。
-      x-cate: resourceCate
+      x-cate: applicationCate
       x-formitem:
         type: input
       pattern: ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$
       x-restype: s3
-      x-label: AppMkt OBS
+      x-label: OBS
     S3_AK:
       title: OBS Access Key
       type: secret
       description: 仅注入Backend FC，用于S3 API签名；不进入Frontend/Admin Console。
-      x-cate: resourceCate
+      x-cate: applicationCate
       x-formitem:
         type: input
       pattern: ^[^'\r\n{}]+$
       x-restype: s3
-      x-label: AppMkt OBS
+      x-label: OBS
     S3_SK:
       title: OBS Secret Key
       type: secret
       description: 仅注入Backend FC，用于S3 API签名；不进入Frontend/Admin Console。
-      x-cate: resourceCate
+      x-cate: applicationCate
       x-formitem:
         type: input
       pattern: ^[^'\r\n{}]+$
       x-restype: s3
-      x-label: AppMkt OBS
+      x-label: OBS
     S3_ENDPOINT:
       title: OBS S3 Endpoint
       type: string
       description: 完整的http或https服务根地址，不带Bucket路径；生产环境必须提供。
-      x-cate: resourceCate
+      x-cate: applicationCate
       x-formitem:
         type: input
       pattern: ^https?://[A-Za-z0-9][A-Za-z0-9.:/\[\]-]*$
       x-restype: s3
-      x-label: AppMkt OBS
+      x-label: OBS
 PropertyDescription:
   resourceCate:
     title: 部署资源
-    description: 三服务固定各1实例，Backend连接PostgreSQL、Valkey和AppMkt OBS；Frontend和Backend不共享文件卷。
+    description: 单容器固定1实例，Backend连接PostgreSQL、Valkey和OBS；OBS配置位于Penpot配置。
   applicationCate:
     title: Penpot配置
     description: 仅供dev；数据库、缓存和对象存储须使用独立测试资源，生产数据不可用于首次迁移测试。
