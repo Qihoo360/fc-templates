@@ -262,26 +262,6 @@ Parameters:
       - s3
       x-restype: s3
       x-label: AppMkt OBS
-    S3_HOST:
-      title: OBS S3主机
-      type: string
-      description: AppMkt OBS 的主机地址；与 S3_ENDPOINT 使用同一对象存储服务。
-      x-cate: applicationCate
-      x-formitem:
-        type: input
-      pattern: ^[A-Za-z0-9][A-Za-z0-9.-]*$
-      x-restype: s3
-      x-label: AppMkt OBS
-    S3_PORT:
-      title: OBS S3端口
-      type: string
-      description: AppMkt OBS 的服务端口。
-      x-cate: applicationCate
-      x-formitem:
-        type: input
-      pattern: ^[0-9]{1,5}$
-      x-restype: s3
-      x-label: AppMkt OBS
     S3_BUCKET:
       title: Penpot独立Bucket
       type: string
