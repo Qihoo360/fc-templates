@@ -51,7 +51,6 @@ resources:
       diskSize: 2048
       timeout: 300
       instanceConcurrency: 50
-      networkType: vpc
       environmentVariables:
         PENPOT_DATABASE_URI: 'postgresql://${vars.POSTGRES_HOST}:${vars.POSTGRES_PORT}/${vars.POSTGRES_DATABASE}?sslmode=${vars.POSTGRES_SSL_MODE}'
         PENPOT_DATABASE_USERNAME: '${vars.POSTGRES_USERNAME}'
