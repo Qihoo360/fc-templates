@@ -21,6 +21,9 @@ vars:
   REDIS_PASSWORD: '{{REDIS_PASSWORD}}'
   REDIS_DATABASE: '{{REDIS_DATABASE}}'
   FileStorage: '{{FileStorage}}'
+  PersistentStorage: '{{PersistentStorage}}'
+  POLEFS_VOLUME: '{{POLEFS_VOLUME}}'
+  POLEFS_VOLUME_CREATE_USER: '{{POLEFS_VOLUME_CREATE_USER}}'
   S3_HOST: '{{S3_HOST}}'
   S3_PORT: '{{S3_PORT}}'
   S3_BUCKET: '{{S3_BUCKET}}'
@@ -90,6 +93,10 @@ resources:
       requestEntry: ''
       startCmd: ''
       requestEntryDescribe: ''
+      nasConfig:
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
+          mountDir: /data
+          createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
       triggers:
       - triggerName: httptrigger
         triggerType: http

@@ -34,6 +34,8 @@ Parameters:
     - REDIS_PASSWORD
     - REDIS_DATABASE
     - FileStorage
+    - POLEFS_VOLUME
+    - POLEFS_VOLUME_CREATE_USER
     - S3_BUCKET
     - S3_REGION
     - S3_AK
@@ -260,6 +262,40 @@ Parameters:
         - s3
       x-restype: s3
       x-label: OBS
+    PersistentStorage:
+      title: 持久化文件存储
+      type: string
+      description: 默认挂载 Polefs 到容器 /data，应用家目录使用 /data/penpot。
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+      default: polefs
+      enum:
+        - polefs
+      x-restype: polefs
+      x-label: Polefs
+    POLEFS_VOLUME:
+      title: Polefs 卷名称
+      type: string
+      description: 持久化卷名称，部署后挂载到容器 /data。
+      x-cate: applicationCate
+      x-formitem:
+        type: select
+        name: volume_unique_name
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: POLEFS_VOLUME_CREATE_USER
+      x-restype: polefs
+      x-label: Polefs
+    POLEFS_VOLUME_CREATE_USER:
+      title: Polefs 挂载用户
+      type: string
+      default: ''
+      description: Polefs 挂载时使用的创建用户。
+      x-cate: applicationCate
+      x-hidden: true
+      x-restype: polefs
+      x-label: Polefs
     S3_HOST:
       title: OBS S3主机
       type: string

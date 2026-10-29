@@ -1,6 +1,6 @@
 # Penpot 2.18.3 AppMkt 单容器适配
 
-Penpot Frontend、Backend、Admin Console 由一张 combined 镜像在同一个 FC 函数内运行。Frontend/Nginx 对外监听 8080，Backend 和 Admin Console 只监听容器回环地址 6060/3000。
+Penpot Frontend、Backend、Admin Console 由一张 combined 镜像在同一个 FC 函数内运行；Polefs 挂载到 `/data`，应用家目录为 `/data/penpot/`，日志写入 `/data/penpot/logs/`。Frontend/Nginx 对外监听 8080，Backend 和 Admin Console 只监听容器回环地址 6060/3000。
 
 - 模板：[`publish.yaml`](publish.yaml)
 - FC 资源：[`src/s.yaml`](src/s.yaml)
