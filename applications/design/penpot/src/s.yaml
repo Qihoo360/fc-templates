@@ -50,6 +50,9 @@ resources:
       instanceConcurrency: 50
       networkType: vpc
       environmentVariables:
+        PENPOT_DATABASE_URI: 'postgresql://${vars.POSTGRES_HOST}:${vars.POSTGRES_PORT}/${vars.POSTGRES_DATABASE}?sslmode=${vars.POSTGRES_SSL_MODE}'
+        PENPOT_DATABASE_USERNAME: '${vars.POSTGRES_USERNAME}'
+        PENPOT_DATABASE_PASSWORD: '${vars.POSTGRES_PASSWORD}'
         PENPOT_INTERNAL_URI: 'http://127.0.0.1:8080'
         PENPOT_BACKEND_URI: 'http://127.0.0.1:6060'
         PENPOT_ADMIN_CONSOLE_URI: 'http://127.0.0.1:3000'
