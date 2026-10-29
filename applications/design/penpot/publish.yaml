@@ -157,8 +157,9 @@ Parameters:
       x-label: PostgreSQL
     POSTGRES_SSL_MODE:
       title: 数据库TLS模式
+      required: false
       type: string
-      description: require加密但不校验证书主机；verify-full须另行配置可信CA。不要为方便自动降级。
+      description: require加密但不校验证书主机；verify-full须另行配置可信CA。不要为方便自动降级。不填时后端默认 require。
       x-cate: applicationCate
       x-formitem:
         type: select
