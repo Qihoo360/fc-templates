@@ -1,12 +1,12 @@
 Edition: 3.0.0
 Type: Project
 Effective: Public
-Name: Penpot（MVP预览，未验收）
+Name: Penpot 设计协作平台
 Organization: 函数计算 (FC)
 Provider:
   - fc
 Version: 2.18.3
-Description: Penpot 2.18.3设计协作MVP：Frontend/Backend/Admin Console，外接PostgreSQL、Valkey和AppMkt OBS；未含Exporter/MCP，仅供隔离dev验证，未通过正式上线验收。
+Description: Penpot 2.18.3设计协作平台：Frontend/Backend/Admin Console，外接PostgreSQL、Valkey和AppMkt OBS；当前版本不含Exporter和MCP。
 HomePage: https://github.com/penpot/penpot/releases/tag/2.18.3
 Tags:
   - Custom Runtime
@@ -70,7 +70,7 @@ Parameters:
       x-cate: applicationCate
       x-formitem:
         type: input
-      default: Penpot 2.18.3 AppMkt MVP（未含服务端导出）
+      default: Penpot 2.18.3 设计协作平台（未含服务端导出）
       pattern: ^[^'\r\n{}]+$
     PENPOT_SECRET_KEY:
       title: 应用持久主密钥
@@ -81,9 +81,9 @@ Parameters:
         type: input
       pattern: ^[A-Za-z0-9_-]{64,128}$
     APPMKT_ALLOW_REGISTRATION:
-      title: 仅 dev 临时开放注册
+      title: 开放用户注册
       type: string
-      description: 默认关闭。true会同时跳过邮件验证，仅可在独占隔离dev创建测试账号，之后关闭；不用于生产。
+      description: 默认关闭。开启后会同时跳过邮件验证，请仅在受控环境中用于初始化账号，完成后关闭。
       x-cate: applicationCate
       x-formitem:
         type: select
@@ -131,7 +131,7 @@ Parameters:
       x-cate: applicationCate
       x-formitem:
         type: input
-      default: penpot_dev
+      default: penpot
       pattern: ^[A-Za-z_][A-Za-z0-9_]*$
       x-restype: postgresql
       x-label: PostgreSQL
@@ -172,7 +172,7 @@ Parameters:
     Cache:
       title: 缓存组件
       type: string
-      description: AppMkt现有redis资源类型；可接Valkey兼容端点。请使用专属测试实例。
+      description: AppMkt现有Redis资源类型，可接入Valkey兼容端点。请为本应用使用独立资源。
       x-cate: applicationCate
       x-formitem:
         type: select
@@ -374,4 +374,4 @@ PropertyDescription:
     description: 单容器固定1实例，Backend连接PostgreSQL、Valkey和OBS；OBS配置位于Penpot配置。
   applicationCate:
     title: Penpot配置
-    description: 仅供dev；数据库、缓存和对象存储须使用独立测试资源，生产数据不可用于首次迁移测试。
+    description: 数据库、缓存和对象存储应使用本应用独立资源，避免与其他应用共享数据。

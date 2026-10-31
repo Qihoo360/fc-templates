@@ -45,7 +45,7 @@ K_LATEST_TRIGGER_IDC=penpot-example-000c7x0c71.beijing-idc.fc.zyunapp.cn
 PENPOT_PUBLIC_URI=https://penpot-example-000c7x0c71.beijing-idc.fc.zyunapp.cn
 ```
 
-首次使用时，按照 dev 环境配置决定是否临时开启注册。创建测试账号后应关闭注册，再验证登录、创建项目、编辑保存和刷新恢复。
+首次使用时可按需开启注册完成账号初始化，创建账号后建议关闭注册，再验证登录、创建项目、编辑保存和刷新恢复。
 
 # 单容器架构
 
@@ -99,7 +99,7 @@ frontend.stderr.log
 
 # 当前限制
 
-当前版本仅供隔离 dev 验证，尚未完成正式上线验收：
+当前版本的功能边界如下：
 
 - 不提供 Exporter 服务端导出；
 - 不提供 MCP；
@@ -107,7 +107,7 @@ frontend.stderr.log
 - 不提供独立远程媒体处理；
 - 默认关闭注册；
 - Redis 自动创建依赖平台资源能力，`neuralredis` 相关问题属于 app-store 平台阻塞；
-- PostgreSQL、Redis/Valkey、OBS、WebSocket、登录、协作和重启恢复需要在目标 FC 环境中单独验证。
+- PostgreSQL、Redis/Valkey、OBS、WebSocket、登录、协作和重启恢复需要在目标 FC 环境中完成验证。
 
 # 验证状态
 

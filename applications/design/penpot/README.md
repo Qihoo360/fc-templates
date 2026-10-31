@@ -8,4 +8,4 @@ Penpot Frontend、Backend、Admin Console 由一张 combined 镜像在同一个 
 - 镜像引用：[`src/combined/Dockerfile`](src/combined/Dockerfile)
 - 适配文档：[`app-adapter/docs/changes/penpot-single-container-2.18.3/`](../../../../app-adapter/docs/changes/penpot-single-container-2.18.3/)
 
-当前仅供隔离 dev 验证，不代表真实平台部署或正式上线已通过。`PENPOT_PUBLIC_URI` 由容器从 `K_LATEST_TRIGGER_IDC` 自动派生。Redis 的 `neuralredis` 注入问题属于 app-store 平台阻塞，本模板不修改 app-store。
+当前版本按单容器方式部署，实际运行能力需结合目标 FC 环境完成验收。`PENPOT_PUBLIC_URI` 由容器从 `K_LATEST_TRIGGER_IDC` 自动派生。Redis 的 `neuralredis` 注入问题属于 app-store 平台阻塞，本模板不修改 app-store。
