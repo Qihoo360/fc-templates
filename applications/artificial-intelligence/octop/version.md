@@ -1,0 +1,1 @@
+- 1.0.0：Octop v1.0.3b1 单容器Web + SQLite/Polefs候选适配，尚未通过平台验收，不可上架。

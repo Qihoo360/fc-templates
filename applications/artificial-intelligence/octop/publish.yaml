@@ -1,0 +1,157 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: Octop
+Organization: 函数计算 (FC)
+Provider:
+- fc
+Version: 1.0.0
+Description: Octop v1.0.3b1 Web单实例适配：SQLite控制面、Polefs持久化与OpenAI兼容模型；不承诺桌面/终端/浏览器自动化。
+HomePage: https://github.com/TencentCloud/Octop
+Tags:
+- AI
+- Custom Runtime
+Category: 人工智能
+Service:
+  FC:
+    Authorities:
+    - 创建函数
+Parameters:
+  type: object
+  additionalProperties: false
+  required:
+  - region
+  - FunctionName
+  - Description
+  - OCTOP_DEFAULT_PASSWORD
+  - OCTOP_ADMIN_USERNAME
+  - OPENAI_URL
+  - OPENAI_MODELNAME
+  - OPENAI_API_KEY
+  - FileStorage
+  - POLEFS_VOLUME
+  - POLEFS_VOLUME_CREATE_USER
+  properties:
+    region:
+      title: 部署区域
+      type: string
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+      enum:
+      - beijing
+      - test-2
+      - test-3
+      x-reaction-properties:
+      - POLEFS_VOLUME
+      default: beijing
+    FunctionName:
+      title: 函数名
+      type: string
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+      pattern: ^[a-z][a-z0-9-]{3,40}$
+      default: octop-${default-suffix}
+    Description:
+      title: 函数描述
+      type: string
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+      maxLength: 255
+      default: Octop Web AI 助手
+    OCTOP_DEFAULT_PASSWORD:
+      title: 初始管理员密码
+      type: secret
+      x-cate: applicationCate
+      x-formitem:
+        type: input
+      minLength: 12
+      maxLength: 64
+      pattern: ^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9_!@#%+=.-]{12,64}$
+      description: 由部署用户填写；至少12位且含字母和数字，仅首次创建管理员生效，重启不覆盖现有密码。
+      x-label: 管理员
+    OCTOP_ADMIN_USERNAME:
+      title: 管理员用户名
+      type: string
+      x-cate: applicationCate
+      x-formitem:
+        type: input
+      pattern: ^[a-zA-Z][a-zA-Z0-9_-]{2,31}$
+      x-label: 管理员
+      description: 由部署用户填写，首次启动时创建管理员。
+    OPENAI_URL:
+      title: 模型服务地址
+      type: string
+      x-cate: applicationCate
+      x-formitem:
+        type: input
+      pattern: ^https?://[^\s\x22\x27?#]+$
+      description: 平台OpenAI资源地址，映射为Octop OPENAI_BASE_URL。
+      x-restype: openai
+      x-label: 大语言模型
+      default: https://llm.api.zyuncs.com/v1
+    OPENAI_MODELNAME:
+      title: 语言模型名称
+      type: string
+      x-cate: applicationCate
+      x-formitem:
+        type: input
+      pattern: ^[A-Za-z0-9._:/-]+$
+      x-restype: openai
+      x-label: 大语言模型
+      default: z-ai/glm-5.3
+    OPENAI_API_KEY:
+      title: 模型调用密钥
+      type: secret
+      x-cate: applicationCate
+      x-formitem:
+        type: input
+      minLength: 1
+      pattern: ^[A-Za-z0-9._~+/=:-]+$
+      description: 由部署用户填写的 OpenAI 兼容服务密钥，使用 Secret 注入。
+      x-label: 大语言模型
+    FileStorage:
+      title: 文件存储类型
+      type: string
+      x-cate: resourceCate
+      x-formitem:
+        type: select
+      enum:
+      - Polefs
+      x-restype: polefs
+      x-label: 文件存储
+      default: Polefs
+    POLEFS_VOLUME:
+      title: 存储卷
+      type: string
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+        name: volume_unique_name
+      description: 专用持久化卷挂载/data，应用状态位于/data/octop。实际文件锁和WAL兼容性需平台验证。
+      x-restype: polefs
+      x-label: 文件存储
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: POLEFS_VOLUME_CREATE_USER
+    POLEFS_VOLUME_CREATE_USER:
+      title: 存储卷创建用户
+      type: string
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+      x-restype: polefs
+      x-label: 文件存储
+      x-hidden: true
+      default: ''
+PropertyDescription:
+  resourceCate:
+    title: 资源创建配置
+    description: FC与Polefs专用资源
+  applicationCate:
+    title: 应用配置
+    description: 管理员和模型配置
