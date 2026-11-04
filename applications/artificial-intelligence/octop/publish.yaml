@@ -73,7 +73,7 @@ Parameters:
       maxLength: 64
       pattern: ^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9_!@#%+=.-]{12,64}$
       description: 由部署用户填写；至少12位且含字母和数字，仅首次创建管理员生效，重启不覆盖现有密码。
-      x-label: 管理员
+      x-label: 初始管理员密码
     OCTOP_ADMIN_USERNAME:
       title: 管理员用户名
       type: string
@@ -81,7 +81,7 @@ Parameters:
       x-formitem:
         type: input
       pattern: ^[a-zA-Z][a-zA-Z0-9_-]{2,31}$
-      x-label: 管理员
+      x-label: 管理员用户名
       description: 由部署用户填写，首次启动时创建管理员。
     OPENAI_URL:
       title: 模型服务地址
