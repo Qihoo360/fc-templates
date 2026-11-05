@@ -1,4 +1,4 @@
-FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/hermes-agent:2026.10.11.8 AS hermes-agent
+FROM harbor.qihoo.net/wfwqjs-eventing-zevent-pub/hermes-agent:2026.10.11.11 AS hermes-agent
 
 ENV DEBIAN_FRONTEND=noninteractive
 
