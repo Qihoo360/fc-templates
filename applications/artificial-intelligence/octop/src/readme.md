@@ -19,13 +19,3 @@
 | OPENAI_API_KEY | OPENAI_API_KEY |
 
 `OCTOP_APPMKT_MODE=1` 通过现有加密仓库同步平台受管 Provider。管理员用户名、管理员初始密码和 `OPENAI_API_KEY` 由部署用户填写；模型地址和模型名按模板参数传入。三项模型配置缺失、URL 不合法或 Provider 名称与用户自建配置冲突时明确失败，不假装已接入模型。
-
-## 本阶段非目标
-
-不承诺浏览器自动化、远程桌面、Terminal Shell、Docker/Podman 宿主控制、移动设备、本地 OCR/嵌入模型或多实例。管理页面可见不表示这些能力已支持或已隔离；需另行完成用户策略和平台权限验收。无需将 Redis、PostgreSQL、S3 或向量库作为此单容器版本的必选资源。
-
-## 上线前必验
-
-镜像 amd64 构建、健康、UI 登录、错误凭据、Agent/线程、真实 AINative 流式对话、工具、文件写入与重启恢复、真实 Polefs 文件锁/WAL、FC WebSocket/协议兼容。没有真实模型和 FC 验收证据不得上架。
-
-原始版本为用户指定 beta `v1.0.3b1`，不是最新稳定版本声明。过程记录统一维护在相邻 `app-adapter/docs/changes/octop-1.0.3b1/`，其 Spec、Plan、Acceptance 和 Verification 是本次验收依据。
