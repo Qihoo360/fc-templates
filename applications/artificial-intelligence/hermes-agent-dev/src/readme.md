@@ -15,3 +15,18 @@
 # 部署 & 体验
 
 * 通过 智汇云官网 -> 产品列表 -> Serverless开发 ->函数计算 FC，部署该应用。
+
+## Codex / Claude Code CLI：共享 Hermes 模型（待发布候选）
+
+两个真实 CLI 使用 Hermes 当前生效的模型、API Key 和服务端点，不新增独立输入。
+每次启动时经既有 provider/Secret 解析器读取当前 profile 的配置，按原生 CLI 协议注入
+该进程；Key 不写入命令参数或第二份持久认证配置。修改 Hermes 模型/Key 后，新任务
+使用新配置，已经运行的任务保留自己的快照。
+
+CLI 原有的权限、插件、MCP、会话和 HOME 保留；受管模型/认证字段由 Hermes 决定。
+不要在命令行另传 --model；需要换模型时更新 Hermes 的配置。
+仓库和报告使用 `/data/hermes-agent/`，既有 CLI 会话继续使用 profile HOME。
+
+共享模型服务须支持 Codex Responses 和 Claude Code Messages 协议；相同 Key
+不能替代真实协议和工具调用验收。Codex namespace 沙箱能力需单独核验，不自动放开权限。
+当前镜像引用保持旧值，本节只描述待发布能力，不代表当前市场实例已接入。
