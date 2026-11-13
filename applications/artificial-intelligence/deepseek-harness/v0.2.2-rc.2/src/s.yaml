@@ -1,0 +1,87 @@
+edition: 3.0.0
+name: deepseek-harness
+access: default
+vars:
+  Region: "{{region}}"
+  FunctionName: "{{FunctionName}}"
+  Description: "{{Description}}"
+
+  FUNCTION_CPU_CORES: {{FUNCTION_CPU_CORES || 2}}
+  FUNCTION_MEMORY_SIZE: {{FUNCTION_MEMORY_SIZE || 4096}}
+
+  APPMKT_APP_OWNER: "{{APPMKT_APP_OWNER || ''}}"
+  APPMKT_APP_NAME: "{{APPMKT_APP_NAME || ''}}"
+  APPMKT_APP_UUID: "{{APPMKT_APP_UUID || ''}}"
+  SENSITIVE_MODE: "{{SENSITIVE_MODE}}"
+
+  DSH_WEB_AUTH_TOKEN: "{{DSH_WEB_AUTH_TOKEN}}"
+  APIMKT_BASE_URL: "{{OPENAI_URL}}"
+  APIMKT_MODELNAME: "{{OPENAI_MODELNAME}}"
+  APIMKT_API_KEY: "{{OPENAI_API_KEY}}"
+
+  DSH_WORKSPACE_PATH: "/home/appmkt/workspace"
+  DSH_DEFAULT_MODEL_PROVIDER: "apimkt"
+  DSH_DEFAULT_MODEL: "{{OPENAI_MODELNAME}"
+
+  POLEFS_VOLUME: "{{POLEFS_VOLUME}}"
+  POLEFS_VOLUME_CAPACITY: "{{POLEFS_VOLUME_CAPACITY || 50}}"
+  POLEFS_VOLUME_CREATE_USER: "{{POLEFS_VOLUME_CREATE_USER}}"
+resources:
+  deepseek-harness:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.Region}
+      functionName: ${vars.FunctionName}
+      description: ${vars.Description}
+      runtime: custom
+      runtimeType: customize
+      sourceSubDir: deepseek-harness
+      cloudBuildType: Dockerfile
+      port: 3080
+      cpu: ${vars.FUNCTION_CPU_CORES}
+      memorySize: ${vars.FUNCTION_MEMORY_SIZE}
+      requestCpu: 0.5
+      requestMemory: 1024
+      diskSize: 512
+      timeout: 72000
+      instanceConcurrency: 1
+      requestType: http
+      networkType: vpc
+      coldStartOpt: false
+      businessSleepEnabled: false
+      environmentVariables:
+        APPMKT_APP_OWNER: "${vars.APPMKT_APP_OWNER}"
+        APPMKT_APP_NAME: "${vars.APPMKT_APP_NAME}"
+        APPMKT_APP_UUID: "${vars.APPMKT_APP_UUID}"
+
+        HOME: /home/appmkt
+        DSH_HOME: /home/appmkt/.dsh
+        DSH_WORKSPACE_PATH: ${vars.DSH_WORKSPACE_PATH}
+        DSH_WEB_AUTH_TOKEN: ${vars.DSH_WEB_AUTH_TOKEN}
+        DSH_DEFAULT_MODEL_PROVIDER: ${vars.DSH_DEFAULT_MODEL_PROVIDER}
+        DSH_DEFAULT_MODEL: ${vars.DSH_DEFAULT_MODEL}
+        APIMKT_BASE_URL: ${vars.APIMKT_BASE_URL}
+        APIMKT_MODELNAME: ${vars.APIMKT_MODELNAME}
+        APIMKT_API_KEY: ${vars.APIMKT_API_KEY}
+        APIMKT_API_KEY_ID: ${vars.APIMKT_API_KEY_ID}
+      nasAccessMode: ReadWriteOncePod
+      nasConfig:
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
+          mountDir: /home/appmkt
+          createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 2
+        min: 1
+        max: 1
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          funcVersion: LATEST
+          disableURLInternet: false
+          triggerConfig:
+            auth_type: None
+            methods: [GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH]
+            disable_url_internet: false
+            auth_config: ""
