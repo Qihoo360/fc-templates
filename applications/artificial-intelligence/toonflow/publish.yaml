@@ -1,0 +1,137 @@
+# yaml-language-server: $schema=../../../schemas/publish-schema.json
+
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: Toonflow
+Organization: 函数计算 (FC)
+Provider:
+  - fc
+Version: 1.0.0
+Description: Toonflow 开源 AI 短剧、漫剧与视频创作平台，提供 Web 画布、素材工作区和可配置的图像/视频生成能力。
+HomePage: https://github.com/HBAI-Ltd/Toonflow-app
+Tags:
+  - AI
+  - Video
+  - Custom Runtime
+Category: 人工智能
+Service:
+  FC:
+    Authorities:
+      - 创建函数
+ResourceSpecs:
+  - micro
+  - light
+  - shared
+  - dedicated
+Parameters:
+  type: object
+  additionalProperties: false
+  required:
+    - region
+    - FunctionName
+    - Description
+    - TOONFLOW_AUTH_USERNAME
+    - TOONFLOW_AUTH_PASSWORD
+    - FileStorage
+    - POLEFS_VOLUME
+    - POLEFS_VOLUME_CREATE_USER
+  properties:
+    region:
+      title: 部署区域
+      type: string
+      default: beijing
+      description: 应用将部署到所选择的区域。
+      enum:
+        - beijing
+        - test-2
+        - test-3
+      x-cate: resourceCate
+      x-reaction-properties:
+        - POLEFS_VOLUME
+      x-formitem:
+        type: select
+    FunctionName:
+      x-hidden: true
+      title: 函数名
+      type: string
+      default: toonflow-${default-suffix}
+      pattern: "^[a-z][a-z0-9-]{3,40}$"
+      description: 名称只能包含小写字母、数字和中划线，长度为 4-41 个字符。
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    Description:
+      x-hidden: true
+      title: 函数描述
+      type: string
+      default: Toonflow AI 视频创作平台
+      pattern: ".{0,255}$"
+      description: 最大长度为 255 个字符。
+      x-cate: resourceCate
+      x-formitem:
+        type: input
+    TOONFLOW_AUTH_USERNAME:
+      title: 应用访问用户名
+      type: string
+      default: toonflow
+      description: Toonflow Web/API 的 Basic Auth 用户名。
+      x-cate: applicationCate
+      x-label: 应用安全
+      x-formitem:
+        type: input
+    TOONFLOW_AUTH_PASSWORD:
+      title: 应用访问密码
+      type: secret
+      description: Toonflow Web/API 的 Basic Auth 密码，至少 16 位。
+      minLength: 16
+      x-cate: applicationCate
+      x-label: 应用安全
+      x-placeholder: 请输入至少 16 位访问密码
+      x-random: true
+      x-formitem:
+        type: input
+    FileStorage:
+      title: 文件存储类型
+      type: string
+      default: Polefs
+      description: Toonflow 设置、插件和工作区使用的持久化存储类型。
+      enum:
+        - Polefs
+      x-cate: resourceCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-formitem:
+        type: select
+    POLEFS_VOLUME:
+      title: 持久化卷名称
+      type: string
+      description: 保存 Toonflow 数据的 Polefs 卷。
+      x-cate: resourceCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-placeholder: 请输入 Polefs 存储卷
+      x-api-uri: /resources/polefs/volumes
+      x-extends-value:
+        create_username: POLEFS_VOLUME_CREATE_USER
+      x-formitem:
+        type: input
+        name: volume_unique_name
+    POLEFS_VOLUME_CREATE_USER:
+      title: 持久化卷创建用户
+      type: string
+      default: ""
+      description: 函数挂载 Polefs 卷时使用的创建用户；应与镜像运行用户 bun 的 UID/GID 契约一致。
+      x-cate: resourceCate
+      x-label: 文件存储
+      x-restype: polefs
+      x-hidden: true
+      x-formitem:
+        type: input
+PropertyDescription:
+  resourceCate:
+    title: 资源创建配置
+    description: 应用运行所需的函数和持久化资源。
+  applicationCate:
+    title: 应用配置
+    description: Toonflow Web/API 的访问安全配置。
