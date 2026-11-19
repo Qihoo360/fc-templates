@@ -8,7 +8,7 @@ Organization: 函数计算 (FC)
 Provider:
 - fc
 Version: 1.0.0
-Description: Octop v1.0.3b1 Web单实例适配：SQLite控制面、Polefs持久化与OpenAI兼容模型；不承诺桌面/终端/浏览器自动化。
+Description: Octop v1.0.3b1 Web单实例适配：SQLite控制面、Polefs持久化与OpenAI兼容模型
 HomePage: https://github.com/TencentCloud/Octop
 Tags:
 - AI
