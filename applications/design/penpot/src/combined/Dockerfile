@@ -1,3 +1,1 @@
-FROM wfwqjs-eventing-zevent-pub/penpot/combined:2.18.3.5
-
-EXPOSE 8080
+FROM penpot-appmkt:2.19.3-r1-rc1

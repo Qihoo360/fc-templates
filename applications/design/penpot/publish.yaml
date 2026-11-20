@@ -5,9 +5,9 @@ Name: Penpot 设计协作平台
 Organization: 函数计算 (FC)
 Provider:
   - fc
-Version: 2.18.3
-Description: Penpot 2.18.3设计协作平台：Frontend/Backend/Admin Console，外接PostgreSQL、Valkey和AppMkt OBS；当前版本不含Exporter和MCP。
-HomePage: https://github.com/penpot/penpot/releases/tag/2.18.3
+Version: 2.19.3
+Description: Penpot 2.19.3设计协作平台：Frontend/Backend/Admin Console，外接PostgreSQL、Valkey和AppMkt OBS；当前版本不含Exporter和MCP。
+HomePage: https://github.com/penpot/penpot/releases/tag/2.19.3
 Tags:
   - Custom Runtime
 Category: 设计协作
@@ -70,7 +70,7 @@ Parameters:
       x-cate: applicationCate
       x-formitem:
         type: input
-      default: Penpot 2.18.3 设计协作平台（未含服务端导出）
+      default: Penpot 2.19.3 设计协作平台（未含服务端导出）
       pattern: ^[^'\r\n{}]+$
     PENPOT_SECRET_KEY:
       title: 应用持久主密钥
@@ -253,7 +253,7 @@ Parameters:
     FileStorage:
       title: 文件存储组件
       type: string
-      description: AppMkt OBS/S3兼容对象存储；仅由Backend FC访问，不使用Frontend/Backend共享文件卷。
+      description: AppMkt OBS/S3兼容对象存储；Backend消费对象存储配置，无需Frontend/Backend共享资产文件卷。
       x-cate: applicationCate
       x-formitem:
         type: select
@@ -304,7 +304,7 @@ Parameters:
       x-cate: applicationCate
       x-formitem:
         type: input
-      pattern: ^[A-Za-z0-9][A-Za-z0-9.-]*$
+      pattern: ^([A-Za-z0-9][A-Za-z0-9.-]*)?$
       x-restype: s3
       x-label: OBS
     S3_PORT:
@@ -315,7 +315,7 @@ Parameters:
       x-cate: applicationCate
       x-formitem:
         type: input
-      pattern: ^[0-9]{1,5}$
+      pattern: ^([0-9]{1,5})?$
       x-restype: s3
       x-label: OBS
     S3_BUCKET:
@@ -341,7 +341,7 @@ Parameters:
     S3_AK:
       title: OBS Access Key
       type: secret
-      description: 仅注入Backend FC，用于S3 API签名；不进入Frontend/Admin Console。
+      description: 单个组合FC内由Backend用于S3 API签名；同容器进程属于共享信任边界，不承诺进程级Secret隔离。
       x-cate: applicationCate
       x-formitem:
         type: input
@@ -351,7 +351,7 @@ Parameters:
     S3_SK:
       title: OBS Secret Key
       type: secret
-      description: 仅注入Backend FC，用于S3 API签名；不进入Frontend/Admin Console。
+      description: 单个组合FC内由Backend用于S3 API签名；同容器进程属于共享信任边界，不承诺进程级Secret隔离。
       x-cate: applicationCate
       x-formitem:
         type: input

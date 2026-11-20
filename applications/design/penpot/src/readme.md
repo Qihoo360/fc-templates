@@ -2,11 +2,11 @@
 
 Penpot 是一款开源的网页设计和原型协作工具，支持团队在浏览器中创建界面设计、原型和设计系统，并进行多人协作。
 
-本案例将 Penpot 2.18.3 部署到函数计算 FC。Frontend、Backend 和 Admin Console 由一个 combined 容器运行，Frontend/Nginx 提供统一的网页访问入口。
+本案例将 Penpot 2.19.3 部署到函数计算 FC。Frontend、Backend 和 Admin Console 由一个 combined 容器运行，Frontend/Nginx 提供统一的网页访问入口。
 
 - 官方网站：https://penpot.app/
 - 官方项目：https://github.com/penpot/penpot
-- 当前版本：2.18.3
+- 当前版本：2.19.3
 
 # 前期准备
 
@@ -121,3 +121,6 @@ frontend.stderr.log
 - 登录、项目创建、编辑保存和刷新恢复正常；
 - Polefs 日志和持久化数据在重启后可读；
 - PostgreSQL、Redis/Valkey 和 OBS 连接正常。
+
+
+本轮2.19.3为本地候选，薄Dockerfile引用 `penpot-appmkt:2.19.3-r1-rc1`。尚未推送该镜像或登记平台版本；当前模板的静态/渲染校验不代表平台可拉取、FC/Polefs验收或正式发布。发布前必须引用实际已发布、回读验证的镜像，重新执行镜像契约检查。源码与构建实现位于 `apps/penpot`，过程与验收真源为 `app-adapter/docs/changes/penpot-2.19.3-q1/`。本轮不包含服务端导出、MCP、邮件和外部身份服务。
