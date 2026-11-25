@@ -1,0 +1,67 @@
+edition: 3.0.0
+name: toonflow
+access: default
+vars:
+  Region: "{{region}}"
+  FunctionName: "{{FunctionName}}"
+  Description: "{{Description}}"
+  ADMIN_USERNAME: "{{TOONFLOW_MULTI_TENANT_ADMIN_USERNAME || 'admin'}}"
+  ADMIN_PASSWORD: "{{TOONFLOW_MULTI_TENANT_ADMIN_PASSWORD}}"
+  OPENAI_URL: "{{OPENAI_URL}}"
+  OPENAI_MODELNAME: "{{OPENAI_MODELNAME}}"
+  OPENAI_API_KEY: "{{OPENAI_API_KEY}}"
+  MULTI_TENANT_SECRET: "{{TOONFLOW_MULTI_TENANT_SECRET || ''}}"
+  POLEFS_VOLUME: "{{POLEFS_VOLUME}}"
+  POLEFS_VOLUME_CREATE_USER: "{{POLEFS_VOLUME_CREATE_USER}}"
+resources:
+  toonflow-web:
+    component: ${path('/utils/components/zfc')}
+    props:
+      region: ${vars.Region}
+      description: ${vars.Description}
+      runtime: custom
+      runtimeType: customize
+      cloudBuildType: Dockerfile
+      sourceSubDir: toonflow-web
+      functionName: ${vars.FunctionName}
+      port: 10888
+      cpu: 2
+      memorySize: 4096
+      requestCpu: 0.5
+      requestMemory: 1024
+      diskSize: 512
+      timeout: 72000
+      instanceConcurrency: 1
+      requestType: http
+      coldStartOpt: false
+      businessSleepEnabled: false
+      nasAccessMode: ReadWriteOncePod
+      environmentVariables:
+        HOME: /home/appmkt
+        TOONFLOW_DATA_DIR: /home/appmkt/toonflow
+        TOONFLOW_SERVER_PORT: "3000"
+        TOONFLOW_MULTI_TENANT_ADMIN_USERNAME: ${vars.ADMIN_USERNAME}
+        TOONFLOW_MULTI_TENANT_ADMIN_PASSWORD: ${vars.ADMIN_PASSWORD}
+        OPENAI_URL: ${vars.OPENAI_URL}
+        OPENAI_MODELNAME: ${vars.OPENAI_MODELNAME}
+        OPENAI_API_KEY: ${vars.OPENAI_API_KEY}
+        TOONFLOW_MULTI_TENANT_SECRET: ${vars.MULTI_TENANT_SECRET}
+      logConfig:
+        isOpen: true
+      scale:
+        scale_config: 2
+        min: 1
+        max: 1
+      triggers:
+        - triggerName: httptrigger
+          triggerType: http
+          funcVersion: LATEST
+          triggerConfig:
+            auth_type: None
+            methods: [GET, POST, PUT, DELETE, OPTIONS, HEAD, PATCH]
+            disable_url_internet: true
+            auth_config: ""
+      nasConfig:
+        - volumeUniqueName: ${vars.POLEFS_VOLUME}
+          mountDir: /home/appmkt
+          createUserName: ${vars.POLEFS_VOLUME_CREATE_USER}

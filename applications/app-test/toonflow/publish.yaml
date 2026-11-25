@@ -1,0 +1,87 @@
+Edition: 3.0.0
+Type: Project
+Effective: Public
+Name: Toonflow
+Organization: 函数计算 (FC)
+Version: 2.0.10
+Description: Toonflow 开源 AI 短剧、漫剧与视频创作平台。
+HomePage: https://github.com/HBAI-Ltd/Toonflow-app
+Provider:
+  - fc
+Tags: [AI, Custom Runtime]
+Category: 人工智能
+ResourceSpecs: [micro, light, shared]
+Parameters:
+  type: object
+  additionalProperties: false
+  required:
+    - region
+    - FunctionName
+    - Description
+    - TOONFLOW_MULTI_TENANT_ADMIN_PASSWORD
+    - OPENAI_URL
+    - OPENAI_MODELNAME
+    - OPENAI_API_KEY
+    - POLEFS_VOLUME
+    - POLEFS_VOLUME_CREATE_USER
+  properties:
+    region:
+      title: 部署区域
+      type: string
+      default: beijing
+      x-cate: resourceCate
+    FunctionName:
+      title: 函数名
+      type: string
+      default: toonflow-${default-suffix}
+      x-cate: resourceCate
+    Description:
+      title: 函数描述
+      type: string
+      default: Toonflow AI 创作平台
+      x-cate: resourceCate
+    TOONFLOW_MULTI_TENANT_ADMIN_USERNAME:
+      title: 管理员用户名
+      type: string
+      default: admin
+      x-cate: applicationCate
+    TOONFLOW_MULTI_TENANT_ADMIN_PASSWORD:
+      title: 管理员初始密码
+      type: secret
+      x-cate: applicationCate
+    OPENAI_URL:
+      title: APIMKT OpenAI-compatible API 地址
+      type: string
+      x-cate: modelCate
+    OPENAI_MODELNAME:
+      title: APIMKT 模型名称
+      type: string
+      x-cate: modelCate
+    OPENAI_API_KEY:
+      title: APIMKT API Key
+      type: secret
+      x-cate: modelCate
+    TOONFLOW_MULTI_TENANT_SECRET:
+      title: MySQL 多租户加密密钥
+      type: secret
+      x-cate: applicationCate
+    POLEFS_VOLUME:
+      title: 持久化卷
+      type: string
+      x-restype: polefs
+      x-cate: resourceCate
+    POLEFS_VOLUME_CREATE_USER:
+      title: 挂载用户
+      type: string
+      x-cate: resourceCate
+PropertyDescription:
+  region: {title: 部署区域}
+  FunctionName: {title: 函数名}
+  Description: {title: 函数描述}
+  TOONFLOW_MULTI_TENANT_ADMIN_PASSWORD: {title: 管理员初始密码}
+  OPENAI_URL: {title: APIMKT API 地址}
+  OPENAI_MODELNAME: {title: APIMKT 模型}
+  OPENAI_API_KEY: {title: APIMKT API Key}
+  TOONFLOW_MULTI_TENANT_SECRET: {title: MySQL 加密密钥}
+  POLEFS_VOLUME: {title: 持久化卷}
+  POLEFS_VOLUME_CREATE_USER: {title: 挂载用户}
