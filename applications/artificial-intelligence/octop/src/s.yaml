@@ -30,6 +30,7 @@ resources:
       sourceSubDir: octop
       cloudBuildType: Dockerfile
       port: 8088
+      nasAccessMode: ReadWriteOncePod
       functionName: ${vars.FunctionName}
       environmentVariables:
         HOME: /data/octop
